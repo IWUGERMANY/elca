@@ -1,0 +1,98 @@
+#content.element-list {
+
+  .elca-element-sheet.element-assistant .elca-sheet-content,
+  .elca-sheet.element-assistant .function-panel {
+    background-color: rgba(194, 224, 255, 0.42);
+  }
+
+  .elca-sheet.element-assistant.active .function-panel,
+  .elca-sheet.element-assistant:hover .function-panel,
+  .elca-element-sheet.element-assistant.active .elca-sheet-content,
+  .elca-element-sheet.element-assistant:hover .elca-sheet-content {
+    background-color: rgba(194, 224, 255, 0.70);
+  }
+}
+
+#tabContent.assistant {
+
+  .assistantForm {
+
+    .element-image {
+      max-width: 800px;
+      min-height:400px;
+      margin-left:510px;
+
+      p.not-supported {
+        margin:0 auto;
+        padding:60px 30px;
+        text-align:center;
+        border:2px dashed #ddd;
+        width:200px;
+      }
+    }
+
+    .left-group {
+      clear:both;
+      float:left;
+      width: 400px;
+      padding-right:30px;
+    }
+    .right-group {
+      float:left;
+      width: 400px;
+    }
+
+    .form-section.horizontal-label {
+      float: left;
+      clear: both;
+      width: 120px;
+    }
+
+    .form-section.processConfigId, .form-section.materialId {
+      float:left;
+      max-height:50px;
+      overflow: hidden;
+      .form-elt {
+        line-height:14px;
+      }
+    }
+
+
+    .ElcaHtmlProcessConfigSelectorLink-section {
+      &.horizontal-label {
+        padding-top:0;
+        padding-bottom:0;
+
+        width: auto;
+        .label-holder {
+          width: 140px;
+          float: left;
+          clear: both;
+        }
+
+        .form-elt {
+          float: left;
+          max-width:250px;
+        }
+      }
+
+      .process-config-selector {
+        font-size:12px;
+        color: $linkColor;
+
+        &.changed, &.error {
+          color:#ff0000;
+        }
+      }
+    }
+
+    .buttons .delete {
+      display:inline-block;
+    }
+    .buttons .delete a {
+      padding-left:15px;
+      padding-right:15px;
+    }
+
+  }
+}

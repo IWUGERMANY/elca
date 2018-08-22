@@ -1,0 +1,17 @@
+test.php
+logs
+i.php
+www/img/elca/patterns
+/vendor/
+/logs/
+!logs/.gitkeep
+/tmp/
+!tmp/.gitkeep
+session-recover
+docs/NOTES-de.md
+docs/NOTES-en.md
+NOTES-de.md
+eLCA_users_manual_de.pdf
+eLCA_users_manual_en.pdf
+config.local.ini
+www/assets

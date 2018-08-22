@@ -1,0 +1,27 @@
+din276Code;label;refValue;refUnit;grouping;headline
+311;Wasser (Wert aus Kriterium 1.2.3);2,01;€/m³;WATER;
+321;Abwasser - Schmutzwasser (Wert aus Kriterium 1.2.3);2,14;€/m³;WATER;
+321;Abwasser - Niederschlag  (Wert aus Kriterium 1.2.3);1,1;€/m³;WATER;
+316;Energie - Endenergiebedarf Heizwärme laut EnEV;0,09;€/kWh;ENERGY;
+316;Energie - Endenergiebedarf Warmwasserbereitung laut EnEV;0,17;€/kWh;ENERGY;
+316;Energie - Endenergiebedarf Luftförderung laut EnEV;0,17;€/kWh;ENERGY;
+316;Energie - Endenergiebedarf Klimakälte laut EnEV;0,17;€/kWh;ENERGY;
+316;Energie - Endenergiebedarf Beleuchtung laut EnEV;0,17;€/kWh;ENERGY;
+316;Energie - Endenergiebedarf Hilfsenergie laut EnEV;0,17;€/kWh;ENERGY;
+316;Einspeisevergütung laut EEG (Energiemenge);;€/kWh;ENERGY;
+316;Eigennutzung nach Ende der Einspeisevergütung (Energiemenge);0,17;€/kWh;ENERGY;
+334;Glasflächen gut zugänglich;1,2;€/m²a;CLEANING;Reinigung von Glasflächen - KGR 334
+334;Glasflächen mittlere Zugänglichkeit;1,5;€/m²a;CLEANING;Reinigung von Glasflächen - KGR 334
+334;Glasflächen schwer zugänglich;2,31;€/m²a;CLEANING;Reinigung von Glasflächen - KGR 334
+335;Naturstein (weich);3,26;€/m²a;CLEANING;Reinigung von Außenwandbekleidungen - KGR 335
+335;Aluminium, Edelstahl, Kupferblech, Stahl (korrosionsgeschützt);1,25;€/m²a;CLEANING;Reinigung von Außenwandbekleidungen - KGR 335
+335;Glas variabel;0,19;€/m²a;CLEANING;Reinigung von Außenwandbekleidungen - KGR 335
+335;Keramik, Kunststein / Werkstein, Naturstein (hart);0,63;€/m²a;CLEANING;Reinigung von Außenwandbekleidungen - KGR 335
+338;Reinigung von Sonnenschutzvorrichtungen;1,25;€/m²a;CLEANING;Reinigung von Sonnenschutzvorrichtungen - KGR 338
+344;Reinigung von Innentüren und -fenster;0,24;€/m²a;CLEANING;Reinigung von Innentüren und Fenstern - KGR 344
+352;keramische Fliesen, Natur- / Werkstein (weich);6;€/m²a;CLEANING;Reinigung von Bodenbeläge normal belastet - KGR 352
+352;Textilbelag;5;€/m²a;CLEANING;Reinigung von Bodenbeläge normal belastet - KGR 352
+352;Kunststoff bis 2,5 mm, Laminat, Linoleum bis 2,5 mm, Parkett;3,75;€/m²a;CLEANING;Reinigung von Bodenbeläge normal belastet - KGR 352
+352;keramische Fliesen, Parkett;7,06;€/m²a;CLEANING;Reinigung von Bodenbeläge stark belastet - KGR 352
+352;Kunststoff über 2,5 mm, Linoleum ab 3,2 mm, Natur- / Werkstein (hart), Textilbelag;4,41;€/m²a;CLEANING;Reinigung von Bodenbeläge stark belastet - KGR 352
+412;Sanitäreinrichtungen / Bodenflächen;7,06;€/m²a;CLEANING;Reinigung von Bodenbeläge stark belastet - KGR 412

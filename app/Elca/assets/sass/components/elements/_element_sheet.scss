@@ -1,0 +1,41 @@
+.elca-element-sheet.composite-element .elca-sheet-content,
+.elca-sheet.composite-element .function-panel {
+    background-color:#FDFFD9;
+}
+
+.elca-sheet.composite-element.active .function-panel,
+.elca-sheet.composite-element:hover .function-panel,
+.elca-element-sheet.composite-element.active .elca-sheet-content,
+.elca-element-sheet.composite-element:hover .elca-sheet-content {
+  background-color:#FAFFA8;
+}
+
+.elca-sheet.no-process-db.active .function-panel,
+.elca-sheet.no-process-db:hover .function-panel,
+.elca-element-sheet.no-process-db.active .elca-sheet-content,
+.elca-element-sheet.no-process-db:hover .elca-sheet-content {
+  background-color: $noResultsActiveColor
+}
+
+.elca-element-sheet .sub-headline a {
+  color:#004f80;
+}
+
+.element-list {
+  .element-image {
+    position:absolute;
+    top:16px;
+    left:10px;
+    width:100px;
+  }
+
+  .elca-element-sheet.has-element-image {
+    .elca-sheet-content {
+      padding-left: 120px;
+    }
+  }
+
+  .elca-element-sheet.no-process-db {
+    background-color: $noResultsColor;
+  }
+}

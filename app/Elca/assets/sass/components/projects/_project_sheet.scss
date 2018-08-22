@@ -1,0 +1,13 @@
+.elca-project-sheet.reference.active .function-panel,
+.elca-project-sheet.reference:hover .function-panel,
+.elca-project-sheet.reference .elca-sheet-content {
+  background-color:#FDFFD9;
+}
+
+.elca-project-sheet.is-protected h2 .protected {
+  display: inline-block;
+  background: transparent url('/img/elca/ic-lock-grey.png') center no-repeat;
+  background-size: contain;
+  width:20px; height:16px;
+  margin-left:8px;
+}

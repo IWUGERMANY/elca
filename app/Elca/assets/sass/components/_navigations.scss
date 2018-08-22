@@ -1,0 +1,320 @@
+#navTopWrapper {
+  li {
+    float:left;
+    line-height:37px;
+    a {
+      color:#fff;
+    }
+  }
+}
+#navTopWrapper {
+  clear: both;
+  background-color:$buttonBgColor;
+}
+ul#navTop {
+  padding-left:110px;
+  float: left;
+}
+ul#projectNavigation {
+  padding-left:25px;
+}
+ul#navTop,
+ul#projectNavigation {
+  background-color:$buttonBgColor;
+  list-style-type:none;
+}
+ul#navTop li {
+  padding-right:40px;
+  margin-top:2px;
+}
+ul#navTop li a,
+ul#projectNavigation li a {
+  padding:4px 10px;
+}
+
+ul#navTop li a {
+  font-size:12px;
+  color:#f0f0f0;
+}
+ul#navTop li a.active,
+ul#navTop li a:hover {
+  background-color:#4c83a6;
+  text-decoration:none;
+
+  -webkit-border-radius:2px;
+  -moz-border-radius:2px;
+  border-radius:2px;
+}
+
+ul#navTop li.first {
+  margin-top:0;
+
+  a {
+    color:#fff;
+    font-size:18px;
+    font-weight:bold;
+    padding:4px 10px 7px 10px;
+  }
+}
+
+ul#languageChooser {
+  float:right;
+  padding-right:15px;
+  li {
+    float:left;
+    padding-left:5px;
+    padding-right:5px;
+    color:#eee;
+    a {
+      color:#eee;
+      font-size: 12px;
+    }
+  }
+  li.active {
+    a {
+      text-decoration: underline;
+    }
+  }
+}
+
+
+ul#projectNavigation li a.active,
+ul#projectNavigation li a:hover {
+  text-decoration:underline;
+}
+#contentHead {
+  position:relative;
+  width:100%;
+  background-color:#4C83A6;
+  border-top:1px solid #2e6e97;
+}
+#contentHead.empty {
+  border-bottom:1px solid $borderLightGrey;
+}
+#contentHead h1 {
+  padding-left:57px;
+  background:url(../../img/elca/ic-pin.gif) 32px 7px no-repeat transparent;
+
+  a {
+    font-weight:normal;
+    font-size:16px;
+    line-height:30px;
+    color:#fff;
+
+    overflow: hidden;
+    max-width: 252px;
+    max-height: 29px;
+  }
+}
+
+/**
+ * project navigation
+ */
+ul#projectNavigation {
+  border-top:1px solid #2e6e97;
+  background-color:#4c83a6;
+}
+
+ul#projectNavigation li {
+  padding: 3px 20px 3px 0;
+  float: left;
+  height:24px;
+}
+
+ul#projectNavigation li a {
+  padding: 2px 10px;
+  font-size: 14px;
+  line-height: 24px;
+  color: #fff;
+}
+
+h1.projectHeader {
+  float: left;
+  margin-right: 40px;
+}
+
+/**
+ * project phases
+ */
+ul#projectPhases li  {
+  float: left;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 30px;
+  color: #fff;
+}
+
+ul#projectPhases li span,
+ul#projectPhases li a {
+  padding: 2px 10px;
+  font-size: 12px;
+  color: #fff;
+}
+ul#projectPhases li .greyed_out {
+  color: #ccc;
+}
+ul#projectPhases li .active {
+  text-decoration:underline;
+}
+
+ul#projectPhases input.button {
+  margin-top: 0px;
+  margin-left: -1em;
+  background: transparent;
+  font-size: 11px;
+
+}
+
+h1.projectHeader {
+  float: left;
+  margin-right: 3em;
+}
+
+#projectVariants {
+  position:absolute;
+  top:0;
+  right:10px;
+  line-height:30px;
+}
+#projectVariants .form-section.projectVariant {
+  padding:0;
+  margin-right:10px;
+}
+
+#projectVariants .form-section.projectVariant,
+#projectVariants .form-section.projectVariant .form-elt,
+#projectVariants .form-section.projectVariant .label-holder {
+  float:left;
+}
+#projectVariants .form-section.projectVariant .label-holder {
+  padding:0;
+}
+#projectVariants .form-section.projectVariant .label-holder label {
+  color:#ddd;
+  font-size:12px;
+  font-style:italic;
+  padding:0 10px 0 40px;
+}
+#projectVariants .projectVariant select {
+  border:1px solid #2E6E97;
+  min-width:150px;
+  max-width:250px;
+  padding:1px 2px;
+  height:20px;
+  font-size:12px;
+}
+#projectVariants input {
+  background-color:transparent;
+  border:none;
+  text-decoration:underline;
+  min-width:auto;
+  width:auto;
+  padding:2px 0;
+  margin:0;
+}
+
+
+/**
+ * navigation left sidebar
+ */
+#navLeft #nav-left-wrapper {
+  padding-top:3px;
+  padding-bottom:20px;
+}
+#navLeft li.struct {
+  padding:15px 0 10px 0;
+  background:url(../../img/elca/nav-gradient.gif) right bottom no-repeat;
+}
+#navLeft h3 {
+  margin-left:5px;
+  margin-top:10px;
+  padding-left:5px;
+  font-weight:normal;
+  font-style:italic;
+  color:#b2b2b2;
+}
+#navLeft li h4 {
+  margin:0;
+  padding:0 30px 0 10px;
+  font-size:14px;
+  line-height:0;
+  font-weight:bold;
+  color:#939393;
+  text-decoration:none;
+  background:url(../../img/elca/nav-arrow-left-grey.png) 278px center no-repeat #fff;
+  white-space:nowrap;
+}
+#navLeft li h4:hover {
+  color:#fff;
+  cursor:pointer;
+  background:url(../../img/elca/nav-arrow-left-white.png) 278px center no-repeat #69a7d3;
+}
+#navLeft li.open h4 {
+  color:#939393;
+  background:url(../../img/elca/nav-arrow-down-blue.png) 276px center no-repeat #fff;
+}
+#navLeft .nav-level1 {
+  margin-top:4px;
+}
+#navLeft .nav-level1 li {
+  clear:left;
+  border-bottom:1px solid $borderLightGrey;
+}
+#navLeft .nav-toggle-item {
+  display:none;
+  padding-bottom:6px;
+}
+#navLeft .nav-level1 li.open .nav-toggle-item {
+  display:block;
+}
+#navLeft .nav-toggle-item li {
+  clear:left;
+  margin:0 0 6px 20px;
+  border:0;
+}
+#navLeft .nav-toggle-item li a {
+  font-weight:bold;
+  color:#939393;
+  text-decoration:none;
+}
+
+#navLeft li.active .nav-toggle  a,
+#navLeft .nav-toggle-item li a:hover,
+#navLeft .nav-toggle-item li.active a {
+  color:$linkColor;
+}
+
+#navLeft .nav-toggle-item li {
+  margin-left:10px;
+}
+#navLeft li h4 a,
+#navLeft li h4 span {
+  font-size:14px;
+  display:inline-block;
+  line-height:34px;
+  overflow:hidden;
+  text-decoration:none;
+  color:inherit;
+  max-width: 267px;
+}
+#navLeft li h4 a:hover {
+  text-decoration:underline;
+}
+
+#navLeft #nav-toggle {
+  margin:0;
+  line-height:21px;
+}
+
+#navLeft.elements h3 {
+  cursor:pointer;
+  background: transparent url('/img/elca/ic-arrow-open.png') 5px 5px no-repeat;
+  padding-left:20px;
+}
+#navLeft.elements h3.close {
+  padding-bottom:7px;
+  border-bottom:1px solid $borderLightGrey;
+  background-image: url('/img/elca/ic-arrow-closed.png');
+  background-position: 7px 3px;
+}

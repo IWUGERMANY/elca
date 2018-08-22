@@ -1,0 +1,151 @@
+/**
+ * projects, elements
+ */
+#elca-projects {
+  position: relative;
+  width: 800px;
+}
+
+#elca-projects .button {
+  float: right;
+  margin-left: 15px;
+}
+
+#elca-projects .add {
+}
+
+#elca-projects .import {
+}
+
+#elca-projects {
+  margin-top: 30px;
+
+  p {
+    padding-left: 8px;
+  }
+
+  .sheets-filter {
+    margin-top: 40px;
+    margin-left: 8px;
+  }
+}
+
+#elca-projects h1 {
+  padding-left: 8px;
+}
+
+#elca-projects .shared-projects,
+#elca-projects .my-projects {
+  margin-top: 100px;
+  h4 {
+    margin: 15px 0 8px 0;
+    border-bottom: 1px solid $borderLightGrey;
+    padding-left: 8px;
+    font-size: 14px;
+    font-style: italic;
+    font-weight: normal;
+    padding-bottom: 4px;
+  }
+}
+
+#elca-projects ul.project-list {
+  margin-top: 20px;
+}
+
+#content.project-variants {
+  width: 900px;
+}
+
+/* project data forms
+ *-------------*/
+form.generalForm {
+}
+
+form.projectForm {
+  max-width: 580px;
+}
+
+form.projectForm .column {
+  width: 250px;
+  padding-right: 40px;
+}
+
+.generalForm .form-section.startWithProjection {
+  .label-holder {
+    width: 220px;
+  }
+}
+
+.generalForm .form-section.constrMeasure {
+  width: 200px;
+}
+
+.generalForm .form-section.description textarea {
+  height: 75px;
+}
+
+.generalForm .form-section.lifeTime input {
+  width: 80px;
+}
+
+.generalForm .form-section.postcode,
+.generalForm .form-section.city {
+  float: left;
+}
+
+.generalForm .form-section.postcode {
+  width: 60px;
+}
+
+.generalForm .form-section.city {
+  width: 175px;
+  padding-left: 15px;
+}
+
+.generalForm .form-section.floorSpace {
+  margin-top:20px;
+}
+
+.generalForm .form-section.isExtantBuilding .label-holder,
+.generalForm .form-section.isListed .label-holder {
+  width: 130px;
+}
+
+/** project import
+ *------------------------*/
+#content.project-import form {
+  width: 600px;
+}
+
+/** project sanity
+ *------------------------*/
+.elca-project-sanity {
+  border: 3px solid #ff0000;
+  padding: 15px 30px;
+  margin: 10px 0;
+
+  h3 {
+    font-size: 14px;
+    font-weight: bold;
+    font-style: italic;
+    line-height: 18px;
+    border-bottom: 1px solid $borderGrey;
+    margin: 0 0 10px 0;
+    color: #F00000;
+  }
+
+  p {
+    font-size: 12px;
+    color: #666;
+    line-height: 18px;
+    margin: 12px 0;
+  }
+
+  .button {
+    text-align: right;
+  }
+
+  .list > li {
+    color: #000;
+  }
+}

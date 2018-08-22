@@ -1,0 +1,64 @@
+.elca-md {
+
+  padding: 10px 20px;
+  background-color: #F9F9F9;
+
+  color: #444;
+
+  h1, h2, h3, h4, h5 {
+    font-weight: bold;
+    margin-bottom: 6px;
+    margin-top: 6px;
+  }
+  h1 {
+    font-size: 16px
+  }
+  h2 {
+    font-size: 14px
+  }
+  h3 {
+    font-size: 12px
+  }
+  h4 {
+    font-size: 12px
+  }
+  h5 {
+    font-size: 12px
+  }
+
+  p {
+    color: #444;
+    margin: 0 0 16px 0;
+  }
+
+  ul {
+    list-style-type: square;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
+  ul, ol {
+    margin-left: 32px;
+    margin-bottom: 16px;
+  }
+  li {
+    color: #444
+  }
+  li p {
+    margin: 0
+  }
+
+  blockquote {
+    margin:1em 0;
+    border:3px solid #FF0000;
+    padding:15px 25px;
+  }
+
+  code {
+    color: #ff0000;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+  }
+}

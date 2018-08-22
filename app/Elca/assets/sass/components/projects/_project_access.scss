@@ -1,0 +1,47 @@
+#content.elca-project-access {
+  width: 600px;
+
+  .project-access-token-form {
+    width: 600px;
+  }
+
+  table.project-access-tokens {
+    width:100%;
+    background-color: #f9f9f9;
+    padding:10px 5px;
+
+    col.userEmail {width: 30%}
+    col.canEdit {width: 15%}
+    col.createdAt, col.confirmedAt {width: 15%}
+    col.actions {width: 40%}
+
+    .canEdit, .createdAt, .confirmedAt  {
+      text-align: center;
+    }
+
+
+    .lastColumn {
+      text-align: left;
+      ul li {
+        float: left;
+        padding-right: 15px;
+        a {
+          color: $linkColor;
+        }
+      }
+    }
+
+    tfoot tr td {
+      border:none;
+    }
+  }
+
+  .new-access.fieldset {
+    background-color: #f9f9f9;
+    padding:10px 5px;
+  }
+
+  .form-section.grantAccessToEmail {
+    width: 400px;
+  }
+}

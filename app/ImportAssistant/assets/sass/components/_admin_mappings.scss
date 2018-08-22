@@ -1,0 +1,36 @@
+#content.admin-mappings {
+
+  .form-wrapper {
+    width:300px;
+    float:left;
+  }
+
+  .buttons {
+    margin-bottom: 50px;
+
+    .button {
+      margin-top:28px;
+
+      float:right;
+      margin-left:20px;
+    }
+  }
+
+  table.dataTable {
+     th.actions {
+      width: 110px;
+    }
+    th.epd-sub-type {
+      width: 140px;
+    }
+    th.process-dbs {
+      width: 140px;
+    }
+    th.mapping-mode {
+      width: 40px;
+    }
+    th.material-name {
+      width:350px;
+    }
+  }
+}

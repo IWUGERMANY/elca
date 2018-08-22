@@ -1,0 +1,136 @@
+/**
+ * sheets
+ */
+.elca-sheet {
+  margin-top:1px;
+  border-bottom:1px solid $borderLightGrey;
+  cursor:pointer;
+  position:relative;
+}
+.elca-sheet.active {
+  cursor:auto;
+}
+
+.elca-sheet .function-panel {
+  position:absolute;
+  top:15px;
+  right:0;
+  display:none;
+  background-color:#fff;
+}
+.elca-sheet.active .function-panel,
+.elca-sheet:hover .function-panel {
+  display:block;
+}
+.elca-sheet .function-panel .icon {
+  float:left;
+  width:19px;
+  height:19px;
+  margin:0 4px;
+  outline:none;
+  text-indent:-9999px;
+}
+.elca-sheet .function-panel .copy {
+  background:url(../../img/elca/ic-copy.gif) left top no-repeat;
+}
+.elca-sheet .function-panel .delete {
+  background:url(../../img/elca/ic-delete.gif) left top no-repeat;
+}
+.elca-sheet .function-panel .delete-recursive {
+  width:24px;
+  background:url(../../img/elca/ic-delete-recursive-24x19.png) left top no-repeat;
+}
+.elca-sheet .function-panel .edit {
+  background:url(../../img/elca/ic-edit.gif) left top no-repeat;
+}
+.elca-sheet .function-panel .move {
+  background:url(../../img/elca/ic-move.gif) left top no-repeat;
+}
+.elca-sheet .function-panel .select {
+  width:21px;
+  background:url(../../img/elca/ic-select-21x19.gif) left top no-repeat;
+}
+.elca-sheet .function-panel .view {
+  width:25px;
+  background:url(../../img/elca/ic-view-25x19.gif) left top no-repeat;
+}
+.elca-sheet .function-panel .assign {
+  width:26px;
+  background:url(../../img/elca/ic-assign-26x19.png) left top no-repeat;
+}
+.elca-sheet .function-panel .unassign {
+  width:26px;
+  background:url(../../img/elca/ic-unassign-26x19.png) left top no-repeat;
+}
+.elca-sheet .function-panel .star {
+  width:17px;
+  background:url(../../img/elca/ic-star.png) left top no-repeat;
+}
+.elca-sheet .function-panel .unstar {
+  width:17px;
+  background:url(../../img/elca/ic-unstar.png) left top no-repeat;
+}
+.elca-sheet .function-panel .cancel {
+  width:15px;
+  margin-top:2px;
+  background:url(../../img/elca/ic-cancel.png) left top no-repeat;
+}
+.elca-sheet .function-panel .export {
+  width:23px;
+  background:url(../../img/elca/ic-export2.png) left top no-repeat;
+}
+.elca-sheet .function-panel .move-element {
+  width:12px;
+  background:url(../../img/elca/ic-move-element.png) left top no-repeat;
+}
+.elca-sheet .function-panel .recompute {
+  width:19px;
+  background:url(../../img/elca/ic-recompute.png) left top no-repeat;
+}
+
+.elca-sheet .elca-sheet-content {
+  padding:15px 8px 10px 8px;
+}
+
+.elca-sheet.active .function-panel,
+.elca-sheet:hover .function-panel,
+.elca-sheet.active .elca-sheet-content,
+.elca-sheet:hover .elca-sheet-content {
+  background-color:#f9f9f9;
+}
+.elca-sheet-content .headline,
+.elca-sheet-content .sub-headline {
+  margin:0 0 8px 0;
+  padding-right:20px;
+  font-size:16px;
+  font-weight:bold;
+  color:#737373;
+  display:inline-block;
+  width:80%;
+  word-wrap: break-word;
+}
+.elca-sheet-content .sub-headline {
+  font-size:12px;
+  font-weight:normal;
+  font-style:italic;
+}
+.elca-sheet-content .sub-headline a.element-selector {
+  color:$linkFuncColor;
+  padding-right:10px;
+}
+
+.elca-sheet-content p {
+  margin:0 0 8px 0;
+}
+.elca-sheet-content .headline.ref-element {
+  /**    background:url(/img/elca/ic-ref-element.gif) right top no-repeat; **/
+}
+.elca-sheet-content .infos {
+  margin-top:6px;
+  overflow: hidden;
+}
+.elca-sheet-content .infos li {
+  float:left;
+  padding-right:20px;
+}
+

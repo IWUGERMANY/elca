@@ -1,0 +1,11 @@
+/** Element overview
+ *------------------*/
+#content.elements.overview h3.import a {
+  padding-left:18px;
+  background: transparent url('/img/elca/ic-arrow-closed.png') 7px 2px no-repeat;
+  text-decoration:none;
+}
+#content.elements.overview h3.import a.open {
+  background-image: url('/img/elca/ic-arrow-open.png');
+  background-position: 5px 5px;
+}

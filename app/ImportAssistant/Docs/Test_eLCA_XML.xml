@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<elca xmlns="https://www.bauteileditor.de/EnEV/2017" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.bauteileditor.de/EnEV/2017 https://www.bauteileditor.de/docs/EnEV/2017/export.xsd">
+  <project>
+    <projectInfo>
+      <name>Test eLCA</name>
+      <description>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis dolore est fugit incidunt modi molestiae nostrum odio officiis, perferendis placeat quaerat qui quis ratione reprehenderit sapiente sed veritatis vitae voluptatem.</description>
+      <projectNr>Test eLCA</projectNr>
+    </projectInfo>
+    <attributes>
+      <attr ident="bki.bauweise">
+        <caption><![CDATA[BKI Bauweise]]></caption>
+        <textValue>leicht</textValue>
+      </attr>
+      <attr ident="bki.gebaeudetyp">
+        <caption><![CDATA[BKI Gebaeudetyp]]></caption>
+        <textValue>Nichtwohngebäude</textValue>
+      </attr>
+    </attributes>
+    <projectVariants>
+      <variant>
+        <name>BKI Export</name>
+        <location>
+          <street>Testweg 1</street>
+          <postcode>80336</postcode>
+          <city>München</city>
+          <country>Deutschland</country>
+        </location>
+        <construction>
+          <grossFloorSpace>100</grossFloorSpace>
+          <netFloorSpace>100</netFloorSpace>
+          <floorSpace/>
+          <propertySize/>
+        </construction>
+        <elements>
+          <element uuid="9E8BD1E4-A170-4F94-9857-DEFBA4D3F0D2" din276Code="330" quantity="63.0" refUnit="m2">
+            <elementInfo>
+              <name>Außenwand Nord</name>
+              <description>Außenwand</description>
+            </elementInfo>
+            <components>
+              <component isLayer="true" processConfigName="Innenputz" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+              <siblings>
+                <component isLayer="true" processConfigName="Kalksandstein DIN 106/1+2 1,4" layerPosition="2" layerSize="0.2400" layerAreaRatio="0.8" layerLength="1" layerWidth="1"/>
+                <component isLayer="true" processConfigName="Mineralwolle (MW) 032 nach DIN EN 13162" layerPosition="2" layerSize="0.1200" layerAreaRatio="0.2" layerLength="1" layerWidth="1"/>
+              </siblings>
+              <component isLayer="true" processConfigName="Beton armiert 1% Stahl" layerPosition="3" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+            </components>
+            <attributes>
+              <attr ident="elca.uValue">
+                <caption><![CDATA[U-Wert]]></caption>
+                <numericValue>0.23</numericValue>
+              </attr>
+            </attributes>
+          </element>
+          <element uuid="9E8BD1E4-A170-4F94-9857-DEFBA4D3F0D3" din276Code="420" quantity="63.0" refUnit="m2">
+              <elementInfo>
+                  <name>Anlage 1</name>
+                  <description>Testanlage</description>
+              </elementInfo>
+              <components>
+                  <component isLayer="false" processConfigName="Innenputz"  quantity="10" refUnit="kg" />
+                  <component isLayer="false" processConfigName="Mehrschichtplatte m. Mineralfaser 040" quantity="10" refUnit="m2" />
+              </components>
+              <attributes>
+                  <attr ident="elca.uValue">
+                      <caption><![CDATA[U-Wert]]></caption>
+                      <numericValue>0.23</numericValue>
+                  </attr>
+              </attributes>
+          </element>
+        </elements>
+
+        <finalEnergy ngfEnEv="419.2" enEvVersion="2013">
+          <finalEnergyDemands>
+            <finalEnergyDemand processConfigName="Erdgas H">
+              <heating>12.6</heating>
+              <water>0.0</water>
+              <lighting>0.0</lighting>
+              <ventilation>0.0</ventilation>
+              <cooling>0.7</cooling>
+            </finalEnergyDemand>
+            <finalEnergyDemand processConfigName="Strom-Mix">
+              <heating>35.0</heating>
+              <water>2.5</water>
+              <lighting>13.8</lighting>
+              <ventilation>3.5</ventilation>
+              <cooling>1.6</cooling>
+            </finalEnergyDemand>
+          </finalEnergyDemands>
+          <refFinalEnergyDemands>
+            <finalEnergyDemand processConfigName="Heizöl EL">
+              <heating>114.0</heating>
+              <water>3.4</water>
+              <lighting>0.0</lighting>
+              <ventilation>0.0</ventilation>
+              <cooling>0.0</cooling>
+            </finalEnergyDemand>
+            <finalEnergyDemand processConfigName="Erdgas H">
+              <heating>0.0</heating>
+              <water>0.0</water>
+              <lighting>0.0</lighting>
+              <ventilation>0.0</ventilation>
+              <cooling>1.1</cooling>
+            </finalEnergyDemand>
+            <finalEnergyDemand processConfigName="Strom-Mix">
+              <heating>1.5</heating>
+              <water>0.3</water>
+              <lighting>14.5</lighting>
+              <ventilation>2.7</ventilation>
+              <cooling>1.2</cooling>
+            </finalEnergyDemand>
+          </refFinalEnergyDemands>
+          <finalEnergySupplies>
+            <finalEnergySupply processConfigName="Strom-Mix" quantity="2419.4" enevRatio="0.10"/>
+          </finalEnergySupplies>
+        </finalEnergy>
+      </variant>
+    </projectVariants>
+  </project>
+</elca>

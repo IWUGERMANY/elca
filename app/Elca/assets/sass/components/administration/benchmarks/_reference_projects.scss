@@ -1,0 +1,194 @@
+/** admin benchmarks form
+ *------------------------*/
+#tabContent.elca-admin-benchmark-version.admin-reference-projects {
+  min-width:inherit;
+
+  form {
+    width:900px;
+  }
+
+  .form-section.benchmarkVersionId {
+    width:300px;
+  }
+
+  .hl-row {
+    position: relative;
+    line-height:20px;
+    height:20px;
+    margin:0;
+  }
+
+  h5.hl-indicator,
+  h5.hl-value {
+    position:absolute;
+    color:#888;
+    font-style:italic;
+    font-weight:normal;
+    border:none;
+    line-height:14px;
+    width:auto;
+    font-size:12px;
+  }
+
+  h5.hl-indicator   {left:0}
+  h5.hl-value.min   {left:305px}
+  h5.hl-value.avg   {left:470px}
+  h5.hl-value.max   {left:635px}
+
+  .indicator-values {
+    padding:3px 0;
+    line-height:24px;
+    background-color:#f9f9f9;
+    margin-bottom:3px;
+    border-bottom:1px solid $borderLightGrey;
+  }
+  #indicatorBenchmarks .form-section {
+    padding:0;
+    position:relative;
+
+    .label-holder {
+      padding:0;
+      float: none;
+      width:auto;
+    }
+    .label-holder label {
+      padding:0 15px;
+      color:#666;
+    }
+    .form-elt  {
+      display:inline-block;
+    }
+
+    .save-button,
+    .input-container {
+      position:absolute;
+      top:0;
+    }
+    .form-elt .input-container {
+      width: 110px;
+      text-align:right;
+
+      &.min {
+        left:290px;
+      }
+      &.avg {
+        left:450px;
+      }
+      &.max {
+        left:620px;
+      }
+    }
+    .form-elt .input-container input {
+      width: 80px;
+      float:none;
+      margin-right:0;
+      text-align:right;
+    }
+
+    .save-button {
+      top:2px;
+      right:15px;
+      color: $buttonColor;
+      background-color: $buttonBgColor;
+      width:auto;
+      font-size: 12px;
+      margin:0;
+
+      &:hover {
+        background-color: $buttonBgHoverColor;
+      }
+    }
+  }
+
+  .din-codes {
+    .din-code-row {
+      position:relative;
+      border-bottom:1px solid $borderGrey;
+      margin:0 15px 0 30px;
+
+      .din-code {
+        display:block;
+        width:290px;
+        overflow: hidden;
+        color:$textColor;
+
+        em.ratio {
+          padding-left:3px;
+          color:#888;
+          white-space: nowrap;
+        }
+      }
+
+      .indicator-value,
+      .save-link {
+        position:absolute;
+        top:0;
+        display:inline-block;
+        width:100px;
+        text-align:right;
+      }
+
+      .din-code-ref-value-min {
+        left:265px;
+      }
+      .din-code-ref-value-avg {
+        left:425px;
+      }
+      .din-code-ref-value-max {
+        left:595px;
+      }
+
+      .indicator-value {
+        color:#333;
+        small {
+          color:$textColor;
+          padding-left:8px;
+          font-style: italic;
+        }
+
+        //small:before {
+        //  content: '[';
+        //}
+        //small:after {
+        //  content: ']';
+        //}
+      }
+
+
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

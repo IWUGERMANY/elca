@@ -1,0 +1,16 @@
+#content.elca-project-life-cycle-usage {
+  width: 920px;
+
+  #nonComplianceNotice {
+    border: 2px solid #ff0000;
+    padding:10px 15px;
+    margin:10px 0;
+    font-size: 14px;
+    color: #ff0000;
+    display:inline-block;
+
+    &.hidden {
+      display:none;
+    }
+  }
+}

@@ -1,0 +1,2036 @@
+/** import mixins **/
+/** common **/
+/** buttons **/
+/** borders **/
+/** footer ---------------*/
+#footer { position: fixed; bottom: 0; left: 0px; width: 100%; color: #000; background-color: #fff; border: none; }
+
+/* global form element styles --------------- */
+fieldset { border: none; padding: 0 0 10px 0; margin: 0; }
+
+input.button, button { background-color: #004f80; border: none; color: #fff; font-family: Arial,sans-serif; font-weight: normal; padding: 2px 15px; margin-top: 10px; cursor: pointer; -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; min-width: 100px; }
+
+input.button:hover, button:hover { background-color: #2660ac; }
+
+input.button.link { background-color: transparent; color: #004f80; -webkit-border-radius: 0; -moz-border-radius: 0; border-radius: 0; }
+input.button.link:hover { text-decoration: underline; }
+
+select { background-color: #fff; padding: 2px 0; height: 24px; line-height: 24px; }
+
+input.read-only, textarea.read-only, select.read-only, option.read-only { background-color: #fafafa !important; color: #a2a2a2 !important; }
+
+div.button a { padding: 3px 6px; font-size: 12px; font-weight: normal; color: #fff; text-decoration: none; background-color: #004f80; -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; }
+
+div.button a:hover { background-color: #4678b8; }
+
+div.selectectBoxChooser { margin-top: 3px; float: left; clear: both; font-size: 12px; }
+
+div.selectectBoxChooser div.administration { width: 400px; height: 180px; font-size: 14px; font-style: italic; clear: both; color: #888; }
+
+div.administration div.allDst, div.allSrc { width: 39%; float: left; height: 150px; }
+
+div.administration div.middle { width: 65px; float: left; text-align: center; padding-top: 65px; margin: 0 10px 0; }
+
+div.administration button.rightButton, button.leftButton { background-color: #004f80; background-image: none; color: white; cursor: pointer; display: block; font-size: 12px; font-weight: normal; line-height: 21px; margin: 0px auto 5px auto; padding: 0px; min-width: 45px; font-style: normal; }
+
+div.administration select.srcSelectBox, select.dstSelectBox { font-family: Arial, sans-serif; font-size: 14px; color: #555; border: 1px solid #ddd; width: 100%; height: 100%; margin-top: 5px; }
+
+/* htmltools styles ----------------*/
+.form-section { padding: 5px 0 10px 0; }
+
+.form-section .label-holder { padding-bottom: 5px; }
+
+.form-section label { font-size: 14px; color: #888; }
+
+.form-section label .required { color: #ff0000; padding-left: 1px; }
+
+.form-section label strong { color: #333; padding-left: 6px; font-size: 11px; }
+
+.form-section label.help { cursor: help; }
+
+.form-section input, .form-section select, .form-section textarea { font-family: Arial, sans-serif; font-size: 14px; color: #555; border: 1px solid #ddd; width: 100%; }
+
+.form-section input.changed, .form-section select.changed, .form-section textarea.changed, form.changed input.submit.submit-changes { -moz-box-shadow: 0px 0px 2px 1px #ff0000; -webkit-box-shadow: 0px 0px 2px 1px #ff0000; box-shadow: 0px 0px 2px 1px #ff0000; }
+
+form.changed a.submit.submit-changes { color: #ff0000 !important; }
+
+.form-section input.highlight, .form-section select.highlight, .form-section textarea.highlight { -moz-box-shadow: 0px 0px 2px 1px #e9892a; -webkit-box-shadow: 0px 0px 2px 1px #e9892a; box-shadow: 0px 0px 2px 1px #e9892a; }
+
+.form-section textarea { resize: vertical; }
+
+.form-section input { height: 20px; padding-left: 4px; padding-right: 4px; }
+
+.form-section .form-elt { padding-right: 10px; }
+
+.form-section .form-elt.HtmlSelectbox { padding-right: 0px; height: 24px; }
+
+.form-section .form-elt.HtmlMultiSelectbox, .form-section .form-elt.ElcaHtmlMultiSelectbox { padding-right: 0px; height: auto; position: relative; }
+
+.form-section.HtmlRadioGroup-section { padding-bottom: 15px; }
+
+.HtmlCheckbox-section .label-holder { float: left; }
+
+.HtmlCheckbox-section .form-elt.HtmlCheckbox { float: left; }
+.HtmlCheckbox-section .form-elt.HtmlCheckbox div input { height: auto; width: auto; }
+.HtmlCheckbox-section .form-elt.HtmlCheckbox div span { font-size: 14px; color: #888; left: 5px; position: relative; top: 2px; }
+
+.HtmlCheckbox-section:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+
+.HtmlUploadInput-section .form-elt input { font-size: 12px; height: auto; }
+
+.HtmlRadioGroup .group-container { text-align: left; }
+
+.HtmlRadioGroup .HtmlRadiobox { padding-right: 10px; }
+
+.HtmlRadioGroup .HtmlRadiobox input { height: auto; width: auto; }
+
+.form-elt.ElcaHtmlSvgPatternSelect { padding-right: 0; }
+.form-elt.ElcaHtmlSvgPatternSelect .elca-svg-pattern-select { display: table; width: 100%; }
+.form-elt.ElcaHtmlSvgPatternSelect .elca-svg-pattern-select .cell { position: relative; display: table-cell; vertical-align: middle; }
+.form-elt.ElcaHtmlSvgPatternSelect .elca-svg-pattern-select .cell span.image { display: block; }
+
+.form-section.error input, .form-section.error .HtmlRadioGroup .group-container, .form-section.error select { border: 1px solid #ff0000; }
+
+.form-section textarea { height: 40px; padding: 4px; max-width: 100%; min-width: 100%; }
+
+.form-section.info-element { padding: 0px 0 0px 0; }
+
+.form-section.info-element .label-holder { float: left; font-size: 14px; }
+
+.form-section.info-element .element-div { padding-left: 6px; float: left; font-size: 14px; color: #333; }
+
+.form-section.info-element .element-div strong { color: #333; padding-left: 3px; font-size: 11px; }
+
+.fieldset.buttons { clear: both; text-align: right; }
+
+.fieldset.buttons .button { margin-left: 20px; }
+
+.fieldset.column { width: 400px; float: left; padding-right: 25px; }
+
+.fieldset .legend { font-size: 14px; font-style: italic; color: #666; padding-top: 20px; padding-bottom: 3px; border-bottom: 1px solid #ddd; margin: 0 0 10px 0; }
+
+a.function-link { color: #004f80; padding-right: 20px; }
+
+/* elca form elements -------------*/
+input.numeric-input { text-align: right; }
+
+.form-section .form-elt.HtmlStaticText, .form-section .form-elt.HtmlText, .form-section .form-elt.HtmlNumericTextWithUnit, .form-section .form-elt.ElcaHtmlCurrencyText { font-size: 14px; line-height: 25px; }
+
+.form-section.inline { padding: 0 0 3px 0; }
+.form-section.inline .label-holder { float: left; padding-right: 25px; padding-bottom: 0; line-height: 24px; min-width: 50%; }
+.form-section.inline .form-elt { display: inline-block; }
+
+body { margin: 0; font-family: Arial,sans-serif; font-size: 16px; color: #666; }
+
+h1, h2, h3, h4, h5, h6 { margin: 0; }
+
+h1 { font-size: 18px; }
+
+h2 { font-size: 16px; font-weight: normal; }
+
+h3 { font-size: 14px; }
+
+h5 { font-weight: bold; font-style: italic; line-height: 22px; border-bottom: 1px solid #e5e5e5; font-size: 12px; color: #555; }
+
+ul, ol { list-style-type: none; margin: 0; padding: 0; }
+
+p, li, label, input, th, td, a, pre { font-size: 12px; color: #888; }
+
+a { text-decoration: none; }
+
+a:hover { text-decoration: underline; }
+
+p a { color: #336699; }
+
+ul.list { margin: 10px 0 20px 0; padding-left: 20px; list-style-type: square; }
+
+ul.list li { font-size: 12px; line-height: 18px; }
+
+/** generic tables ------------------*/
+table th, table td { border-bottom: 1px solid #ddd; border-right: 1px solid #ddd; color: #333333; padding: 2px 4px; }
+
+table th { font-style: italic; font-weight: normal; color: #888; border-bottom: none; }
+
+table th.firstColumn, table td.firstColumn { text-align: left; }
+
+table th.lastColumn, table td.lastColumn { border-right: none; }
+
+table tr.lastRow td { border-bottom: none; }
+
+/** noscript message ---------------*/
+#noscript-message { position: fixed; top: 0; left: 0; background-color: #ae0000; width: 100%; z-index: 101; }
+
+#noscript-message p { color: #fff; font-size: 14px; font-weight: bold; line-height: 30px; text-align: center; margin: 0; }
+
+/** Sonstiges ------------------*/
+p.notice a, ul.last-changes a { color: #336699; }
+
+/** Header ---------*/
+#header { background-color: #5c5c5c; color: #aaa; }
+
+#header a { color: #eee; }
+
+#header .layout-width { line-height: 39px; }
+
+#header h1 { padding: 0 0 0 110px; line-height: inherit; }
+
+#header h1 a { font-size: 18px; color: #aaa; }
+
+#header h1 a:hover { text-decoration: none; }
+
+#header h1 span.elca-version { font-size: 11px; }
+
+#header h1 span.beta { font-size: 9px; color: red; text-transform: uppercase; }
+
+#header h1.logo { font-weight: normal; font-style: italic; height: 39px; }
+
+#header ul#meta { position: absolute; right: 20px; top: 0; list-style-type: none; }
+
+#header ul#meta li { float: right; padding-left: 10px; color: #aaa; }
+
+#header ul#meta li a.license img { vertical-align: middle; border-width: 0; }
+
+/** helper ------------------*/
+.clear { clear: both; }
+
+.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+
+.clearfix { display: inline-block; }
+
+* html .clearfix { height: 1%; }
+
+.clearfix { display: block; }
+
+.hidden { display: none; }
+
+body.hl-mi-tr span.mi-tr { background-color: yellow; color: darkgrey !important; text-decoration: underline !important; text-decoration: underline wavy red !important; -webkit-text-decoration: underline wavy red !important; -moz-text-decoration: underline wavy red !important; display: inline !important; }
+body.hl-mi-tr input.button.mi-tr { background-color: #004f80; color: yellow !important; text-decoration: underline !important; text-decoration: underline wavy red !important; -webkit-text-decoration: underline wavy red !important; -moz-text-decoration: underline wavy red !important; }
+body.hl-mi-tr option.mi-tr, body.hl-mi-tr optgroup.mi-tr { background-color: yellow; }
+body.hl-mi-tr select.mi-tr { border: 1px solid yellow; }
+body.hl-mi-tr select.mi-tr.read-only { border: 1px solid yellow; }
+body.hl-mi-tr a.icon.mi-tr, body.hl-mi-tr img.mi-tr { border: 1px solid yellow; }
+
+/* global layout --------------- */
+.layout-width { position: relative; min-width: 1260px; max-width: 1600px; }
+
+#header { height: 39px; }
+
+#bmub { position: absolute; top: 2px; left: 10px; z-index: 1; }
+
+#inner, .main-content { position: relative; clear: both; }
+
+#outer { min-width: 1260px; }
+
+#navLeft { position: absolute; top: 0; left: 0; width: 299px; border-right: 2px solid #a3a3a3; padding: 10px 0 20px 0; }
+
+#navLeft, #main { min-height: 600px; }
+
+.projects #navLeft, .projects #main { min-height: 1191px; }
+
+#main { position: relative; margin-left: 299px; border-left: 2px solid #a3a3a3; }
+
+#main.full { margin-left: 0; }
+
+#content { padding: 20px 20px; max-width: 1330px; min-width: 920px; }
+
+#loading { position: fixed; top: 45%; left: 45%; background: url(/img/elca/ajax-loader.gif) center center no-repeat #fff; width: 64px; height: 64px; text-align: center; vertical-align: middle; display: none; border: 4px solid #e5e5e5; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; -moz-box-shadow: 0px 0px 10px 0 #ccc; -webkit-box-shadow: 0px 0px 10px 0 #ccc; box-shadow: 0px 0px 10px 0 #ccc; }
+
+body.loading #loading { display: block; }
+
+#progress { position: fixed; top: 115px; left: 45%; background-color: #f9f9f9; min-width: 100px; padding: 3px 20px; text-align: center; display: none; border: 1px solid #888; font-size: 12px; line-height: 18px; color: #333; }
+
+.elca-md { padding: 10px 20px; background-color: #F9F9F9; color: #444; }
+.elca-md h1, .elca-md h2, .elca-md h3, .elca-md h4, .elca-md h5 { font-weight: bold; margin-bottom: 6px; margin-top: 6px; }
+.elca-md h1 { font-size: 16px; }
+.elca-md h2 { font-size: 14px; }
+.elca-md h3 { font-size: 12px; }
+.elca-md h4 { font-size: 12px; }
+.elca-md h5 { font-size: 12px; }
+.elca-md p { color: #444; margin: 0 0 16px 0; }
+.elca-md ul { list-style-type: square; }
+.elca-md ol { list-style-type: decimal; }
+.elca-md ul, .elca-md ol { margin-left: 32px; margin-bottom: 16px; }
+.elca-md li { color: #444; }
+.elca-md li p { margin: 0; }
+.elca-md blockquote { margin: 1em 0; border: 3px solid #FF0000; padding: 15px 25px; }
+.elca-md code { color: #ff0000; font-family: Arial, sans-serif; font-weight: bold; }
+
+/** sheets */
+.elca-sheet { margin-top: 1px; border-bottom: 1px solid #e5e5e5; cursor: pointer; position: relative; }
+
+.elca-sheet.active { cursor: auto; }
+
+.elca-sheet .function-panel { position: absolute; top: 15px; right: 0; display: none; background-color: #fff; }
+
+.elca-sheet.active .function-panel, .elca-sheet:hover .function-panel { display: block; }
+
+.elca-sheet .function-panel .icon { float: left; width: 19px; height: 19px; margin: 0 4px; outline: none; text-indent: -9999px; }
+
+.elca-sheet .function-panel .copy { background: url(../../img/elca/ic-copy.gif) left top no-repeat; }
+
+.elca-sheet .function-panel .delete { background: url(../../img/elca/ic-delete.gif) left top no-repeat; }
+
+.elca-sheet .function-panel .delete-recursive { width: 24px; background: url(../../img/elca/ic-delete-recursive-24x19.png) left top no-repeat; }
+
+.elca-sheet .function-panel .edit { background: url(../../img/elca/ic-edit.gif) left top no-repeat; }
+
+.elca-sheet .function-panel .move { background: url(../../img/elca/ic-move.gif) left top no-repeat; }
+
+.elca-sheet .function-panel .select { width: 21px; background: url(../../img/elca/ic-select-21x19.gif) left top no-repeat; }
+
+.elca-sheet .function-panel .view { width: 25px; background: url(../../img/elca/ic-view-25x19.gif) left top no-repeat; }
+
+.elca-sheet .function-panel .assign { width: 26px; background: url(../../img/elca/ic-assign-26x19.png) left top no-repeat; }
+
+.elca-sheet .function-panel .unassign { width: 26px; background: url(../../img/elca/ic-unassign-26x19.png) left top no-repeat; }
+
+.elca-sheet .function-panel .star { width: 17px; background: url(../../img/elca/ic-star.png) left top no-repeat; }
+
+.elca-sheet .function-panel .unstar { width: 17px; background: url(../../img/elca/ic-unstar.png) left top no-repeat; }
+
+.elca-sheet .function-panel .cancel { width: 15px; margin-top: 2px; background: url(../../img/elca/ic-cancel.png) left top no-repeat; }
+
+.elca-sheet .function-panel .export { width: 23px; background: url(../../img/elca/ic-export2.png) left top no-repeat; }
+
+.elca-sheet .function-panel .move-element { width: 12px; background: url(../../img/elca/ic-move-element.png) left top no-repeat; }
+
+.elca-sheet .function-panel .recompute { width: 19px; background: url(../../img/elca/ic-recompute.png) left top no-repeat; }
+
+.elca-sheet .elca-sheet-content { padding: 15px 8px 10px 8px; }
+
+.elca-sheet.active .function-panel, .elca-sheet:hover .function-panel, .elca-sheet.active .elca-sheet-content, .elca-sheet:hover .elca-sheet-content { background-color: #f9f9f9; }
+
+.elca-sheet-content .headline, .elca-sheet-content .sub-headline { margin: 0 0 8px 0; padding-right: 20px; font-size: 16px; font-weight: bold; color: #737373; display: inline-block; width: 80%; word-wrap: break-word; }
+
+.elca-sheet-content .sub-headline { font-size: 12px; font-weight: normal; font-style: italic; }
+
+.elca-sheet-content .sub-headline a.element-selector { color: #004f80; padding-right: 10px; }
+
+.elca-sheet-content p { margin: 0 0 8px 0; }
+
+.elca-sheet-content .headline.ref-element { /**    background:url(/img/elca/ic-ref-element.gif) right top no-repeat; **/ }
+
+.elca-sheet-content .infos { margin-top: 6px; overflow: hidden; }
+
+.elca-sheet-content .infos li { float: left; padding-right: 20px; }
+
+/** tabs ---------------*/
+#content ul.elca-tabs { position: relative; top: 1px; }
+
+#content ul.elca-tabs li.elca-tab { float: left; border: 1px solid #ccc; padding: 0; margin-right: 5px; border-bottom: none; }
+
+#content ul.elca-tabs li.elca-tab a { display: inline-block; font-size: 14px; line-height: 24px; color: #888; padding: 0 15px; border-bottom: 1px solid transparent; }
+
+#content ul.elca-tabs li.elca-tab.active a { color: #004f80; font-weight: bold; border-bottom: 1px solid #fff; }
+
+#content ul.elca-tabs li.elca-tab.active a:hover { text-decoration: none; }
+
+#tabContent { border: 1px solid #ccc; padding: 20px; }
+
+.chart { position: relative; font: 10px sans-serif; }
+
+.chart line.line0, .chart .axis path, .chart .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }
+
+.chart .x.axis text.is-extant { fill: steelblue; }
+
+.chart .y.axis .tick text { fill: #ff0000; }
+
+.chart .bar { fill: steelblue; opacity: .9; }
+
+.chart .bar:hover { opacity: 1; }
+
+.chart .x.axis path { display: none; }
+
+.benchmark-chart .x.axis path { display: block; }
+
+.benchmark-chart .bar { stroke: #fff; stroke-width: 1px; }
+
+.benchmark-chart line.benchmark { stroke: #999999; stroke-width: 1px; opacity: .8; }
+.benchmark-chart line.benchmark.max { stroke: #ee0000; stroke-width: 2px; }
+.benchmark-chart line.benchmark.p20, .benchmark-chart line.benchmark.p40, .benchmark-chart line.benchmark.p60, .benchmark-chart line.benchmark.p80 { stroke-dasharray: 5, 5; }
+
+.chart div.tooltip { position: absolute; text-align: center; width: auto; min-width: 50px; padding: 6px 20px; margin: 0 10px; font: 12px sans-serif; background: #eee; color: #000; border: 0px; border-radius: 8px; pointer-events: none; }
+
+#diagramsLoading { display: none; position: absolute; top: -1000px; left: -1000px; }
+
+.dt-wrapper div.dt-buttons a.dt-button { padding: 2px 8px; margin: 10px 0; }
+.dt-wrapper select, .dt-wrapper input[type="search"] { background-color: #fff; padding: 2px 0; font-family: Arial, sans-serif; font-size: 14px; color: #555; border: 1px solid #ddd; outline: none; }
+.dt-wrapper .dataTables_length { float: left; }
+.dt-wrapper .dataTables_filter { float: right; text-align: right; }
+.dt-wrapper .dataTables_paginate { clear: both; }
+.dt-wrapper table.dataTable { margin-top: 30px; width: 100%; border-bottom: none; }
+.dt-wrapper table.dataTable thead th { font-weight: normal; border-color: #ddd; text-align: left; }
+.dt-wrapper table.dataTable td a { color: #004f80; }
+.dt-wrapper table.dataTable.no-footer { border-bottom: none; }
+.dt-wrapper .dataTables_info { font-size: 12px; color: #333; }
+.dt-wrapper table.dataTable.compact thead th.sorting_disabled, .dt-wrapper table.dataTable.compact thead th.sorting_disabled td { padding: 4px; }
+
+#content div.elca-element-process-config-sanity h3 { font-size: 12px; font-weight: normal; font-style: italic; color: #ff0000; line-height: 18px; border-bottom: 1px solid #ddd; margin: 40px 0 10px 0; }
+#content div.elca-element-process-config-sanity p { font-size: 12px; color: #666; line-height: 18px; margin: 12px 0; }
+#content div.elca-element-process-config-sanity .warning { color: #ff0000; }
+#content div.elca-element-process-config-sanity .ok { color: #00aa00; }
+#content div.elca-element-process-config-sanity .element-sanity-table-wrapper { padding: 10px 20px 10px 10px; width: 80%; max-height: 300px; overflow: scroll; border: 1px solid #ddd; background-color: #f9f9f9; }
+#content div.elca-element-process-config-sanity table td { height: 25px; }
+#content div.elca-element-process-config-sanity table td.din-code, #content div.elca-element-process-config-sanity table td.layer-position { text-align: center; }
+#content div.elca-element-process-config-sanity table th { text-align: left; }
+#content div.elca-element-process-config-sanity table td.element-name a { color: #004f80; }
+#content div.elca-element-process-config-sanity table tbody tr:hover td { background-color: #f5f5f5; }
+
+/** Filter tags ----------------------*/
+#content ul.filter-tags h5 { font-weight: normal; font-style: normal; }
+
+#content ul.filter-tags li { float: left; width: auto; line-height: 16px; background-color: #4C83A6; color: #fff; padding: 2px 6px; margin: 2px; border-radius: 4px; }
+#content ul.filter-tags li .remove-filter { display: inline-block; color: #fff; border-left: 1px solid #fff; padding-left: 5px; margin-left: 3px; }
+
+#content ul.filter-tags li.label { background-color: transparent; color: #888; padding-left: 0; font-style: italic; }
+
+#content ul.filter-tags li.constrCatalogId { background-color: #F28502; }
+
+#content ul.filter-tags li.constrDesignId { background-color: #e25502; }
+
+#content ul.filter-tags li.processDbId { background-color: #5c731d; }
+
+#content ul.filter-tags li.scope { background-color: #72CC76; }
+
+#content ul.filter-tags li.keyword { background-color: #4C83A6; }
+
+/* elements filter form -------------*/
+#content.elca-filter-sheets .sheets-filter .legend { margin-top: 0; padding-top: 0; }
+
+#content.elca-filter-sheets .sheets-filter { position: relative; }
+
+#content.elca-filter-sheets .sheets-filter .form-section.scope, #content.elca-filter-sheets .sheets-filter .form-section.search, #content.elca-filter-sheets .sheets-filter .form-section.processDbId, #content.elca-filter-sheets .sheets-filter .form-section.constrCatalogId, #content.elca-filter-sheets .sheets-filter .form-section.constrDesignId { float: left; width: 150px; padding-right: 20px; }
+
+#content.elca-filter-sheets .sheets-filter .form-section.search { width: 200px; }
+
+#content.elca-filter-sheets .sheets-filter .form-section.processDbId { width: 200px; }
+
+#content.elca-filter-sheets .sheets-filter .form-section.search .form-elt .hint { font-size: 10px; font-style: italic; color: #888; }
+
+#content.elca-filter-sheets .sheets-filter .form-section.scope { width: 320px; }
+
+#content.elca-filter-sheets .sheets-filter .form-section.scope .HtmlRadiobox { float: left; }
+
+#content.elca-filter-sheets .sheets-filter .submit.button { position: absolute; top: 0; left: 120px; margin: 0; background-color: transparent; color: #336699; }
+
+#content.elca-filter-sheets .sheets-filter .submit.button:hover { text-decoration: underline; }
+
+/** lca processing ---------------------*/
+#elca-modal-content.processing div.spinning-wheel { float: left; height: 64px; width: 64px; text-align: center; vertical-align: middle; background-position: center center; background-repeat: no-repeat; }
+
+#elca-modal-content.processing.spin div.spinning-wheel { background-image: url(/img/elca/ajax-loader.gif); }
+
+#elca-modal-content.processing.done div.spinning-wheel { background-image: url(/img/elca/ic-select.png); }
+
+#elca-modal-content.processing p.processing { padding-top: 10px; }
+
+#elca-modal-content.processing p.processing-done { padding-top: 25px; display: none; }
+
+#elca-modal-content.processing.done p.processing { display: none; }
+
+#elca-modal-content.processing.done p.processing-done { display: block; }
+
+#elca-modal-content.processing #elca-modal-close { display: none; }
+
+#elca-modal-content.processing.done #elca-modal-close { display: inline; }
+
+#content form.life-cycle-usages .form-section.construction, #content form.life-cycle-usages .form-section.maintenance { min-width: 60px; display: inline-block; padding: 0; border-right: 1px solid #e5e5e5; }
+#content form.life-cycle-usages .form-section.construction:last-child, #content form.life-cycle-usages .form-section.maintenance:last-child { border-right: none; }
+#content form.life-cycle-usages .form-section.construction .label-holder, #content form.life-cycle-usages .form-section.construction .form-elt, #content form.life-cycle-usages .form-section.maintenance .label-holder, #content form.life-cycle-usages .form-section.maintenance .form-elt { text-align: center; float: none; width: auto; border-bottom: 1px solid #e5e5e5; background-color: #f9f9f9; padding: 4px 6px; }
+#content form.life-cycle-usages .form-section.construction .label-holder label, #content form.life-cycle-usages .form-section.maintenance .label-holder label { font-size: 13px; font-style: italic; }
+#content form.life-cycle-usages .form-section.construction .form-elt, #content form.life-cycle-usages .form-section.maintenance .form-elt { padding-right: 0; }
+#content form.life-cycle-usages .form-section.construction .form-elt input, #content form.life-cycle-usages .form-section.maintenance .form-elt input { float: none; width: auto; }
+#content form.life-cycle-usages .form-section.construction.D, #content form.life-cycle-usages .form-section.maintenance.D { padding-left: 20px; }
+
+/* modal box
+*-----------------------*/
+#elca-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; display: none; background-color: rgba(100, 100, 100, 0.1); }
+
+#elca-modal-box { margin-top: 5%; }
+
+#elca-modal-content { position: relative; margin: 0 auto; border: 1px solid #3b70b4; padding: 20px 15px; width: 400px; background-color: #fff; overflow-y: auto; -webkit-box-shadow: 0px 0px 10px #333; -moz-box-shadow: 0px 0px 10px #333; box-shadow: 0px 0px 10px #333; -webkit-border-radius: 8px; -moz-border-radius: 8px; border-radius: 8px; }
+
+#elca-modal-close { position: absolute; top: 3px; right: 15px; font-weight: bold; line-height: 20px; color: #3b70b4; outline: none; }
+
+#elca-modal-content.element-image { width: 1000px; }
+
+/** msgBox ---------------*/
+#msgBox { position: fixed; top: 0; left: 0; width: 100%; display: none; }
+#msgBox .content-wrapper { background: url(/img/elca/ic-msg-box-notice.png) 260px center no-repeat; border-bottom: 2px solid transparent; padding: 4px 0 4px 300px; }
+#msgBox ul { list-style-type: none; margin: 0; padding: 10px 0 10px 20px; text-align: left; border-left: 1px solid transparent; }
+#msgBox ul li p { float: left; margin: 2px 0 4px 0; line-height: 14px; }
+#msgBox ul li p.message { max-width: 400px; font-style: italic; font-size: 14px; }
+#msgBox ul li.confirm a, #msgBox ul li.confirm span.cancel { -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; padding: 1px 10px; margin-left: 10px; font-size: 12px; font-weight: bold; cursor: pointer; }
+#msgBox.notice .content-wrapper, #msgBox.info .content-wrapper { background-color: #f9f700; border-bottom-color: #fffd14; }
+#msgBox.notice ul, #msgBox.info ul { border-left-color: #939200; }
+#msgBox.notice ul li p, #msgBox.info ul li p { color: black; }
+#msgBox.notice ul li.confirm a, #msgBox.notice ul li.confirm span.cancel, #msgBox.info ul li.confirm a, #msgBox.info ul li.confirm span.cancel { background-color: black; color: #fff; }
+#msgBox.error .content-wrapper, #msgBox.confirm .content-wrapper { background-color: #ff6666; border-bottom-color: #ff4d4d; }
+#msgBox.error ul, #msgBox.confirm ul { border-left-color: #ffcccc; }
+#msgBox.error ul li p, #msgBox.confirm ul li p { color: white; }
+#msgBox.error ul li.confirm a, #msgBox.error ul li.confirm span.cancel, #msgBox.confirm ul li.confirm a, #msgBox.confirm ul li.confirm span.cancel { background-color: #660000; color: #fff; }
+
+#navTopWrapper li { float: left; line-height: 37px; }
+#navTopWrapper li a { color: #fff; }
+
+#navTopWrapper { clear: both; background-color: #004f80; }
+
+ul#navTop { padding-left: 110px; float: left; }
+
+ul#projectNavigation { padding-left: 25px; }
+
+ul#navTop, ul#projectNavigation { background-color: #004f80; list-style-type: none; }
+
+ul#navTop li { padding-right: 40px; margin-top: 2px; }
+
+ul#navTop li a, ul#projectNavigation li a { padding: 4px 10px; }
+
+ul#navTop li a { font-size: 12px; color: #f0f0f0; }
+
+ul#navTop li a.active, ul#navTop li a:hover { background-color: #4c83a6; text-decoration: none; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; }
+
+ul#navTop li.first { margin-top: 0; }
+ul#navTop li.first a { color: #fff; font-size: 18px; font-weight: bold; padding: 4px 10px 7px 10px; }
+
+ul#languageChooser { float: right; padding-right: 15px; }
+ul#languageChooser li { float: left; padding-left: 5px; padding-right: 5px; color: #eee; }
+ul#languageChooser li a { color: #eee; font-size: 12px; }
+ul#languageChooser li.active a { text-decoration: underline; }
+
+ul#projectNavigation li a.active, ul#projectNavigation li a:hover { text-decoration: underline; }
+
+#contentHead { position: relative; width: 100%; background-color: #4C83A6; border-top: 1px solid #2e6e97; }
+
+#contentHead.empty { border-bottom: 1px solid #e5e5e5; }
+
+#contentHead h1 { padding-left: 57px; background: url(../../img/elca/ic-pin.gif) 32px 7px no-repeat transparent; }
+#contentHead h1 a { font-weight: normal; font-size: 16px; line-height: 30px; color: #fff; overflow: hidden; max-width: 252px; max-height: 29px; }
+
+/** project navigation */
+ul#projectNavigation { border-top: 1px solid #2e6e97; background-color: #4c83a6; }
+
+ul#projectNavigation li { padding: 3px 20px 3px 0; float: left; height: 24px; }
+
+ul#projectNavigation li a { padding: 2px 10px; font-size: 14px; line-height: 24px; color: #fff; }
+
+h1.projectHeader { float: left; margin-right: 40px; }
+
+/** project phases */
+ul#projectPhases li { float: left; padding: 0 10px; font-size: 12px; font-weight: 400; line-height: 30px; color: #fff; }
+
+ul#projectPhases li span, ul#projectPhases li a { padding: 2px 10px; font-size: 12px; color: #fff; }
+
+ul#projectPhases li .greyed_out { color: #ccc; }
+
+ul#projectPhases li .active { text-decoration: underline; }
+
+ul#projectPhases input.button { margin-top: 0px; margin-left: -1em; background: transparent; font-size: 11px; }
+
+h1.projectHeader { float: left; margin-right: 3em; }
+
+#projectVariants { position: absolute; top: 0; right: 10px; line-height: 30px; }
+
+#projectVariants .form-section.projectVariant { padding: 0; margin-right: 10px; }
+
+#projectVariants .form-section.projectVariant, #projectVariants .form-section.projectVariant .form-elt, #projectVariants .form-section.projectVariant .label-holder { float: left; }
+
+#projectVariants .form-section.projectVariant .label-holder { padding: 0; }
+
+#projectVariants .form-section.projectVariant .label-holder label { color: #ddd; font-size: 12px; font-style: italic; padding: 0 10px 0 40px; }
+
+#projectVariants .projectVariant select { border: 1px solid #2E6E97; min-width: 150px; max-width: 250px; padding: 1px 2px; height: 20px; font-size: 12px; }
+
+#projectVariants input { background-color: transparent; border: none; text-decoration: underline; min-width: auto; width: auto; padding: 2px 0; margin: 0; }
+
+/** navigation left sidebar */
+#navLeft #nav-left-wrapper { padding-top: 3px; padding-bottom: 20px; }
+
+#navLeft li.struct { padding: 15px 0 10px 0; background: url(../../img/elca/nav-gradient.gif) right bottom no-repeat; }
+
+#navLeft h3 { margin-left: 5px; margin-top: 10px; padding-left: 5px; font-weight: normal; font-style: italic; color: #b2b2b2; }
+
+#navLeft li h4 { margin: 0; padding: 0 30px 0 10px; font-size: 14px; line-height: 0; font-weight: bold; color: #939393; text-decoration: none; background: url(../../img/elca/nav-arrow-left-grey.png) 278px center no-repeat #fff; white-space: nowrap; }
+
+#navLeft li h4:hover { color: #fff; cursor: pointer; background: url(../../img/elca/nav-arrow-left-white.png) 278px center no-repeat #69a7d3; }
+
+#navLeft li.open h4 { color: #939393; background: url(../../img/elca/nav-arrow-down-blue.png) 276px center no-repeat #fff; }
+
+#navLeft .nav-level1 { margin-top: 4px; }
+
+#navLeft .nav-level1 li { clear: left; border-bottom: 1px solid #e5e5e5; }
+
+#navLeft .nav-toggle-item { display: none; padding-bottom: 6px; }
+
+#navLeft .nav-level1 li.open .nav-toggle-item { display: block; }
+
+#navLeft .nav-toggle-item li { clear: left; margin: 0 0 6px 20px; border: 0; }
+
+#navLeft .nav-toggle-item li a { font-weight: bold; color: #939393; text-decoration: none; }
+
+#navLeft li.active .nav-toggle a, #navLeft .nav-toggle-item li a:hover, #navLeft .nav-toggle-item li.active a { color: #336699; }
+
+#navLeft .nav-toggle-item li { margin-left: 10px; }
+
+#navLeft li h4 a, #navLeft li h4 span { font-size: 14px; display: inline-block; line-height: 34px; overflow: hidden; text-decoration: none; color: inherit; max-width: 267px; }
+
+#navLeft li h4 a:hover { text-decoration: underline; }
+
+#navLeft #nav-toggle { margin: 0; line-height: 21px; }
+
+#navLeft.elements h3 { cursor: pointer; background: transparent url("/img/elca/ic-arrow-open.png") 5px 5px no-repeat; padding-left: 20px; }
+
+#navLeft.elements h3.close { padding-bottom: 7px; border-bottom: 1px solid #e5e5e5; background-image: url("/img/elca/ic-arrow-closed.png"); background-position: 7px 3px; }
+
+/** No access ---------------------*/
+#content.no-access { width: 900px; }
+
+#content.no-access, #content.no-access p { color: inherit; }
+
+#content.no-access .box { padding: 20px; }
+
+/** Osit */
+#osit a { color: #336699; }
+
+#osit li.active span { font-style: italic; font-weight: bold; }
+
+#osit a, #osit span { position: relative; display: block; font-size: 14px; line-height: 37px; padding: 0 20px; font-weight: bold; max-width: 1259px; }
+
+#osit li { border-bottom: 1px solid #a3a3a3; background: url(/img/elca/osit-blur.gif) 0 bottom no-repeat; }
+
+#osit li.active { background: none; border-bottom: none; }
+
+#osit li.active.library { background: url(/img/elca/osit-library.png) 0 0 repeat-x; }
+
+#osit li.active span { color: #333; color: #f28502; }
+
+#osit li:hover { background: #f28502; }
+
+#osit li.active:hover { background-color: transparent; }
+
+#osit li span.osit-context { display: inline; color: #888; font-size: 10px; font-weight: normal; text-transform: uppercase; padding-left: 5px; }
+
+#osit a:hover { text-decoration: none; color: #fff; }
+
+#osit a:hover span.osit-context { color: #fff; }
+
+#osit a .back-hint { position: absolute; top: 0; right: 10px; font-size: 12px; padding: 0 5px; }
+
+/** Overview ------------------*/
+#content.overview h3.section { font-size: 12px; font-weight: normal; font-style: italic; line-height: 18px; border-bottom: 1px solid #ddd; margin: 40px 0 10px 0; }
+#content.overview .last-modified ul { list-style-type: square; margin-bottom: 25px; }
+#content.overview .last-modified ul li { margin-left: 20px; margin-bottom: 3px; }
+#content.overview .last-modified ul li a { color: #004f80; }
+#content.overview .last-modified ul.need-configuration li a { color: #f28502; }
+
+/** pageable ------------------*/
+#content ul.pageable li.next-page { padding: 20px 8px; text-align: center; }
+
+#content ul.pageable li.next-page a { display: inline-block; padding-left: 40px; line-height: 32px; }
+
+#content ul.pageable li.next-page a.loading { background: transparent url(/img/elca/loader/indicator_medium.gif) left center no-repeat; }
+
+.toggle { display: none; }
+.toggle, .toggle:after, .toggle:before, .toggle *, .toggle *:after, .toggle *:before, .toggle + .toggle-btn { box-sizing: border-box; }
+.toggle::selection, .toggle:after::selection, .toggle:before::selection, .toggle *::selection, .toggle *:after::selection, .toggle *:before::selection, .toggle + .toggle-btn::selection { background: none; }
+.toggle + .toggle-btn { outline: 0; display: inline-block; width: 35px; height: 20px; position: relative; cursor: pointer; user-select: none; }
+.toggle + .toggle-btn:after, .toggle + .toggle-btn:before { position: relative; display: block; content: ""; width: 50%; height: 100%; }
+.toggle + .toggle-btn:after { left: 0; }
+.toggle + .toggle-btn:before { display: none; }
+.toggle:checked + .toggle-btn:after { left: 50%; }
+
+.toggle-light + .toggle-btn { background: #f0f0f0; border-radius: 2em; padding: 2px; transition: all .4s ease; }
+.toggle-light + .toggle-btn:after { border-radius: 50%; background: #fff; transition: all .2s ease; }
+.toggle-light:checked + .toggle-btn { background: #9FD6AE; }
+
+.form-section.toggle-button.inline .label-holder { float: left; padding-right: 25px; }
+
+/** autocomplete menu ------------------*/
+.ui-autocomplete { position: fixed; cursor: default; max-height: 150px; overflow-y: auto; /* prevent horizontal scrollbar */ overflow-x: hidden; /* add padding to account for vertical scrollbar */ padding-right: 20px; }
+
+.ui-helper-hidden-accessible { display: none; }
+
+/* workarounds */
+* html .ui-autocomplete { width: 1px; }
+
+/* without this, the menu expands to 100% in IE6 */
+.ui-autocomplete-category { font-weight: bold; font-style: italic; padding: 0; margin: 4px 0 2px 0; line-height: 1.5; }
+
+.ui-menu { list-style: none; padding: 2px; margin: 0; display: block; float: left; background-color: #fff; border: 1px solid #aaa; }
+
+.ui-menu .ui-menu { margin-top: -3px; }
+
+.ui-menu .ui-menu-item { margin: 0; padding: 0; zoom: 1; float: left; clear: left; width: 100%; }
+
+.ui-menu .ui-menu-item a { text-decoration: none; display: block; padding: .2em .4em; line-height: 1.5; zoom: 1; cursor: pointer; }
+
+.ui-menu .ui-menu-item a:hover, .ui-menu .ui-menu-item a:active { font-weight: normal; background-color: #efefef; }
+
+#elca-svg-patterns div.add { text-align: right; }
+
+.elca-svg-pattern-sheet .elca-sheet-content { padding-left: 92px; }
+
+.elca-svg-pattern-sheet .elca-sheet-content .pattern-preview { position: absolute; top: 17px; left: 13px; width: 59px; height: 59px; }
+
+.pattern-preview.x-size { background-size: 80% auto; }
+
+.pattern-preview.y-size { background-size: auto 80%; }
+
+#content.svg-patterns { min-width: 750px; width: 750px; }
+
+form.adminSvgPatternForm .buttons fieldset { margin-top: 20px; width: 400px; }
+
+#content.svg-patterns .svg-pattern-group { width: 400px; }
+
+#content.svg-patterns .svg-pattern-preview-group { width: 500px; position: absolute; top: 98px; left: 470px; }
+
+#content.svg-patterns .svg-pattern-preview-group .pattern-preview { position: absolute; top: 28px; left: 0px; }
+
+#content.svg-patterns .svg-pattern-preview-group .file-info { display: inline-block; font-size: 12px; position: absolute; top: 10px; right: 0; }
+#content.svg-patterns .svg-pattern-preview-group .file-info a { color: #336699; }
+
+#content.svg-pattern-assignments form { width: 800px; position: relative; }
+#content.svg-pattern-assignments .fieldset.buttons { position: absolute; top: 6px; right: 15px; }
+#content.svg-pattern-assignments li.buttons { text-align: right; }
+#content.svg-pattern-assignments li.buttons input { margin: 5px 15px; }
+#content.svg-pattern-assignments .buttons input[name=cancel] { background: none; color: #336699; padding: 2px 5px; }
+#content.svg-pattern-assignments .buttons input[name=cancel]:hover { text-decoration: underline; }
+#content.svg-pattern-assignments ul.level1 .form-section { padding: 3px 15px; float: left; background-color: #f9f9f9; border-bottom: #e5e5e5 solid 1px; margin-bottom: 3px; }
+#content.svg-pattern-assignments ul.level1 .form-section .cell.image { width: 50px; }
+#content.svg-pattern-assignments ul.level1 .form-section .label-holder { float: left; width: 490px; padding-top: 4px; padding-right: 15px; padding-bottom: 4px; }
+#content.svg-pattern-assignments ul.level1 .form-section .form-elt { float: left; width: 250px; }
+#content.svg-pattern-assignments ul.level1 .form-section span.image { width: 40px; height: 26px; }
+#content.svg-pattern-assignments li { overflow: hidden; *zoom: 1; clear: both; }
+#content.svg-pattern-assignments li > .form-section .label-holder { padding-left: 15px; background: transparent url("/img/elca/ic-arrow-closed.png") 2px 8px no-repeat; cursor: pointer; }
+#content.svg-pattern-assignments li > .form-section .label-holder label { cursor: pointer; }
+#content.svg-pattern-assignments li.open > .form-section .label-holder { background-image: url("/img/elca/ic-arrow-open.png"); background-position: left 10px; }
+#content.svg-pattern-assignments li.item > .form-section { background-color: transparent; padding-left: 50px; }
+#content.svg-pattern-assignments li.item > .form-section .label-holder { background: none; cursor: auto; }
+#content.svg-pattern-assignments li.item > .form-section .label-holder label { cursor: auto; }
+#content.svg-pattern-assignments li.item .spinner { display: block; margin: 0 auto; height: 24px; width: 24px; background: transparent url(/img/elca/loader/indicator_medium.gif) center no-repeat; background-size: 75%; }
+#content.svg-pattern-assignments ul.level1 ul li { display: none; }
+#content.svg-pattern-assignments ul.level1 > .open ul li { display: block; }
+#content.svg-pattern-assignments ul.level2 ul.level3 li { display: none; }
+#content.svg-pattern-assignments ul.level2 > .open ul.level3 li { display: block; }
+#content.svg-pattern-assignments ul.level2 .ElcaHtmlSvgPatternSelect-section { padding-left: 35px; }
+#content.svg-pattern-assignments ul.level2 .ElcaHtmlSvgPatternSelect-section .label-holder { width: 470px; }
+#content.svg-pattern-assignments ul.level3 .ElcaHtmlSvgPatternSelect-section { padding-left: 50px; }
+#content.svg-pattern-assignments ul.level3 .ElcaHtmlSvgPatternSelect-section .label-holder { width: 455px; }
+
+/** Nutzerverwaltung ------------------*/
+#content.users, #tabContent.users { width: 900px; }
+
+.main-content.users #navLeft .nav-level1 li { border: none; }
+
+#elca-groups div.add, #elca-users div.add { text-align: right; }
+
+/** Nutzerverwaltung ------------------*/
+#userForm { width: 900px; }
+#userForm .HtmlRadioGroup .HtmlRadiobox { float: left; }
+#userForm div.buttons { padding-right: 50px; }
+#userForm .HtmlTextInput-section.email p { color: red; margin-top: 5px; }
+
+#roleForm, #groupForm { width: 400px; }
+
+#roleForm .formSection.roles .formEltLabel { float: left; width: 150px; }
+
+#elca-users .elca-sheet-content li.locked strong { color: #ff6666; }
+#elca-users .elca-sheet-content li.requested strong { color: darkorange; }
+
+/** admin benchmarks form ------------------------*/
+#tabContent.tab-common.elca-admin-benchmark-version form, #tabContent.tab-common.elca-admin-benchmark-version .buttons { width: 500px; }
+#tabContent.tab-common.elca-admin-benchmark-version .selectize-control.multi { min-width: 100px; }
+#tabContent.tab-common.elca-admin-benchmark-version .selectize-control.multi .item, #tabContent.tab-common.elca-admin-benchmark-version .selectize-control.multi .option { font-size: 12px; }
+#tabContent.tab-common.elca-admin-benchmark-version .selectize-control.multi .selectize-input { padding: 1px; border-radius: 0; }
+#tabContent.tab-common.elca-admin-benchmark-version .selectize-control.multi .item { padding-right: 5px !important; margin: 1px 3px 1px 0; }
+#tabContent.tab-common.elca-admin-benchmark-version .selectize-control.multi .item a { margin-left: 5px; }
+#tabContent.tab-common.elca-admin-benchmark-version .form-section.displayLivingSpace .label-holder { width: auto; }
+
+/** admin benchmarks form ------------------------*/
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions { min-width: inherit; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions form { width: 800px; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions .form-section.benchmarkVersionId { width: 300px; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions .hl-row { position: relative; line-height: 20px; height: 20px; margin: 0; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions h5.hl-indicator, #tabContent.elca-admin-benchmark-version.admin-benchmark-constructions h5.hl-value { position: absolute; color: #888; font-style: italic; font-weight: normal; border: none; line-height: 14px; width: auto; font-size: 12px; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions h5.hl-indicator { left: 0; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions h5.hl-value.min { left: 220px; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions h5.hl-value.avg { left: 380px; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions h5.hl-value.max { left: 520px; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions .indicator-values { padding: 3px 0; line-height: 24px; background-color: #f9f9f9; margin-bottom: 3px; border-bottom: 1px solid #e5e5e5; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions #indicatorBenchmarks .form-section { padding: 0; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions #indicatorBenchmarks .form-section .label-holder { float: left; width: 200px; padding: 0; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions #indicatorBenchmarks .form-section .label-holder label { padding: 0 15px; color: #666; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions #indicatorBenchmarks .form-section .form-elt { display: inline-block; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions #indicatorBenchmarks .form-section .form-elt .input-container { float: left; width: 120px; margin-right: 33px; text-align: right; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions #indicatorBenchmarks .form-section .form-elt .input-container input { width: 120px; text-align: right; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions #indicatorBenchmarks .form-section .form-elt .input-container span.use-computed-value { display: inline-block; padding-right: 15px; width: 5px; height: 9px; background: transparent url(/img/elca/ic-arrow-closed.png) center no-repeat; cursor: pointer; }
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions #indicatorBenchmarks .form-section .form-elt .input-container .computed-value { display: inline-block; }
+
+#tabContent.elca-admin-benchmark-version.benchmark-groups form { width: 920px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups .hl-row { position: relative; margin-left: 0; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups .hl-row h5 { position: absolute; top: 0; color: #888; font-weight: normal; border: none; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups .hl-row .hl-name { left: 20px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups .hl-row .hl-indicators { left: 170px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups .hl-row .hl-score { left: 435px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups .hl-row .hl-caption { left: 550px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups #lcaGroups { margin-top: 30px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li { position: relative; padding: 3px 0; line-height: 24px; min-height: 28px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li.group { background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; margin-bottom: 8px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li.group-threshold { margin-left: 430px; margin-right: 15px; border-bottom: 1px solid #e0e0e0; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li.group-threshold.last { border: none; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .form-section { position: absolute; top: 0; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .name { left: 20px; width: 140px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .indicators { left: 170px; width: 230px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .score { left: 10px; width: 60px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .caption { left: 120px; width: 180px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .caption input { width: 100%; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .function-link { position: absolute; top: 6px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .function-link.delete-link { right: 80px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .function-link.cancel-link, #tabContent.elca-admin-benchmark-version.benchmark-groups li .function-link.add-link { right: -20px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .selectize-control.multi { min-width: 100px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .selectize-control.multi .item, #tabContent.elca-admin-benchmark-version.benchmark-groups li .selectize-control.multi .option { font-size: 12px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .selectize-control.multi .selectize-input { padding: 1px; border-radius: 0; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .selectize-control.multi .item { padding-right: 5px !important; margin: 1px 3px 1px 0; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups li .selectize-control.multi .item a { margin-left: 5px; }
+#tabContent.elca-admin-benchmark-version.benchmark-groups #transports.new-group .function-link.add-link { display: none; }
+
+/** admin benchmarks form ------------------------*/
+#tabContent.elca-admin-benchmark-version.admin-reference-projects { min-width: inherit; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects form { width: 900px; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects .form-section.benchmarkVersionId { width: 300px; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects .hl-row { position: relative; line-height: 20px; height: 20px; margin: 0; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects h5.hl-indicator, #tabContent.elca-admin-benchmark-version.admin-reference-projects h5.hl-value { position: absolute; color: #888; font-style: italic; font-weight: normal; border: none; line-height: 14px; width: auto; font-size: 12px; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects h5.hl-indicator { left: 0; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects h5.hl-value.min { left: 305px; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects h5.hl-value.avg { left: 470px; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects h5.hl-value.max { left: 635px; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects .indicator-values { padding: 3px 0; line-height: 24px; background-color: #f9f9f9; margin-bottom: 3px; border-bottom: 1px solid #e5e5e5; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects #indicatorBenchmarks .form-section { padding: 0; position: relative; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects #indicatorBenchmarks .form-section .label-holder { padding: 0; float: none; width: auto; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects #indicatorBenchmarks .form-section .label-holder label { padding: 0 15px; color: #666; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects #indicatorBenchmarks .form-section .form-elt { display: inline-block; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects #indicatorBenchmarks .form-section .save-button, #tabContent.elca-admin-benchmark-version.admin-reference-projects #indicatorBenchmarks .form-section .input-container { position: absolute; top: 0; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects #indicatorBenchmarks .form-section .form-elt .input-container { width: 110px; text-align: right; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects #indicatorBenchmarks .form-section .form-elt .input-container.min { left: 290px; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects #indicatorBenchmarks .form-section .form-elt .input-container.avg { left: 450px; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects #indicatorBenchmarks .form-section .form-elt .input-container.max { left: 620px; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects #indicatorBenchmarks .form-section .form-elt .input-container input { width: 80px; float: none; margin-right: 0; text-align: right; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects #indicatorBenchmarks .form-section .save-button { top: 2px; right: 15px; color: #fff; background-color: #004f80; width: auto; font-size: 12px; margin: 0; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects #indicatorBenchmarks .form-section .save-button:hover { background-color: #2660ac; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects .din-codes .din-code-row { position: relative; border-bottom: 1px solid #ddd; margin: 0 15px 0 30px; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects .din-codes .din-code-row .din-code { display: block; width: 290px; overflow: hidden; color: #666; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects .din-codes .din-code-row .din-code em.ratio { padding-left: 3px; color: #888; white-space: nowrap; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects .din-codes .din-code-row .indicator-value, #tabContent.elca-admin-benchmark-version.admin-reference-projects .din-codes .din-code-row .save-link { position: absolute; top: 0; display: inline-block; width: 100px; text-align: right; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects .din-codes .din-code-row .din-code-ref-value-min { left: 265px; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects .din-codes .din-code-row .din-code-ref-value-avg { left: 425px; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects .din-codes .din-code-row .din-code-ref-value-max { left: 595px; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects .din-codes .din-code-row .indicator-value { color: #333; }
+#tabContent.elca-admin-benchmark-version.admin-reference-projects .din-codes .din-code-row .indicator-value small { color: #666; padding-left: 8px; font-style: italic; }
+
+#content.elca-admin-benchmark-systems { width: 800px; }
+#content.elca-admin-benchmark-systems .button.add { text-align: right; margin-bottom: 40px; }
+
+#content.elca-admin-benchmark-system { width: 685px; min-width: 685px; }
+#content.elca-admin-benchmark-system .benchmark-system-group { width: 400px; }
+#content.elca-admin-benchmark-system .benchmark-version-group { position: relative; width: 685px; }
+#content.elca-admin-benchmark-system .benchmark-version-group .function-link.add-version { position: absolute; top: 22px; right: 0; padding-right: 0; }
+#content.elca-admin-benchmark-system .benchmark-version-group .hl-row { position: relative; }
+#content.elca-admin-benchmark-system .benchmark-version-group h5 { position: absolute; top: 0; left: 0; border: none; font-weight: normal; font-style: italic; color: #888; }
+#content.elca-admin-benchmark-system .benchmark-version-group h5.hl-process-db { left: 180px; }
+#content.elca-admin-benchmark-system .benchmark-version-group h5.hl-actions { left: 400px; }
+#content.elca-admin-benchmark-system .benchmark-version-group #benchmarkVersions { margin-top: 30px; }
+#content.elca-admin-benchmark-system .benchmark-version-group li.benchmark-version { margin-bottom: 5px; position: relative; clear: both; background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; }
+#content.elca-admin-benchmark-system .benchmark-version-group li.benchmark-version .form-section { display: inline-block; padding: 4px 20px 4px 5px; }
+#content.elca-admin-benchmark-system .benchmark-version-group li.benchmark-version .form-section.versionName { width: 150px; }
+#content.elca-admin-benchmark-system .benchmark-version-group li.benchmark-version .form-section.versionProcessDbId { width: 200px; }
+#content.elca-admin-benchmark-system .benchmark-version-group li.benchmark-version .function-link { display: inline-block; line-height: 18px; }
+#content.elca-admin-benchmark-system .benchmark-version-group li.benchmark-version .function-link.delete-link { padding-right: 0; }
+#content.elca-admin-benchmark-system .benchmark-system-information p { margin-bottom: 0; }
+#content.elca-admin-benchmark-system .benchmark-system-information ul.list { margin-top: 2px; }
+
+#content .elca-admin-benchmark-version.tab-computation form { width: 920px; }
+
+#content .elca-admin-benchmark-version { width: 1230px; }
+#content .elca-admin-benchmark-version h3 { font-weight: normal; border-bottom: 1px solid #ddd; color: #666; font-size: 14px; font-style: italic; margin: 0 0 10px; padding-bottom: 3px; padding-top: 20px; }
+#content .elca-admin-benchmark-version h3 a { color: #336699; }
+#content .elca-admin-benchmark-version a.clear-fields { display: inline-block; padding-left: 20px; }
+#content .elca-admin-benchmark-version .hl-row { margin-top: 0px; margin-left: 135px; }
+#content .elca-admin-benchmark-version h5 { font-weight: normal; font-style: normal; font-size: 14px; color: #888; border: none; text-align: center; width: 72px; }
+#content .elca-admin-benchmark-version .form-section { clear: both; }
+#content .elca-admin-benchmark-version .label-holder { width: 135px; float: left; }
+#content .elca-admin-benchmark-version .form-elt input { width: 62px; font-size: 12px; }
+#content .elca-admin-benchmark-version h5, #content .elca-admin-benchmark-version .form-elt input { float: left; margin-right: 5px; text-align: center; }
+#content .elca-admin-benchmark-version .HtmlRadiobox input { width: auto; }
+#content .elca-admin-benchmark-version .reference-model .form-section { padding-bottom: 0; padding-top: 0; }
+#content .elca-admin-benchmark-version .reference-model .hl-row { margin-top: 15px; }
+#content .elca-admin-benchmark-version .reference-model .hl-row h5 { width: 79px; }
+#content .elca-admin-benchmark-version .reference-model .hl-row h5 span { display: block; line-height: 18px; }
+#content .elca-admin-benchmark-version .reference-model .hl-row .indicator-unit { font-size: 11px; }
+#content .elca-admin-benchmark-version .reference-model .constr-values input { margin-top: 1px; width: 69px; }
+#content .elca-admin-benchmark-version .reference-model .form-section.ElcaHtmlProcessConfigSelectorLink-section a { color: #004f80; }
+#content .elca-admin-benchmark-version .reference-model .form-section.ElcaHtmlProcessConfigSelectorLink-section .changed a { color: #ff0000; }
+#content .elca-admin-benchmark-version .buttons { width: 920px; }
+
+#content.element-list .elca-element-sheet.element-assistant .elca-sheet-content, #content.element-list .elca-sheet.element-assistant .function-panel { background-color: rgba(194, 224, 255, 0.42); }
+#content.element-list .elca-sheet.element-assistant.active .function-panel, #content.element-list .elca-sheet.element-assistant:hover .function-panel, #content.element-list .elca-element-sheet.element-assistant.active .elca-sheet-content, #content.element-list .elca-element-sheet.element-assistant:hover .elca-sheet-content { background-color: rgba(194, 224, 255, 0.7); }
+
+#tabContent.assistant .assistantForm .element-image { max-width: 800px; min-height: 400px; margin-left: 510px; }
+#tabContent.assistant .assistantForm .element-image p.not-supported { margin: 0 auto; padding: 60px 30px; text-align: center; border: 2px dashed #ddd; width: 200px; }
+#tabContent.assistant .assistantForm .left-group { clear: both; float: left; width: 400px; padding-right: 30px; }
+#tabContent.assistant .assistantForm .right-group { float: left; width: 400px; }
+#tabContent.assistant .assistantForm .form-section.horizontal-label { float: left; clear: both; width: 120px; }
+#tabContent.assistant .assistantForm .form-section.processConfigId, #tabContent.assistant .assistantForm .form-section.materialId { float: left; max-height: 50px; overflow: hidden; }
+#tabContent.assistant .assistantForm .form-section.processConfigId .form-elt, #tabContent.assistant .assistantForm .form-section.materialId .form-elt { line-height: 14px; }
+#tabContent.assistant .assistantForm .ElcaHtmlProcessConfigSelectorLink-section.horizontal-label { padding-top: 0; padding-bottom: 0; width: auto; }
+#tabContent.assistant .assistantForm .ElcaHtmlProcessConfigSelectorLink-section.horizontal-label .label-holder { width: 140px; float: left; clear: both; }
+#tabContent.assistant .assistantForm .ElcaHtmlProcessConfigSelectorLink-section.horizontal-label .form-elt { float: left; max-width: 250px; }
+#tabContent.assistant .assistantForm .ElcaHtmlProcessConfigSelectorLink-section .process-config-selector { font-size: 12px; color: #336699; }
+#tabContent.assistant .assistantForm .ElcaHtmlProcessConfigSelectorLink-section .process-config-selector.changed, #tabContent.assistant .assistantForm .ElcaHtmlProcessConfigSelectorLink-section .process-config-selector.error { color: #ff0000; }
+#tabContent.assistant .assistantForm .buttons .delete { display: inline-block; }
+#tabContent.assistant .assistantForm .buttons .delete a { padding-left: 15px; padding-right: 15px; }
+
+#tabContent.pillar-assistants .assistantForm .type-images { padding-left: 500px; }
+#tabContent.pillar-assistants .assistantForm .type-images img { height: 300px; }
+#tabContent.pillar-assistants .assistantForm .form-section.width, #tabContent.pillar-assistants .assistantForm .form-section.height, #tabContent.pillar-assistants .assistantForm .form-section.length, #tabContent.pillar-assistants .assistantForm .form-section.radius { width: 70px; float: left; padding-right: 15px; }
+#tabContent.pillar-assistants .assistantForm .form-section.surface { float: right; width: 120px; }
+#tabContent.pillar-assistants .assistantForm .form-section.shape .HtmlRadiobox { float: left; }
+#tabContent.pillar-assistants .assistantForm .form-section.shape .HtmlRadiobox label { padding-left: 4px; }
+#tabContent.pillar-assistants .assistantForm #processConfigSelector-material1, #tabContent.pillar-assistants .assistantForm #processConfigSelector-material2 { clear: left; float: left; width: 300px; }
+#tabContent.pillar-assistants .assistantForm .form-section.material1Share, #tabContent.pillar-assistants .assistantForm .form-section.material2Share { width: 50px; float: left; padding-right: 15px; }
+
+#tabContent.tab-staircase-assistant .assistantForm .type-images img { height: 300px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.width, #tabContent.tab-staircase-assistant .assistantForm .form-section.numberOfSteps { width: 100px; float: left; padding-right: 15px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.width input, #tabContent.tab-staircase-assistant .assistantForm .form-section.numberOfSteps input { width: 60px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.stepDepth, #tabContent.tab-staircase-assistant .assistantForm .form-section.stepHeight, #tabContent.tab-staircase-assistant .assistantForm .form-section.stepDegree { width: 70px; float: left; padding-right: 15px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.stepDepth input, #tabContent.tab-staircase-assistant .assistantForm .form-section.stepHeight input, #tabContent.tab-staircase-assistant .assistantForm .form-section.stepDegree input { width: 60px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.stepDegree { clear: left; width: 100px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.stepDepth { padding-left: 15px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.coverSize, #tabContent.tab-staircase-assistant .assistantForm .form-section.coverLength1, #tabContent.tab-staircase-assistant .assistantForm .form-section.coverLength2 { width: 70px; float: left; padding-right: 15px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.coverLength1 { padding-left: 15px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.coverLength2 { width: 80px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.coverLength2 input { width: 60px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.isTrapezoid { clear: left; float: left; padding-left: 120px; width: 100px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.isTrapezoid .form-elt { float: none; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.isTrapezoid .form-elt input { margin-left: 30px; }
+#tabContent.tab-staircase-assistant .assistantForm #processConfigSelector-cover { clear: left; width: 250px; padding-left: 120px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.riserSize, #tabContent.tab-staircase-assistant .assistantForm .form-section.riserHeight { width: 70px; float: left; padding-right: 15px; }
+#tabContent.tab-staircase-assistant .assistantForm #processConfigSelector-riser { clear: left; width: 250px; padding-left: 120px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.type .HtmlRadiobox { float: left; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.type .HtmlRadiobox label { padding-left: 4px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.solidSlabHeight { width: 70px; float: left; padding-right: 15px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.solidLength, #tabContent.tab-staircase-assistant .assistantForm .form-section.stringerLength, #tabContent.tab-staircase-assistant .assistantForm .form-section.holmLength { width: 70px; float: left; padding-right: 15px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.alternativeLength { float: left; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.alternativeLength .calcLength { font-size: 12px; line-height: 24px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.alternativeLength .calcLength a { padding-left: 30px; color: #336699; }
+#tabContent.tab-staircase-assistant .assistantForm #processConfigSelector-solid1, #tabContent.tab-staircase-assistant .assistantForm #processConfigSelector-solid2 { clear: left; float: left; width: 300px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.solidMaterial1Share, #tabContent.tab-staircase-assistant .assistantForm .form-section.solidMaterial2Share { width: 50px; float: left; padding-right: 15px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.numberOfStringers, #tabContent.tab-staircase-assistant .assistantForm .form-section.stringerWidth, #tabContent.tab-staircase-assistant .assistantForm .form-section.stringerHeight { width: 70px; float: left; padding-right: 15px; }
+#tabContent.tab-staircase-assistant .assistantForm #processConfigSelector-stringer { clear: left; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.holmOrientation, #tabContent.tab-staircase-assistant .assistantForm .form-section.holmShape { float: left; padding-right: 15px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.holmWidth { clear: both; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.holmWidth, #tabContent.tab-staircase-assistant .assistantForm .form-section.holmHeight, #tabContent.tab-staircase-assistant .assistantForm .form-section.holmSize { width: 70px; float: left; padding-right: 15px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.holmSize { width: 80px; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.holmSize input { width: 60px; }
+#tabContent.tab-staircase-assistant .assistantForm #processConfigSelector-holm { clear: left; }
+#tabContent.tab-staircase-assistant .assistantForm .form-section.numberOfPlatforms, #tabContent.tab-staircase-assistant .assistantForm .form-section.platformWidth, #tabContent.tab-staircase-assistant .assistantForm .form-section.platformHeight { width: 70px; float: left; padding-right: 15px; }
+#tabContent.tab-staircase-assistant .assistantForm .platforms .edit-platform-element { float: left; margin-top: 35px; padding: 5px 0 10px; }
+#tabContent.tab-staircase-assistant .assistantForm .platforms .edit-platform-element a { color: #336699; }
+#tabContent.tab-staircase-assistant .assistantForm #elementSelector-platformCoverElementId, #tabContent.tab-staircase-assistant .assistantForm #elementSelector-platformConstructionElementId { clear: left; float: left; margin-top: 35px; }
+#tabContent.tab-staircase-assistant .assistantForm #elementSelector-platformCoverElementId .label-holder, #tabContent.tab-staircase-assistant .assistantForm #elementSelector-platformConstructionElementId .label-holder { float: left; width: 88px; }
+#tabContent.tab-staircase-assistant .assistantForm #elementSelector-platformCoverElementId .form-elt, #tabContent.tab-staircase-assistant .assistantForm #elementSelector-platformConstructionElementId .form-elt { padding-left: 30px; float: left; }
+#tabContent.tab-staircase-assistant .assistantForm #elementSelector-platformCoverElementId .form-elt .element-selector, #tabContent.tab-staircase-assistant .assistantForm #elementSelector-platformConstructionElementId .form-elt .element-selector { font-size: 12px; color: #336699; }
+#tabContent.tab-staircase-assistant .assistantForm #elementSelector-platformCoverElementId .form-elt .element-selector.changed, #tabContent.tab-staircase-assistant .assistantForm #elementSelector-platformCoverElementId .form-elt .element-selector.error, #tabContent.tab-staircase-assistant .assistantForm #elementSelector-platformConstructionElementId .form-elt .element-selector.changed, #tabContent.tab-staircase-assistant .assistantForm #elementSelector-platformConstructionElementId .form-elt .element-selector.error { color: #ff0000; }
+#tabContent.tab-staircase-assistant .assistantForm .platforms { width: 830px; }
+#tabContent.tab-staircase-assistant .assistantForm .platforms .element-image { margin-top: 10px; margin-left: 450px; height: 100px; min-height: 100px; width: 300px; }
+
+#tabContent.tab-window-assistant .assistantForm .form-section.width, #tabContent.tab-window-assistant .assistantForm .form-section.height, #tabContent.tab-window-assistant .assistantForm .form-section.sealingWidth { width: 70px; float: left; padding-right: 15px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.sealingWidth { padding-left: 120px; width: 100px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.sealingWidth input { width: 60px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.area, #tabContent.tab-window-assistant .assistantForm .form-section.openingArea { float: right; width: 70px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.tileWidth, #tabContent.tab-window-assistant .assistantForm .form-section.tileHeight { float: left; width: 80px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.tileWidth .form-elt, #tabContent.tab-window-assistant .assistantForm .form-section.tileHeight .form-elt { width: 50px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.numberOfMullions, #tabContent.tab-window-assistant .assistantForm .form-section.numberOfTransoms, #tabContent.tab-window-assistant .assistantForm .form-section.mullion-transom-details { width: 50px; float: left; padding-right: 15px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.fixedMullionsTransoms { float: left; }
+#tabContent.tab-window-assistant .assistantForm .form-section.fixedMullionsTransoms .label-holder { float: none; }
+#tabContent.tab-window-assistant .assistantForm .form-section.mullion-transom-details { left: 0; padding-top: 25px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.mullion-transom-details a { color: #004f80; padding-left: 12px; background: transparent url("/img/elca/ic-arrow-open.png") left center no-repeat; }
+#tabContent.tab-window-assistant .assistantForm .form-section.mullion-transom-details a.closed { background: transparent url(/img/elca/ic-arrow-closed.png) 2px center no-repeat; }
+#tabContent.tab-window-assistant .assistantForm .mullions-transoms-dims .first { margin-left: 120px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.fixedFrameWidth, #tabContent.tab-window-assistant .assistantForm .form-section.sashFrameWidth, #tabContent.tab-window-assistant .assistantForm .form-section.frameRatio, #tabContent.tab-window-assistant .assistantForm .form-section.glassRatio { width: 110px; float: left; padding-right: 15px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.fixedFrameWidth input, #tabContent.tab-window-assistant .assistantForm .form-section.sashFrameWidth input, #tabContent.tab-window-assistant .assistantForm .form-section.frameRatio input, #tabContent.tab-window-assistant .assistantForm .form-section.glassRatio input { width: 60px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.frameRatio { padding-left: 120px; clear: both; }
+#tabContent.tab-window-assistant .assistantForm .form-section.hasTopLight { float: left; }
+#tabContent.tab-window-assistant .assistantForm .form-section.hasTopLight .label-holder { float: none; }
+#tabContent.tab-window-assistant .assistantForm .form-section.topLightHeight { float: left; width: 70px; padding-left: 15px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.fittings, #tabContent.tab-window-assistant .assistantForm .form-section.handles { width: 45px; float: left; padding-left: 15px; }
+#tabContent.tab-window-assistant .assistantForm #processConfigSelector-fittings, #tabContent.tab-window-assistant .assistantForm #processConfigSelector-handles { width: 220px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.sealing { width: 300px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.sillIndoorDepth, #tabContent.tab-window-assistant .assistantForm .form-section.sillIndoorSize, #tabContent.tab-window-assistant .assistantForm .form-section.sillOutdoorDepth, #tabContent.tab-window-assistant .assistantForm .form-section.sillOutdoorSize { width: 60px; float: left; padding-left: 10px; }
+#tabContent.tab-window-assistant .assistantForm .form-section.soffitIndoorDepth, #tabContent.tab-window-assistant .assistantForm .form-section.soffitIndoorSize, #tabContent.tab-window-assistant .assistantForm .form-section.soffitOutdoorDepth, #tabContent.tab-window-assistant .assistantForm .form-section.soffitOutdoorSize { width: 60px; float: left; padding-left: 10px; }
+#tabContent.tab-window-assistant .assistantForm #processConfigSelector-sillIndoor, #tabContent.tab-window-assistant .assistantForm #processConfigSelector-sillOutdoor, #tabContent.tab-window-assistant .assistantForm #processConfigSelector-soffitIndoor, #tabContent.tab-window-assistant .assistantForm #processConfigSelector-soffitOutdoor { width: 140px; }
+
+/** Element components ------------------*/
+#section-components .legend { padding-left: 35px; background: url(../../img/elca/ic-section-single-16x27.gif) left 20px no-repeat; }
+
+#section-layers .legend { padding-left: 25px; background: url(../../img/elca/ic-section-geom-16x16.gif) left 20px no-repeat; }
+
+.element-components div.buttons { float: right; }
+
+/** Element layers ------------------*/
+#section-layers .fieldset span.area { position: absolute; top: 0px; right: 370px; padding-top: 24px; font-size: 12px; font-weight: normal; font-style: italic; }
+
+/** element components ------------------------*/
+.element-section { min-width: 850px; max-width: 1050px; margin-left: 20px; }
+.element-section .fieldset, .element-section .hl-row, .element-section .element-component { position: relative; }
+.element-section .add-component { display: inline-block; }
+.element-section .fieldset .section-toggle { position: absolute; top: 18px; left: -20px; cursor: pointer; width: 10px; height: 21px; background: transparent url("/img/elca/ic-arrow-open.png") center no-repeat; }
+.element-section .fieldset .section-toggle.closed { background-image: url("/img/elca/ic-arrow-closed.png"); }
+.element-section .form-section.area { width: 50px; }
+.element-section .hl-row { height: 22px; }
+.element-section .hl-row h5 { position: absolute; color: #888; font-style: italic; font-weight: normal; border: none; }
+.element-section .hl-row h5.hl-layer { left: 0; }
+.element-section .hl-row h5.hl-sibling { right: 390px; }
+.element-section .hl-row h5.hl-size { right: 467px; }
+.element-section .hl-row h5.hl-width-length { right: 450px; display: none; }
+.element-section .hl-row h5.hl-quantity { right: 522px; }
+.element-section .hl-row h5.hl-life-time { right: 300px; cursor: help; }
+.element-section .hl-row h5.hl-is-active { right: 240px; cursor: help; }
+.element-section .hl-row h5.hl-is-extant { right: 190px; cursor: help; }
+.element-section .hl-row h5.hl-move { right: 0; }
+.element-section .hl-row h5.hl-element { left: 0; }
+.element-section .hl-row h5.hl-dinCode { right: 495px; }
+.element-section#section-composite .hl-row h5.hl-quantity { right: 562px; }
+.element-section#section-composite .hl-row h5.hl-is-extant { right: 285px; cursor: help; }
+.element-section.show-dimension .hl-row h5.hl-size { right: 550px; display: block; }
+.element-section.show-dimension .hl-row h5.hl-width-length { display: block; }
+.element-section ol { list-style-type: decimal; }
+.element-section li { background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; margin-bottom: 8px; padding: 3px 0; line-height: 24px; }
+.element-section li.no-results { background-color: #FFDCDD; }
+.element-section li.no-results .process-config-selector a { color: #ff0000; }
+.element-section #element-composite-non-opaque .non-opaque-infos .info { padding-top: 10px; }
+.element-section #element-composite-non-opaque li { background-color: #f0f9f0; }
+.element-section div.element { background-color: inherit; }
+.element-section li, .element-section .element-component, .element-section .element, .element-section ol li.drag-placeholder { min-height: 24px; }
+.element-section ol li.drag-placeholder { padding: 3px 0; background-color: transparent; border: 1px solid #e5e5e5; }
+.element-section .element, .element-section .element-component { position: relative; width: 100%; }
+.element-section .toggle-link, .element-section .element-component .layer-position, .element-section .element-component .process-config-selector, .element-section .element .element-selector, .element-section .element-component a.add-sibling-link, .element-section span.function-separator, .element-section span.function-separator-2, .element-section .element-component .areaRatio, .element-section .element-component .size, .element-section .element-component .show-dimension-icon, .element-section .element-component .length, .element-section .element-component .width, .element-section .element-component .quantity, .element-section .element-component .conversionId, .element-section .element-component .lifeTime, .element-section .element-component .lifeTimeDelay, .element-section .element-component .show-lifeTimeDelay-icon, .element-section .element-component .calcLca, .element-section .element-component .isExtant, .element-section .cancel-link, .element-section .delete-link, .element-section .unassign-link, .element-section .edit-link, .element-section .element .quantity, .element-section .element .surface, .element-section .element .refUnit, .element-section .element .dinCode, .element-section .element .elementType, .element-section .element .isExtant, .element-section div.drag-handle { position: absolute; padding: 0; top: 0; background-color: inherit; }
+.element-section .toggle-link { left: 10px; width: 20px; }
+.element-section a.edit-link { width: 60px; text-align: left; right: 140px; }
+.element-section a.delete-link, .element-section a.cancel-link { width: 60px; text-align: left; right: 65px; }
+.element-section .element-component .layer-position { left: 5px; width: 20px; }
+.element-section .element-component .process-config-selector { left: 30px; width: 400px; max-width: 32%; max-height: 20px; overflow: hidden; }
+.element-section .element-component a.add-sibling-link { right: 135px; width: 50px; }
+.element-section .element-component .areaRatio { right: 390px; width: 50px; }
+.element-section .element-component .size { right: 470px; width: 50px; }
+.element-section .element-component .show-dimension-icon { right: 460px; width: 40px; }
+.element-section .element-component .length { right: 500px; width: 40px; display: none; }
+.element-section .element-component .width { right: 450px; width: 40px; display: none; }
+.element-section .element-component .quantity { right: 500px; width: 60px; }
+.element-section .element-component .conversionId { right: 435px; width: 60px; }
+.element-section .element-component .lifeTime { right: 330px; width: 30px; }
+.element-section .element-component .show-lifeTimeDelay-icon { right: 318px; width: 5px; }
+.element-section .element-component .lifeTimeDelay { right: 283px; width: 30px; }
+.element-section .element-component .calcLca { right: 235px; width: 40px; text-align: center; }
+.element-section .element-component .isExtant { right: 195px; width: 40px; text-align: center; }
+.element-section .element-component .calcLca .HtmlCheckbox, .element-section .element-component .isExtant .HtmlCheckbox { float: none; }
+.element-section .element-component span.function-separator { width: 5px; text-align: center; right: 134px; color: #666; }
+.element-section .element-component .sibling-label { width: 60px; text-align: left; right: 135px; font-size: 12px; }
+.element-section .element-component .show-dimension-icon { display: inline-block; width: 5px; text-indent: -10000px; overflow: hidden; background: transparent url("/img/elca/ic-arrow-grey.png") center no-repeat; }
+.element-section .element-component .show-lifeTimeDelay-icon { display: none; width: 5px; text-indent: -10000px; overflow: hidden; background: transparent url("/img/elca/ic-arrow-grey.png") center no-repeat; }
+.element-section .element-component.is-extant .show-lifeTimeDelay-icon { display: inline-block; }
+.element-section .element-component .process-config-selector.changed { color: #ff0000; }
+.element-section .element-component .lifeTime input { margin-left: 12px; width: 26px; }
+.element-section .element-component .lifeTime .life-time-info-link { position: absolute; top: 3px; left: 4px; width: 6px; }
+.element-section .element-component .lifeTime .life-time-info-link span.symbol { display: block; font-family: "Georgia", "Times New Roman", serif; font-size: 12px; font-weight: bold; line-height: 20px; cursor: pointer; color: #ff0000; }
+.element-section .element-component .lifeTime .life-time-info-link .life-time-info { display: none; position: absolute; bottom: 0; left: 46px; min-width: 150px; padding: 10px 15px; background-color: #fefefe; border: 1px solid #888; z-index: 99; border-radius: 6px; }
+.element-section .element-component .lifeTime .life-time-info-link .life-time-info h3 { font-size: inherit; color: #555; }
+.element-section .element-component .lifeTime .life-time-info-link .life-time-info li input { margin: 0 10px 0 0; height: auto; width: auto; }
+.element-section .element-component .lifeTime .life-time-info-link .life-time-info li input[type=text] { margin-left: 3px; margin-right: 0; }
+.element-section .element-component .lifeTime .life-time-info-link .life-time-info li { background-color: transparent; border: none; line-height: 16px; margin: 0; padding: 0; white-space: nowrap; color: #555; }
+.element-section .element-component .lifeTime.active .life-time-wrapper .life-time-info, .element-section .element-component .lifeTime .life-time-wrapper.hover:hover .life-time-info { display: block; }
+.element-section .element-component .lifeTime.active .life-time-wrapper input.numeric-input, .element-section .element-component .lifeTime .life-time-wrapper.hover:hover input.numeric-input { border-color: #4C83A6; }
+.element-section.show-dimension .element-component .size { right: 550px; }
+.element-section.show-dimension .element-component .length { display: block; }
+.element-section.show-dimension .element-component .width { display: block; }
+.element-section.is-extant-building .hl-row h5.hl-life-time { right: 285px; }
+.element-section.is-extant-building .element-component .lifeTime { right: 345px; }
+.element-section.is-extant-building .element-component .lifeTimeDelay { display: none; }
+.element-section.is-extant-building .element-component.show-lifeTimeDelay .lifeTimeDelay { display: block; }
+.element-section.is-extant-building .element-component.show-lifeTimeDelay .show-lifeTimeDelay-icon { display: none; }
+.element-section .element .form-section.elementType { height: 25px; overflow: hidden; }
+.element-section .element span.function-separator { width: 5px; text-align: center; right: 131px; color: #666; }
+.element-section .element a.edit-link { width: 60px; text-align: left; right: 210px; }
+.element-section .element span.function-separator-2 { width: 5px; text-align: center; right: 202px; color: #666; }
+.element-section .element a.unassign-link { width: 60px; text-align: left; right: 135px; }
+.element-section .element .element-selector { left: 30px; width: 320px; max-height: 20px; overflow: hidden; }
+.element-section .element .quantity { right: 585px; width: 60px; text-align: right; }
+.element-section .element .surface { right: 655px; width: auto; text-align: right; padding-left: 10px; }
+.element-section .element .surface .HtmlStaticText { font-size: 12px; padding-right: 0; }
+.element-section .element .refUnit { right: 540px; width: 40px; text-align: left; }
+.element-section .element .dinCode { right: 510px; }
+.element-section .element .isExtant { right: 285px; width: 40px; text-align: center; }
+.element-section .element .isExtant .HtmlCheckbox { float: none; }
+.element-section .element .elementType { right: 315px; width: 200px; text-align: left; }
+.element-section .element .HtmlText { font-size: 12px; }
+.element-section #element-composite-non-opaque .element .element-selector { left: 30px; width: 300px; max-height: 20px; overflow: hidden; }
+.element-section div.drag-handle { right: 0; width: 60px; height: 24px; background: url(../../img/elca/ic-move.gif) center no-repeat; cursor: pointer; }
+.element-section .element .element-selector, .element-section .element-component .process-config-selector, .element-section .element-component a.add-sibling-link, .element-section .element-component .sibling-label, .element-section a.delete-link, .element-section a.unassign-link, .element-section a.edit-link, .element-section a.cancel-link { padding: 0; line-height: 24px; display: block; position: absolute; color: #004f80; }
+.element-section .process-config-selector a { color: #004f80; display: inline-block; }
+.element-section .process-config-selector a.data-sheet-link { width: 11px; height: 14px; background: url(/img/elca/ic-datasheet.png) no-repeat center center; overflow: hidden; text-indent: -1000px; padding-left: 15px; position: relative; top: 3px; }
+.element-section .toggle-link { display: block; padding: 0 5px 0 0; width: 5px; text-indent: -1000px; overflow: hidden; background: transparent url("/img/elca/ic-arrow-closed.png") center no-repeat; }
+.element-section a.toggle-link.open { background-image: url("/img/elca/ic-arrow-open.png"); }
+
+#content.elements .element-section .lifeTime { right: 335px; }
+
+.element-section div.results, .element-section table { margin: 0 10px; }
+
+.element-section table { padding-top: 30px; border-bottom: 1px solid #ddd; width: 98%; }
+
+.element-section table th, .element-section table td { font-size: 12px; }
+
+.element-section div.results div.info { padding-top: 25px; padding-right: 40px; padding-left: 4px; float: left; font-size: 12px; }
+
+.element-section div.results div.info span.caption { color: #888; font-style: italic; padding-right: 10px; }
+
+.element-section div.results div.info span.value { color: #000; }
+
+.element-section table col.peNEm, .element-section table col.peEm, .element-section table col.pet, .element-section table col.pere, .element-section table col.perm, .element-section table col.pert, .element-section table col.penre, .element-section table col.penrm, .element-section table col.penrt, .element-section table col.adp, .element-section table col.adpe, .element-section table col.adpf, .element-section table col.ep, .element-section table col.odp, .element-section table col.pocp, .element-section table col.gwp, .element-section table col.ap { width: 66px; }
+
+.element-section table col.ratio, .element-section table col.refUnit { width: 100px; }
+
+.element-section table col.processDb { width: 150px; }
+
+.element-section table col.nameOrig { width: auto; }
+
+.element-section table col.uuid { width: 250px; }
+
+.element-section table th, .element-section table td { text-align: left; }
+
+.elements .element-section table tr.lastRow td { border-top: none; }
+
+#section-summary div.results, #section-summary table { padding: 3px 0; line-height: 24px; margin: 0; margin-left: 10px; }
+
+.element-section table tr.total td { border-top: 1px solid #999; color: #000; }
+
+#section-summary .fieldset .legend span { font-size: 11px; font-weight: bold; color: #333; }
+
+/** Element overview ------------------*/
+#content.elements.overview h3.import a { padding-left: 18px; background: transparent url("/img/elca/ic-arrow-closed.png") 7px 2px no-repeat; text-decoration: none; }
+
+#content.elements.overview h3.import a.open { background-image: url("/img/elca/ic-arrow-open.png"); background-position: 5px 5px; }
+
+/** element selector form ------------------------*/
+.modal-element-selector .HtmlRadioGroup-section .label-holder { float: left; width: auto; }
+
+.modal-element-selector .form-section .HtmlRadioGroup { float: left; }
+
+.modal-element-selector .form-section .HtmlRadiobox { float: left; }
+
+.modal-element-selector .form-section .HtmlRadiobox input { height: auto; width: auto; margin-left: 20px; margin-right: 5px; }
+
+.modal-element-selector .form-section.search { clear: both; }
+
+.elca-element-sheet.composite-element .elca-sheet-content, .elca-sheet.composite-element .function-panel { background-color: #FDFFD9; }
+
+.elca-sheet.composite-element.active .function-panel, .elca-sheet.composite-element:hover .function-panel, .elca-element-sheet.composite-element.active .elca-sheet-content, .elca-element-sheet.composite-element:hover .elca-sheet-content { background-color: #FAFFA8; }
+
+.elca-sheet.no-process-db.active .function-panel, .elca-sheet.no-process-db:hover .function-panel, .elca-element-sheet.no-process-db.active .elca-sheet-content, .elca-element-sheet.no-process-db:hover .elca-sheet-content { background-color: #FFCCDD; }
+
+.elca-element-sheet .sub-headline a { color: #004f80; }
+
+.element-list .element-image { position: absolute; top: 16px; left: 10px; width: 100px; }
+.element-list .elca-element-sheet.has-element-image .elca-sheet-content { padding-left: 120px; }
+.element-list .elca-element-sheet.no-process-db { background-color: #FFDCDD; }
+
+/** Elements ----------------------*/
+#content ul.elements, #content div.elements-top { width: 900px; }
+
+#content.element-list .button.add { float: right; width: 300px; text-align: right; padding-bottom: 20px; }
+
+#content.project-elements .button.add { margin-top: 0px; width: auto; }
+
+#content.project-elements .button.add a { margin-left: 20px; }
+
+/** elements ------------------------*/
+#tabContent.elements h2, #tabContent.project-elements h2 { font-size: 16px; margin-top: 20px; padding-top: 20px; color: #888; }
+
+#tabContent.elements h2 span, #tabContent.project-elements h2 span { font-size: 11px; font-weight: bold; color: #333; }
+
+#tabContent.elements .process-dbs { color: #333; }
+#tabContent.elements .process-dbs strong { color: #73a903; }
+#tabContent.elements .process-dbs.no-process-dbs { color: #ff0000; font-weight: bold; }
+
+/* element form -------------*/
+#elementForm .column { width: 230px; }
+
+#elementForm .column.properties .form-section.quantity { float: left; width: 115px; padding-right: 10px; }
+#elementForm .column.properties .form-section.quantity input { width: 100px; }
+
+#elementForm .column.properties .form-section.refUnit { width: 100px; float: left; }
+
+#elementForm .column.properties .form-section.processDbId { float: left; }
+
+#elementForm .element-image { max-width: 800px; min-height: 250px; margin-left: 510px; }
+
+.element-image p.not-supported { margin: 0 auto; padding: 60px 30px; text-align: center; border: 2px dashed #ddd; width: 200px; }
+
+#elementForm .form-section.constrDesignId select, #elementForm .form-section.constrCatalogId select { height: 94px; }
+
+#elementForm .form-section.isPublic .element-div, #elementForm .form-section.isReference .element-div { float: left; line-height: 26px; }
+
+#elementForm .HtmlMultiSelectbox-section .label-holder a, #elementForm .ElcaHtmlMultiSelectbox-section .label-holder a { float: right; color: #004f80; display: inline-block; line-height: 21px; padding-left: 10px; }
+
+#elementForm .ElcaHtmlMultiSelectbox-section span.select-helpers { position: absolute; top: -24px; right: 0px; display: inline-block; }
+#elementForm .ElcaHtmlMultiSelectbox-section span.select-helpers a { float: right; color: #004f80; display: inline-block; line-height: 21px; padding-left: 10px; }
+
+#elementForm .form-section.attr { float: left; width: 65px; padding-right: 10px; }
+
+#elementForm .properties .form-section.attr { float: none; width: inherit; }
+
+#elementForm .composite-element .label-holder { float: left; width: 150px; }
+
+#elementForm .composite-element .form-elt { padding-left: 150px; }
+
+#elementForm .composite-element a { color: #004f80; padding-right: 10px; }
+
+#elementForm .buttons { width: 510px; }
+
+#elementForm .buttons .export, #elementForm .buttons .delete { display: inline-block; }
+
+#elementForm .buttons .delete a, #elementForm .buttons .export a { padding-left: 15px; padding-right: 15px; }
+
+#compositeElementForm .buttons .save-elements { display: none; }
+
+#compositeElementForm.changed .buttons .save-elements { display: inline-block; }
+
+#content.elca-filter-sheets .sheets-filter .form-section.scope { width: 450px; }
+
+/** element import ------------------------*/
+#content.elements.overview form { width: 600px; }
+
+/** Imprint ------------------*/
+#content .imprint { width: 600px; }
+
+#content .imprint p { font-size: 12px; margin-top: 5px; line-height: 19px; }
+
+#content .imprint h1, #content .imprint h2, #content .imprint h3 { color: #214476; font-weight: bold; margin: 15px 0 5px 0; }
+
+#content .imprint h2 { font-size: 14px; }
+
+#content .imprint h3 { color: inherit; font-size: 12px; font-weight: normal; }
+
+/** Login ---------------------*/
+.bbsr-logo { display: block; position: absolute; left: 900px; top: 23px; }
+
+.elca-login { margin: 20px 35px; line-height: 19px; max-width: 900px; overflow: hidden; position: relative; }
+.elca-login .login-wrapper { padding-left: 500px; width: 250px; }
+.elca-login .login-form-container { width: 250px; }
+.elca-login .subscribe-form-container { display: none; }
+.elca-login .subscribe-form-container .fieldset.personal-data { float: left; padding-left: 25px; width: 250px; }
+.elca-login .subscribe-form-container .fieldset.access-data { float: left; width: 250px; }
+.elca-login .subscribe-form-container .fieldset.buttons { clear: both; margin-right: 75px; }
+.elca-login .subscribe-form-container .fieldset.buttons p.notice { text-align: left; }
+.elca-login .subscribe-form-container p.success { margin-top: 20px; padding-right: 70px; }
+.elca-login .subscribe-form-container p.success strong { color: #336699; }
+.elca-login .forgot-form-container { display: none; }
+.elca-login .forgot-form-container h1 { margin-bottom: 20px; }
+.elca-login .forgot-form-container .fieldset.buttons p.notice { text-align: left; }
+.elca-login .forgot-form-container p.success { margin-top: 20px; padding-right: 70px; }
+.elca-login .forgot-form-container p.success strong { color: #336699; }
+.elca-login .disclaimer { float: left; width: 450px; padding-right: 20px; border-right: 1px solid #ddd; }
+.elca-login .disclaimer .disclaimer-content-wrapper { width: 440px; }
+.elca-login .disclaimer h1 { margin-bottom: 10px; }
+.elca-login .disclaimer h2 { font-size: 12px; font-weight: bold; color: #888; }
+.elca-login .disclaimer h3 { font-size: 12px; font-weight: normal; color: #888; }
+.elca-login .disclaimer ul { margin-left: 20px; margin-bottom: 10px; }
+.elca-login .disclaimer ul li { list-style-type: square; }
+.elca-login .disclaimer .important { padding: 5px; background-color: #f9f9f9; color: #444; }
+.elca-login p { margin: 0 0 10px 0; }
+.elca-login .notice { font-style: italic; margin: 0; }
+
+.elca-login.show-subscribe-form .disclaimer { width: 250px; }
+.elca-login.show-subscribe-form .disclaimer .disclaimer-content-wrapper { width: auto; }
+.elca-login.show-subscribe-form .login-wrapper { width: 600px; padding-left: 0px; position: absolute; left: 300px; top: 0px; }
+.elca-login.show-subscribe-form .login-wrapper p.login-only, .elca-login.show-subscribe-form .login-wrapper .login-form-container { display: none; }
+.elca-login.show-subscribe-form .login-wrapper .subscribe-form-container { display: block; }
+.elca-login.show-subscribe-form .login-wrapper .subscribe-form-container .box { border: 1px solid transparent; margin-right: 55px; padding: 15px 15px 10px 15px; }
+.elca-login.show-subscribe-form .login-wrapper .subscribe-form-container .box.red { border: 1px solid #ae0000; background: #ae0000; }
+.elca-login.show-subscribe-form .login-wrapper .subscribe-form-container .box.red h1, .elca-login.show-subscribe-form .login-wrapper .subscribe-form-container .box.red p { color: #ffffff; }
+.elca-login.show-subscribe-form .login-wrapper .HtmlRadioGroup .HtmlRadiobox { float: left; }
+
+.elca-login.show-forgot-form .login-wrapper { width: 250px; padding-left: 0px; position: absolute; left: 500px; top: 0px; }
+.elca-login.show-forgot-form .login-wrapper p.login-only, .elca-login.show-forgot-form .login-wrapper .login-form-container { display: none; }
+.elca-login.show-forgot-form .login-wrapper .forgot-form-container { display: block; }
+
+/** start page ------------------*/
+#index { width: 1200px; }
+#index .column { width: 550px; }
+#index .left { float: left; }
+#index .right { float: right; }
+#index p { line-height: 19px; }
+
+/** Process configs ------------------*/
+#content.process-configs { width: 900px; }
+
+#content.process-configs div.button.add { text-align: right; padding-bottom: 20px; }
+
+.elca-process-config-sheet.inactive .elca-sheet-content, .elca-sheet.inactive .function-panel { background-color: #FDFFD9; }
+
+.elca-sheet.inactive.active .function-panel, .elca-sheet.inactive:hover .function-panel, .elca-process-config-sheet.inactive.active .elca-sheet-content, .elca-process-config-sheet.inactive:hover .elca-sheet-content { background-color: #FAFFA8; }
+
+/* process config general form ----------------------*/
+#processConfig { width: 820px; }
+
+#processConfig .column.properties { width: 350px; padding-right: 40px; }
+
+#processConfig .column.properties .form-section.isReference, #processConfig .column.properties .form-section.is4108Compat { float: left; }
+
+#processConfig .column.properties .form-section.is4108Compat { float: right; }
+
+#processConfig .column.properties .form-section.density, #processConfig .column.properties .form-section.defaultSize, #processConfig .column.properties .form-section.fHsHi { width: 110px; float: left; padding-right: 30px; }
+
+#processConfig .column.properties .form-section.defaultSize, #processConfig .column.properties .form-section.fHsHi { width: 90px; }
+
+#processConfig .column.properties .form-section.fHsHi { padding-right: 0px; }
+
+#processConfig .column.properties .form-section.transportPayLoad { width: 125px; float: left; padding-right: 30px; }
+
+#processConfig .column.properties .form-section.transportEfficiency { padding-right: 0px; float: left; width: 125px; }
+
+#processConfig .column h5 { clear: both; padding-top: 20px; margin-bottom: 10px; font-size: 14px; font-weight: normal; font-style: italic; color: #666; }
+
+#processConfig .column.properties .form-section.opAsSupply, #processConfig .column.properties .form-section.opAsSupply { padding: 0; }
+
+#processConfig .column.right { padding-right: 0; float: right; }
+
+#processConfig .column.life-times .form-section { float: left; }
+
+#processConfig .column.life-times .form-section.lifeTimeInfo { padding-right: 0; clear: both; width: 100%; }
+
+#processConfig .column.life-times .form-section.minLifeTime, #processConfig .column.life-times .form-section.avgLifeTime, #processConfig .column.life-times .form-section.maxLifeTime { width: 50px; clear: both; padding-right: 20px; }
+
+#processConfig .column.life-times .form-section.minLifeTimeInfo, #processConfig .column.life-times .form-section.avgLifeTimeInfo, #processConfig .column.life-times .form-section.maxLifeTimeInfo { width: 330px; padding-right: 0; }
+
+#processConfig .ElcaHtmlSvgPatternSelect-section { clear: both; }
+#processConfig .ElcaHtmlSvgPatternSelect-section span.image { width: 120px; height: 100px; }
+#processConfig .ElcaHtmlSvgPatternSelect-section select { width: 90%; margin-left: 15px; }
+
+#processConfig table.quantitative-references { width: 100%; }
+#processConfig table.quantitative-references th.quantitative-reference, #processConfig table.quantitative-references td.quantitative-reference { text-align: right; }
+
+#conversions { position: relative; width: 800px; }
+
+#conversions a.function-link.add-conversion { display: block; position: absolute; top: 22px; left: 150px; }
+
+#conversions .hl-row, #conversions .elt-row { clear: both; position: relative; height: 20px; }
+
+#conversions .hl-row h5, #conversions .elt-row .form-section, #conversions .elt-row a.delete-link, #conversions .elt-row a.cancel-link { position: absolute; }
+
+#conversions .hl-row h5 { color: #888; font-style: italic; font-weight: normal; border: none; }
+
+#conversions .elt-row { background-color: #f9f9f9; padding: 3px 5px; border-bottom: 1px solid #e5e5e5; height: 30px; margin-bottom: 8px; }
+
+#conversions .elt-row .form-elt { padding: 0; }
+
+#conversions .hl-row h5.hl-input { left: 10px; width: 80px; }
+
+#conversions .hl-row h5.hl-output { left: 130px; width: 80px; }
+
+#conversions .hl-row h5.hl-factor { left: 110px; width: 80px; }
+
+#conversions .hl-row h5.hl-ident { right: 15px; width: 480px; }
+
+#conversions .elt-row .elt-in-unit { left: 15px; width: 80px; text-align: right; }
+
+#conversions .elt-row .elt-arrow { left: 100px; top: 0; width: 30px; text-align: center; }
+
+#conversions .elt-row .elt-out-unit { left: 230px; width: 60px; }
+
+#conversions .elt-row .elt-colon { left: 10px; width: 30px; text-align: center; }
+
+#conversions .elt-row .elt-factor { left: 140px; width: 70px; text-align: right; }
+
+#conversions .elt-row .elt-ident { right: 15px; width: 480px; }
+
+#conversions .elt-row a.delete-link, #conversions .elt-row a.cancel-link { right: 15px; padding: 5px 0 10px 20px; line-height: 20px; display: block; color: #004f80; text-decoration: underline; }
+
+#conversions .elt-row .elt-ident .form-elt { font-size: 12px; }
+
+#processConfigVariants { width: 620px; }
+
+#processConfigVariants h3 { font-weight: normal; font-style: italic; border-bottom: 1px solid #ddd; padding-top: 20px; margin-bottom: 10px; }
+
+#processConfigVariants table col.name { width: 400px; }
+
+#processConfigVariants table col.refValue { width: 220px; }
+
+#processConfigVariants table .refValue { text-align: right; }
+
+/* process configs lca -----------------------*/
+#tabContent.tab-lca fieldset { clear: both; }
+
+#tabContent.tab-lca .process-group { clear: both; position: relative; margin-top: 20px; }
+
+#tabContent.tab-lca .process-group .legend { margin-top: 0; }
+
+#tabContent.tab-lca .form-section.processDbId { width: 200px; }
+
+#tabContent.tab-lca a.function-link.add-assignment { display: block; position: absolute; top: 20px; left: 150px; }
+
+#tabContent.tab-lca .process-assignment { position: relative; background-color: #f9f9f9; padding: 8px 5px; border-bottom: 1px solid #e5e5e5; min-height: 24px; height: auto; margin-bottom: 8px; }
+
+#tabContent.tab-lca .process-assignment .toggle-link, #tabContent.tab-lca .process-assignment div.form-section.ratio, #tabContent.tab-lca .process-assignment span.unit, #tabContent.tab-lca .process-assignment div.form-section.lifeCycle, #tabContent.tab-lca .process-assignment div.ElcaHtmlProcessSelectorLink-section, #tabContent.tab-lca .process-assignment .delete-link { position: absolute; padding: 0; line-height: 24px; height: 24px; }
+
+#tabContent.tab-lca .process-assignment .toggle-link { cursor: pointer; padding: 0 5px 0 0; width: 5px; text-indent: -1000px; overflow: hidden; background: transparent url("/img/elca/ic-arrow-closed.png") center no-repeat; }
+
+#tabContent.tab-lca .process-assignment div.toggle-link.open { background-image: url("/img/elca/ic-arrow-open.png"); }
+
+#tabContent.tab-lca .process-assignment div.form-section.ratio { left: 20px; width: 40px; }
+
+#tabContent.tab-lca .process-assignment span.unit { left: 62px; font-size: 12px; }
+
+#tabContent.tab-lca .process-assignment div.form-section.lifeCycle { left: 20px; width: 300px; }
+
+#tabContent.tab-lca .process-assignment.eol div.form-section.lifeCycle, #tabContent.tab-lca .process-assignment.rec div.form-section.lifeCycle { left: 80px; width: 240px; }
+
+#tabContent.tab-lca .process-assignment div.ElcaHtmlProcessSelectorLink-section { left: 350px; max-width: 400px; }
+
+#tabContent.tab-lca .process-assignment div.ElcaHtmlProcessSelectorLink-section a { line-height: 24px; }
+
+#tabContent.tab-lca .process-assignment .delete-link { right: 15px; }
+
+#tabContent.tab-lca .process-assignment table { clear: both; margin: 0; padding: 40px 0 0 0; width: 100%; }
+
+#tabContent.tab-lca .process-assignment table col.processDb { width: 150px; }
+
+#tabContent.tab-lca .process-assignment table col.nameOrig { width: auto; }
+
+#tabContent.tab-lca .process-assignment table col.lifeCycleName { width: 100px; }
+
+#tabContent.tab-lca .process-assignment table col.ratio { width: 50px; }
+
+#tabContent.tab-lca .process-assignment table col.refValue { width: 100px; }
+
+#tabContent.tab-lca .process-assignment table col.uuid { width: 250px; }
+
+#tabContent.tab-lca .process-assignment table th { text-align: left; }
+
+#tabContent.tab-lca .process-assignment table td { text-align: left; }
+
+#tabContent.tab-lca .process-assignment table td { text-align: left; }
+
+/** Process Datenbanken ------------------*/
+#content.process-databases div.button.export { margin: 0 20px 15px 0; float: left; }
+
+#processData { overflow: auto; }
+#processData table td { white-space: nowrap; }
+#processData table td.firstColumn { white-space: normal; }
+
+#content.processes h3 { position: relative; }
+#content.processes h3 a { display: inline-block; padding-left: 70px; font-style: normal; color: #004f80; }
+#content.processes #processSanityTable td { background-color: #fff; }
+#content.processes #processSanityTable td input.changed { -moz-box-shadow: 0px 0px 2px 1px #ff0000; -webkit-box-shadow: 0px 0px 2px 1px #ff0000; box-shadow: 0px 0px 2px 1px #ff0000; }
+#content.processes #processSanityTable th.active-filter { color: #009926; font-weight: bold; }
+#content.processes #processSanityTable tr:hover td { background-color: #f5f5f5; }
+#content.processes #processSanityTable tr.inactive td { background-color: #FDFFD9; }
+#content.processes #processSanityTable tr { -moz-transition-property: box-shadow; -o-transition-property: box-shadow; -webkit-transition-property: box-shadow; transition-property: box-shadow; -moz-transition-duration: 2s; -o-transition-duration: 2s; -webkit-transition-duration: 2s; transition-duration: 2s; -moz-transition-timing-function: linear; -o-transition-timing-function: linear; -webkit-transition-timing-function: linear; transition-timing-function: linear; }
+#content.processes #processSanityTable tr.glow { box-shadow: 0 0 20px #879c83; }
+#content.processes #processSanityTable tr.glow td { background-color: #f5f5f5; }
+#content.processes #processSanityTable tr.glow.inactive td { background-color: #ebedc7; }
+#content.processes #processSanityTable tr td, #content.processes #processSanityTable tr th { text-align: center; }
+#content.processes #processSanityTable tr th:nth-child(2), #content.processes #processSanityTable tr td:nth-child(2) { text-align: left; }
+#content.processes #processSanityTable input, #content.processes #processSanityTable select { font-size: 12px; }
+#content.processes #processSanityTable .selectize-control.multi { min-width: 100px; }
+#content.processes #processSanityTable .selectize-control.multi .item, #content.processes #processSanityTable .selectize-control.multi .option { font-size: 12px; }
+#content.processes #processSanityTable .selectize-control.multi .selectize-input { padding: 1px; border-radius: 0; }
+#content.processes #processSanityTable .selectize-control.multi .item { padding: 0; }
+#content.processes #processSanityTable .selectize-control.plugin-remove_button [data-value] .no-xhr { z-index: 1; position: absolute; top: 0; right: 0; bottom: 0; width: 17px; text-align: center; font-weight: bold; font-size: 12px; color: inherit; text-decoration: none; vertical-align: middle; display: inline-block; padding: 2px 0 0 0; border-left: 1px solid #d0d0d0; -webkit-border-radius: 0 2px 2px 0; -moz-border-radius: 0 2px 2px 0; border-radius: 0 2px 2px 0; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+
+/** Process selector form ------------------------*/
+#processSelectorForm input.submit.button { margin-top: 5px; }
+
+#processSelectorForm select optgroup { color: #888; font-style: italic; }
+
+#processSelectorForm select optgroup option { color: #555; }
+
+.form-section .ElcaHtmlProcessSelectorLink { overflow: hidden; width: 100%; height: 24px; line-height: 12px; margin-right: 10px; }
+
+.form-section .ElcaHtmlProcessSelectorLink a { color: #004f80; }
+
+.form-section .ElcaHtmlProcessSelectorLink span { line-height: 25px; font-size: 12px; }
+
+.form-section.error .ElcaHtmlProcessSelectorLink a { color: #ff0000; }
+
+.form-section.changed .ElcaHtmlProcessSelectorLink a, .form-section .ElcaHtmlProcessSelectorLink a.changed { color: #ff0000; }
+
+#processSelectorForm .data-sheet-link, #processConfigSelectorForm .data-sheet-link { float: right; margin-top: 8px; color: #004f80; }
+
+.elca-process-config-selector a, .process-config-selector a, .process-selector-link a { color: #004f80; display: inline-block !important; position: relative !important; }
+.elca-process-config-selector a.data-sheet-link.icon, .process-config-selector a.data-sheet-link.icon, .process-selector-link a.data-sheet-link.icon { width: 11px !important; height: 14px !important; background: url(/img/elca/ic-datasheet.png) no-repeat center center; overflow: hidden; text-indent: -1000px; padding-left: 15px !important; top: 2px; }
+.elca-process-config-selector.changed a, .process-config-selector.changed a, .process-selector-link.changed a { color: #ff0000; }
+
+.form-section.db, .form-section.epdSubType { float: left; width: 192px; }
+
+.form-section.db { margin-right: 15px; }
+
+.form-section.search { clear: both; }
+
+/** Processes ------------------*/
+#content.processes.overview { width: 900px; }
+
+.main-content.processes #navLeft h3 { position: relative; }
+.main-content.processes #navLeft h3 a.search-link { position: absolute; top: 1px; left: 72px; display: block; width: 14px; height: 14px; background: transparent url(/img/elca/search16_light.png) no-repeat right bottom; background-size: contain; text-indent: -10000px; overflow: hidden; }
+.main-content.processes #navLeft h3 a.search-link:hover { background-image: url(/img/elca/search16_dark.png); }
+
+#content.elca-project-access { width: 600px; }
+#content.elca-project-access .project-access-token-form { width: 600px; }
+#content.elca-project-access table.project-access-tokens { width: 100%; background-color: #f9f9f9; padding: 10px 5px; }
+#content.elca-project-access table.project-access-tokens col.userEmail { width: 30%; }
+#content.elca-project-access table.project-access-tokens col.canEdit { width: 15%; }
+#content.elca-project-access table.project-access-tokens col.createdAt, #content.elca-project-access table.project-access-tokens col.confirmedAt { width: 15%; }
+#content.elca-project-access table.project-access-tokens col.actions { width: 40%; }
+#content.elca-project-access table.project-access-tokens .canEdit, #content.elca-project-access table.project-access-tokens .createdAt, #content.elca-project-access table.project-access-tokens .confirmedAt { text-align: center; }
+#content.elca-project-access table.project-access-tokens .lastColumn { text-align: left; }
+#content.elca-project-access table.project-access-tokens .lastColumn ul li { float: left; padding-right: 15px; }
+#content.elca-project-access table.project-access-tokens .lastColumn ul li a { color: #336699; }
+#content.elca-project-access table.project-access-tokens tfoot tr td { border: none; }
+#content.elca-project-access .new-access.fieldset { background-color: #f9f9f9; padding: 10px 5px; }
+#content.elca-project-access .form-section.grantAccessToEmail { width: 400px; }
+
+#content.project-benchmarks form { width: 400px; }
+
+#content.project-benchmarks .hl-row { position: relative; height: 40px; }
+
+#content.project-benchmarks h5.hl-indicator, #content.project-benchmarks h5.hl-benchmark { position: absolute; color: #888; font-style: italic; font-weight: normal; border: none; line-height: 14px; }
+
+#content.project-benchmarks h5.hl-indicator { left: 0; }
+
+#content.project-benchmarks h5.hl-benchmark { left: 200px; }
+
+#content.project-benchmarks .indicator-benchmark { padding: 3px 0; line-height: 24px; background-color: #f9f9f9; margin-bottom: 3px; border-bottom: 1px solid #e5e5e5; }
+
+#content.project-benchmarks .form-section { padding: 0; }
+
+#content.project-benchmarks .form-section .label-holder { display: inline-block; width: 210px; padding: 0; }
+
+#content.project-benchmarks .form-section .label-holder label { padding: 0 15px; color: #666; }
+
+#content.project-benchmarks .form-section .form-elt { display: inline-block; width: 40px; }
+
+#content.replace-elements form { width: 750px; }
+#content.replace-elements .form-section.din276 { width: 400px; }
+#content.replace-elements .element-image { float: right; width: 160px; }
+#content.replace-elements .ElcaHtmlTemplateElementSelectorLink-section .form-elt { background-color: #fafafa; padding: 5px 15px; border-bottom: 1px solid #f0f0f0; }
+#content.replace-elements .ElcaHtmlTemplateElementSelectorLink-section .form-elt:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+#content.replace-elements .ElcaHtmlTemplateElementSelectorLink-section a { color: #004f80; }
+#content.replace-elements .ElcaHtmlTemplateElementSelectorLink-section.error a { color: #ff0000; }
+#content.replace-elements h5 { font-weight: normal; border-bottom: none; }
+#content.replace-elements .column { position: absolute; top: 0; color: #666; }
+#content.replace-elements .matching-elements { position: relative; }
+#content.replace-elements .matching-elements h5 { position: absolute; top: 18px; left: 505px; }
+#content.replace-elements .matching-elements ul.composite-elements { width: 750px; }
+#content.replace-elements .matching-elements ul.composite-elements > li.composite-element { position: relative; color: #666; line-height: 24px; background-color: #f9f9f9; padding: 3px 15px; border-bottom: 1px solid #e5e5e5; margin-bottom: 3px; }
+#content.replace-elements .matching-elements ul.composite-elements > li.composite-element a { color: #004f80; }
+#content.replace-elements .matching-elements ul.composite-elements > li.composite-element .column.quantity { left: 450px; text-align: right; display: inline-block; width: 70px; }
+#content.replace-elements .matching-elements ul.composite-elements > li.composite-element .column.ref-unit { left: 525px; text-align: left; display: inline-block; width: 70px; }
+#content.replace-elements .matching-elements ul.composite-elements > li.composite-element ul.elements > li.element { position: relative; }
+#content.replace-elements .matching-elements ul.composite-elements > li.composite-element ul.elements > li.element .column.quantity { left: 435px; }
+#content.replace-elements .matching-elements ul.composite-elements > li.composite-element ul.elements > li.element .column.ref-unit { left: 510px; }
+#content.replace-elements .matching-elements ul.composite-elements > li.composite-element .element-name { line-height: 24px; margin-left: 45px; }
+#content.replace-elements .matching-elements ul.composite-elements > li.composite-element span.element-name { color: #666; }
+#content.replace-elements .matching-elements ul.composite-elements > li.composite-element .column.check { top: 3px; left: 15px; line-height: 24px; }
+
+#templateElement fieldset { position: relative; }
+#templateElement h5 { position: absolute; top: 18px; }
+#templateElement h5.hl-layer-size { left: 425px; }
+#templateElement h5.hl-life-time { left: 630px; }
+#templateElement ul.element-components > li.element-component { position: relative; height: 24px; margin-left: 30px; margin-bottom: 3px; background-color: #fafafa; border-bottom: 1px solid #f0f0f0; padding: 3px 15px; }
+#templateElement ul.element-components > li.element-component .layer-position { display: inline-block; line-height: 28px; width: 15px; }
+#templateElement ul.element-components > li.element-component .column { position: absolute; top: 5px; width: 70px; text-align: right; }
+#templateElement ul.element-components > li.element-component .layer-name { left: 30px; width: 350px; text-align: left; line-height: 24px; color: #666; }
+#templateElement ul.element-components > li.element-component input { color: #666; font-size: 14px; }
+#templateElement ul.element-components > li.element-component input.error { border: 1px solid #ff0000; }
+#templateElement ul.element-components > li.element-component .layer-size { left: 400px; }
+#templateElement ul.element-components > li.element-component .life-time { left: 600px; }
+
+#compareWithReferenceProject { margin-left: 10px; }
+#compareWithReferenceProject .form-section.compare .form-elt { width: 80px; text-align: right; }
+
+#navLeft.project-elements .navigation { position: relative; }
+#navLeft.project-elements .navigation .ref-project { position: absolute; display: inline-block; width: 9px; height: 9px; box-shadow: #ddd7c3 1px 1px 1px 1px; background-color: #fff9e2; }
+#navLeft.project-elements .navigation .ref-project.positive { background-color: #ccfd8b; box-shadow: #acdb72 1px 1px 1px 1px; }
+#navLeft.project-elements .navigation .ref-project.negative { background-color: #fd695e; box-shadow: #d46358 1px 1px 1px 1px; }
+#navLeft.project-elements ul.nav-level1 > li.navigation > .ref-project { top: 11px; right: 32px; }
+#navLeft.project-elements ul.nav-level2 > li.navigation > .ref-project { top: 2px; right: 32px; }
+#navLeft.project-elements.compare-with-reference-projects li h4 a, #navLeft.project-elements.compare-with-reference-projects li h4 span { max-width: 240px; }
+
+/** Final-Energy-Demand ---------------------*/
+#content.project-final-energy { font-size: 14px; color: #888; /** Final-Energy-Demand ---------------------*/ }
+#content.project-final-energy dl { padding-bottom: 10px; width: 500px; }
+#content.project-final-energy dt { clear: both; float: left; width: 200px; }
+#content.project-final-energy dd { color: #333; }
+#content.project-final-energy .projection { width: 600px; }
+#content.project-final-energy .projection h5 { color: #888; font-size: 14px; margin-top: 30px; }
+#content.project-final-energy .projection p.notice { color: #ff0000; }
+#content.project-final-energy .projection p.notice a { color: #ff0000; text-decoration: underline; }
+#content.project-final-energy table.benchmark-projections { margin: 20px 0; }
+#content.project-final-energy table.benchmark-projections col { width: 80px; }
+#content.project-final-energy table.benchmark-projections col.name { width: 200px; }
+#content.project-final-energy table.benchmark-projections col.targetValue { width: 100px; }
+#content.project-final-energy table.benchmark-projections th, #content.project-final-energy table.benchmark-projections td { background-color: #f9f9f9; text-align: center; }
+#content.project-final-energy table.benchmark-projections td { line-height: 23px; padding: 0; }
+#content.project-final-energy table.benchmark-projections .firstColumn { text-align: left; }
+#content.project-final-energy table.benchmark-projections td.lastColumn { border-right: none; }
+#content.project-final-energy table.benchmark-projections td span { display: block; }
+#content.project-final-energy table.benchmark-projections td.name span { padding: 0 5px; }
+#content.project-final-energy table.benchmark-projections td .red { background-color: #FF6961; }
+#content.project-final-energy table.benchmark-projections td .yellow { background-color: #FDFD96; }
+#content.project-final-energy table.benchmark-projections td .green { background-color: #77DD77; }
+#content.project-final-energy .form-section.ngf { float: left; width: 100px; }
+#content.project-final-energy .form-section.enEvVersion { float: left; width: 100px; padding-left: 15px; }
+#content.project-final-energy .final-energy-section { margin-top: 20px; }
+#content.project-final-energy .final-energy-section h5, #content.project-final-energy .final-energy-section h6 { font-size: 16px; color: #888; font-style: italic; font-weight: normal; border: none; }
+#content.project-final-energy .final-energy-section .hl-row { position: relative; height: 34px; }
+#content.project-final-energy .final-energy-section .hl-row h6 { position: absolute; font-size: 12px; top: 0; text-align: left; }
+#content.project-final-energy .final-energy-section .hl-row h6.hl-heating, #content.project-final-energy .final-energy-section .hl-row h6.hl-water, #content.project-final-energy .final-energy-section .hl-row h6.hl-lighting, #content.project-final-energy .final-energy-section .hl-row h6.hl-ventilation, #content.project-final-energy .final-energy-section .hl-row h6.hl-cooling, #content.project-final-energy .final-energy-section .hl-row h6.hl-quantity, #content.project-final-energy .final-energy-section .hl-row h6.hl-overall { width: 60px; text-align: center; }
+#content.project-final-energy .final-energy-section .hl-row h6.hl-usage { left: 10px; width: 250px; top: 9px; }
+#content.project-final-energy .final-energy-section .hl-row h6.hl-heating { right: 587px; }
+#content.project-final-energy .final-energy-section .hl-row h6.hl-water { right: 499px; }
+#content.project-final-energy .final-energy-section .hl-row h6.hl-lighting { right: 403px; }
+#content.project-final-energy .final-energy-section .hl-row h6.hl-ventilation { right: 305px; }
+#content.project-final-energy .final-energy-section .hl-row h6.hl-cooling { right: 214px; }
+#content.project-final-energy .final-energy-section .hl-row h6.hl-overall { right: 7px; }
+#content.project-final-energy .final-energy-section .hl-row h6.hl-description { right: 585px; top: 9px; }
+#content.project-final-energy .final-energy-section .hl-row h6.hl-quantity { right: 320px; }
+#content.project-final-energy .final-energy-section .hl-row h6.hl-enEvRatio { right: 190px; width: 100px; }
+#content.project-final-energy .final-energy-section .hl-row.hl-process-energy { margin-top: 20px; }
+#content.project-final-energy .final-energy-section.energy-supply .hl-overall { width: 80px !important; }
+#content.project-final-energy .final-energy-section li { background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; margin-bottom: 8px; padding: 3px 0; line-height: 24px; min-height: 24px; }
+#content.project-final-energy .final-energy-section li.no-results { background-color: #FFDCDD; }
+#content.project-final-energy .final-energy-section .final-energy-row { position: relative; width: 100%; }
+#content.project-final-energy .final-energy-section .toggle-link { left: 10px; width: 20px; }
+#content.project-final-energy .final-energy-section .process-config-selector, #content.project-final-energy .final-energy-section .process-energy-demand { position: relative; left: 25px; width: 370px; max-width: 32%; max-height: 20px; overflow: hidden; }
+#content.project-final-energy .final-energy-section .form-section.heating { right: 585px; }
+#content.project-final-energy .final-energy-section .form-section.water { right: 490px; }
+#content.project-final-energy .final-energy-section .form-section.lighting { right: 395px; }
+#content.project-final-energy .final-energy-section .form-section.ventilation { right: 300px; }
+#content.project-final-energy .final-energy-section .form-section.cooling { right: 210px; }
+#content.project-final-energy .final-energy-section .form-section.overall { right: 20px; text-align: right; }
+#content.project-final-energy .final-energy-section .delete-link, #content.project-final-energy .final-energy-section .cancel-link { width: 60px; text-align: left; right: 115px; top: 0px; }
+#content.project-final-energy .final-energy-section .form-section.description { right: 410px; }
+#content.project-final-energy .final-energy-section .form-section.quantity { right: 315px; }
+#content.project-final-energy .final-energy-section .form-section.enEvRatio { right: 220px; }
+#content.project-final-energy .final-energy-section .form-section.description, #content.project-final-energy .final-energy-section .form-section.quantity, #content.project-final-energy .final-energy-section .form-section.enEvRatio, #content.project-final-energy .final-energy-section .form-section.heating, #content.project-final-energy .final-energy-section .form-section.water, #content.project-final-energy .final-energy-section .form-section.lighting, #content.project-final-energy .final-energy-section .form-section.ventilation, #content.project-final-energy .final-energy-section .form-section.cooling, #content.project-final-energy .final-energy-section .form-section.overall, #content.project-final-energy .final-energy-section .toggle-link { position: absolute; padding: 0; top: 0; }
+#content.project-final-energy .final-energy-section .form-section.quantity, #content.project-final-energy .final-energy-section .form-section.enEvRatio, #content.project-final-energy .final-energy-section .form-section.heating, #content.project-final-energy .final-energy-section .form-section.water, #content.project-final-energy .final-energy-section .form-section.lighting, #content.project-final-energy .final-energy-section .form-section.ventilation, #content.project-final-energy .final-energy-section .form-section.cooling, #content.project-final-energy .final-energy-section .form-section.overall { width: 70px; }
+#content.project-final-energy .final-energy-section .form-section.description { width: 250px; }
+#content.project-final-energy .final-energy-section .add-energy-carrier { display: inline-block; }
+#content.project-final-energy .final-energy-section .process-config-selector a, #content.project-final-energy .final-energy-section span.process-energy-demand, #content.project-final-energy .final-energy-section a.delete-link, #content.project-final-energy .final-energy-section a.cancel-link { padding: 0; line-height: 24px; display: block; position: absolute; color: #004f80; }
+#content.project-final-energy .final-energy-section .process-config-selector.changed a { color: #ff0000; }
+#content.project-final-energy .final-energy-section span.process-energy-demand { color: #333; }
+#content.project-final-energy .final-energy-section.reference-model { background-color: #f9f9f9; border: 1px solid #ddd; padding: 10px 15px; }
+#content.project-final-energy .final-energy-section.reference-model span.ref-model-ident { display: block; position: absolute; left: 25px; line-height: 25px; }
+#content.project-final-energy .final-energy-section.reference-model h5, #content.project-final-energy .final-energy-section.reference-model h6, #content.project-final-energy .final-energy-section.reference-model span.ref-model-ident { color: #666; }
+#content.project-final-energy .final-energy-section table col.peNEm, #content.project-final-energy .final-energy-section table col.peEm, #content.project-final-energy .final-energy-section table col.pet, #content.project-final-energy .final-energy-section table col.pere, #content.project-final-energy .final-energy-section table col.perm, #content.project-final-energy .final-energy-section table col.pert, #content.project-final-energy .final-energy-section table col.penre, #content.project-final-energy .final-energy-section table col.penrm, #content.project-final-energy .final-energy-section table col.penrt, #content.project-final-energy .final-energy-section table col.adp, #content.project-final-energy .final-energy-section table col.adpe, #content.project-final-energy .final-energy-section table col.adpf, #content.project-final-energy .final-energy-section table col.ep, #content.project-final-energy .final-energy-section table col.odp, #content.project-final-energy .final-energy-section table col.pocp, #content.project-final-energy .final-energy-section table col.gwp, #content.project-final-energy .final-energy-section table col.ap { width: 65px; }
+#content.project-final-energy .final-energy-section table col.ratio, #content.project-final-energy .final-energy-section table col.refUnit { width: 100px; }
+#content.project-final-energy .final-energy-section table col.lifeCycleName { width: 150px; }
+#content.project-final-energy .final-energy-section table col.nameOrig { width: auto; min-width: 100px; }
+#content.project-final-energy .final-energy-section table th, #content.project-final-energy .final-energy-section table td { text-align: left; }
+#content.project-final-energy .final-energy-section tr.lastRow td { border-top: 1px solid #999; }
+#content.project-final-energy .final-energy-section div.results { display: none; }
+#content.project-final-energy .final-energy-section div.results div.info { padding-top: 30px; margin: 0 10px; }
+#content.project-final-energy .final-energy-section div.results, #content.project-final-energy .final-energy-section table { margin: 0 10px; }
+#content.project-final-energy .final-energy-section table { padding-top: 30px; width: 98%; }
+#content.project-final-energy .final-energy-section table th, #content.project-final-energy .final-energy-section table td { font-size: 12px; }
+#content.project-final-energy .final-energy-section li, #content.project-final-energy .final-energy-section .final-energy-row { min-height: 24px; }
+#content.project-final-energy .final-energy-section .toggle-link { display: block; padding: 0 5px 0 0; width: 5px; text-indent: -1000px; overflow: hidden; background: transparent url("/img/elca/ic-arrow-closed.png") center no-repeat; }
+#content.project-final-energy .final-energy-section .toggle-link.open { background-image: url("/img/elca/ic-arrow-open.png"); }
+
+#content.elca-project-life-cycle-usage { width: 920px; }
+#content.elca-project-life-cycle-usage #nonComplianceNotice { border: 2px solid #ff0000; padding: 10px 15px; margin: 10px 0; font-size: 14px; color: #ff0000; display: inline-block; }
+#content.elca-project-life-cycle-usage #nonComplianceNotice.hidden { display: none; }
+
+/** project element sanity check ------------------------------*/
+#content div.elca-project-process-config-sanity h3 { font-size: 12px; font-weight: normal; font-style: italic; line-height: 18px; border-bottom: 1px solid #ddd; margin: 40px 0 10px 0; }
+#content div.elca-project-process-config-sanity p { font-size: 12px; color: #666; line-height: 18px; margin: 12px 0; }
+#content div.elca-project-process-config-sanity .warning { color: #ff0000; }
+#content div.elca-project-process-config-sanity .ok { color: #00aa00; }
+#content div.elca-project-process-config-sanity table { margin-top: 35px; width: 95%; }
+#content div.elca-project-process-config-sanity table td { height: 25px; }
+#content div.elca-project-process-config-sanity table th { text-align: left; }
+#content div.elca-project-process-config-sanity table .current-process-db, #content div.elca-project-process-config-sanity table .process-db-names { text-align: center; }
+#content div.elca-project-process-config-sanity table td.context-name a { color: #004f80; }
+#content div.elca-project-process-config-sanity table td.current-process-db, #content div.elca-project-process-config-sanity table td.process-config-name { color: #ff0000; }
+#content div.elca-project-process-config-sanity table td.replace-by a { color: #004f80; }
+#content div.elca-project-process-config-sanity table td.replace-by .changed a { color: #00aa00; }
+#content div.elca-project-process-config-sanity table td.replace-by span.text-mute { color: #aaa; }
+#content div.elca-project-process-config-sanity table tbody tr:hover td { background-color: #f5f5f5; }
+#content div.elca-project-process-config-sanity input.submit.submit-changes { box-shadow: 0 0 2px 1px #00aa00; }
+
+.elca-project-sheet.reference.active .function-panel, .elca-project-sheet.reference:hover .function-panel, .elca-project-sheet.reference .elca-sheet-content { background-color: #FDFFD9; }
+
+.elca-project-sheet.is-protected h2 .protected { display: inline-block; background: transparent url("/img/elca/ic-lock-grey.png") center no-repeat; background-size: contain; width: 20px; height: 16px; margin-left: 8px; }
+
+#content.project-transports { width: 900px; /** results **/ }
+#content.project-transports .includeInLca { padding-bottom: 30px; }
+#content.project-transports .hl-row { position: relative; }
+#content.project-transports .hl-row h5 { position: absolute; top: 0; color: #888; font-weight: normal; border: none; }
+#content.project-transports .hl-row .hl-mat-process-config { left: 20px; }
+#content.project-transports .hl-row .hl-name { left: 170px; }
+#content.project-transports .hl-row .hl-quantity { left: 360px; }
+#content.project-transports .hl-row .hl-process-config { left: 430px; }
+#content.project-transports .hl-row .hl-distance { left: 600px; }
+#content.project-transports .hl-row .hl-efficiency { left: 670px; }
+#content.project-transports #transports { margin-top: 30px; }
+#content.project-transports li { position: relative; padding: 3px 0; line-height: 24px; min-height: 28px; }
+#content.project-transports li.transport { background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; margin-bottom: 8px; }
+#content.project-transports li.transport-mean { margin-left: 430px; margin-right: 15px; border-bottom: 1px solid #e0e0e0; }
+#content.project-transports li.transport-mean.last { border: none; }
+#content.project-transports li .form-section { position: absolute; top: 0; }
+#content.project-transports li .matProcessConfigId { left: 20px; width: 140px; }
+#content.project-transports li .name { left: 170px; width: 180px; }
+#content.project-transports li .quantity { left: 360px; width: 60px; }
+#content.project-transports li .distance { left: 170px; width: 60px; }
+#content.project-transports li .efficiency { left: 255px; width: 40px; }
+#content.project-transports li .function-link { position: absolute; top: 6px; }
+#content.project-transports li .function-link.toggle-link { display: block; top: 6px; padding: 0 5px 0 0; width: 5px; text-indent: -1000px; overflow: hidden; background: transparent url("/img/elca/ic-arrow-closed.png") center no-repeat; }
+#content.project-transports li .function-link.toggle-link.open { background-image: url("/img/elca/ic-arrow-open.png"); }
+#content.project-transports li .function-link.toggle-link { left: 5px; }
+#content.project-transports li .function-link.delete-link { right: 80px; }
+#content.project-transports li .function-link.cancel-link, #content.project-transports li .function-link.add-link { right: -20px; }
+#content.project-transports li .process-config-selector { color: #004f80; }
+#content.project-transports li .process-config-selector.changed, #content.project-transports li .process-config-selector.error { color: #ff0000; }
+#content.project-transports #transports.new-transport .function-link.add-link { display: none; }
+#content.project-transports table col.peGes, #content.project-transports table col.peNEm, #content.project-transports table col.peEm, #content.project-transports table col.pere, #content.project-transports table col.perm, #content.project-transports table col.pert, #content.project-transports table col.pet, #content.project-transports table col.penre, #content.project-transports table col.penrm, #content.project-transports table col.penrt, #content.project-transports table col.adp, #content.project-transports table col.adpe, #content.project-transports table col.adpf, #content.project-transports table col.ep, #content.project-transports table col.odp, #content.project-transports table col.pocp, #content.project-transports table col.gwp, #content.project-transports table col.ap { width: 65px; }
+#content.project-transports table col.lifeCycleName, #content.project-transports table col.processConfigName { width: 150px; }
+#content.project-transports table col.nameOrig { width: auto; }
+#content.project-transports table th, #content.project-transports table td { text-align: left; }
+#content.project-transports table tr.lastRow td { border-top: 1px solid #999; }
+#content.project-transports table { width: 100%; margin: 0; }
+#content.project-transports table.process-databases { width: 98%; padding-top: 30px; margin: 0 10px; display: none; }
+#content.project-transports table th, #content.project-transports table td { font-size: 12px; }
+#content.project-transports #section-summary { margin-top: 50px; }
+
+/* project variant form */
+.project-variants { height: 22px; position: relative; }
+
+.project-variants .hl-row { height: 22px; position: relative; }
+
+.project-variants .variant-row { position: relative; height: 24px; }
+
+.project-variants .hl-row h5 { position: absolute; color: #888; font-style: italic; font-weight: normal; border: none; }
+
+.project-variants li { background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; margin-bottom: 8px; padding: 3px 0; line-height: 33px; height: 33px; }
+
+.project-variants li.active { background-color: #f0f0f0; }
+
+.project-variants .hl-row h5.hl-name { left: 5px; }
+
+.project-variants .hl-row h5.hl-created { left: 370px; }
+
+.project-variants .hl-row h5.hl-actions { right: 353px; }
+
+.project-variants .variant .name, .project-variants .variant .created, .project-variants .variant a.delete-link, .project-variants .variant a.copy-link, .project-variants .variant a.replace-material-link, .project-variants .variant a.replace-elements-link { position: absolute; padding: 0; top: 0; }
+
+.project-variants .variant .name { left: 5px; width: 350px; overflow: hidden; }
+
+.project-variants .variant .created { left: 370px; width: 150px; }
+
+.project-variants .variant a.delete-link { width: 60px; text-align: left; right: 0; }
+
+.project-variants .variant a.copy-link { width: 60px; text-align: left; right: 65px; }
+
+.project-variants .variant a.replace-material-link { width: 130px; text-align: left; right: 270px; }
+
+.project-variants .variant a.replace-elements-link { width: 130px; text-align: left; right: 140px; }
+
+.project-variants .variant .created .HtmlStaticText { font-size: 12px; color: #666; line-height: 33px; }
+
+.project-search-and-replace-processes form.projectSearchAndReplaceProcessesForm .label-holder { float: left; margin-right: 20px; width: 100px; }
+.project-search-and-replace-processes form.projectSearchAndReplaceProcessesForm .HtmlTag input { width: 350px; }
+.project-search-and-replace-processes form.projectSearchAndReplaceProcessesForm .HtmlTag a.open-modal { color: #336699; padding-left: 10px; }
+.project-search-and-replace-processes form.projectSearchAndReplaceProcessesForm .HtmlTag .disabled-but-clickable.d-b-c-o { display: inline-block; position: relative; }
+.project-search-and-replace-processes form.projectSearchAndReplaceProcessesForm .HtmlTag .disabled-but-clickable.d-b-c-o .d-b-c-i { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.project-search-and-replace-processes .header { position: relative; }
+.project-search-and-replace-processes .header p, .project-search-and-replace-processes .header a { display: inline-block; position: absolute; top: 0px; left: auto; right: auto; overflow: hidden; padding: 0; margin: 0; }
+.project-search-and-replace-processes .header p.quantity { left: 430px; }
+.project-search-and-replace-processes .header p.conversion { left: 500px; }
+.project-search-and-replace-processes .header p.lifetime { right: 163px; }
+.project-search-and-replace-processes .header p.lifetime-new { right: 135px; }
+.project-search-and-replace-processes .header p.layer-size { right: 292px; }
+.project-search-and-replace-processes .header p.layer-size-new { right: 256px; }
+.project-search-and-replace-processes .header a { color: #336699; }
+.project-search-and-replace-processes .header a.all { right: 20px; }
+.project-search-and-replace-processes .header a.invert { right: 50px; }
+.project-search-and-replace-processes .header .clear { text-indent: -1000px; }
+.project-search-and-replace-processes ul.s-r-results li { background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; margin-bottom: 3px; padding: 3px 15px; position: relative; }
+.project-search-and-replace-processes ul.s-r-results li .element { position: relative; line-height: 25px; }
+.project-search-and-replace-processes ul.s-r-results li .element a { color: #336699; line-height: 25px; }
+.project-search-and-replace-processes ul.s-r-results li .element span.quantity { position: absolute; left: 375px; width: 80px; text-align: right; }
+.project-search-and-replace-processes ul.s-r-results li .process-config { position: relative; line-height: 20px; overflow: hidden; }
+.project-search-and-replace-processes ul.s-r-results li .process-config.match { background-color: #fcf8e3; line-height: 30px; color: #000; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span { display: inline-block; position: absolute; top: 0; left: auto; right: auto; overflow: hidden; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span.layer-position { left: 0px; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span.name { left: 20px; max-width: 290px; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span.ratio { left: 310px; width: 40px; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span.quantity { left: 375px; width: 80px; text-align: right; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span.conversion { left: 485px; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span.lifetime-old { right: 170px; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span.lifetime-new { right: 106px; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span.lifetime-new input { width: 40px; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span.layer-size-old { right: 283px; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span.layer-size-new { right: 223px; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span.layer-size-new input { width: 40px; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span.checkbox { right: 0px; }
+.project-search-and-replace-processes ul.s-r-results li .process-config span.forbidden { right: 0px; }
+.project-search-and-replace-processes ul.s-r-results li .process-config div.clear { text-indent: -1000px; }
+
+/** projects, elements */
+#elca-projects { position: relative; width: 800px; }
+
+#elca-projects .button { float: right; margin-left: 15px; }
+
+#elca-projects { margin-top: 30px; }
+#elca-projects p { padding-left: 8px; }
+#elca-projects .sheets-filter { margin-top: 40px; margin-left: 8px; }
+
+#elca-projects h1 { padding-left: 8px; }
+
+#elca-projects .shared-projects, #elca-projects .my-projects { margin-top: 100px; }
+#elca-projects .shared-projects h4, #elca-projects .my-projects h4 { margin: 15px 0 8px 0; border-bottom: 1px solid #e5e5e5; padding-left: 8px; font-size: 14px; font-style: italic; font-weight: normal; padding-bottom: 4px; }
+
+#elca-projects ul.project-list { margin-top: 20px; }
+
+#content.project-variants { width: 900px; }
+
+/* project data forms -------------*/
+form.projectForm { max-width: 580px; }
+
+form.projectForm .column { width: 250px; padding-right: 40px; }
+
+.generalForm .form-section.startWithProjection .label-holder { width: 220px; }
+
+.generalForm .form-section.constrMeasure { width: 200px; }
+
+.generalForm .form-section.description textarea { height: 75px; }
+
+.generalForm .form-section.lifeTime input { width: 80px; }
+
+.generalForm .form-section.postcode, .generalForm .form-section.city { float: left; }
+
+.generalForm .form-section.postcode { width: 60px; }
+
+.generalForm .form-section.city { width: 175px; padding-left: 15px; }
+
+.generalForm .form-section.floorSpace { margin-top: 20px; }
+
+.generalForm .form-section.isExtantBuilding .label-holder, .generalForm .form-section.isListed .label-holder { width: 130px; }
+
+/** project import ------------------------*/
+#content.project-import form { width: 600px; }
+
+/** project sanity ------------------------*/
+.elca-project-sanity { border: 3px solid #ff0000; padding: 15px 30px; margin: 10px 0; }
+.elca-project-sanity h3 { font-size: 14px; font-weight: bold; font-style: italic; line-height: 18px; border-bottom: 1px solid #ddd; margin: 0 0 10px 0; color: #F00000; }
+.elca-project-sanity p { font-size: 12px; color: #666; line-height: 18px; margin: 12px 0; }
+.elca-project-sanity .button { text-align: right; }
+.elca-project-sanity .list > li { color: #000; }
+
+/** Reports ----------------------*/
+#content.report { font-size: 14px; color: #888; position: relative; max-width: 1600px; }
+#content.report .button.print { position: absolute; top: 22px; left: 600px; }
+#content.report .button.print a { margin-left: 10px; }
+#content.report h1 { margin-top: 30px; margin-bottom: 10px; font-style: italic; color: #888; }
+#content.report h1 span { font-size: 11px; font-weight: normal; color: #888; padding-left: 5px; text-transform: uppercase; }
+#content.report h2 { font-size: 14px; font-weight: bold; margin-top: 10px; margin-bottom: 10px; color: #888; }
+#content.report h2 a { color: #336699; font-size: 14px; }
+#content.report h3 { font-size: 12px; font-weight: normal; font-style: italic; }
+#content.report dl { margin: 0; padding-bottom: 10px; width: 500px; }
+#content.report dt { clear: both; float: left; width: 200px; }
+#content.report dd { color: #333; margin-left: 200px; }
+#content.report dl > .epd-types { margin-top: 4px; }
+#content.report dd.description { white-space: pre; margin-bottom: 20px; }
+#content.report dd.date { margin-bottom: 20px; }
+#content.report dd.print, #content.report dt.print { display: none; }
+#content.report dd.warning { color: #ff0000; }
+#content.report dd.benchmark-version { color: #ff0000; font-weight: bold; }
+#content.report dl.inner { margin-top: 3px; }
+#content.report dl.inner dt { font-style: italic; }
+#content.report li { clear: both; }
+#content.report li h1 span { font-size: 12px; }
+#content.report li .tables { clear: both; }
+#content.report li .tables, #content.report li div.chart { float: left; }
+#content.report p { margin: 0 0 20px 0; font-size: 14px; line-height: 22px; }
+#content.report p a.note { font-size: xx-small; vertical-align: top; color: #336699; }
+#content.report .report-notes { margin: 40px 0 80px 0; padding-top: 5px; padding-left: 20px; list-style-type: decimal; border-top: 1px solid #e5e5e5; }
+#content.report ul.list { margin: 10px 0 20px 0; padding-left: 20px; list-style-type: square; }
+#content.report ul.list li { font-size: 14px; line-height: 18px; }
+#content.report div.chart { padding-top: 5px; padding-left: 30px; }
+#content.report ul.final-energy dt, #content.report ul.element-types dt { width: 120px; }
+#content.report ul.final-energy li, #content.report ul.element-types li { margin-bottom: 40px; }
+#content.report span.counter { color: #e25502; font-weight: bold; }
+#content.report table.report { padding-bottom: 20px; border-collapse: collapse; }
+#content.report table.report th { text-align: left; font-weight: normal; color: #888; font-style: italic; }
+#content.report table.report th { border-right: 1px solid #ddd; }
+#content.report table.report td { text-align: left; color: #333; border-bottom: 1px solid #ddd; border-right: 1px solid #ddd; }
+#content.report table.report td, #content.report table.report th { padding: 2px 4px; }
+#content.report table.report .lastColumn { border-right: none; }
+
+/** assets **/
+#content.report table.report-assets { margin-bottom: 10px; border-collapse: separate; }
+#content.report table.report-assets tr.component td { border: none; border-top: 5px solid #fff; background-color: #f9f9f9; padding-top: 4px; }
+#content.report table.report-assets tr.details td { border-right: none; border-bottom: 1px solid #ddd; background-color: #f9f9f9; }
+#content.report table.report-assets tr.component td span span.info { font-style: italic; color: #888; padding-left: 25px; white-space: nowrap; }
+#content.report table.report-assets tr.component td span span.info span { font-style: normal; color: #333; }
+#content.report table.report-assets tr.component td span.info.info-default-life-times { display: none; }
+#content.report table.report-assets tr.component td span.info.info-life-time-info span { color: #e25502; }
+#content.report table.report-assets col.component_layer_position { width: 20px; }
+#content.report table.report-assets col.process_config_name { width: auto; }
+
+/** asset details **/
+#content.report table.report-assets-details { margin: 5px 0 10px 17px; }
+#content.report table.report-assets-details.operation { margin-left: 0; background-color: #f9f9f9; }
+#content.report table.report-assets-details col.process_life_cycle_description { width: 120px; }
+#content.report table.report-assets-details col.process_ratio { width: 50px; }
+#content.report table.report-assets-details col.process_name_orig { width: 300px; }
+#content.report table.report-assets-details col.process_ref_unit { width: 55px; }
+#content.report table.report-assets-details col.process_uuid { width: 250px; }
+#content.report table.report-assets-details td { border-bottom: 1px solid #ddd; }
+#content.report table.report-assets-details th, #content.report table.report-assets-details .lastColumn { border-right: none; }
+#content.report table.report-assets-details tr.lastRow td { border-bottom: none; }
+
+#content.report table.report-assets-details .table-headlines .lastColumn, #content.report-assets div.element-assets { float: left; }
+
+#content.report-assets div.element-assets table { float: none; }
+
+#content.report-assets div.element-image, #content.report-effects-elements div.element-image { float: left; width: 600px; height: 250px; padding-left: 30px; }
+
+/** effects **/
+#content.report table.report-effects { background-color: #f9f9f9; border-collapse: separate; margin-bottom: 20px; padding-bottom: 0; }
+#content.report table.report-effects td, #content.report table.report-effects th { padding: 2px 4px; }
+#content.report table.report-effects col.indicator_name { width: 110px; }
+#content.report table.report-effects col.indicator_value { width: 300px; }
+#content.report table.report-effects col.bar { width: 60px; }
+#content.report table.report-effects col.indicator_total_value, #content.report table.report-effects col.indicator_prod_value, #content.report table.report-effects col.indicator_maint_value, #content.report table.report-effects col.indicator_eol_value { width: 140px; }
+#content.report table.report-effects th { text-align: center; }
+#content.report table.report-effects th.firstColumn { text-align: left; }
+#content.report table.report-effects td { text-align: right; }
+#content.report table.report-effects td.firstColumn { text-align: left; }
+#content.report table.report-effects .report-bar-outer { background-color: #fff; width: 50px; border: 1px solid #2E6E97; height: 10px; }
+#content.report table.report-effects .report-bar-outer.overdub { border-right-color: #ff0000; border-right-width: 2px; }
+#content.report table.report-effects .report-bar { background-color: #4C83A6; height: 10px; }
+#content.report table.report-effects .gain .report-bar { background-color: #93CD00; }
+#content.report table.report-effects .total { color: #000; border-left: 1px solid #666; background-color: #eee; border-right: 3px double #666; }
+#content.report table.report-effects .total.lastColumn { border-right: none; }
+#content.report table.report-effects th.total { color: #666; }
+#content.report table.report-effects th.eol.C3, #content.report table.report-effects th.eol.C4 { color: #ff0000; }
+#content.report table.report-effects th.eol.C3.C4 { color: #888; }
+#content.report table.report-effects tfoot td.firstColumn { padding-top: 5px; text-align: right; font-style: italic; color: #666; border: none; background-color: #fff; }
+
+/** element details **/
+#content.report-effects .element-details-wrapper { margin-top: 20px; }
+#content.report-effects .element-details-wrapper h3 { cursor: pointer; line-height: 12px; margin-bottom: 15px; padding-left: 20px; background: transparent url(/img/elca/ic-arrow-closed.png) 3px 1px no-repeat; }
+#content.report-effects .element-details-wrapper h3.open { background: transparent url(/img/elca/ic-arrow-open.png) left center no-repeat; }
+#content.report-effects .element-details-wrapper h4 { margin-bottom: 5px; }
+#content.report-effects .element-details-wrapper table.element-details col.indicator_total_value, #content.report-effects .element-details-wrapper table.element-details col.indicator_prod_value, #content.report-effects .element-details-wrapper table.element-details col.indicator_maint_value, #content.report-effects .element-details-wrapper table.element-details col.indicator_eol_value { width: 140px; }
+#content.report-effects .element-details-wrapper h4, #content.report-effects .element-details-wrapper table.element-details { margin-left: 30px; }
+#content.report-effects .element-details-wrapper li.section { margin-bottom: 30px; }
+
+#content.report.project-data dt, #content.report.project-data dd { padding-bottom: 6px; }
+
+/** top elements, top processes **/
+#content.report table.report-top-elements col.element_type { min-width: 250px; }
+
+#content.report table.report-top-elements col.element_name, #content.report table.report-top-processes col.process_config_name { min-width: 250px; }
+
+#content.report table.report-top-elements col.element_quantity, #content.report table.report-top-processes col.quantity { min-width: 50px; }
+
+#content.report table.report-top-elements col.indicator_value, #content.report table.report-top-processes col.indicator_value { width: 145px; }
+
+#content.report table.report-top-elements col.indicator_unit, #content.report table.report-top-processes col.indicator_unit { width: 110px; }
+
+#content.report table.report-top-elements td.indicator_name, #content.report table.report-top-processes td.indicator_name { text-align: center; }
+
+#content.report table.report-top-elements td.indicator_value, #content.report table.report-top-processes td.indicator_value, #content.report table.report-top-elements td.element_quantity, #content.report table.report-top-processes td.quantity, #content.report table.report-top-elements td.cache_component_mass { text-align: right; }
+
+#content.report table.report-top-elements td a { color: #004f80; }
+
+#content table.print-table, #content table.print-table td.print-td, #content table.print-table td.print-td, #content table.print-table td.print-content { border: none; }
+
+#content table.print-table td.print-td div.print-header, #content table.print-table td.print-td div.print-footer { display: none; }
+
+/** report forms ------------------------*/
+#content.report-effects .reportForm, #content.report-summary-element-types .reportForm { position: absolute; top: 0; left: 760px; width: 100px; }
+
+#content.report-effects .reportForm { width: 340px; }
+
+#content .reportTopForm { width: 800px; margin-bottom: 30px; }
+
+#content.report-effects .reportForm .form-section, #content .reportTopForm .form-section { float: left; width: 150px; padding-right: 20px; }
+
+#content .reportTopForm .form-section.limit { width: 120px; text-align: center; }
+#content .reportTopForm .form-section.limit input { width: 50px; }
+#content .reportTopForm .form-section.order { width: 180px; }
+#content .reportTopForm .form-section.inTotal { width: 150px; }
+#content .reportTopForm .form-section .HtmlRadiobox { float: left; }
+#content .reportTopForm .form-section .submit.button { margin-top: 25px; }
+
+#content.report-summary-benchmarks .reportForm { width: 500px; }
+#content.report-summary-benchmarks .reportForm .form-section.benchmarkVersionId { width: 300px; }
+#content.report-summary-benchmarks table.report-effects tbody.second-data-set tr:first-child td { padding-top: 15px; }
+#content.report-summary-benchmarks .indicator-charts { height: 300px; }
+#content.report-summary-benchmarks .indicator-charts .cycler { position: relative; float: left; margin-top: 30px; margin-left: 20px; }
+#content.report-summary-benchmarks .indicator-charts .cycler .ref-model-chart { position: absolute; top: 0; left: 0; }
+#content.report-summary-benchmarks .indicator-charts #indicator-charts-pager a { display: inline-block; padding-right: 10px; color: #336699; line-height: 16px; }
+
+#content.report .benchmark-print-comment { display: none; }
+
+#content.report-compare .reportForm { width: 700px; }
+#content.report-compare .reportForm .projectVariantId { padding: 0; }
+#content.report-compare .reportForm .projectVariantId .label-holder { width: 200px; float: left; }
+#content.report-compare .reportForm .projectVariantId .form-elt { margin-left: 200px; }
+#content.report-compare .reportForm .projectVariantId .form-elt select { width: 300px; }
+#content.report-compare .reportForm .form-section.i { position: absolute; top: 0; left: 760px; width: 100px; }
+
+#content.report-assets-non-default-life-time ul.report-elements > li.section { background-color: #f9f9f9; padding: 10px 15px; }
+#content.report-assets-non-default-life-time ul.report-elements > li.section h2 { color: #666; }
+#content.report-assets-non-default-life-time div.element-assets, #content.report-assets-non-default-life-time table.report-assets { width: 100%; }
+#content.report-assets-non-default-life-time table.report-assets tr.component td { border: none; border-bottom: 1px solid #e5e5e5; }
+#content.report-assets-non-default-life-time table.report-assets tr.component td.firstColumn { vertical-align: top; font-weight: bold; color: #666; }
+#content.report-assets-non-default-life-time table.report-assets tr.component td span { display: inline-block; word-break: break-all; }
+#content.report-assets-non-default-life-time table.report-assets tr.component td span.process-config-name { font-weight: bold; color: #666; }
+#content.report-assets-non-default-life-time table.report-assets tr.component td span.info.info-life-time { padding-left: 0; padding-top: 10px; display: block; font-size: 120%; }
+#content.report-assets-non-default-life-time table.report-assets tr.component td span.info.info-default-life-times { padding-left: 0; display: block; font-size: 120%; }
+#content.report-assets-non-default-life-time table.report-assets tr.component td span.info.info-default-life-times span { padding-right: 10px; color: #009926; }
+#content.report-assets-non-default-life-time table.report-assets tr.component td span.info.info-life-time-info { padding-left: 0; display: block; padding-bottom: 5px; font-size: 120%; }
+#content.report-assets-non-default-life-time table.report-assets tr.component td span.info.info-life-time-info span { color: #e25502; }
+#content.report-assets-non-default-life-time table.report-assets tr.component td span.info.info-life-time-info span.no-value { color: inherit; }
+#content.report-assets-non-default-life-time table.report-assets tr.lastRow td { border-bottom: none; }
+
+#content.report-summary-epd-types .tables { width: 100%; }
+#content.report-summary-epd-types table.report { border-collapse: separate; }
+#content.report-summary-epd-types table.epd-type-effects { width: 95%; }
+#content.report-summary-epd-types tr.total td, #content.report-summary-epd-types tr.mainttotal td, #content.report-summary-epd-types tr.prodtotal td { border-top: 1px solid #aaa; }
+#content.report-summary-epd-types tr.total td { font-weight: bold; }
+#content.report-summary-epd-types tr.mainttotal td, #content.report-summary-epd-types tr.prodtotal td { font-style: italic; }
+#content.report-summary-epd-types table.report-epd-types .lastColumn { border-left: 1px solid #aaa; }
+#content.report-summary-epd-types table.report-epd-types td.lastColumn { font-weight: bold; }
+
+/** pdf generation ---------------------*/
+#elca-modal-content.pdf-gen div.spinning-wheel { float: left; height: 64px; width: 64px; text-align: center; vertical-align: middle; background-position: center center; background-repeat: no-repeat; }
+
+#elca-modal-content.pdf-gen.spin div.spinning-wheel { background-image: url(/img/elca/ajax-loader.gif); }
+
+#elca-modal-content.pdf-gen.done div.spinning-wheel { background-image: url(/img/elca/ic-select.png); }
+
+#elca-modal-content.pdf-gen p.pdf-gen { padding-top: 10px; }
+
+#elca-modal-content.pdf-gen p.pdf-gen-done { display: none; }
+
+#elca-modal-content.pdf-gen.done p.pdf-gen { display: none; }
+
+#elca-modal-content.pdf-gen.done p.pdf-gen-done { display: block; }
+
+#elca-modal-content.pdf-gen #elca-modal-close { display: none; }
+
+#elca-modal-content.pdf-gen.done #elca-modal-close { display: inline; }
+
+#elca-modal-content.pdf-gen.done p a { margin-left: 10px; }

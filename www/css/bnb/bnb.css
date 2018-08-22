@@ -1,0 +1,63 @@
+/** common **/
+/** buttons **/
+/** borders **/
+#content.bnb-4-1-4 { max-width: 1000px; min-width: 900px; }
+#content.bnb-4-1-4 .element-types-container { border-top: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5; -moz-box-shadow: #e5e5e5 0 0 5px inset; -webkit-box-shadow: #e5e5e5 0 0 5px inset; box-shadow: #e5e5e5 0 0 5px inset; padding: 20px 15px; height: 80%; overflow-y: auto; }
+#content.bnb-4-1-4 .fieldset.bnb-element-type { position: relative; }
+#content.bnb-4-1-4 .fieldset.bnb-element-type h4 { position: absolute; top: 23px; right: 22px; text-decoration: none; font-weight: normal; font-style: italic; font-size: 12px; }
+#content.bnb-4-1-4 .fieldset.bnb-element-type h4.eol { right: 215px; }
+#content.bnb-4-1-4 .fieldset.bnb-element-type h4.separation { right: 122px; }
+#content.bnb-4-1-4 .fieldset.bnb-element-type h4.recycling { right: 22px; }
+#content.bnb-4-1-4 ul.bnb-elements li { position: relative; padding: 3px 15px; background-color: #f9f9f9; border-bottom: #e5e5e5 solid 1px; margin-bottom: 3px; }
+#content.bnb-4-1-4 ul.bnb-elements li.complete { background-color: #efffed; }
+#content.bnb-4-1-4 ul.bnb-elements li.incomplete { background-color: #Ffefef; }
+#content.bnb-4-1-4 ul.bnb-elements li a { color: #336699; display: block; line-height: 25px; margin-right: 300px; max-width: 640px; min-width: 500px; }
+#content.bnb-4-1-4 ul.bnb-elements li .form-section { padding: 0; }
+#content.bnb-4-1-4 ul.bnb-elements li .form-section input { position: absolute; top: 3px; width: 40px; }
+#content.bnb-4-1-4 ul.bnb-elements li .form-section input.eol { right: 215px; }
+#content.bnb-4-1-4 ul.bnb-elements li .form-section input.separation { right: 122px; }
+#content.bnb-4-1-4 ul.bnb-elements li .form-section input.recycling { right: 22px; }
+
+#content.bnb-report-4-1-4 form .calcMethod { overflow: hidden; *zoom: 1; }
+#content.bnb-report-4-1-4 form .calcMethod .label-holder { float: left; width: 195px; }
+#content.bnb-report-4-1-4 form .calcMethod .form-elt { float: left; width: 400px; }
+#content.bnb-report-4-1-4 form .calcMethod .HtmlRadiobox { float: left; }
+#content.bnb-report-4-1-4 table.report { margin-top: 30px; }
+#content.bnb-report-4-1-4 table.report col.elementName { width: 300px; }
+#content.bnb-report-4-1-4 table.report a { color: #336699; }
+#content.bnb-report-4-1-4 table.report td, #content.bnb-report-4-1-4 table.report th { padding: 3px 4px; }
+#content.bnb-report-4-1-4 table.report th { padding-right: 10px; }
+#content.bnb-report-4-1-4 table.report th.firstColumn { padding-left: 4px; }
+#content.bnb-report-4-1-4 table.report th.centered { padding-left: 10px; }
+#content.bnb-report-4-1-4 table.report th.align-right { padding-right: 4px; }
+#content.bnb-report-4-1-4 table.report td.centered { text-align: center; }
+#content.bnb-report-4-1-4 table.report td.align-right { text-align: right; }
+#content.bnb-report-4-1-4 table.report tfoot td { background-color: transparent; border-bottom: none; font-weight: bold; padding-top: 10px; }
+#content.bnb-report-4-1-4 table.report tfoot td.firstColumn { text-align: left; font-weight: normal; font-style: italic; color: #666; border-right: none; }
+
+#content.bnb-water { width: 790px; min-width: inherit; }
+#content.bnb-water .bnb-section { position: relative; }
+#content.bnb-water .bnb-section.collapsible div.legend { padding-left: 20px; background: transparent url("/img/elca/ic-arrow-open.png") 3px 25px no-repeat; cursor: pointer; }
+#content.bnb-water .bnb-section.collapsible.close div.legend { background-image: url("/img/elca/ic-arrow-closed.png"); background-position: 5px 22px; }
+#content.bnb-water h3, #content.bnb-water h4 { font-size: 14px; font-weight: normal; font-style: italic; padding-top: 10px; }
+#content.bnb-water .headline { position: absolute; top: 0; left: 0; height: 36px; }
+#content.bnb-water h3 { position: absolute; bottom: 0; width: 100px; padding-top: 23px; padding-bottom: 0; font-size: 12px; }
+#content.bnb-water .form-section, #content.bnb-water .buttons, #content.bnb-water h4 { clear: both; padding-left: 30px; }
+#content.bnb-water h4 { margin-top: 10px; font-size: 12px; }
+#content.bnb-water .form-section { position: relative; padding-top: 2px; padding-bottom: 7px; display: block; }
+#content.bnb-water .form-section:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+#content.bnb-water .form-section.not-equal { color: red; }
+#content.bnb-water .form-elt.HtmlNumericTextWithUnit { font-size: 14px; text-align: right; }
+#content.bnb-water .label-holder { float: left; width: 480px; padding: 0; }
+#content.bnb-water .form-elt .input-column, #content.bnb-water .form-elt .frequency-column { position: absolute; top: 0; }
+#content.bnb-water .form-elt .frequency-column { left: 500px; width: 150px; font-size: 12px; line-height: 24px; text-align: center; }
+#content.bnb-water .form-elt .input-column { left: 700px; width: 70px; text-align: right; font-size: 14px; }
+#content.bnb-water .form-elt.HtmlNumericTextWithUnit .input-column { left: 580px; width: 200px; }
+#content.bnb-water .form-elt input.numeric-input { display: inline-block; }
+#content.bnb-water .form-elt input.read-only { border: none; color: #666 !important; }
+#content.bnb-water .form-elt span.ref-unit { font-size: 12px; padding-left: 5px; }
+#content.bnb-water .buttons { text-align: right; }
+#content.bnb-water .form-section.sum { font-weight: bold; }
+#content.bnb-water .totals { margin-top: 10px; padding: 5px 0 0 0; font-weight: bold; }
+#content.bnb-water .totals .rating { margin: 10px 0; border: 1px solid #ddd; }
+#content.bnb-water .totals .rating label, #content.bnb-water .totals .rating .form-elt { font-size: 18px; color: #333; }

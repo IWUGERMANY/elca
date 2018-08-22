@@ -1,0 +1,54 @@
+
+/** Header
+ *---------*/
+#header {
+  background-color:#5c5c5c;
+  color:#aaa;
+}
+#header a {
+  color:#eee;
+}
+#header .layout-width {
+  line-height:39px;
+}
+#header h1 {
+  padding:0 0 0 110px;
+  line-height:inherit;
+}
+#header h1 a {
+  font-size:18px;
+  color:#aaa;
+}
+#header h1 a:hover {
+  text-decoration:none;
+}
+#header h1 span.elca-version {
+  font-size:11px;
+}
+#header h1 span.beta {
+  font-size:9px;
+  color:red;
+  text-transform:uppercase;
+}
+
+#header h1.logo {
+  font-weight:normal;
+  font-style:italic;
+  height:39px;
+
+}
+#header ul#meta {
+  position:absolute;
+  right:20px;
+  top:0;
+  list-style-type:none;
+}
+#header ul#meta li {
+  float:right;
+  padding-left:10px;
+  color:#aaa;
+}
+#header ul#meta li a.license img {
+  vertical-align:middle;
+  border-width:0;
+}

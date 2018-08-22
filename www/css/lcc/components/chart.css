@@ -1,0 +1,22 @@
+/** charts --------------*/
+#content.lcc-reports text { font: 10px sans-serif; }
+
+#content.lcc-reports div.chart.line-chart { padding-left: 0; }
+
+#content.lcc-reports .line-chart .y.axis .tick text { fill: #000; }
+
+#content.lcc-reports .pie-chart { float: left; }
+
+#content.lcc-reports .pie-chart .arc path { stroke: #fff; }
+
+#content.lcc-reports .line-chart .axis path, #content.lcc-reports .line-chart .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }
+
+#content.lcc-reports .line-chart .line { fill: none; stroke: #000; stroke-width: 2px; }
+
+#content.lcc-reports .line-chart .area { opacity: 0.3; stroke: none; }
+
+#content.lcc-reports .line-chart .dots circle { opacity: 0.6; }
+
+#content.lcc-reports .line-chart .cross line { opacity: 0.2; stroke: #000; stroke-width: 1px; shape-rendering: crispEdges; }
+
+div.tooltip { position: absolute; text-align: center; width: auto; min-width: 50px; padding: 6px 20px; margin: 0 10px; font: 12px sans-serif; background: #eee; color: #000; border: 0px; border-radius: 8px; pointer-events: none; }

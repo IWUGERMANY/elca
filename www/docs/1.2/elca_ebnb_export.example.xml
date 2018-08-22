@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of the eLCA project
+  ~
+  ~ eLCA
+  ~ A web based life cycle assessment application
+  ~
+  ~ Copyright (c) 2016 Tobias Lode <tobias@beibob.de>
+  ~               BEIBOB Medienfreunde GbR - http://beibob.de/
+  ~
+  ~ eLCA is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ eLCA is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with eLCA. If not, see <http://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<projectDataSet xmlns="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../1.2/elca_ebnb_export.xsd">
+
+    <projectInformation>
+        <common>
+            <name><![CDATA[Testprojekt]]></name>
+            <projectNr><![CDATA[1234-1234]]></projectNr>
+            <description><![CDATA[]]></description>
+
+            <!-- Bilanzierungszeitraum-->
+            <lifeTime>50</lifeTime>
+
+            <!-- Bauwerkszuordnung -->
+            <constrClass refNum="9890"><![CDATA[Sonstige Gebäude]]></constrClass>
+
+            <!-- Baumaßnahme: private|public -->
+            <projectType>public</projectType>
+
+            <!-- BNB Nummer -->
+            <bnbNr><![CDATA[ABC-1234/213]]></bnbNr>
+
+            <!-- eGis Nummer -->
+            <eGisNr><![CDATA[ABC-1234/213]]></eGisNr>
+
+            <!-- Bearbeiter -->
+            <editor><![CDATA[TL]]></editor>
+        </common>
+
+        <projectVariant phaseIdent="ES_BAU" refId="123"><![CDATA[ES Bau]]></projectVariant>
+
+        <benchmarkSystem>
+            <name><![CDATA[BNB]]></name>
+            <version><![CDATA[2011]]></version>
+        </benchmarkSystem>
+
+        <processDatabase sourceUri="">
+            <name><![CDATA[Ökobau.dat 2011]]></name>
+            <uuid>e1d19bd2-461f-4574-8be3-f98ca825b2eb</uuid>
+        </processDatabase>
+
+        <location>
+            <street><![CDATA[]]></street>
+            <postcode>2</postcode>
+            <city><![CDATA[]]></city>
+            <country><![CDATA[]]></country>
+        </location>
+
+        <construction>
+            <!-- BGF -->
+            <grossFloorSpace>3000</grossFloorSpace>
+
+            <!-- NGF -->
+            <netFloorSpace>2500</netFloorSpace>
+
+            <!-- NGF EnEV -->
+            <netFloorSpaceEnEv version="EnEV Version"></netFloorSpaceEnEv>
+
+            <!-- NF -->
+            <floorSpace/>
+
+            <!-- Grundstücksfläche -->
+            <propertySize/>
+        </construction>
+
+    </projectInformation>
+
+
+    <administrativeInformation>
+        <timestamp>2014-03-27T18:24:59.179+01:00</timestamp>
+        <system version="1.1" host="http://www.bauteileditor.de/">eLCA</system>
+        <publisher><![CDATA[Tobias Lode]]></publisher>
+    </administrativeInformation>
+
+
+    <outputs>
+
+        <!-- Gesamtbilanz -->
+        <lca type="summary">
+            <resultSet ident="summary">
+                <resultSetInformation>
+                    <name><![CDATA[Gesamtbilanz]]></name>
+                </resultSetInformation>
+
+                <result ident="peiNEm">
+                    <resultInformation>
+                        <name><![CDATA[PEI n. ern.]]></name>
+                        <unit>MJ</unit>
+                    </resultInformation>
+
+                    <amount module="total">272.3938</amount>
+
+                    <subSet>
+                        <amount module="A1-3">1.2131</amount>
+                        <amount module="B6">1.2131</amount>
+                        <amount module="C4">1.2131</amount>
+                        <amount module="D">1.2131</amount>
+                    </subSet>
+                </result>
+
+                <!-- peiEm, ADP, GWP, ... -->
+            </resultSet>
+        </lca>
+
+
+        <!-- Bilanz nach Bauteilgruppe (DIN 276) bis zur 3. Ebene -->
+        <lca type="DIN_276">
+            <resultSet ident="300">
+                <resultSetInformation>
+                    <name><![CDATA[Bauwerk - Baukonstruktionen]]></name>
+                </resultSetInformation>
+
+                <result ident="peiNEm">
+                    <resultInformation>
+                        <name><![CDATA[PEI n. ern.]]></name>
+                        <unit>MJ</unit>
+                    </resultInformation>
+
+                    <amount module="total">272.3938</amount>
+
+                    <subSet>
+                        <amount module="A1-3">1.2131</amount>
+                        <amount module="B6">1.2131</amount>
+                        <amount module="C4">1.2131</amount>
+                        <amount module="D">1.2131</amount>
+                    </subSet>
+
+                </result>
+                <!-- peiEm, GWP, ... -->
+            </resultSet>
+
+            <resultSet ident="310">
+
+                <resultSetInformation>
+                    <name><![CDATA[Bauwerk - Baukonstruktionen]]></name>
+                </resultSetInformation>
+
+                <result ident="peiNEm">
+                    <resultInformation>
+                        <name><![CDATA[PEI n. ern.]]></name>
+                        <unit>MJ</unit>
+                    </resultInformation>
+
+                    <amount module="total">272.3938</amount>
+
+                    <subSet>
+                        <amount module="A1-3">1.2131</amount>
+                        <amount module="B6">1.2131</amount>
+                        <amount module="C4">1.2131</amount>
+                        <amount module="D">1.2131</amount>
+                    </subSet>
+
+                </result>
+                <!-- peiEm, GWP, ... -->
+
+            </resultSet>
+
+            <resultSet ident="311">
+
+                <resultSetInformation>
+                    <name><![CDATA[Baugrubenherstellung]]></name>
+                </resultSetInformation>
+
+                <result ident="peiNEm">
+                    <resultInformation>
+                        <name><![CDATA[PEI n. ern.]]></name>
+                        <unit>MJ</unit>
+                    </resultInformation>
+
+                    <amount module="total">27.3938</amount>
+
+                    <subSet>
+                        <amount module="A1-3">1.2131</amount>
+                        <amount module="B6">1.2131</amount>
+                        <amount module="C4">1.2131</amount>
+                        <amount module="D">1.2131</amount>
+                    </subSet>
+
+                </result>
+                <!-- peiEm, GWP, ... -->
+
+            </resultSet>
+
+        </lca>
+
+
+
+        <!-- Lebenszykluskosten LCC-->
+        <lcc>
+            <lccInformation>
+                <name>LCC</name>
+                <version>
+                    <name>Preisstand 2009/2010</name>
+                </version>
+                <category ident="Sonderbedingungen">2</category>
+            </lccInformation>
+
+            <resultSet ident="Aufteilung LCC Kosten">
+
+                <resultSetInformation>
+                    <name><![CDATA[Aufteilung LCC Kosten]]></name>
+                </resultSetInformation>
+
+                <result ident="Barwert Gesamt">
+                    <resultInformation>
+                        <name><![CDATA[Barwert Gesamt]]></name>
+                        <unit>EUR</unit>
+                    </resultInformation>
+
+                    <amount module="total">3000</amount>
+
+                    <subSet>
+                        <amount module="Herstellkosten KG300">1.2131</amount>
+                        <amount module="Herstellkosten KG400">1.2131</amount>
+                        <amount module="Herstellkosten KG500">1.2131</amount>
+
+                        <amount module="Barwert unregelmäßige Zahlungen KG300">1.2131</amount>
+                        <amount module="Barwert unregelmäßige Zahlungen KG400">1.2131</amount>
+                        <amount module="Barwert unregelmäßige Zahlungen KG500">1.2131</amount>
+
+                        <amount module="Barwert regelmäßige Instandhaltungskosten KG300">1.2131</amount>
+                        <amount module="Barwert regelmäßige Instandhaltungskosten KG400">1.2131</amount>
+                        <amount module="Barwert regelmäßige Instandhaltungskosten KG500">1.2131</amount>
+
+                        <amount module="Barwert Nutzungskosten Wasser / Abwasser">1.2131</amount>
+                        <amount module="Barwert Nutzungskosten Energie">1.2131</amount>
+                        <amount module="Barwert Nutzungskosten Reinigung">1.2131</amount>
+
+                    </subSet>
+
+                </result>
+
+                <result ident="Lebenszykluskosten / m2BGF">
+                    <resultInformation>
+                        <name><![CDATA[Lebenszykluskosten / m2BGF]]></name>
+                        <unit>EUR</unit>
+                    </resultInformation>
+
+                    <amount module="total">3000</amount>
+                </result>
+
+                <result ident="Punkte Kriterium 2.1.1">
+                    <resultInformation>
+                        <name><![CDATA[Punkte Kriterium 2.1.1]]></name>
+                        <unit />
+                    </resultInformation>
+
+                    <amount module="total">77</amount>
+                </result>
+
+            </resultSet>
+        </lcc>
+
+
+        <!-- Modul Trinkwasser -->
+        <freshWater>
+            <freshWaterInformation>
+                <name><![CDATA[Trinkwasser 1.2.3]]></name>
+            </freshWaterInformation>
+
+            <resultSet ident="Frischwasserbedarf pro Jahr">
+                <resultSetInformation>
+                    <name><![CDATA[Frischwasserbedarf pro Jahr]]></name>
+                </resultSetInformation>
+
+                <result ident="Gesamtfrischwasserbedarf">
+                    <resultInformation>
+                        <name><![CDATA[Gesamtfrischwasserbedarf]]></name>
+                        <unit>m3</unit>
+                    </resultInformation>
+
+                    <amount module="total">100.12</amount>
+
+                    <subSet>
+                        <amount module="Frischwasserbedarf pro Mitarbeiter">1.2131</amount>
+                        <amount module="Frischwasserbedarf Fussbodenreinigung">1.2131</amount>
+                        <amount module="Menge des genutzten Niederschlagswassers">1.2131</amount>
+                        <amount module="Menge des genutzten Brauchwassers">1.2131</amount>
+                    </subSet>
+
+                </result>
+
+            </resultSet>
+
+            <resultSet ident="Abwasseraufkommen pro Jahr">
+                <resultSetInformation>
+                    <name><![CDATA[Abwasseraufkommen pro Jahr]]></name>
+                </resultSetInformation>
+
+                <result ident="Gesamtabwasseraufkommen">
+                    <resultInformation>
+                        <name><![CDATA[Gesamtabwasseraufkommen]]></name>
+                        <unit>m3</unit>
+                    </resultInformation>
+
+                    <amount module="total">100.12</amount>
+
+                    <subSet>
+                        <amount module="Abwasseraufkommen pro Mitarbeiter">1.2131</amount>
+                        <amount module="Abwasseraufkommen Fussbodenreinigung">1.2131</amount>
+                        <amount module="Anfallendes Niederschlagswassers">1.2131</amount>
+                        <amount module="Menge des auf dem Grundstück versickerten Regenwassers">1.2131</amount>
+                        <amount module="Menge des genutzten Brauchwassers">1.2131</amount>
+                        <amount module="Menge des auf dem Grundstück gereinigten Brauchwassers">1.2131</amount>
+                    </subSet>
+
+                </result>
+            </resultSet>
+
+            <resultSet ident="Wassergebrauchskennwert">
+                <resultSetInformation>
+                    <name><![CDATA[Wassergebrauchskennwert]]></name>
+                </resultSetInformation>
+
+                <result ident="Wassergebrauchskennwert">
+                    <resultInformation>
+                        <name><![CDATA[Wassergebrauchskennwert]]></name>
+                        <unit>m3</unit>
+                    </resultInformation>
+
+                    <amount module="total">10.2</amount>
+                </result>
+            </resultSet>
+
+            <resultSet ident="Grenzwerte">
+                <resultSetInformation>
+                    <name><![CDATA[Grenzwerte]]></name>
+                </resultSetInformation>
+
+                <result ident="Grenzwert Gesamt">
+                    <resultInformation>
+                        <name><![CDATA[Grenzwert Gesamt]]></name>
+                        <unit>m3</unit>
+                    </resultInformation>
+
+                    <amount module="total">10.12</amount>
+
+                    <subSet>
+                        <amount module="Wasserbedarf pro Mitarbeiter">1.2131</amount>
+                        <amount module="Abwasseraufkommen pro Mitarbeiter">1.2131</amount>
+                        <amount module="Wasserbedarf Fussbodenreinigung">1.2131</amount>
+                        <amount module="Abwasseraufkommen Fussbodenreinigung">1.2131</amount>
+                        <amount module="Abwasseraufkommen anfallendes Niederschlagswassers">1.2131</amount>
+                    </subSet>
+
+                </result>
+            </resultSet>
+
+            <resultSet ident="Ergebnis">
+                <resultSetInformation>
+                    <name><![CDATA[Ergebnis]]></name>
+                </resultSetInformation>
+
+                <result ident="Verhältnis Wassergebrauchskennwert / Grenzwert">
+                    <resultInformation>
+                        <name><![CDATA[Verhältnis Wassergebrauchskennwert / Grenzwert]]></name>
+                        <unit />
+                    </resultInformation>
+
+                    <amount module="total">0.123</amount>
+                </result>
+
+                <result ident="Punkte Kriterium 1.2.3">
+                    <resultInformation>
+                        <name><![CDATA[Punkte Kriterium 1.2.3]]></name>
+                        <unit />
+                    </resultInformation>
+
+                    <amount module="total">150</amount>
+                </result>
+
+            </resultSet>
+
+        </freshWater>
+
+    </outputs>
+
+</projectDataSet>

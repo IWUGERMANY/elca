@@ -1,0 +1,58 @@
+/** Nutzerverwaltung
+ *------------------*/
+#content.users,
+#tabContent.users {
+  width:900px;
+}
+
+.main-content.users #navLeft .nav-level1 li {
+  border:none;
+}
+#elca-groups div.add, #elca-users div.add {
+  text-align:right;
+}
+
+/** Nutzerverwaltung
+ *------------------*/
+#userForm {
+  width:900px;
+
+  .HtmlRadioGroup {
+    .HtmlRadiobox {
+      float:left;
+    }
+  }
+
+  div.buttons {
+    padding-right:50px;
+  }
+
+  .HtmlTextInput-section.email p {
+    color:red;
+    margin-top:5px;
+  }
+}
+
+#roleForm,
+#groupForm {
+  width:400px;
+}
+
+#roleForm .formSection.roles .formEltLabel {
+  float:left;
+  width:150px;
+}
+
+#elca-users {
+  .elca-sheet-content {
+    li.locked strong {
+      color:$msgBoxError;
+    }
+    li.confirmed strong {
+    }
+    li.requested strong {
+      color:darkorange;
+    }
+  }
+}
+

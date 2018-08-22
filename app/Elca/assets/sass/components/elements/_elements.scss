@@ -1,0 +1,172 @@
+/** Elements
+ *----------------------*/
+#content ul.elements,
+#content div.elements-top {
+  width:900px;
+}
+#content.element-list .button.add {
+  float:right;
+  width:300px;
+  text-align:right;
+  padding-bottom:20px;
+}
+
+#content.project-elements .button.add {
+  margin-top:0px;
+  width:auto;
+}
+#content.project-elements .button.add a {
+  margin-left:20px;
+}
+
+/** elements
+ *------------------------*/
+#tabContent.elements h2,
+#tabContent.project-elements h2 {
+  font-size: 16px;
+  margin-top:20px;
+  padding-top:20px;
+  color:#888;
+}
+
+#tabContent.elements h2 span,
+#tabContent.project-elements h2 span {
+  font-size: 11px;
+  font-weight:bold;
+  color:#333;
+}
+
+#tabContent.elements .process-dbs {
+  color:#333;
+
+  strong {
+    color: #73a903;
+  }
+  &.no-process-dbs {
+    color: #ff0000;
+    font-weight: bold;
+  }
+}
+
+/* element form
+ *-------------*/
+#elementForm .column {
+  width:230px;
+}
+#elementForm .column.properties .form-section.quantity {
+  float:left;
+  width:115px;
+  padding-right:10px;
+
+  input {
+    width: 100px;
+  }
+}
+#elementForm .column.properties .form-section.refUnit {
+  width:100px;
+  float:left;
+}
+
+#elementForm .column.properties .form-section.processDbId {
+  float:left;
+}
+
+#elementForm  .element-image {
+  max-width: 800px;
+  min-height:250px;
+  margin-left:510px;
+}
+.element-image p.not-supported {
+  margin:0 auto;
+  padding:60px 30px;
+  text-align:center;
+  border:2px dashed #ddd;
+  width:200px;
+}
+
+#elementForm .form-section.constrDesignId select,
+#elementForm .form-section.constrCatalogId select {
+  height:94px;
+}
+#elementForm .form-section.isPublic .element-div,
+#elementForm .form-section.isReference .element-div {
+  float:left;
+  line-height:26px;
+}
+#elementForm .HtmlMultiSelectbox-section .label-holder a,
+#elementForm .ElcaHtmlMultiSelectbox-section .label-holder a {
+  float:right;
+  color:#004f80;
+  display:inline-block;
+  line-height:21px;
+  padding-left:10px;
+}
+#elementForm .ElcaHtmlMultiSelectbox-section span.select-helpers {
+  position: absolute;
+  top: -24px;
+  right: 0px;
+  display: inline-block;
+
+  a {
+    float:right;
+    color:#004f80;
+    display:inline-block;
+    line-height:21px;
+    padding-left:10px;
+  }
+}
+
+
+#elementForm .form-section.attr {
+  float:left;
+  width:65px;
+  padding-right:10px;
+}
+#elementForm .properties .form-section.attr {
+  float:none;
+  width:inherit;
+}
+
+#elementForm .composite-element .label-holder {
+  float:left;
+  width:150px;
+}
+#elementForm .composite-element .form-elt {
+  padding-left:150px;
+}
+#elementForm .composite-element a {
+  color:#004f80;
+  padding-right:10px;
+}
+#elementForm .buttons {
+  width:510px;
+}
+#elementForm .buttons .export,
+#elementForm .buttons .delete {
+  display:inline-block;
+}
+#elementForm .buttons .delete a,
+#elementForm .buttons .export a {
+  padding-left:15px;
+  padding-right:15px;
+}
+
+#compositeElementForm .buttons .save-elements {
+  display:none;
+}
+#compositeElementForm.changed .buttons .save-elements {
+  display:inline-block;
+}
+
+#content.elca-filter-sheets .sheets-filter .form-section.scope {
+  width:450px;
+}
+
+
+/** element import
+ *------------------------*/
+#content.elements.overview form {
+  width:600px;
+}
+
+

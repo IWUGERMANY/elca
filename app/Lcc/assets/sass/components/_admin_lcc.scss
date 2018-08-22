@@ -1,0 +1,23 @@
+#tabContent.elca-admin-benchmark-version.tab-lcc {
+  .form-section {
+    .label-holder {
+      .label-content {
+        display:block;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+#tabContent.elca-admin-benchmark-version.tab-lcc-groups {
+
+  .form-section.category {
+    left:170px;
+    width:180px;
+    margin-top:3px;
+    
+    .form-elt > .group-container .HtmlRadiobox {
+      float:left;
+    }
+  }
+}

@@ -1,0 +1,22 @@
+#content.admin-mapping-edit {
+  fieldset {
+    width: 500px;
+  }
+
+  .form-section.mode {
+    .HtmlRadiobox {
+      float:left;
+    }
+  }
+
+  .form-section.processConfigId {
+    float:left;
+    width:420px;
+    height:47px;
+  }
+  .form-section.siblingRatio {
+    float:left;
+    width:80px;
+    height:47px;
+  }
+}

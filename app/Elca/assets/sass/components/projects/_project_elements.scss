@@ -1,0 +1,54 @@
+#compareWithReferenceProject {
+  margin-left:10px;
+
+  .form-section.compare {
+    .form-elt {
+      width:80px;
+      text-align:right;
+    }
+  }
+}
+
+#navLeft.project-elements {
+
+  .navigation {
+    position:relative;
+
+    .ref-project {
+      position:absolute;
+      display: inline-block;
+      width:9px;
+      height:9px;
+
+      box-shadow: #ddd7c3 1px 1px 1px 1px;
+      background-color: #fff9e2;
+      &.positive {
+        background-color: #ccfd8b;
+        box-shadow: #acdb72 1px 1px 1px 1px;
+      }
+      &.negative {
+        background-color: #fd695e;
+        box-shadow: #d46358 1px 1px 1px 1px;
+      }
+    }
+  }
+
+  ul.nav-level1 > li.navigation  {
+    > .ref-project {
+      top:11px;
+      right:32px;
+    }
+  }
+
+  ul.nav-level2 > li.navigation {
+    > .ref-project {
+      top:2px;
+      right:32px;
+    }
+  }
+
+  &.compare-with-reference-projects li h4 a,
+  &.compare-with-reference-projects li h4 span {
+    max-width:240px;
+  }
+}

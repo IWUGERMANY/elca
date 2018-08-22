@@ -1,0 +1,344 @@
+/** Final-Energy-Demand
+ *---------------------*/
+#content.project-final-energy {
+  font-size:14px;
+  color:#888;
+
+  dl {
+    padding-bottom:10px;
+    width:500px;
+  }
+  dt {
+    clear:both;
+    float:left;
+    width:200px;
+  }
+  dd {
+    color:#333;
+  }
+
+  .projection {
+    width:600px;
+
+    h5 {
+      color:#888;
+      font-size:14px;
+      margin-top:30px;
+    }
+    p.notice {
+      color:#ff0000;
+
+      a {
+        color:#ff0000;
+        text-decoration:underline;
+      }
+    }
+  }
+
+  table.benchmark-projections {
+    margin:20px 0;
+
+    col {width:80px;}
+    col.name {width:200px;}
+    col.targetValue {width:100px;}
+
+    th,
+    td {
+      background-color:#f9f9f9;
+      text-align:center;
+    }
+    th {
+    }
+    td {
+      line-height:23px;
+      padding:0;
+    }
+
+    .firstColumn {
+      text-align:left;
+    }
+    td.lastColumn {
+      border-right:none;
+    }
+
+    td span {
+      display:block;
+    }
+    td.name span {
+      padding:0 5px;
+    }
+
+    td .red {background-color:#FF6961}
+    td .yellow {background-color:#FDFD96}
+    td .green  {background-color:#77DD77}
+  }
+
+
+  /** Final-Energy-Demand
+   *---------------------*/
+
+  .form-section.ngf {
+    float: left;
+    width: 100px;
+  }
+  .form-section.enEvVersion {
+    float: left;
+    width: 100px;
+    padding-left: 15px;
+  }
+
+
+  .final-energy-section {
+    margin-top:20px;
+
+    h5, h6 {
+      font-size: 16px;
+      color: #888;
+      font-style: italic;
+      font-weight: normal;
+      border: none;
+    }
+
+    .hl-row {
+      position: relative;
+      height: 34px;
+
+
+      h6 {
+        position: absolute;
+        font-size: 12px;
+        top:0;
+        text-align: left;
+
+        &.hl-heating,
+        &.hl-water,
+        &.hl-lighting,
+        &.hl-ventilation,
+        &.hl-cooling,
+        &.hl-quantity,
+        &.hl-overall     {
+          width:60px;
+          text-align: center;
+        }
+
+        &.hl-usage       { left: 10px; width:250px; top:9px }
+        &.hl-heating     { right: 587px; }
+        &.hl-water       { right: 499px;}
+        &.hl-lighting    { right: 403px; }
+        &.hl-ventilation { right: 305px; }
+        &.hl-cooling     { right: 214px; }
+        &.hl-overall     { right: 7px; }
+
+        &.hl-description { right: 585px; top:9px}
+        &.hl-quantity    { right: 320px; }
+        &.hl-enEvRatio   { right: 190px; width:100px;}
+      }
+
+      &.hl-process-energy { margin-top:20px;}
+    }
+
+    &.energy-supply .hl-overall     { width:80px !important; }
+
+    li {
+      background-color: #f9f9f9;
+      border-bottom: 1px solid #e5e5e5;
+      margin-bottom: 8px;
+      padding: 3px 0;
+      line-height: 24px;
+      min-height: 24px;
+
+      &.no-results {
+        background-color:$noResultsColor;
+      }
+    }
+    .final-energy-row {
+      position: relative;
+      width: 100%;
+    }
+
+    .toggle-link {
+      left: 10px;
+      width: 20px;
+    }
+    .process-config-selector,
+    .process-energy-demand {
+      position: relative;
+      left: 25px;
+      width: 370px;
+      max-width: 32%;
+      max-height: 20px;
+      overflow: hidden;
+    }
+
+    .form-section.heating     { right: 585px }
+    .form-section.water       { right: 490px }
+    .form-section.lighting    { right: 395px }
+    .form-section.ventilation { right: 300px }
+    .form-section.cooling     { right: 210px }
+    .form-section.overall     { right: 20px; text-align:right }
+    .delete-link,
+    .cancel-link {
+      width: 60px;
+      text-align: left;
+      right: 115px;
+      top:0px;
+    }
+
+    .form-section.description     { right: 410px }
+    .form-section.quantity        { right: 315px }
+    .form-section.enEvRatio       { right: 220px }
+
+
+    .form-section.description,
+    .form-section.quantity,
+    .form-section.enEvRatio,
+    .form-section.heating,
+    .form-section.water,
+    .form-section.lighting,
+    .form-section.ventilation,
+    .form-section.cooling,
+    .form-section.overall,
+    .toggle-link {
+      position: absolute;
+      padding: 0;
+      top: 0;
+    }
+
+    .form-section.quantity,
+    .form-section.enEvRatio,
+    .form-section.heating,
+    .form-section.water,
+    .form-section.lighting,
+    .form-section.ventilation,
+    .form-section.cooling,
+    .form-section.overall {
+      width: 70px;
+    }
+
+    .form-section.description {
+      width: 250px;
+    }
+
+    .add-energy-carrier {
+      display: inline-block;
+    }
+
+    .process-config-selector a,
+    span.process-energy-demand,
+    a.delete-link,
+    a.cancel-link {
+      padding: 0;
+      line-height: 24px;
+      display: block;
+      position: absolute;
+      color: #004f80;
+    }
+
+    .process-config-selector.changed a {
+      color: #ff0000;
+    }
+
+    span.process-energy-demand {
+      color: #333;
+    }
+
+    &.reference-model {
+      background-color:$bgLightGrey;
+      border:1px solid $borderGrey;
+      padding:10px 15px;
+
+      span.ref-model-ident {
+        display:block;
+        position:absolute;
+        left:25px;
+        line-height:25px;
+      }
+
+      h5, h6, span.ref-model-ident {
+        color:$textColor;
+      }
+    }
+
+    table col.peNEm,
+    table col.peEm,
+    table col.pet,
+    table col.pere,
+    table col.perm,
+    table col.pert,
+    table col.penre,
+    table col.penrm,
+    table col.penrt,
+    table col.adp,
+    table col.adpe,
+    table col.adpf,
+    table col.ep,
+    table col.odp,
+    table col.pocp,
+    table col.gwp,
+    table col.ap {
+      width: 65px;
+    }
+
+    table col.ratio,
+    table col.refUnit {
+      width: 100px;
+    }
+
+    table col.lifeCycleName {
+      width: 150px;
+    }
+
+    table col.nameOrig {
+      width: auto;
+      min-width:100px;
+    }
+
+    table th,
+    table td {
+      text-align: left;
+    }
+    tr.lastRow td {
+      border-top: 1px solid #999;
+    }
+    div.results {
+      display: none;
+
+      div.info {
+        padding-top:30px;
+        margin: 0 10px;
+      }
+    }
+    div.results,
+    table {
+      margin: 0 10px;
+    }
+
+    table {
+      padding-top: 30px;
+      width: 98%;
+    }
+
+    table th,
+    table td {
+      font-size: 12px;
+    }
+
+    li, .final-energy-row {
+      min-height: 24px;
+    }
+
+    .toggle-link {
+      display: block;
+      padding: 0 5px 0 0;
+      width: 5px;
+      text-indent: -1000px;
+      overflow: hidden;
+      background: transparent url('/img/elca/ic-arrow-closed.png') center no-repeat;
+
+      &.open {
+        background-image: url('/img/elca/ic-arrow-open.png');
+      }
+    }
+
+  }
+}

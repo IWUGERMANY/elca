@@ -1,0 +1,45 @@
+#content.project-benchmarks form {
+  width:400px;
+}
+
+#content.project-benchmarks .hl-row {
+  position: relative;
+  height:40px;
+}
+
+#content.project-benchmarks h5.hl-indicator,
+#content.project-benchmarks h5.hl-benchmark {
+  position:absolute;
+  color:#888;
+  font-style:italic;
+  font-weight:normal;
+  border:none;
+  line-height:14px;
+}
+#content.project-benchmarks h5.hl-indicator {left:0}
+#content.project-benchmarks h5.hl-benchmark {left:200px}
+
+#content.project-benchmarks .indicator-benchmark {
+  padding:3px 0;
+  line-height:24px;
+  background-color:#f9f9f9;
+  margin-bottom:3px;
+  border-bottom:1px solid #e5e5e5;
+}
+#content.project-benchmarks .form-section {
+  padding:0;
+}
+
+#content.project-benchmarks .form-section .label-holder {
+  display:inline-block;
+  width:210px;
+  padding:0;
+}
+#content.project-benchmarks .form-section .label-holder label {
+  padding:0 15px;
+  color:#666;
+}
+#content.project-benchmarks .form-section .form-elt {
+  display:inline-block;
+  width:40px;
+}

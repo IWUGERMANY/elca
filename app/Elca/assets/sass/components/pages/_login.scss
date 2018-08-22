@@ -1,0 +1,190 @@
+/** Login
+ *---------------------*/
+.bbsr-logo {
+  display: block;
+  position: absolute;
+  left:900px;
+  top:23px;
+}
+.elca-login {
+  margin:20px 35px;
+  line-height:19px;
+  max-width:900px;
+  overflow: hidden;
+  position: relative;
+
+  .login-wrapper {
+    padding-left:500px;
+    width:250px;
+  }
+
+
+
+  .login-form-container {
+    width:250px;
+  }
+
+  .subscribe-form-container {
+    display:none;
+
+    .fieldset.personal-data {
+      float:left;
+      padding-left:25px;
+      width:250px;
+    }
+    .fieldset.access-data {
+      float:left;
+      width:250px;
+    }
+    .fieldset.buttons {
+      clear:both;
+      margin-right: 75px;
+      p.notice {
+        text-align: left;
+      }
+    }
+
+    p.success {
+      margin-top: 20px;
+      padding-right:70px;
+      strong {
+        color:$linkColor;
+      }
+    }
+  }
+
+  .forgot-form-container {
+    display:none;
+
+    h1 {
+      margin-bottom:20px;
+    }
+    .fieldset.buttons {
+      p.notice {
+        text-align: left;
+      }
+    }
+
+    p.success {
+      margin-top: 20px;
+      padding-right:70px;
+      strong {
+        color:$linkColor;
+      }
+    }
+  }
+
+  .disclaimer {
+    float:left;
+    width:450px;
+    padding-right:20px;
+    border-right:1px solid #ddd;
+
+    .disclaimer-content-wrapper {
+      width:440px;
+    }
+  }
+  .disclaimer h1 {
+    margin-bottom:10px;
+  }
+  .disclaimer h2 {
+    font-size:12px;
+    font-weight:bold;
+    color:#888;
+  }
+  .disclaimer h3 {
+    font-size:12px;
+    font-weight:normal;
+    color:#888;
+  }
+  .disclaimer ul {
+    margin-left:20px;
+    margin-bottom:10px;
+  }
+  .disclaimer ul li {
+    list-style-type:square;
+  }
+  .disclaimer .important {
+    padding:5px;
+    background-color:#f9f9f9;
+    color:#444;
+  }
+
+  p {
+    margin:0 0 10px 0;
+  }
+
+  .notice {
+    font-style:italic;
+    margin:0;
+  }
+}
+
+.elca-login.show-subscribe-form {
+  .disclaimer {
+    width:250px;
+    .disclaimer-content-wrapper {
+      width:auto;
+    }
+  }
+  .login-wrapper {
+    width: 600px;
+    padding-left: 0px;
+    position: absolute;
+    left: 300px;
+    top: 0px;
+
+    p.login-only, .login-form-container {
+      display:none;
+    }
+
+    .subscribe-form-container {
+      display:block;
+
+
+      .box {
+        border:1px solid transparent;
+        margin-right:55px;
+        padding:15px 15px 10px 15px;
+
+      }
+      .box.red {
+        border:1px solid #ae0000;
+        background: #ae0000;
+
+        h1,p {
+          color:#ffffff;
+        }
+      }
+    }
+    .HtmlRadioGroup {
+      .HtmlRadiobox {
+        float:left;
+      }
+    }
+  }
+
+
+
+}
+
+
+.elca-login.show-forgot-form {
+  .login-wrapper {
+    width: 250px;
+    padding-left: 0px;
+    position: absolute;
+    left: 500px;
+    top: 0px;
+
+    p.login-only, .login-form-container {
+      display:none;
+    }
+
+    .forgot-form-container {
+      display:block;
+    }
+  }
+}
+
+

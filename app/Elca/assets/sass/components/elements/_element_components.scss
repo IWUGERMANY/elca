@@ -1,0 +1,487 @@
+/** Element components
+ *------------------*/
+#section-components .legend {
+  padding-left:35px;
+  background:url(../../img/elca/ic-section-single-16x27.gif) left 20px no-repeat;
+}
+#section-layers .legend {
+  padding-left:25px;
+  background:url(../../img/elca/ic-section-geom-16x16.gif) left 20px no-repeat;
+}
+
+.element-components div.buttons {
+  float:right;
+}
+
+/** Element layers
+ *------------------*/
+#section-layers .fieldset span.area {
+  position:absolute;
+  top:0px;
+  right:370px;
+
+  padding-top:24px;
+  font-size:12px;
+  font-weight:normal;
+  font-style:italic;
+}
+
+/** element components
+ *------------------------*/
+.element-section {
+  min-width:850px;
+  max-width:1050px;
+  margin-left:20px;
+
+  .fieldset,
+  .hl-row,
+  .element-component {
+    position:relative;
+  }
+
+  .add-component {
+    display:inline-block;
+  }
+
+  .fieldset .section-toggle {
+    position:absolute;
+    top:18px;
+    left:-20px;
+    cursor: pointer;
+    width:10px;
+    height:21px;
+    background: transparent url('/img/elca/ic-arrow-open.png') center no-repeat;
+
+    &.closed {
+      background-image: url('/img/elca/ic-arrow-closed.png');
+    }
+
+  }
+
+  .form-section.area {
+    width:50px;
+  }
+  .hl-row {
+    height:22px;
+
+    h5 {
+      position:absolute;
+      color:#888;
+      font-style:italic;
+      font-weight:normal;
+      border:none;
+
+      &.hl-layer     { left:0; }
+      &.hl-sibling   { right:390px; }
+      &.hl-size      { right:467px; }
+      &.hl-width-length  { right:450px; display: none;}
+      &.hl-quantity  { right:522px; }
+      &.hl-life-time { right:300px; cursor:help;}
+      &.hl-is-active { right:240px; cursor:help;}
+      &.hl-is-extant { right:190px; cursor:help;}
+      &.hl-move      { right: 0; }
+      &.hl-element   { left:0; }
+      &.hl-dinCode   { right:495px; }
+    }
+  }
+
+  &#section-composite .hl-row h5 {
+    &.hl-quantity  { right:562px; }
+    &.hl-is-extant { right:285px; cursor:help;}
+  }
+
+  &.show-dimension .hl-row h5 {
+    &.hl-size    { right:550px; display: block;}
+    &.hl-width-length    { display: block;}
+  }
+
+  ol {
+    list-style-type:decimal;
+  }
+  li {
+    background-color:#f9f9f9;
+    border-bottom:1px solid #e5e5e5;
+    margin-bottom:8px;
+    padding:3px 0;
+    line-height:24px;
+
+    &.no-results {
+      background-color:$noResultsColor;
+
+      .process-config-selector a {
+        color:#ff0000;
+      }
+    }
+
+  }
+
+  #element-composite-non-opaque .non-opaque-infos .info {
+    padding-top:10px;
+  }
+
+  #element-composite-non-opaque li {
+    background-color:#f0f9f0;
+  }
+  div.element {
+    background-color:inherit;
+  }
+
+  li,
+  .element-component,
+  .element,
+  ol li.drag-placeholder {
+    min-height:24px;
+  }
+
+  ol li.drag-placeholder {
+    padding:3px 0;
+    background-color:transparent;
+    border:1px solid #e5e5e5;
+  }
+  .element,
+  .element-component {
+    position:relative;
+    width:100%;
+  }
+
+  .toggle-link,
+  .element-component .layer-position,
+  .element-component .process-config-selector,
+  .element .element-selector,
+  .element-component a.add-sibling-link,
+  span.function-separator,
+  span.function-separator-2,
+  .element-component .areaRatio,
+  .element-component .size,
+  .element-component .show-dimension-icon,
+  .element-component .length,
+  .element-component .width,
+  .element-component .quantity,
+  .element-component .conversionId,
+  .element-component .lifeTime,
+  .element-component .lifeTimeDelay,
+  .element-component .show-lifeTimeDelay-icon,
+  .element-component .calcLca,
+  .element-component .isExtant,
+  .cancel-link,
+  .delete-link,
+  .unassign-link,
+  .edit-link,
+  .element .quantity,
+  .element .surface,
+  .element .refUnit,
+  .element .dinCode,
+  .element .elementType,
+  .element .isExtant,
+  div.drag-handle {
+    position:absolute;
+    padding:0;
+    top:0;
+    background-color:inherit;
+  }
+
+  .toggle-link { left:10px; width:20px; }
+  a.edit-link { width:60px; text-align:left; right:140px }
+  a.delete-link,
+  a.cancel-link { width: 60px; text-align: left; right: 65px; }
+
+  .element-component {
+    .layer-position { left:5px; width:20px; }
+    .process-config-selector {left:30px; width:400px; max-width: 32%; max-height: 20px; overflow: hidden;}
+    a.add-sibling-link { right:135px; width:50px;}
+    .areaRatio { right:390px; width:50px; }
+    .size { right:470px; width:50px; }
+    .show-dimension-icon { right:460px; width:40px; }
+    .length { right:500px; width:40px; display: none; }
+    .width { right:450px; width:40px; display: none; }
+    .quantity { right:500px; width:60px; }
+    .conversionId { right:435px; width:60px; }
+    .lifeTime { right:330px; width:30px;}
+    .show-lifeTimeDelay-icon { right:318px; width:5px;}
+    .lifeTimeDelay { right:283px; width:30px;}
+    .calcLca { right: 235px; width:40px; text-align: center; }
+    .isExtant { right: 195px; width:40px; text-align: center; }
+    .calcLca .HtmlCheckbox,
+    .isExtant .HtmlCheckbox { float:none; }
+    span.function-separator { width: 5px; text-align: center; right: 134px; color:#666}
+    .sibling-label { width: 60px; text-align: left; right: 135px; font-size: 12px;}
+
+    .show-dimension-icon {
+      display: inline-block;
+      width: 5px;
+      text-indent: -10000px;
+      overflow: hidden;
+      background: transparent url('/img/elca/ic-arrow-grey.png') center no-repeat;
+    }
+    .show-lifeTimeDelay-icon {
+      display:none;
+      width: 5px;
+      text-indent: -10000px;
+      overflow: hidden;
+      background: transparent url('/img/elca/ic-arrow-grey.png') center no-repeat;
+    }
+    &.is-extant .show-lifeTimeDelay-icon {
+      display: inline-block;
+    }
+
+    .process-config-selector.changed {
+      color:#ff0000;
+    }
+
+    .lifeTime {
+      input {
+        margin-left:12px;
+        width:26px;
+      }
+      .life-time-info-link {
+        position:absolute;
+        top:3px;
+        left:4px;
+        width:6px;
+
+        span.symbol {
+          display:block;
+          font-family: "Georgia", "Times New Roman", serif;
+          font-size:12px;
+          font-weight:bold;
+          line-height:20px;
+          cursor:pointer;
+          color:#ff0000;
+        }
+        .life-time-info {
+          display:none;
+          position:absolute;
+          bottom:0;
+          left:46px;
+          min-width:150px;
+          padding:10px 15px;
+          background-color:#fefefe;
+          border:1px solid #888;
+          z-index:99;
+          border-radius:6px;
+        }
+        .life-time-info h3 {
+          font-size:inherit;
+          color:#555;
+        }
+        .life-time-info li input {
+          margin:0 10px 0 0;
+          height:auto;
+          width:auto;
+
+          &[type=text] {
+            margin-left:3px;
+            margin-right:0;
+          }
+        }
+        .life-time-info li {
+          background-color:transparent;
+          border:none;
+          line-height:16px;
+          margin:0;
+          padding:0;
+          white-space:nowrap;
+          color:#555;
+        }
+      }
+      &.active .life-time-wrapper .life-time-info,
+      .life-time-wrapper.hover:hover .life-time-info {
+        display:block;
+      }
+      &.active .life-time-wrapper input.numeric-input,
+      .life-time-wrapper.hover:hover input.numeric-input {
+        border-color:#4C83A6;
+      }
+    }
+  }
+
+  &.show-dimension .element-component {
+    .size { right:550px; }
+    .length { display: block; }
+    .width { display: block; }
+  }
+
+  &.is-extant-building .hl-row {
+    h5.hl-life-time {right: 285px;}
+  }
+
+  &.is-extant-building .element-component {
+    .lifeTime {right: 345px;}
+
+    .lifeTimeDelay {
+      display:none;
+    }
+
+    &.show-lifeTimeDelay .lifeTimeDelay {
+      display:block;
+    }
+    &.show-lifeTimeDelay .show-lifeTimeDelay-icon {
+      display:none;
+    }
+  }
+
+  .element .form-section.elementType {
+    height:25px;
+    overflow:hidden;
+  }
+
+  .element {
+    span.function-separator { width: 5px; text-align: center; right: 131px; color:#666}
+    a.edit-link { width:60px; text-align:left; right:210px }
+    span.function-separator-2 { width: 5px; text-align: center; right: 202px; color:#666}
+    a.unassign-link { width:60px; text-align:left; right:135px }
+    .element-selector {left:30px; width: 320px; max-height: 20px; overflow: hidden;}
+    .quantity {right:585px; width:60px; text-align:right }
+    .surface {right:655px; width:auto; text-align:right; padding-left:10px }
+    .surface .HtmlStaticText { font-size:12px; padding-right:0 }
+    .refUnit {right:540px; width:40px; text-align:left; }
+    .dinCode {right:510px;}
+    .isExtant { right: 285px; width:40px; text-align: center; }
+    .isExtant .HtmlCheckbox { float:none; }
+    .elementType {
+      right:315px;
+      width:200px;
+      text-align:left;
+    }
+
+    .HtmlText {
+      font-size:12px;
+    }
+  }
+
+  #element-composite-non-opaque .element .element-selector {left:30px; width: 300px; max-height: 20px; overflow: hidden;}
+
+  div.drag-handle {
+    right: 0;
+    width:60px;
+    height: 24px;
+    background:url(../../img/elca/ic-move.gif) center no-repeat;
+    cursor:pointer;
+  }
+
+  .element .element-selector,
+  .element-component .process-config-selector,
+  .element-component a.add-sibling-link,
+  .element-component .sibling-label,
+  a.delete-link,
+  a.unassign-link,
+  a.edit-link,
+  a.cancel-link {
+    padding:0;
+    line-height:24px;
+    display: block;
+    position:absolute;
+    color:#004f80;
+  }
+
+  .process-config-selector {
+    a {
+      color:#004f80;
+      display:inline-block;
+    }
+    a.data-sheet-link {
+      width:11px;
+      height:14px;
+      background:url(/img/elca/ic-datasheet.png) no-repeat center center;
+      overflow:hidden;
+      text-indent: -1000px;
+      padding-left:15px;
+      position: relative;
+      top:3px;
+    }
+  }
+
+  .toggle-link {
+    display: block;
+    padding: 0 5px 0 0;
+    width: 5px;
+    text-indent:-1000px;
+    overflow:hidden;
+    background: transparent url('/img/elca/ic-arrow-closed.png') center no-repeat;
+  }
+  a.toggle-link.open {
+    background-image: url('/img/elca/ic-arrow-open.png');
+  }
+}
+
+#content.elements .element-section .lifeTime {right: 335px;}
+
+.element-section div.results,
+.element-section table {
+  margin:0 10px;
+}
+
+.element-section table {
+  padding-top:30px;
+  border-bottom:1px solid #ddd;
+  width: 98%;
+}
+
+.element-section table th,
+.element-section table td {
+  font-size:12px;
+}
+.element-section div.results div.info {
+  padding-top:25px;
+  padding-right:40px;
+  padding-left:4px;
+  float:left;
+  font-size:12px;
+}
+.element-section div.results div.info span.caption {
+  color:#888;
+  font-style:italic;
+  padding-right:10px;
+}
+.element-section div.results div.info span.value {
+  color:#000;
+}
+
+
+.element-section table col.peNEm,
+.element-section table col.peEm,
+.element-section table col.pet,
+.element-section table col.pere,
+.element-section table col.perm,
+.element-section table col.pert,
+.element-section table col.penre,
+.element-section table col.penrm,
+.element-section table col.penrt,
+.element-section table col.adp,
+.element-section table col.adpe,
+.element-section table col.adpf,
+.element-section table col.ep,
+.element-section table col.odp,
+.element-section table col.pocp,
+.element-section table col.gwp,
+.element-section table col.ap { width:66px; }
+.element-section table col.ratio,
+.element-section table col.refUnit { width:100px; }
+.element-section table col.processDb { width:150px; }
+.element-section table col.nameOrig { width:auto; }
+.element-section table col.uuid { width:250px; }
+.element-section table th,
+.element-section table td { text-align:left; }
+
+.elements .element-section table tr.lastRow td {
+  border-top: none;
+}
+
+#section-summary div.results,
+#section-summary table {
+  padding:3px 0;
+  line-height:24px;
+  margin:0;
+  margin-left:10px;
+}
+
+.element-section table tr.total td {
+  border-top:1px solid #999;
+  color:#000;
+}
+
+#section-summary .fieldset .legend span {
+  font-size: 11px;
+  font-weight:bold;
+  color:#333;
+}

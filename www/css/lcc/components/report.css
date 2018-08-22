@@ -1,0 +1,16 @@
+/** reports **/
+#content.lcc-reports table { margin-top: 20px; float: left; }
+
+#content.lcc-reports table col.name { width: 320px; }
+
+#content.lcc-reports table td.costs, #content.lcc-reports table td.percentage { text-align: right; }
+
+#content.lcc-reports table th.unit, #content.lcc-reports table th.percentage, #content.lcc-reports table td.unit { text-align: center; }
+
+#content.lcc-reports table tbody.costs, #content.lcc-reports table tbody.service { background-color: #f0f0f0; }
+
+#content.lcc-reports table tbody.rating, #content.lcc-reports table tbody.total { background-color: #fff; }
+
+#content.lcc-reports table tbody.rating td, #content.lcc-reports table tbody.total td { border: none; font-weight: bold; }
+
+#content.lcc-reports table tbody.rating td { padding-top: 10px; }

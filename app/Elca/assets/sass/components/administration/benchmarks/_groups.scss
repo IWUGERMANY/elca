@@ -1,0 +1,100 @@
+#tabContent.elca-admin-benchmark-version.benchmark-groups {
+  form {
+    width:920px;
+  }
+
+  .hl-row {
+    position:relative;
+    margin-left:0;
+
+    h5 {
+      position:absolute;
+      top:0;
+      color: $labelColor;
+      font-weight:normal;
+      border:none;
+    }
+
+    .hl-name             { left:20px }
+    .hl-indicators       { left:170px }
+    .hl-score            { left:435px }
+    .hl-caption          { left:550px }
+  }
+
+  #lcaGroups {
+    margin-top: 30px;
+  }
+
+  li {
+    position:relative;
+    padding:3px 0;
+    line-height:24px;
+    min-height:28px;
+
+    &.group {
+      background-color:$bgLightGrey;
+      border-bottom:1px solid $borderLightGrey;
+      margin-bottom:8px;
+    }
+
+    &.group-threshold {
+      margin-left:430px;
+      margin-right:15px;
+      border-bottom:1px solid #e0e0e0;
+    }
+
+    &.group-threshold.last {
+      border:none;
+    }
+    .form-section {
+      position:absolute;
+      top:0;
+    }
+
+    .name { left:20px; width:140px }
+    .indicators   { left:170px; width:230px }
+    .score        { left:10px; width:60px }
+    .caption        {
+      left:120px;
+      width:180px;
+      input {
+        width:100%;
+      }
+    }
+
+    .function-link {
+      position:absolute;
+      top:6px;
+    }
+    .function-link.delete-link {right:80px;}
+    .function-link.cancel-link,
+    .function-link.add-link {right:-20px;}
+
+    .selectize-control.multi {
+
+      min-width:100px;
+      .item,
+      .option {
+        font-size: 12px;
+      }
+
+      .selectize-input {
+        padding: 1px;
+        border-radius: 0;
+      }
+
+      .item {
+        padding-right:5px !important;
+        margin: 1px 3px 1px 0;
+
+        a {
+          margin-left:5px;
+        }
+      }
+    }
+  }
+
+  #transports.new-group .function-link.add-link {
+    display:none;
+  }
+}

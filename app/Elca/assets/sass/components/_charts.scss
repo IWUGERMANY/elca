@@ -1,0 +1,79 @@
+.chart {
+  position: relative;
+  font: 10px sans-serif;
+}
+
+.chart line.line0,
+.chart .axis path,
+.chart .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.chart .x.axis text.is-extant {
+  fill: steelblue;
+}
+
+.chart .y.axis .tick text {
+  fill: #ff0000;
+}
+
+.chart .bar {
+  fill: steelblue;
+  opacity: .9;
+}
+
+.chart .bar:hover {
+  opacity: 1;
+}
+
+.chart .x.axis path {
+  display: none;
+}
+
+.benchmark-chart .x.axis path {
+  display: block;
+}
+
+.benchmark-chart .bar {
+  stroke: #fff;
+  stroke-width: 1px;
+}
+
+.benchmark-chart line.benchmark {
+  stroke: #999999;
+  stroke-width: 1px;
+  opacity: .8;
+
+  &.max {
+    stroke: #ee0000;
+    stroke-width: 2px;
+  }
+
+  &.p20, &.p40, &.p60, &.p80 {
+    stroke-dasharray: 5, 5;
+  }
+}
+
+.chart div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: auto;
+  min-width: 50px;
+  padding: 6px 20px;
+  margin: 0 10px;
+  font: 12px sans-serif;
+  background: #eee;
+  color: #000;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+#diagramsLoading {
+  display: none;
+  position: absolute;
+  top: -1000px;
+  left: -1000px;
+}

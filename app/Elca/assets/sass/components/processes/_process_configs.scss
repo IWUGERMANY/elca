@@ -1,0 +1,309 @@
+/** Process configs
+ *------------------*/
+
+#content.process-configs {
+  width:900px;
+}
+#content.process-configs div.button.add {
+  text-align:right;
+  padding-bottom:20px;
+}
+
+.elca-process-config-sheet.inactive .elca-sheet-content,
+.elca-sheet.inactive .function-panel {
+  background-color:#FDFFD9;
+}
+
+.elca-sheet.inactive.active .function-panel,
+.elca-sheet.inactive:hover .function-panel,
+.elca-process-config-sheet.inactive.active .elca-sheet-content,
+.elca-process-config-sheet.inactive:hover .elca-sheet-content {
+  background-color:#FAFFA8;
+}
+
+
+/* process config general form
+ *----------------------*/
+#processConfig {
+  width:820px;
+}
+#processConfig .column.properties {
+  width:350px;
+  padding-right:40px;
+}
+
+#processConfig .column.properties .form-section.isReference,
+#processConfig .column.properties .form-section.is4108Compat {
+  float:left;
+}
+#processConfig .column.properties .form-section.is4108Compat {
+  float:right;
+}
+#processConfig .column.properties .form-section.density,
+#processConfig .column.properties .form-section.defaultSize,
+#processConfig .column.properties .form-section.fHsHi {
+  width:110px;
+  float:left;
+  padding-right:30px;
+}
+#processConfig .column.properties .form-section.defaultSize,
+#processConfig .column.properties .form-section.fHsHi {
+  width:90px;
+}
+#processConfig .column.properties .form-section.fHsHi {
+  padding-right:0px;
+}
+
+#processConfig .column.properties .form-section.transportPayLoad {
+  width:125px;
+  float:left;
+  padding-right:30px;
+}
+#processConfig .column.properties .form-section.transportEfficiency {
+  padding-right:0px;
+  float:left;
+  width:125px;
+}
+
+#processConfig .column h5 {
+  clear:both;
+  padding-top:20px;
+  margin-bottom:10px;
+  font-size:14px;
+  font-weight:normal;
+  font-style:italic;
+  color:#666;
+}
+#processConfig .column.properties .form-section.opAsSupply,
+#processConfig .column.properties .form-section.opAsSupply {
+  padding:0;
+}
+
+#processConfig .column.right{
+  padding-right:0;
+  float:right;
+}
+
+#processConfig .column.life-times .form-section {
+  float:left;
+}
+#processConfig .column.life-times .form-section.lifeTimeInfo {
+  padding-right:0;
+  clear:both;
+  width:100%;
+}
+#processConfig .column.life-times .form-section.minLifeTime,
+#processConfig .column.life-times .form-section.avgLifeTime,
+#processConfig .column.life-times .form-section.maxLifeTime {
+  width:50px;
+  clear:both;
+  padding-right:20px;
+}
+#processConfig .column.life-times .form-section.minLifeTimeInfo,
+#processConfig .column.life-times .form-section.avgLifeTimeInfo,
+#processConfig .column.life-times .form-section.maxLifeTimeInfo {
+  width:330px;
+  padding-right:0;
+}
+
+#processConfig .ElcaHtmlSvgPatternSelect-section {
+  clear:both;
+
+  span.image {
+    width:120px;
+    height:100px;
+  }
+
+  select {
+    width:90%;
+    margin-left:15px;
+  }
+}
+
+#processConfig table.quantitative-references {
+  width: 100%;
+
+  th.quantitative-reference,
+  td.quantitative-reference {
+    text-align: right;
+  }
+}
+
+#conversions {
+  position: relative;
+  width:800px;
+}
+#conversions a.function-link.add-conversion {
+  display:block;
+  position:absolute;
+  top:22px;
+  left:150px;
+}
+#conversions .hl-row,
+#conversions .elt-row {
+  clear: both;
+  position:relative;
+  height:20px;
+}
+#conversions .hl-row h5,
+#conversions .elt-row .form-section,
+#conversions .elt-row a.delete-link,
+  #conversions .elt-row a.cancel-link {
+  position:absolute;
+}
+#conversions .hl-row h5 {
+  color:#888;
+  font-style:italic;
+  font-weight:normal;
+  border:none;
+}
+#conversions .elt-row {
+  background-color:#f9f9f9;
+  padding: 3px 5px;
+  border-bottom:1px solid $borderLightGrey;
+  height:30px;
+  margin-bottom:8px;
+}
+#conversions .elt-row .form-elt {
+  padding:0;
+}
+#conversions .hl-row h5.hl-input      { left:10px; width:80px }
+#conversions .hl-row h5.hl-output     { left:130px; width:80px }
+#conversions .hl-row h5.hl-factor     { left:110px; width:80px; }
+#conversions .hl-row h5.hl-ident      { right:15px; width:480px; }
+#conversions .elt-row .elt-in-unit    { left:15px; width:80px; text-align: right; }
+#conversions .elt-row .elt-arrow      { left:100px; top: 0; width:30px; text-align:center; }
+#conversions .elt-row .elt-out-unit   { left:230px; width:60px; }
+#conversions .elt-row .elt-colon      { left:10px; width:30px; text-align:center; }
+#conversions .elt-row .elt-factor     { left:140px; width:70px; text-align: right; }
+#conversions .elt-row .elt-ident      { right:15px; width:480px; }
+#conversions .elt-row a.delete-link,
+#conversions .elt-row a.cancel-link {
+  right: 15px;
+  padding:5px 0 10px 20px;
+  line-height: 20px;
+  display: block;
+  color:$linkFuncColor;
+  text-decoration:underline;
+}
+#conversions .elt-row .elt-ident .form-elt {
+  font-size: 12px;
+}
+
+#processConfigVariants {
+  width:620px;
+}
+#processConfigVariants h3 {
+  font-weight:normal;
+  font-style:italic;
+  border-bottom:1px solid #ddd;
+  padding-top:20px;
+  margin-bottom:10px;
+}
+
+#processConfigVariants table col.name { width: 400px; }
+#processConfigVariants table col.refValue { width: 220px; }
+#processConfigVariants table .refValue { text-align:right; }
+
+
+/* process configs lca
+ *-----------------------*/
+#tabContent.tab-lca fieldset {
+  clear:both;
+}
+#tabContent.tab-lca .process-group {
+  clear:both;
+  position:relative;
+  margin-top:20px;
+}
+#tabContent.tab-lca .process-group .legend {
+  margin-top:0;
+}
+
+#tabContent.tab-lca .form-section.processDbId {
+  width:200px;
+}
+
+#tabContent.tab-lca a.function-link.add-assignment {
+  display:block;
+  position:absolute;
+  top:20px;
+  left:150px;
+}
+
+#tabContent.tab-lca .process-assignment  {
+  position:relative;
+  background-color:#f9f9f9;
+  padding: 8px 5px;
+  border-bottom:1px solid $borderLightGrey;
+  min-height:24px;
+  height:auto;
+  margin-bottom:8px;
+}
+
+#tabContent.tab-lca .process-assignment .toggle-link,
+#tabContent.tab-lca .process-assignment div.form-section.ratio,
+#tabContent.tab-lca .process-assignment span.unit,
+#tabContent.tab-lca .process-assignment div.form-section.lifeCycle,
+#tabContent.tab-lca .process-assignment div.ElcaHtmlProcessSelectorLink-section,
+#tabContent.tab-lca .process-assignment .delete-link {
+  position:absolute;
+  padding:0;
+  line-height:24px;
+  height:24px;
+}
+#tabContent.tab-lca .process-assignment .toggle-link {
+  cursor:pointer;
+  padding: 0 5px 0 0;
+  width: 5px;
+  text-indent:-1000px;
+  overflow:hidden;
+  background: transparent url('/img/elca/ic-arrow-closed.png') center no-repeat;
+}
+#tabContent.tab-lca .process-assignment div.toggle-link.open {
+  background-image: url('/img/elca/ic-arrow-open.png');
+}
+#tabContent.tab-lca .process-assignment div.form-section.ratio {
+  left:20px;
+  width:40px;
+}
+#tabContent.tab-lca .process-assignment span.unit {
+  left:62px;
+  font-size:12px;
+}
+
+#tabContent.tab-lca .process-assignment div.form-section.lifeCycle {
+  left:20px;
+  width:300px;
+}
+#tabContent.tab-lca .process-assignment.eol div.form-section.lifeCycle,
+#tabContent.tab-lca .process-assignment.rec div.form-section.lifeCycle {
+  left:80px;
+  width:240px;
+}
+
+#tabContent.tab-lca .process-assignment div.ElcaHtmlProcessSelectorLink-section {
+  left:350px;
+  max-width:400px;
+}
+#tabContent.tab-lca .process-assignment div.ElcaHtmlProcessSelectorLink-section a {
+  line-height:24px;
+}
+#tabContent.tab-lca .process-assignment .delete-link {
+  right:15px;
+}
+#tabContent.tab-lca .process-assignment table {
+  clear:both;
+  margin:0;
+  padding:40px 0 0 0;
+  width:100%;
+}
+#tabContent.tab-lca .process-assignment table col.processDb { width:150px; }
+#tabContent.tab-lca .process-assignment table col.nameOrig { width:auto; }
+#tabContent.tab-lca .process-assignment table col.lifeCycleName { width:100px; }
+#tabContent.tab-lca .process-assignment table col.ratio { width:50px; }
+#tabContent.tab-lca .process-assignment table col.refValue { width:100px; }
+#tabContent.tab-lca .process-assignment table col.uuid { width:250px; }
+#tabContent.tab-lca .process-assignment table th { text-align:left; }
+#tabContent.tab-lca .process-assignment table td { text-align:left; }
+#tabContent.tab-lca .process-assignment table td { text-align:left; }

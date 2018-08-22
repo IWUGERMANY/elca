@@ -1,0 +1,47 @@
+din276Code;label;lifeTime;grouping
+310;Baugrube;50;KGU300
+320;Gründung ohne KG 327 Drainage;50;KGU300
+327;Drainage;25;KGU300
+331;Außenwände;50;KGU300
+333;Außenstützen;50;KGU300
+334;Außentüren und -fenster;40;KGU300
+335;Außenwandbekleidungen außen;25;KGU300
+339;Außenwände sonstiges;50;KGU300
+341;Tragende Innenwände;50;KGU300
+342;Nichttragende Innenwände;50;KGU300
+344;Innentüren und -fenster;40;KGU300
+345;Innenwandbekleidungen (Fliesen, Farbe etc.);25;KGU300
+346;Elementierte Innenwände;50;KGU300
+349;Innenwände sonstiges;50;KGU300
+351;Deckenkonstruktion;50;KGU300
+352;Deckenbeläge;25;KGU300
+353;Deckenbekleidungen;25;KGU300
+359;Decken sonstiges;50;KGU300
+361;Dachkonstruktion;50;KGU300
+362;Dachfenster;40;KGU300
+363;Dachbeläge;50;KGU300
+364;Dachbekleidungen;40;KGU300
+369;Dächer sonstiges;50;KGU300
+379;Baukonstruktive Einbauten;50;KGU300
+391;Baustelleneinrichtung;50;KGU300
+392;Gerüste;50;KGU300
+411;Abwasseranlage;50;KGU400
+412;Wasseranlagen;50;KGU400
+419;Sonstiges;50;KGU400
+421;Wärmepumpe mit Zubehör;25;KGU400
+422;Wärmeverteilnetze mit Kühlen;50;KGU400
+423;Kapillar-Rohrmatten Heizen Kühlen;25;KGU400
+429;solarthermische Anlagen;25;KGU400
+431;Lufttechnische Anlage;25;KGU400
+442;Eigenstromversorgung;25;KGU400
+443;Niederspannungsschaltanlagen;25;KGU400
+444;Niederspannungsinstallationsanlagen;25;KGU400
+445;Beleuchtungsanlage;25;KGU400
+446;Blitz- und erdungsanlagen;25;KGU400
+449;Sonstiges;25;KGU400
+451;TK-Netze;25;KGU400
+452;Such- und Signalanlagen;25;KGU400
+455;Antennenanlagen;25;KGU400
+456;Gefahrenmelde- und Alarmanlagen;25;KGU400
+461;Aufzugsanlage;25;KGU400
+481;Automationssysteme;25;KGU400

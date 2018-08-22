@@ -1,0 +1,23 @@
+###########################################################################################################
+
+UUID: af176b86-c64f-4f60-bc14-3e3671b1b49c
+Name: Tondachziegel, Werk Höngeda - CREATON
+EPDType: ?
+MatML: average mass per unit area []
+RefValue: 1 kg
+
+ReferenceFlow: Tondachziegel, Werk Dorfen - CREATON [90c5a7ce-f4da-443b-9354-74601c95bfe0] [3.3 kg] isA Dachziegel [f1d9183d-ca67-4850-b6c7-d4cfb96fc5ab] [1 kg]
+               <epd:vendorSpecificProduct>true</epd:vendorSpecificProduct>
+
+
+
+###########################################################################################################
+
+UUID: e765cc08-a014-47f8-8162-51ccb521c98b
+Name: Dachziegel
+EPDType: generic dataset
+RefValue: 1 kg
+
+ReferenceFlow: Dachziegel [f1d9183d-ca67-4850-b6c7-d4cfb96fc5ab] [1 kg]
+
+###########################################################################################################

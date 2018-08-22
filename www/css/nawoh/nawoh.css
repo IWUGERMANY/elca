@@ -1,0 +1,24 @@
+/** borders **/
+#content.nawoh-water { width: 700px; min-width: inherit; }
+#content.nawoh-water fieldset { position: relative; }
+#content.nawoh-water h5.column { position: absolute; top: 10px; font-size: 12px; border: none; font-weight: normal; font-style: italic; padding-top: 10px; }
+#content.nawoh-water h5.column.inputs { left: 340px; }
+#content.nawoh-water h5.column.version { right: 130px; width: 120px; line-height: 15px; top: 0; text-align: center; }
+#content.nawoh-water h5.column.result { right: 5px; }
+#content.nawoh-water .buttons { clear: both; padding-left: 30px; text-align: right; }
+#content.nawoh-water .form-section { padding: 5px 15px; display: block; position: relative; background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; margin-bottom: 3px; }
+#content.nawoh-water .form-section:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+#content.nawoh-water .ElcaHtmlNumericText { font-size: 14px; text-align: right; width: 70px; }
+#content.nawoh-water .label-holder { float: left; width: 320px; padding: 0; line-height: 24px; }
+#content.nawoh-water .form-elt { float: left; }
+#content.nawoh-water .form-elt input.numeric-input { display: inline-block; width: 70px; }
+#content.nawoh-water .form-elt input.read-only { border: none; color: #666 !important; }
+#content.nawoh-water .form-elt span.column { display: inline-block; position: absolute; top: 5px; font-size: 14px; text-align: right; line-height: 24px; }
+#content.nawoh-water .form-elt span.product { right: 260px; width: 20px; color: #888; }
+#content.nawoh-water .form-elt span.version_base { right: 185px; width: 70px; }
+#content.nawoh-water .form-elt span.result { right: 35px; width: 70px; color: #000; }
+#content.nawoh-water .form-elt span.equals { right: 135px; width: 20px; color: #888; }
+#content.nawoh-water .form-section.HtmlRadioGroup-section { margin-bottom: 15px; }
+#content.nawoh-water .form-section.HtmlRadioGroup-section .HtmlRadiobox { float: left; }
+#content.nawoh-water .form-section.tub-input.hidden { display: none; }
+#content.nawoh-water .form-section.last { margin-bottom: 15px; }

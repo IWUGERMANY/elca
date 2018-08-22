@@ -1,0 +1,6 @@
+Materialname;ProcessConfigId;Gefach?;Gefach_Ratio;Split?
+BEISPIEL 1:1;17269;0;;0
+BEISPIEL Gefach;17269;1;97;0
+BEISPIEL Gefach;15086;1;3;0
+BEISPIEL Split;17269;0;;1
+BEISPIEL Split;15086;0;;1

@@ -1,0 +1,57 @@
+# This file is part of the eLCA project
+#
+# eLCA
+# A web based life cycle assessment application
+#
+# Copyright (c) 2013 Tobias Lode <tobias@beibob.de>
+#               BEIBOB Medienfreunde GbR - http://beibob.de/
+#
+# eLCA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# eLCA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with eLCA. If not, see <http://www.gnu.org/licenses/>.
+#
+### Don't show directory listings for URLs which map to a directory.
+Options -Indexes
+
+### Follow symbolic links in this directory.
+Options +FollowSymLinks
+
+### Set directory index
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+  RewriteEngine on
+  RewriteBase /
+
+  RewriteCond %{REMOTE_ADDR} !^217\.86\.175\.217
+  RewriteCond %{DOCUMENT_ROOT}/maintenance.html -f
+  RewriteCond %{DOCUMENT_ROOT}/maintenance.enable -f
+  RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+  RewriteRule .* /maintenance.html [R=503,L]
+  ErrorDocument 503 /maintenance.html
+
+  ### Removing multiple slashes in url (redirect)
+  RewriteCond %{REQUEST_METHOD} !^POST$
+  RewriteCond %{REQUEST_URI} ^(.*)//(.*)$
+  RewriteRule . http://%{HTTP_HOST}%1/%2 [R=301,L]
+
+  ### Add trailing slash (and redirect)
+  RewriteCond %{REQUEST_METHOD} !^POST$
+  RewriteCond %{REQUEST_URI} ^/[^\.]*[^/]$
+  RewriteRule ^(.*)$ http://%{HTTP_HOST}/$1/ [R=301,L]
+
+  ### Rewrite directory requests to default index.php
+  RewriteCond %{REQUEST_URI} !^/robots.txt$
+  RewriteCond %{REQUEST_URI} !\.(html|php|gif|jpe?g|png|swf|css|htc|js|pdf|doc|xml|ico|flv|svg|csv|xsd)$
+  RewriteRule (.*) /index.php [L]
+</IfModule>
+

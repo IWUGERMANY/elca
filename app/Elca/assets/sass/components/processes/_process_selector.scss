@@ -1,0 +1,82 @@
+/** Process selector form
+ *------------------------*/
+#processSelectorForm input.submit.button {
+  margin-top:5px;
+}
+
+#processSelectorForm select optgroup {
+  color:$labelColor;
+  font-style: italic;
+}
+
+#processSelectorForm select optgroup option {
+  color:#555;
+}
+
+.form-section .ElcaHtmlProcessSelectorLink {
+  overflow:hidden;
+  width:100%;
+  height:24px;
+  line-height:12px;
+  margin-right:10px;
+}
+.form-section .ElcaHtmlProcessSelectorLink a {
+  color:$linkFuncColor;
+}
+.form-section .ElcaHtmlProcessSelectorLink span {
+  line-height:25px;
+  font-size:12px;
+}
+
+.form-section.error .ElcaHtmlProcessSelectorLink a {
+  color:#ff0000;
+}
+.form-section.changed .ElcaHtmlProcessSelectorLink a,
+.form-section .ElcaHtmlProcessSelectorLink a.changed {
+  color:#ff0000;
+}
+
+#processSelectorForm .data-sheet-link,
+#processConfigSelectorForm .data-sheet-link {
+  float:right;
+  margin-top:8px;
+  color:$linkFuncColor;
+}
+
+.elca-process-config-selector,
+.process-config-selector,
+.process-selector-link {
+  a {
+    color:#004f80;
+    display:inline-block !important;
+    position: relative !important;
+  }
+  a.data-sheet-link.icon {
+    width:11px !important;
+    height:14px !important;
+    background:url(/img/elca/ic-datasheet.png) no-repeat center center;
+    overflow:hidden;
+    text-indent: -1000px;
+    padding-left:15px !important;
+    top:2px;
+  }
+
+  &.changed a {
+      color:#ff0000;
+  }
+}
+
+.form-section.db,
+.form-section.epdSubType {
+  float:left;
+  width:192px;
+}
+
+.form-section.db {
+  margin-right:15px;
+}
+
+
+.form-section.search {
+  clear:both;
+}

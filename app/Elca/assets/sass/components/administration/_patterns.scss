@@ -1,0 +1,201 @@
+#elca-svg-patterns div.add  {
+  text-align:right;
+}
+
+.elca-svg-pattern-sheet .elca-sheet-content {
+  padding-left:92px;
+}
+.elca-svg-pattern-sheet .elca-sheet-content .pattern-preview {
+  position: absolute;
+  top:17px;
+  left:13px;
+  width:59px;
+  height:59px;
+}
+.pattern-preview.x-size {
+  background-size: 80% auto;
+}
+.pattern-preview.y-size {
+  background-size: auto 80%;
+}
+#content.svg-patterns {
+  min-width: 750px;
+  width: 750px;
+}
+form.adminSvgPatternForm .buttons fieldset {
+  margin-top:20px;
+  width:400px;
+}
+
+#content.svg-patterns .svg-pattern-group {
+  width: 400px;
+}
+
+#content.svg-patterns .svg-pattern-preview-group {
+  width:500px;
+  position:absolute;
+  top:98px;
+  left:470px;
+}
+
+
+#content.svg-patterns .svg-pattern-preview-group .pattern-preview {
+  position:absolute;
+  top:28px;
+  left:0px;
+}
+
+#content.svg-patterns .svg-pattern-preview-group .file-info {
+  display:inline-block;
+  font-size:12px;
+  position:absolute;
+  top:10px;
+  right:0;
+
+  a {
+    color: $linkColor;
+  }
+}
+
+#content.svg-pattern-assignments {
+
+  form {
+    width:800px;
+    position:relative;
+  }
+
+  .fieldset.buttons {
+    position:absolute;
+    top:6px;
+    right:15px;
+  }
+
+  li.buttons {
+    text-align:right;
+
+    input {
+      margin:5px 15px;
+    }
+  }
+
+  .buttons input[name=cancel] {
+    background:none;
+    color:$linkColor;
+    padding:2px 5px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  ul.level1 .form-section {
+
+    padding:3px 15px;
+    float: left;
+    background-color:#f9f9f9;
+    border-bottom:#e5e5e5 solid 1px;
+    margin-bottom:3px;
+
+    .cell.image {
+      width:50px;
+    }
+
+    .label-holder {
+      float:left;
+      width: 490px;
+      padding-top:4px;
+      padding-right:15px;
+      padding-bottom:4px;
+    }
+
+    .form-elt {
+      float:left;
+      width: 250px;
+
+    }
+    span.image {
+      width:40px;
+      height:26px;
+    }
+  }
+
+  li {
+    @include clearfix;
+    clear:both;
+  }
+
+  li > .form-section .label-holder {
+    padding-left:15px;
+    background: transparent url('/img/elca/ic-arrow-closed.png') 2px 8px no-repeat;
+    cursor:pointer;
+
+    label {
+      cursor:pointer;
+    }
+  }
+
+
+  li.open > .form-section .label-holder {
+    background-image: url('/img/elca/ic-arrow-open.png');
+    background-position: left 10px;
+  }
+
+  li.item > .form-section {
+    background-color:transparent;
+    padding-left:50px;
+
+    .label-holder {
+      background:none;
+      cursor:auto;
+
+      label {
+        cursor:auto;
+      }
+    }
+
+  }
+
+  li.item .spinner {
+    display:block;
+    margin:0 auto;
+    height:24px;
+    width:24px;
+    background: transparent url(/img/elca/loader/indicator_medium.gif) center no-repeat;
+    background-size:75%;
+  }
+
+  ul.level1 ul li {
+    display:none;
+  }
+  ul.level1 > .open ul li {
+    display:block;
+  }
+  ul.level2 ul.level3 li {
+    display:none;
+  }
+  ul.level2 > .open ul.level3 li {
+    display:block;
+  }
+
+  ul.level2 {
+    .ElcaHtmlSvgPatternSelect-section {
+      padding-left:35px;
+
+      .label-holder {
+        width: 470px;
+      }
+    }
+  }
+
+  ul.level3 {
+    .ElcaHtmlSvgPatternSelect-section {
+      padding-left:50px;
+
+      .label-holder {
+        width: 455px;
+      }
+    }
+  }
+}
+
+

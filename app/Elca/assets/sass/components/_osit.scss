@@ -1,0 +1,67 @@
+/**
+ * Osit
+ */
+#osit a {
+  color:#336699;
+}
+#osit li.active span {
+  font-style:italic;
+  font-weight:bold;
+}
+#osit a,
+#osit span {
+  position:relative;
+  display:block;
+  font-size:14px;
+  line-height:37px;
+  padding:0 20px;
+  font-weight:bold;
+  max-width:1259px;
+}
+#osit li {
+  border-bottom:1px solid #a3a3a3;
+  background:url(/img/elca/osit-blur.gif) 0 bottom no-repeat;
+}
+#osit li.active {
+  background:none;
+  border-bottom:none;
+}
+#osit li.active.library {
+  background:url(/img/elca/osit-library.png) 0 0 repeat-x;
+}
+#osit li.active span {
+  color:#333;
+  color:#f28502;
+}
+
+#osit li:hover {
+  background:#f28502;
+}
+#osit li.active:hover {
+  background-color:transparent;
+}
+
+#osit li span.osit-context {
+  display:inline;
+  color:#888;
+  font-size:10px;
+  font-weight:normal;
+  text-transform:uppercase;
+  padding-left:5px;
+}
+
+#osit a:hover {
+  text-decoration:none;
+  color:#fff;
+}
+#osit a:hover span.osit-context {
+  color:#fff;
+}
+
+#osit a .back-hint {
+  position:absolute;
+  top:0;
+  right:10px;
+  font-size:12px;
+  padding:0 5px;
+}

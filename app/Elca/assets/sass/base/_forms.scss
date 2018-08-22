@@ -1,0 +1,340 @@
+/* global form element styles
+ * --------------- */
+fieldset {
+  border:none;
+  padding:0 0 10px 0;
+  margin:0;
+}
+input.button,
+button {
+  background-color:$buttonBgColor;
+  border:none;
+  color:$buttonColor;
+  font-family:Arial,sans-serif;
+  font-weight:normal;
+  padding:2px 15px;
+  margin-top:10px;
+  cursor: pointer;
+
+  @include border-radius(5px);
+
+  min-width:100px;
+
+}
+input.button:hover,
+button:hover {
+  background-color:$buttonBgHoverColor;
+}
+
+input.button.link {
+  background-color:transparent;
+  color:$linkFuncColor;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+select {
+  background-color:#fff;
+  padding:2px 0;
+  height:24px;
+  line-height:24px;
+}
+input.read-only,
+textarea.read-only,
+select.read-only,
+option.read-only {
+  background-color:#fafafa !important;
+  color:#a2a2a2 !important;
+}
+div.button a {
+  padding:3px 6px;
+  font-size:12px;
+  font-weight:normal;
+  color:$buttonColor;
+  text-decoration:none;
+  background-color:$buttonBgColor;
+
+  @include border-radius(5px);
+}
+div.button a:hover {
+  background-color:#4678b8;
+}
+
+div.selectectBoxChooser{
+  margin-top: 3px;
+  float:left;
+  clear: both;
+  font-size: 12px;
+}
+div.selectectBoxChooser div.administration{
+  width:400px;
+  height: 180px;
+  font-size:14px;
+  font-style: italic;
+  clear: both;
+  color: $labelColor;
+}
+
+div.administration div.allDst ,div.allSrc {
+  width:39%;
+  float:left;
+  height: 150px;
+}
+
+div.administration div.middle {
+  width: 65px;
+  float: left;
+  text-align: center;
+  padding-top:65px;
+  margin: 0 10px 0;
+}
+div.administration button.rightButton , button.leftButton{
+  background-color: $buttonBgColor;
+  background-image: none;
+  color: white;
+  cursor: pointer;
+  display: block;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 21px;
+  margin: 0px auto 5px auto;
+  padding: 0px;
+  min-width: 45px;
+  font-style: normal;
+}
+
+div.administration select.srcSelectBox , select.dstSelectBox{
+  font-family:Arial, sans-serif;
+  font-size:14px;
+  color:#555;
+  border:1px solid $borderGrey;
+  width:100%;
+  height:100%;
+  margin-top:5px;
+}
+
+
+/* htmltools styles
+ *----------------*/
+.form-section {
+  padding:5px 0 10px 0;
+}
+.form-section .label-holder {
+  padding-bottom:5px;
+}
+.form-section label {
+  font-size:14px;
+  color:#888;
+}
+.form-section label .required {
+  color:#ff0000;
+  padding-left:1px;
+}
+.form-section label strong {
+  color:#333;
+  padding-left:6px;
+  font-size:11px;
+}
+.form-section label.help {
+  cursor:help;
+}
+.form-section input,
+.form-section select,
+.form-section textarea {
+  font-family:Arial, sans-serif;
+  font-size:14px;
+  color:#555;
+  border:1px solid #ddd;
+  width:100%;
+}
+.form-section input.changed,
+.form-section select.changed,
+.form-section textarea.changed,
+form.changed input.submit.submit-changes {
+  @include single-box-shadow(0px, 0px, 2px, 1px, #ff0000);
+}
+form.changed a.submit.submit-changes {
+  color:#ff0000 !important;
+}
+.form-section input.highlight,
+.form-section select.highlight,
+.form-section textarea.highlight {
+  @include single-box-shadow(0px, 0px, 2px, 1px, #e9892a);
+}
+
+.form-section textarea {
+  resize:vertical;
+}
+.form-section input {
+  height:20px;
+  padding-left:4px;
+  padding-right:4px;
+}
+.form-section .form-elt {
+  padding-right:10px;
+}
+.form-section .form-elt.HtmlSelectbox {
+  padding-right:0px;
+  height: 24px;
+}
+.form-section .form-elt.HtmlMultiSelectbox,
+  .form-section .form-elt.ElcaHtmlMultiSelectbox {
+  padding-right:0px;
+  height: auto;
+  position: relative;
+}
+
+.form-section.HtmlRadioGroup-section {
+  padding-bottom: 15px;
+}
+
+.HtmlCheckbox-section .label-holder {
+  float:left;
+}
+.HtmlCheckbox-section .form-elt.HtmlCheckbox {
+  float:left;
+  div {
+    input {
+      height:auto;
+      width:auto;
+    }
+    span {
+      font-size:14px;
+      color:#888;
+      left: 5px;
+      position: relative;
+      top: 2px;
+    }
+  }
+}
+
+.HtmlCheckbox-section:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.HtmlUploadInput-section .form-elt input {
+  font-size:12px;
+  height:auto;
+}
+.HtmlRadioGroup .group-container {
+  text-align:left;
+}
+.HtmlRadioGroup .HtmlRadiobox {
+  padding-right:10px;
+}
+.HtmlRadioGroup .HtmlRadiobox input {
+  height:auto;
+  width:auto;
+}
+.form-elt.ElcaHtmlSvgPatternSelect {
+  padding-right:0;
+
+  .elca-svg-pattern-select {
+    display:table;
+    width:100%;
+
+    .cell {
+      position:relative;
+      display:table-cell;
+      vertical-align:middle;
+    }
+
+    .cell span.image {
+      display:block;
+    }
+  }
+}
+
+.form-section.error input,
+.form-section.error .HtmlRadioGroup .group-container,
+.form-section.error select {
+  border:1px solid #ff0000;
+}
+.form-section textarea {
+  height:40px;
+  padding:4px;
+  max-width:100%;
+  min-width:100%;
+}
+.form-section.info-element {
+  padding:0px 0 0px 0;
+}
+.form-section.info-element .label-holder {
+  float:left;
+  font-size:14px;
+}
+.form-section.info-element .element-div  {
+  padding-left:6px;
+  float:left;
+  font-size:14px;
+  color:#333;
+}
+.form-section.info-element .element-div strong {
+  color:#333;
+  padding-left:3px;
+  font-size:11px;
+}
+.fieldset.buttons {
+  clear:both;
+  text-align:right;
+}
+.fieldset.buttons .button {
+  margin-left:20px;
+}
+
+.fieldset.column {
+  width: 400px;
+  float: left;
+  padding-right:25px;
+}
+.fieldset .legend {
+  font-size:14px;
+  font-style:italic;
+  color:#666;
+  padding-top:20px;
+  padding-bottom:3px;
+  border-bottom:1px solid #ddd;
+  margin:0 0 10px 0;
+}
+a.function-link {
+  color:#004f80;
+  padding-right:20px;
+}
+
+/* elca form elements
+ *-------------*/
+input.numeric-input {
+  text-align:right;
+}
+
+.form-section .form-elt.HtmlStaticText,
+.form-section .form-elt.HtmlText,
+.form-section .form-elt.HtmlNumericTextWithUnit,
+.form-section .form-elt.ElcaHtmlCurrencyText {
+  font-size:14px;
+  line-height:25px;
+}
+
+.form-section.inline {
+  padding:0 0 3px 0;
+
+  .label-holder {
+    float:left;
+    padding-right:25px;
+    padding-bottom: 0;
+    line-height: 24px;
+    min-width:50%;
+  }
+
+  .form-elt {
+    display:inline-block;
+  }
+}

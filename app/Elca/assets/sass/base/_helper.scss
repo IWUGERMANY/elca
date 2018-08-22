@@ -1,0 +1,55 @@
+/** helper
+ *------------------*/
+.clear {
+  clear:both;
+}
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.clearfix { display: inline-block; }
+* html .clearfix { height:1%; }
+.clearfix { display:block; }
+
+.hidden {
+  display:none;
+}
+
+body.hl-mi-tr {
+  span.mi-tr {
+    background-color: yellow;
+    color:darkgrey !important;
+    text-decoration: underline !important;
+    text-decoration: underline wavy red !important;
+    -webkit-text-decoration: underline wavy red !important;
+    -moz-text-decoration: underline wavy red !important;
+    display:inline !important;
+  }
+
+  input.button.mi-tr {
+    background-color: #004f80;
+    color:yellow !important;
+    text-decoration: underline !important;
+    text-decoration: underline wavy red !important;
+    -webkit-text-decoration: underline wavy red !important;
+    -moz-text-decoration: underline wavy red !important;
+  }
+
+  option.mi-tr, optgroup.mi-tr {
+    background-color:yellow;
+  }
+
+  select.mi-tr {
+    border: 1px solid yellow;
+  }
+  select.mi-tr.read-only {
+    border: 1px solid yellow;
+  }
+
+  a.icon.mi-tr, img.mi-tr {
+    border:1px solid yellow;
+  }
+}

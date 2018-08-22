@@ -1,0 +1,316 @@
+@import "colors";
+
+#content.import-assistant.project-import {
+
+  form.projectImportForm {
+    width: 825px;
+  }
+  form.projectImportPreviewForm {
+    width: 950px;
+  }
+
+  .import-group {
+    .form-section.importFile,
+    .form-section.processDbId {
+      float: left;
+      width: 400px;
+    }
+
+    .form-section.processDbId {
+      margin-left: 25px;
+    }
+  }
+
+  h4 {
+    font-size: 14px;
+    font-weight: normal;
+    color: #333;
+  }
+
+  .project-info {
+    .form-section {
+      float: left;
+      padding-right: 20px;
+      padding-bottom: 0;
+      padding-top: 5px;
+    }
+  }
+
+  .navigation {
+    margin-top: 20px;
+
+    a {
+      &.active {
+        font-weight: bold;
+        color: $textColor
+      }
+    }
+  }
+
+  .tab-item {
+    border: 1px solid #ccc;
+    padding: 20px;
+  }
+
+  .hl-row {
+    position: relative;
+    height: 22px;
+    margin-top: 20px;
+
+    h5 {
+      position: absolute;
+      top: 0;
+      border-bottom: none;
+      font-weight: normal;
+      font-style: italic;
+      color: $labelColor;
+    }
+  }
+
+  .component {
+    position: relative;
+    min-height: 24px;
+
+    .column {
+      display: block;
+      position: absolute;
+      top: 0;
+    }
+
+    .elca-process-config-selector {
+      position:static;
+      float:right;
+      padding-top:2px;
+      top: auto;
+      right: auto;
+      width: 270px;
+      line-height: 16px;
+    }
+  }
+
+  .component-group {
+    display: list-item;
+    clear: both;
+
+    background-color: $bgLightGrey;
+    border-bottom: 1px solid $borderLightGrey;
+
+    margin-bottom: 8px;
+    padding: 3px 0;
+    line-height: 24px;
+
+
+  }
+
+  .elements {
+    width: auto;
+  }
+
+  li.element {
+    clear: both;
+    margin-bottom: 30px;
+
+    h4 {
+      font-size: 14px;
+    }
+
+    .components {
+      margin-left: 20px;
+    }
+
+    .layer-components {
+      list-style-type: decimal;
+      list-style-position: outside;
+      list-style-image: none;
+    }
+
+    .HtmlStaticText {
+      font-size: 12px;
+      line-height: 16px;
+      color: #666;
+    }
+
+    .element-info {
+      .form-section {
+        float: left;
+        padding-right: 20px;
+        padding-bottom: 0;
+        padding-top: 5px;
+      }
+
+      .form-section.elementDinCodes {
+        width: 60px;
+
+        .HtmlSelectbox {
+          width: 50px;
+        }
+      }
+
+      .HtmlStaticText {
+        font-size: 14px;
+      }
+    }
+
+    .hl-row {
+      margin-left: 20px;
+    }
+    .hl-row h5 {
+      &.hl-material {
+        left: 10px;
+      }
+      &.hl-quantity {
+        left: 330px;
+        text-align: center;
+        width: 100px;
+      }
+      &.hl-ratio {
+        left: 475px;
+      }
+      &.hl-din-code {
+        right: 315px;
+      }
+      &.hl-process-config {
+        right: 203px;
+      }
+    }
+
+    .component {
+      .material {
+        left: 10px;
+        width: 300px;
+        overflow: hidden;
+        height: 24px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .quantity {
+        left: 330px;
+        text-align: right;
+        width: 100px;
+      }
+
+      .ratio {
+        left: 440px;
+        text-align: right;
+        width: 70px;
+      }
+
+      .din-code {
+        right: 300px;
+        width: 50px;
+        padding-top: 1px;
+      }
+    }
+  }
+
+  .fieldset.final-energy {
+    h4 {
+      font-size: 14px;
+      font-weight: normal;
+      margin-top: 20px;
+    }
+
+    .finalenergy-info {
+      .form-section {
+        float: left;
+        padding-right: 20px;
+        padding-bottom: 0;
+        padding-top: 5px;
+      }
+    }
+
+    .hl-row {
+      margin-top: 5px;
+    }
+    .hl-row h5 {
+      &.hl-heating, &.hl-water, &.hl-lighting, &.hl-ventilation, &.hl-cooling, &.hl-quantity {
+        text-align: center;
+        width: 65px;
+      }
+
+      &.hl-material {
+        left: 10px;
+      }
+      &.hl-quantity {
+        left: 250px;
+      }
+      &.hl-enev-ratio {
+        left: 465px;
+      }
+      &.hl-heating {
+        left: 250px;
+      }
+      &.hl-water {
+        left: 325px;
+      }
+      &.hl-lighting {
+        left: 390px;
+      }
+      &.hl-ventilation {
+        left: 455px;
+      }
+      &.hl-cooling {
+        left: 520px;
+      }
+      &.hl-process-config {
+        right: 203px;
+      }
+    }
+
+    .component {
+      .heating, .water, .lighting, .ventilation, .cooling, .quantity {
+        text-align: center;
+        width: 65px;
+      }
+
+      .material {
+        left: 10px;
+        width: 300px;
+      }
+
+      .heating {
+        left: 250px;
+      }
+
+      .water {
+        left: 325px;
+      }
+
+      .lighting {
+        left: 390px;
+      }
+
+      .ventilation {
+        left: 455px;
+      }
+
+      .cooling {
+        left: 520px;
+      }
+
+      .quantity {
+        left: 250px;
+        text-align: center;
+      }
+
+      .enev-ratio {
+        left: 455px;
+        width: 105px;
+        text-align: center;
+      }
+    }
+  }
+
+  li.warning {
+    background-color: $bgLightYellow;
+
+    .elca-process-config-selector a {
+      color: #ff0000;
+    }
+
+    .component-group {
+      background-color: $bgLightYellow;
+    }
+  }
+}

@@ -1,0 +1,94 @@
+/** common **/
+/** buttons **/
+/** borders **/
+#content.soda4lca-databases { width: 920px; }
+
+#content.soda4lca-databases .soda4lca-database-sheet.is-active .elca-sheet-content { background-color: #FDFFD9; }
+
+#content.soda4lca-databases .soda4lca-database-sheet.is-active:hover .function-panel, #content.soda4lca-databases .soda4lca-database-sheet.is-active:hover .elca-sheet-content { background-color: #FAFFA8; }
+
+#content.soda4lca-databases .button.add { text-align: right; padding-bottom: 20px; }
+
+#content.soda4lca-database p.notice { font-weight: bold; font-size: 16px; }
+
+#content.soda4lca-database form .fieldset.data { width: 400px; padding-right: 80px; float: left; }
+
+#content.soda4lca-database .form-elt input.read-only { border: none; color: #666 !important; }
+
+#content.soda4lca-database .fieldset.info { padding-top: 30px; }
+
+#content.soda4lca-database .fieldset.info .form-section { padding-top: 2px; padding-bottom: 2px; display: block; }
+
+#content.soda4lca-database .fieldset.info .form-section:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+
+#content.soda4lca-database .fieldset.info .label-holder { float: left; width: 150px; padding: 0; }
+
+#content.soda4lca-database .fieldset.info .form-elt { float: left; width: 280px; }
+
+#content.soda4lca-database .fieldset.info .form-elt input { display: inline-block; }
+
+#content.soda4lca-database .fieldset.info .numberOfProjects .form-elt { position: relative; }
+#content.soda4lca-database .fieldset.info .numberOfProjects .projects-using-this-db { position: absolute; top: 20px; left: 0; min-width: 150px; padding: 10px 15px; background-color: #fefefe; border: 1px solid #888; z-index: 99; border-radius: 6px; display: none; }
+#content.soda4lca-database .fieldset.info .numberOfProjects .projects-using-this-db h4 { font-size: 12px; font-weight: normal; padding-bottom: 5px; }
+#content.soda4lca-database .fieldset.info .numberOfProjects .projects-using-this-db ol { list-style-type: decimal; list-style-position: inside; }
+#content.soda4lca-database .fieldset.info .numberOfProjects .projects-using-this-db li { background-color: transparent; border: none; line-height: 16px; margin: 0; padding: 0; white-space: nowrap; color: #555; }
+#content.soda4lca-database .fieldset.info .numberOfProjects .projects-using-this-db a { color: #336699; }
+#content.soda4lca-database .fieldset.info .numberOfProjects .projects-using-this-db:hover, #content.soda4lca-database .fieldset.info .numberOfProjects:hover .projects-using-this-db { display: block; }
+
+#content.soda4lca-database h2 { margin-top: 60px; border-bottom: 1px solid #ddd; }
+
+#content.soda4lca-database form .fieldset.filter { margin-top: 10px; }
+
+#content.soda4lca-database form .fieldset.filter .form-section.status { width: 340px; }
+
+#content.soda4lca-database form .fieldset.filter .form-section.status .label-holder { width: 100px; float: left; }
+
+#content.soda4lca-database form .fieldset.filter .form-section.status .form-elt { width: 240px; float: left; }
+
+#content.soda4lca-database table .status { text-align: center; min-width: 95px; }
+
+#content.soda4lca-database table .name { text-align: left; min-width: 600px; padding-left: 20px; }
+
+#content.soda4lca-database table.has-latest-version-column .name { min-width: 520px; }
+
+#content.soda4lca-database table .name a { color: inherit; }
+
+#content.soda4lca-database table td.version { text-align: center; width: 80px; }
+
+#content.soda4lca-database table td.latest-version { text-align: center; width: 80px; }
+
+#content.soda4lca-database table .modules { text-align: right; width: 150px; }
+
+#content.soda4lca-database table tr:hover td { background-color: #f5f5f5; }
+
+#content.soda4lca-database table tr td.status, #content.soda4lca-database table tr:hover td.status { background-color: #77DD77; }
+
+#content.soda4lca-database table tr.skipped td { background-color: #FF6767; color: #fff; }
+
+#content.soda4lca-database table tr.skipped:hover td { background-color: #FFa7a7; }
+
+#content.soda4lca-database table tr.unassigned td { background-color: #FDFD96; }
+
+#content.soda4lca-database table tr.unassigned:hover td { background-color: #FFFFC6; }
+
+#content.soda4lca-database table tr.needs-update td { background-color: #ff9c00; }
+
+#content.soda4lca-database table tr.needs-update:hover td { background-color: #ffd28b; }
+
+#content.soda4lca-database table tr.not-ok td { cursor: pointer; }
+
+#content.soda4lca-database table td.status div.not-ok { position: relative; }
+
+#content.soda4lca-database table td.status .details-info { display: none; position: absolute; top: -100%; left: -240px; width: 200px; padding: 10px 15px; background-color: #fefefe; border: 1px solid #888; z-index: 99; border-radius: 6px; -moz-box-shadow: -3px 6px 5px #888; -webkit-box-shadow: -3px 6px 5px #888; box-shadow: -3px 6px 5px #888; color: #333; }
+
+#content.soda4lca-database table tr.not-ok:hover .details-info { display: block; }
+
+#processes { position: relative; }
+
+#processes a#exportLink { position: absolute; top: 22px; left: 120px; color: #004f80; }
+
+#processes a#checkVersions { position: absolute; top: 22px; left: 220px; color: #004f80; }
+
+#processes a#updateEPDType { position: absolute; top: 22px; left: 520px; color: #004f80; }
+
+#processes a#updateGeographicalRepresentativeness { position: absolute; top: 22px; left: 720px; color: #004f80; }

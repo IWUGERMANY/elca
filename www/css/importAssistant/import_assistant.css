@@ -1,0 +1,80 @@
+/** common **/
+/** buttons **/
+/** borders **/
+#content.admin-mapping-edit fieldset { width: 500px; }
+#content.admin-mapping-edit .form-section.mode .HtmlRadiobox { float: left; }
+#content.admin-mapping-edit .form-section.processConfigId { float: left; width: 420px; height: 47px; }
+#content.admin-mapping-edit .form-section.siblingRatio { float: left; width: 80px; height: 47px; }
+
+#content.admin-mappings .form-wrapper { width: 300px; float: left; }
+#content.admin-mappings .buttons { margin-bottom: 50px; }
+#content.admin-mappings .buttons .button { margin-top: 28px; float: right; margin-left: 20px; }
+#content.admin-mappings table.dataTable th.actions { width: 110px; }
+#content.admin-mappings table.dataTable th.epd-sub-type { width: 140px; }
+#content.admin-mappings table.dataTable th.process-dbs { width: 140px; }
+#content.admin-mappings table.dataTable th.mapping-mode { width: 40px; }
+#content.admin-mappings table.dataTable th.material-name { width: 350px; }
+
+/** common **/
+/** buttons **/
+/** borders **/
+#content.import-assistant.project-import form.projectImportForm { width: 825px; }
+#content.import-assistant.project-import form.projectImportPreviewForm { width: 950px; }
+#content.import-assistant.project-import .import-group .form-section.importFile, #content.import-assistant.project-import .import-group .form-section.processDbId { float: left; width: 400px; }
+#content.import-assistant.project-import .import-group .form-section.processDbId { margin-left: 25px; }
+#content.import-assistant.project-import h4 { font-size: 14px; font-weight: normal; color: #333; }
+#content.import-assistant.project-import .project-info .form-section { float: left; padding-right: 20px; padding-bottom: 0; padding-top: 5px; }
+#content.import-assistant.project-import .navigation { margin-top: 20px; }
+#content.import-assistant.project-import .navigation a.active { font-weight: bold; color: #666; }
+#content.import-assistant.project-import .tab-item { border: 1px solid #ccc; padding: 20px; }
+#content.import-assistant.project-import .hl-row { position: relative; height: 22px; margin-top: 20px; }
+#content.import-assistant.project-import .hl-row h5 { position: absolute; top: 0; border-bottom: none; font-weight: normal; font-style: italic; color: #888; }
+#content.import-assistant.project-import .component { position: relative; min-height: 24px; }
+#content.import-assistant.project-import .component .column { display: block; position: absolute; top: 0; }
+#content.import-assistant.project-import .component .elca-process-config-selector { position: static; float: right; padding-top: 2px; top: auto; right: auto; width: 270px; line-height: 16px; }
+#content.import-assistant.project-import .component-group { display: list-item; clear: both; background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; margin-bottom: 8px; padding: 3px 0; line-height: 24px; }
+#content.import-assistant.project-import .elements { width: auto; }
+#content.import-assistant.project-import li.element { clear: both; margin-bottom: 30px; }
+#content.import-assistant.project-import li.element h4 { font-size: 14px; }
+#content.import-assistant.project-import li.element .components { margin-left: 20px; }
+#content.import-assistant.project-import li.element .layer-components { list-style-type: decimal; list-style-position: outside; list-style-image: none; }
+#content.import-assistant.project-import li.element .HtmlStaticText { font-size: 12px; line-height: 16px; color: #666; }
+#content.import-assistant.project-import li.element .element-info .form-section { float: left; padding-right: 20px; padding-bottom: 0; padding-top: 5px; }
+#content.import-assistant.project-import li.element .element-info .form-section.elementDinCodes { width: 60px; }
+#content.import-assistant.project-import li.element .element-info .form-section.elementDinCodes .HtmlSelectbox { width: 50px; }
+#content.import-assistant.project-import li.element .element-info .HtmlStaticText { font-size: 14px; }
+#content.import-assistant.project-import li.element .hl-row { margin-left: 20px; }
+#content.import-assistant.project-import li.element .hl-row h5.hl-material { left: 10px; }
+#content.import-assistant.project-import li.element .hl-row h5.hl-quantity { left: 330px; text-align: center; width: 100px; }
+#content.import-assistant.project-import li.element .hl-row h5.hl-ratio { left: 475px; }
+#content.import-assistant.project-import li.element .hl-row h5.hl-din-code { right: 315px; }
+#content.import-assistant.project-import li.element .hl-row h5.hl-process-config { right: 203px; }
+#content.import-assistant.project-import li.element .component .material { left: 10px; width: 300px; overflow: hidden; height: 24px; text-overflow: ellipsis; white-space: nowrap; }
+#content.import-assistant.project-import li.element .component .quantity { left: 330px; text-align: right; width: 100px; }
+#content.import-assistant.project-import li.element .component .ratio { left: 440px; text-align: right; width: 70px; }
+#content.import-assistant.project-import li.element .component .din-code { right: 300px; width: 50px; padding-top: 1px; }
+#content.import-assistant.project-import .fieldset.final-energy h4 { font-size: 14px; font-weight: normal; margin-top: 20px; }
+#content.import-assistant.project-import .fieldset.final-energy .finalenergy-info .form-section { float: left; padding-right: 20px; padding-bottom: 0; padding-top: 5px; }
+#content.import-assistant.project-import .fieldset.final-energy .hl-row { margin-top: 5px; }
+#content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-heating, #content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-water, #content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-lighting, #content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-ventilation, #content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-cooling, #content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-quantity { text-align: center; width: 65px; }
+#content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-material { left: 10px; }
+#content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-quantity { left: 250px; }
+#content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-enev-ratio { left: 465px; }
+#content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-heating { left: 250px; }
+#content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-water { left: 325px; }
+#content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-lighting { left: 390px; }
+#content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-ventilation { left: 455px; }
+#content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-cooling { left: 520px; }
+#content.import-assistant.project-import .fieldset.final-energy .hl-row h5.hl-process-config { right: 203px; }
+#content.import-assistant.project-import .fieldset.final-energy .component .heating, #content.import-assistant.project-import .fieldset.final-energy .component .water, #content.import-assistant.project-import .fieldset.final-energy .component .lighting, #content.import-assistant.project-import .fieldset.final-energy .component .ventilation, #content.import-assistant.project-import .fieldset.final-energy .component .cooling, #content.import-assistant.project-import .fieldset.final-energy .component .quantity { text-align: center; width: 65px; }
+#content.import-assistant.project-import .fieldset.final-energy .component .material { left: 10px; width: 300px; }
+#content.import-assistant.project-import .fieldset.final-energy .component .heating { left: 250px; }
+#content.import-assistant.project-import .fieldset.final-energy .component .water { left: 325px; }
+#content.import-assistant.project-import .fieldset.final-energy .component .lighting { left: 390px; }
+#content.import-assistant.project-import .fieldset.final-energy .component .ventilation { left: 455px; }
+#content.import-assistant.project-import .fieldset.final-energy .component .cooling { left: 520px; }
+#content.import-assistant.project-import .fieldset.final-energy .component .quantity { left: 250px; text-align: center; }
+#content.import-assistant.project-import .fieldset.final-energy .component .enev-ratio { left: 455px; width: 105px; text-align: center; }
+#content.import-assistant.project-import li.warning { background-color: #FDFFD9; }
+#content.import-assistant.project-import li.warning .elca-process-config-selector a { color: #ff0000; }
+#content.import-assistant.project-import li.warning .component-group { background-color: #FDFFD9; }

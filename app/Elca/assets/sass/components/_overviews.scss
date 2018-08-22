@@ -1,0 +1,33 @@
+/** Overview
+ *------------------*/
+#content.overview {
+
+  h3.section {
+    font-size: 12px;
+    font-weight: normal;
+    font-style: italic;
+    line-height: 18px;
+    border-bottom: 1px solid $borderGrey;
+    margin: 40px 0 10px 0;
+  }
+
+  .last-modified {
+    ul {
+      list-style-type: square;
+      margin-bottom: 25px;
+
+      li {
+        margin-left: 20px;
+        margin-bottom: 3px;
+      }
+      li a {
+        color: $linkFuncColor;
+      }
+
+      &.need-configuration li a {
+        color: #f28502;
+      }
+    }
+  }
+}
+

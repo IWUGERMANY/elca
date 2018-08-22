@@ -1,0 +1,104 @@
+#content .elca-admin-benchmark-version {
+  width:1230px;
+
+  h3 {
+    font-weight:normal;
+    border-bottom: 1px solid #ddd;
+    color: #666;
+    font-size: 14px;
+    font-style: italic;
+    margin: 0 0 10px;
+    padding-bottom: 3px;
+    padding-top: 20px;
+
+    a {
+      color: $linkColor;
+    }
+  }
+
+  a.clear-fields {
+    display:inline-block;
+    padding-left:20px;
+  }
+
+  .hl-row {
+    margin-top:0px;
+    margin-left:135px;
+  }
+  h5 {
+    font-weight:normal;
+    font-style:normal;
+    font-size:14px;
+    color:$labelColor;
+    border:none;
+    text-align:center;
+    width:72px;
+  }
+
+  .form-section {
+    clear: both;
+  }
+
+  .label-holder {
+    width:135px;
+    float:left;
+  }
+  .form-elt input {
+    width:62px;
+    font-size:12px;
+  }
+
+  h5, .form-elt input {
+    float:left;
+    margin-right:5px;
+    text-align:center;
+  }
+
+  .HtmlRadiobox input {
+    width:auto;
+  }
+
+  .reference-model {
+    .form-section {
+      padding-bottom:0;
+      padding-top:0;
+    }
+
+    .hl-row {
+      margin-top:15px;
+
+      h5 {
+        width:79px;
+
+        span {
+          display: block;
+          line-height: 18px;
+        }
+      }
+
+      .indicator-unit {
+        font-size:11px;
+      }
+    }
+
+    .constr-values {
+
+      input {
+        margin-top:1px;
+        width:69px;
+      }
+    }
+
+    .form-section.ElcaHtmlProcessConfigSelectorLink-section a {
+      color:$linkFuncColor;
+    }
+    .form-section.ElcaHtmlProcessConfigSelectorLink-section .changed a {
+      color:#ff0000;
+    }
+
+  }
+
+  .buttons {
+    width:920px;
+  }
+}

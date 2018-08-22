@@ -1,0 +1,96 @@
+/* global layout
+ * --------------- */
+.layout-width {
+  position:relative;
+  min-width:1260px;
+  max-width:1600px;
+}
+
+#header {
+  height:39px;
+}
+#bmub {
+  position:absolute;
+  top:2px;
+  left:10px;
+  z-index:1;
+}
+
+#inner,
+.main-content {
+  position:relative;
+  clear:both;
+}
+#outer {
+  min-width:1260px;
+}
+
+#navLeft {
+  position:absolute;
+  top:0;
+  left:0;
+  width:299px;
+  border-right:2px solid #a3a3a3;
+  padding:10px 0 20px 0;
+}
+#navLeft,
+#main {
+  min-height:600px;
+}
+.projects #navLeft,
+.projects #main {
+  min-height:1191px;
+}
+#main {
+  position:relative;
+  margin-left:299px;
+  border-left:2px solid #a3a3a3;
+}
+#main.full {
+  margin-left:0;
+}
+
+#content {
+  padding:20px 20px;
+  max-width:1330px;
+  min-width:920px;
+}
+
+#loading {
+  position:fixed;
+  top:45%;
+  left:45%;
+  background:url(/img/elca/ajax-loader.gif) center center no-repeat #fff;
+
+  width:64px;
+  height:64px;
+  text-align:center;
+  vertical-align:middle;
+  display:none;
+
+  border:4px solid $borderLightGrey;
+
+  @include border-radius(10px);
+  @include single-box-shadow(0px, 0px, 10px, 0, #ccc);
+}
+
+body.loading #loading {
+  display:block;
+}
+
+#progress {
+  position:fixed;
+  top:115px;
+  left:45%;
+  background-color:#f9f9f9;
+
+  min-width:100px;
+  padding:3px 20px;
+  text-align:center;
+  display:none;
+  border:1px solid #888;
+
+  font-size:12px;
+  line-height:18px;
+  color:#333;
+}

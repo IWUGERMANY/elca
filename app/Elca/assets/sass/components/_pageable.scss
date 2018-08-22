@@ -1,0 +1,15 @@
+/** pageable
+ *------------------*/
+#content ul.pageable li.next-page  {
+  padding:20px 8px;
+  text-align:center;
+}
+
+#content ul.pageable li.next-page a {
+  display:inline-block;
+  padding-left:40px;
+  line-height:32px;
+}
+#content ul.pageable li.next-page a.loading {
+  background: transparent url(/img/elca/loader/indicator_medium.gif) left center no-repeat;
+}

@@ -1,0 +1,94 @@
+#elementForm.costs .column { width: 450px; }
+#elementForm.costs .quantity, #elementForm.costs .lifeTime, #elementForm.costs .calculatedQuantity, #elementForm.costs .elementQuantity, #elementForm.costs .totalQuantity, #elementForm.costs .prodCostsPerUnit, #elementForm.costs .prodCostsTotal { float: left; padding-right: 20px; width: 125px; }
+#elementForm.costs .totalQuantity, #elementForm.costs .lifeTime { padding-right: 0; }
+#elementForm.costs .calculatedQuantity { padding-left: 145px; }
+#elementForm.costs .own-quantity-note { font-style: italic; }
+
+.element-section.element-costs .hl-row h5 { position: absolute; color: #888; font-style: italic; font-weight: normal; border: none; }
+.element-section.element-costs .hl-row h5.hl-is-active { right: 330px; }
+.element-section.element-costs .hl-row h5.hl-life-time { right: 265px; }
+.element-section.element-costs .hl-row h5.hl-is-extant { right: 190px; }
+.element-section.element-costs .hl-row h5.hl-costs { right: 45px; }
+.element-section.element-costs .hl-row h5.hl-costs-total { right: 45px; }
+.element-section.element-costs .hl-row h5.hl-element { left: 0; }
+.element-section.element-costs .hl-row h5.hl-quantity { right: 522px; }
+.element-section.element-costs .hl-row h5.hl-dinCode { right: 495px; }
+.element-section.element-costs .hl-row h5.hl-layer-area { right: 522px; }
+.element-section.element-costs#section-composite .hl-row h5.hl-quantity { right: 575px; }
+.element-section.element-costs#section-composite .hl-row h5.hl-is-extant { right: 285px; cursor: help; }
+.element-section.element-costs#section-composite .hl-row h5.hl-costs-calculated { right: 390px; }
+.element-section.element-costs#section-composite .hl-row h5.hl-costs { right: 250px; }
+.element-section.element-costs#section-composite .hl-row h5.hl-dinCode { right: 505px; }
+.element-section.element-costs#section-composite .hl-row h5.hl-replacements { right: 100px; }
+.element-section.element-costs .element-component { position: relative; }
+.element-section.element-costs .element-component .costs, .element-section.element-costs .element-component .prodCosts, .element-section.element-costs .element-component .layer-area { position: absolute; padding: 0; top: 0; background-color: inherit; }
+.element-section.element-costs .element-component .layer-position { left: 5px; width: 20px; }
+.element-section.element-costs .element-component .process-config-selector { left: 30px; width: 400px; max-width: 32%; max-height: 20px; overflow: hidden; }
+.element-section.element-costs .element-component .quantity { right: 523px; width: 80px; text-align: right; }
+.element-section.element-costs .element-component .layer-area { right: 523px; width: 80px; text-align: right; }
+.element-section.element-costs .element-component .costs { right: 40px; width: 100px; }
+.element-section.element-costs .element-component .prodCosts { right: 50px; width: 100px; text-align: right; }
+.element-section.element-costs .element-component .lifeTime { right: 255px; width: 30px; }
+.element-section.element-costs .element-component .isExtant { right: 190px; width: 40px; text-align: center; }
+.element-section.element-costs .element-component .calcLca { right: 340px; width: 40px; text-align: center; }
+.element-section.element-costs.is-extant-building .element-component .lifeTime { right: 255px; }
+.element-section.element-costs .element .costs, .element-section.element-costs .element .prodCosts, .element-section.element-costs .element .prodCosts-refUnit, .element-section.element-costs .element .costs-total, .element-section.element-costs .element .costs-refUnit, .element-section.element-costs .element .costs-refUnit2, .element-section.element-costs .element .replacements { position: absolute; padding: 0; top: 0; background-color: inherit; }
+.element-section.element-costs .element .element-selector { left: 28px; width: 320px; max-height: 20px; overflow: hidden; }
+.element-section.element-costs .element .quantity { right: 585px; width: 60px; text-align: right; }
+.element-section.element-costs .element .surface { right: 655px; width: auto; text-align: right; padding-left: 10px; }
+.element-section.element-costs .element .surface .HtmlStaticText { font-size: 12px; padding-right: 0; }
+.element-section.element-costs .element .refUnit { right: 550px; width: 40px; text-align: left; }
+.element-section.element-costs .element .dinCode { right: 510px; }
+.element-section.element-costs .element .isExtant { right: 285px; width: 40px; text-align: center; }
+.element-section.element-costs .element .prodCosts { right: 400px; width: 100px; text-align: right; }
+.element-section.element-costs .element .prodCosts-refUnit { right: 350px; text-align: left; width: 50px; }
+.element-section.element-costs .element .costs { right: 260px; width: 80px; text-align: right; }
+.element-section.element-costs .element .costs-refUnit { right: 200px; text-align: left; width: 50px; }
+.element-section.element-costs .element .costs-refUnit2 { right: 84px; text-align: left; width: 50px; }
+.element-section.element-costs .element .replacements { right: 125px; width: 60px; }
+.element-section.element-costs .element a.edit-link { right: 10px; }
+.element-section.element-costs .element .prodCosts.shade, .element-section.element-costs .element .prodCosts-refUnit.shade { color: #aaa; text-decoration: line-through; }
+.element-section.element-costs #element-composite-non-opaque .element .element-selector { left: 28px; width: 300px; max-height: 20px; overflow: hidden; }
+.element-section.element-costs .costs-table.composite .scroll-wrapper table tbody tr td { height: 24px; }
+.element-section.element-costs .costs-table.composite .scroll-wrapper table tbody tr th.fixed.process_config_name { color: #000000; overflow: hidden; text-overflow: ellipsis; }
+.element-section.element-costs .costs-table.composite .scroll-wrapper table tbody tr.lastRow td, .element-section.element-costs .costs-table.composite .scroll-wrapper table tbody tr.lastRow th { /**              border-top:2px solid #999; **/ }
+.element-section.element-costs .costs-table.composite .scroll-wrapper.scroll { margin-left: 360px; }
+.element-section.element-costs .costs-table.composite .scroll-wrapper.scroll table thead tr th.fixed.total { left: 251px; }
+.element-section.element-costs .costs-table.composite .scroll-wrapper.scroll table thead tr.legendRow th { top: 30px; }
+.element-section.element-costs .costs-table.composite .scroll-wrapper.scroll table thead tr.legendRow th.lastColumn { left: 360px; }
+.element-section.element-costs .costs-table.composite .scroll-wrapper.scroll table tbody tr th.fixed.total { left: 251px; }
+.element-section.element-costs .costs-table.composite .scroll-wrapper.scroll table tbody tr th.fixed.process_config_name { color: #000000; }
+.element-section.element-costs .costs-table { padding-bottom: 15px; }
+.element-section.element-costs .costs-table tr.lastRow td, .element-section.element-costs .costs-table tr.lastRow th { border-top: 1px solid #999; color: #000; }
+.element-section.element-costs .costs-table .scroll-wrapper { padding-left: 10px; }
+.element-section.element-costs .costs-table .scroll-wrapper table { table-layout: fixed; width: auto; margin-left: 0; margin-right: 0; padding-top: 15px; }
+.element-section.element-costs .costs-table .scroll-wrapper table th, .element-section.element-costs .costs-table .scroll-wrapper table td { text-align: center; white-space: nowrap; }
+.element-section.element-costs .costs-table .scroll-wrapper table tr th.fixed { border-right: 1px solid #dddddd; }
+.element-section.element-costs .costs-table .scroll-wrapper table tr th.fixed.years { width: 60px; text-align: left; }
+.element-section.element-costs .costs-table .scroll-wrapper table tr th.fixed.process_config_name { width: 230px; text-align: left; }
+.element-section.element-costs .costs-table .scroll-wrapper table tr th.fixed.total { width: 100px; }
+.element-section.element-costs .costs-table .scroll-wrapper table thead tr th { color: #888; }
+.element-section.element-costs .costs-table .scroll-wrapper table tbody tr th { border-bottom: 1px solid #dddddd; }
+.element-section.element-costs .costs-table .scroll-wrapper table tbody tr th.fixed.total { width: 100px; color: #000000; }
+.element-section.element-costs .costs-table .scroll-wrapper table tbody tr.lastRow th { border-bottom: none; border-top: 1px solid #999; }
+.element-section.element-costs .costs-table .scroll-wrapper.scroll { overflow: hidden; overflow-x: scroll; overflow-y: visible; margin-left: 190px; padding-bottom: 10px; padding-left: 0px; }
+.element-section.element-costs .costs-table .scroll-wrapper.scroll table { margin-top: 15px; padding-top: 28px; }
+.element-section.element-costs .costs-table .scroll-wrapper.scroll table thead tr.legendRow th { top: 30px; }
+.element-section.element-costs .costs-table .scroll-wrapper.scroll table thead tr.legendRow th.lastColumn { position: absolute; left: 189px; border-left: none; }
+.element-section.element-costs .costs-table .scroll-wrapper.scroll table thead tr th.fixed { position: absolute; display: block; height: 24px; }
+.element-section.element-costs .costs-table .scroll-wrapper.scroll table thead tr th.fixed.years { left: 12px; width: 60px; }
+.element-section.element-costs .costs-table .scroll-wrapper.scroll table thead tr th.fixed.process_config_name { left: 12px; width: 230px; }
+.element-section.element-costs .costs-table .scroll-wrapper.scroll table thead tr th.fixed.total { left: 81px; width: 100px; }
+.element-section.element-costs .costs-table .scroll-wrapper.scroll table tbody tr td { width: 100px; text-align: center; }
+.element-section.element-costs .costs-table .scroll-wrapper.scroll table tbody tr.lastRow th { border-bottom: 1px solid #dddddd; }
+.element-section.element-costs .costs-table .scroll-wrapper.scroll table tbody th.fixed { position: absolute; left: 12px; }
+.element-section.element-costs .costs-table .scroll-wrapper.scroll table tbody th.fixed.years { left: 12px; }
+.element-section.element-costs .costs-table .scroll-wrapper.scroll table tbody th.fixed.total { left: 81px; }
+.element-section.element-costs .costs-table .no-data-available { padding-top: 40px; padding-left: 10px; }
+
+.tab-lcc.elements .element .element-selector { left: 10px; }
+
+#costs-table-total table { margin: 0; padding: 0; }
+#costs-table-total table .legendRow th { top: 65px; }
+#costs-table-total .scroll table { padding-top: 42px; }
+#costs-table-total .no-data-available { padding-left: 0; font-size: 14px; }

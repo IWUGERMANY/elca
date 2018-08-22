@@ -1,0 +1,132 @@
+$bgLightGrey:#f9f9f9;
+/** borders **/
+$borderLightGrey: #e5e5e5;
+$borderGrey: #ddd;
+$labelColor: #888;
+
+#content.nawoh-water {
+  width: 700px;
+  min-width: inherit;
+
+  fieldset {
+    position:relative;
+  }
+  h5.column {
+    position:absolute;
+    top:10px;
+    font-size:12px;
+    border:none;
+
+    font-weight: normal;
+    font-style: italic;
+    padding-top: 10px;
+  }
+
+  h5.column.inputs {
+    left:340px;
+  }
+
+  h5.column.version {
+    right:130px;
+    width: 120px;
+    line-height: 15px;
+    top: 0;
+    text-align: center;
+  }
+  h5.column.result {
+    right:5px;
+  }
+
+  .buttons {
+    clear: both;
+    padding-left: 30px;
+    text-align: right;
+  }
+
+  .form-section {
+    padding: 5px 15px;
+    display: block;
+    position: relative;
+
+    background-color: $bgLightGrey;
+    border-bottom:1px solid $borderLightGrey;
+    margin-bottom:3px;
+  }
+  .form-section:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+  }
+
+  .ElcaHtmlNumericText {
+    font-size: 14px;
+    text-align: right;
+    width: 70px;
+  }
+  .label-holder {
+    float: left;
+    width: 320px;
+    padding: 0;
+    line-height:24px;
+  }
+
+  .form-elt {
+    float: left;
+    input.numeric-input {
+      display: inline-block;
+      width: 70px;
+    }
+    input.read-only {
+      border: none;
+      color: #666 !important;
+    }
+
+    span.column {
+      display:inline-block;
+      position:absolute;
+      top:5px;
+      font-size: 14px;
+      text-align:right;
+      line-height: 24px;
+    }
+
+    span.product {
+      right:260px;
+      width:20px;
+      color: $labelColor;
+    }
+    span.version_base {
+      right: 185px;
+      width:70px;
+    }
+
+    span.result {
+      right:35px;
+      width:70px;
+      color: #000;
+    }
+    span.equals {
+      right:135px;
+      width:20px;
+      color: $labelColor;
+    }
+  }
+
+  .form-section.HtmlRadioGroup-section {
+    margin-bottom:15px;
+
+    .HtmlRadiobox {
+      float:left;
+    }
+  }
+
+  .form-section.tub-input.hidden {
+    display:none;
+  }
+
+  .form-section.last {
+    margin-bottom: 15px;
+  }
+ }

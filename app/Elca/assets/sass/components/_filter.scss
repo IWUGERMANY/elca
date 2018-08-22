@@ -1,0 +1,86 @@
+/** Filter tags
+ *----------------------*/
+#content ul.filter-tags h5 {
+  font-weight:normal;
+  font-style:normal;
+}
+#content ul.filter-tags li {
+  float:left;
+  width:auto;
+  line-height:16px;
+  background-color:#4C83A6;
+  color:#fff;
+  padding:2px 6px;
+  margin:2px;
+  border-radius:4px;
+
+  .remove-filter {
+    display: inline-block;
+    color:#fff;
+    border-left: 1px solid #fff;
+    padding-left: 5px;
+    margin-left: 3px;
+  }
+}
+#content ul.filter-tags li.label {
+  background-color:transparent;
+  color:#888;
+  padding-left:0;
+  font-style:italic;
+}
+
+#content ul.filter-tags li.constrCatalogId { background-color:#F28502; }
+#content ul.filter-tags li.constrDesignId  { background-color:#e25502; }
+#content ul.filter-tags li.processDbId  { background-color: #5c731d; }
+#content ul.filter-tags li.scope   { background-color:#72CC76; }
+#content ul.filter-tags li.keyword { background-color:#4C83A6; }
+
+/* elements filter form
+ *-------------*/
+#content.elca-filter-sheets .sheets-filter .legend {
+  margin-top:0;
+  padding-top:0;
+}
+
+#content.elca-filter-sheets .sheets-filter {
+  position:relative;
+}
+#content.elca-filter-sheets .sheets-filter .form-section.scope,
+#content.elca-filter-sheets .sheets-filter .form-section.search,
+#content.elca-filter-sheets .sheets-filter .form-section.processDbId,
+#content.elca-filter-sheets .sheets-filter .form-section.constrCatalogId,
+#content.elca-filter-sheets .sheets-filter .form-section.constrDesignId {
+  float:left;
+  width:150px;
+  padding-right:20px;
+}
+#content.elca-filter-sheets .sheets-filter .form-section.search {
+  width:200px;
+}
+#content.elca-filter-sheets .sheets-filter .form-section.processDbId {
+  width:200px;
+}
+#content.elca-filter-sheets .sheets-filter .form-section.search .form-elt .hint {
+  font-size:10px;
+  font-style:italic;
+  color:#888;
+}
+#content.elca-filter-sheets .sheets-filter .form-section.scope {
+  width:320px;
+}
+#content.elca-filter-sheets .sheets-filter .form-section.scope .HtmlRadiobox {
+  float:left;
+}
+
+#content.elca-filter-sheets .sheets-filter .submit.button {
+  position:absolute;
+  top:0;
+  left:120px;
+  margin:0;
+  background-color:transparent;
+  color:#336699;
+}
+#content.elca-filter-sheets .sheets-filter .submit.button:hover {
+  text-decoration:underline;
+}
+

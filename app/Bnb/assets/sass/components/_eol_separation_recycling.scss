@@ -1,0 +1,167 @@
+#content.bnb-4-1-4 {
+  max-width: 1000px;
+  min-width: 900px;
+
+  .element-types-container {
+    border-top:1px solid $borderLightGrey;
+    border-bottom:1px solid $borderLightGrey;
+    @include box-shadow($borderLightGrey 0 0 5px inset);
+    padding:20px 15px;
+    height:80%;
+    overflow-y: auto;
+  }
+
+
+  .fieldset.bnb-element-type {
+    position: relative;
+
+    h4 {
+      position: absolute;
+      top: 23px;
+      right: 22px;
+      text-decoration: none;
+      font-weight: normal;
+      font-style: italic;
+      font-size: 12px;
+    }
+
+    h4.eol {
+      right: 215px;
+    }
+    h4.separation {
+      right: 122px;
+    }
+    h4.recycling {
+      right: 22px;
+    }
+  }
+
+
+
+  ul.bnb-elements {
+    li {
+      position: relative;
+
+      padding:3px 15px;
+      background-color:#f9f9f9;
+      border-bottom:#e5e5e5 solid 1px;
+      margin-bottom:3px;
+
+      &.complete {
+        background-color:#efffed;
+      }
+      &.incomplete {
+        background-color:#Ffefef;
+      }
+
+      a {
+        color:$linkColor;
+        display:block;
+        line-height:25px;
+
+        margin-right:300px;
+        max-width:640px;
+        min-width:500px;
+      }
+
+      .form-section {
+        padding:0;
+
+        input {
+          position: absolute;
+          top: 3px;
+          width: 40px;
+
+          &.eol {
+            right: 215px;
+          }
+          &.separation {
+            right: 122px;
+          }
+          &.recycling {
+            right: 22px;
+          }
+        }
+      }
+    }
+
+  }
+}
+
+
+#content.bnb-report-4-1-4 {
+
+  form .calcMethod {
+
+    @include clearfix;
+
+    .label-holder {
+      float:left;
+      width:195px;
+    }
+
+    .form-elt {
+      float:left;
+      width:400px;
+    }
+
+    .HtmlRadiobox {
+      float:left;
+    }
+  }
+
+
+  table.report {
+    margin-top:30px;
+
+
+    col.elementName { width:300px }
+
+    a {
+      color:$linkColor;
+    }
+
+    td, th {
+      padding:3px 4px;
+    }
+
+    th {
+      padding-right:10px;
+    }
+    th.firstColumn {
+      padding-left:4px;
+    }
+    th.centered {
+      padding-left:10px;
+    }
+    th.align-right {
+      padding-right:4px;
+    }
+
+    td.centered {
+      text-align:center;
+    }
+    td.align-right {
+      text-align:right;
+    }
+
+    tfoot {
+      td {
+        background-color: transparent;
+        border-bottom: none;
+        font-weight:bold;
+        padding-top:10px;
+      }
+
+      td.firstColumn {
+        text-align:left;
+        font-weight:normal;
+        font-style:italic;
+        color:$textColor;
+        border-right:none;
+      }
+
+    }
+
+  }
+}

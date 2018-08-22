@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ This file is part of the eLCA project
+  ~
+  ~ eLCA
+  ~ A web based life cycle assessment application
+  ~
+  ~ Copyright (c) 2016 Tobias Lode <tobias@beibob.de>
+  ~               BEIBOB Medienfreunde GbR - http://beibob.de/
+  ~
+  ~ eLCA is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ eLCA is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with eLCA. If not, see <http://www.gnu.org/licenses/>.
+  ~
+  -->
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="projectDataSet" type="projectDataSetType"/>
+  <xs:complexType name="resultSetInformationType">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="constrClassType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="refNum"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="commonType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="name"/>
+      <xs:element type="xs:string" name="projectNr"/>
+      <xs:element type="xs:string" name="description"/>
+      <xs:element type="xs:string" name="lifeTime">
+        <xs:annotation>
+          <xs:documentation>Bilanzierungszeitraum</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="constrClassType" name="constrClass">
+        <xs:annotation>
+          <xs:documentation>Bauwerkszuordnung</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="projectType">
+        <xs:annotation>
+          <xs:documentation>Baumaßnahme: private|public</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="bnbNr">
+        <xs:annotation>
+          <xs:documentation>BNB Nummer</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="eGisNr">
+        <xs:annotation>
+          <xs:documentation>eGis Nummer</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="editor">
+        <xs:annotation>
+          <xs:documentation>Bearbeiter</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="resultSetType">
+    <xs:sequence>
+      <xs:element type="resultSetInformationType" name="resultSetInformation"/>
+      <xs:element type="resultType" name="result" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="ident" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="lccType">
+    <xs:sequence>
+      <xs:element type="lccInformationType" name="lccInformation"/>
+      <xs:element type="resultSetType" name="resultSet"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="processDatabaseType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="name"/>
+      <xs:element type="xs:string" name="uuid"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="sourceUri"/>
+  </xs:complexType>
+  <xs:complexType name="subSetType">
+    <xs:sequence>
+      <xs:element type="amountType" name="amount" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="locationType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="street"/>
+      <xs:element type="xs:string" name="postcode"/>
+      <xs:element type="xs:string" name="city"/>
+      <xs:element type="xs:string" name="country"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="projectDataSetType">
+    <xs:sequence>
+      <xs:element type="projectInformationType" name="projectInformation"/>
+      <xs:element type="administrativeInformationType" name="administrativeInformation"/>
+      <xs:element type="outputsType" name="outputs"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lcaType">
+    <xs:sequence>
+      <xs:element type="resultSetType" name="resultSet" maxOccurs="unbounded" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>peiEm, ADP, GWP, ...  peiEm, GWP, ...  peiEm, GWP, ...  peiEm, GWP, ...</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="type" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="netFloorSpaceEnEvType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="version"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="outputsType">
+    <xs:sequence>
+      <xs:element type="lcaType" name="lca" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="lccType" name="lcc">
+        <xs:annotation>
+          <xs:documentation>section life cycle costs</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="freshWaterType" name="freshWater">
+        <xs:annotation>
+          <xs:documentation>section trinkwasser</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="amountType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="module" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="systemType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="version"/>
+        <xs:attribute type="xs:string" name="host"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="categoryType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="ident"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="freshWaterType">
+    <xs:sequence>
+      <xs:element type="freshWaterInformationType" name="freshWaterInformation"/>
+      <xs:element type="resultSetType" name="resultSet" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="constructionType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="grossFloorSpace">
+        <xs:annotation>
+          <xs:documentation>BGF</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="netFloorSpace">
+        <xs:annotation>
+          <xs:documentation>NGF</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="netFloorSpaceEnEvType" name="netFloorSpaceEnEv">
+        <xs:annotation>
+          <xs:documentation>NGF EnEV</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="floorSpace">
+        <xs:annotation>
+          <xs:documentation>NF</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="propertySize">
+        <xs:annotation>
+          <xs:documentation>Grundstücksfläche</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="resultInformationType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="name" />
+      <xs:element name="unit">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value=""/>
+            <xs:enumeration value="MJ"/>
+            <xs:enumeration value="kg"/>
+            <xs:enumeration value="kg CO2-Äqv."/>
+            <xs:enumeration value="kg Ethen-Äqv."/>
+            <xs:enumeration value="kg PO4-Äqv."/>
+            <xs:enumeration value="kg R11-Äqv."/>
+            <xs:enumeration value="kg SO2-Äqv."/>
+            <xs:enumeration value="kg Sb-Äqv."/>
+            <xs:enumeration value="Stück"/>
+            <xs:enumeration value="m"/>
+            <xs:enumeration value="m2"/>
+            <xs:enumeration value="m3"/>
+            <xs:enumeration value="EUR"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lccInformationType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="name"/>
+      <xs:element type="versionType" name="version"/>
+      <xs:element type="categoryType" name="category"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="freshWaterInformationType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="name"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="benchmarkSystemType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="name"/>
+      <xs:element type="xs:string" name="version"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="projectVariantType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="phaseIdent"/>
+        <xs:attribute type="xs:string" name="refId"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="resultType">
+    <xs:sequence>
+      <xs:element type="resultInformationType" name="resultInformation"/>
+      <xs:element type="amountType" name="amount"/>
+      <xs:element type="subSetType" name="subSet" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="ident" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="versionType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="name"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="administrativeInformationType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="timestamp"/>
+      <xs:element type="systemType" name="system"/>
+      <xs:element type="xs:string" name="publisher"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="projectInformationType">
+    <xs:sequence>
+      <xs:element type="commonType" name="common"/>
+      <xs:element type="projectVariantType" name="projectVariant"/>
+      <xs:element type="benchmarkSystemType" name="benchmarkSystem"/>
+      <xs:element type="processDatabaseType" name="processDatabase"/>
+      <xs:element type="locationType" name="location"/>
+      <xs:element type="constructionType" name="construction"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

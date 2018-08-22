@@ -1,0 +1,88 @@
+#content.elca-admin-benchmark-systems {
+  width:800px;
+
+  .button.add {
+    text-align:right;
+    margin-bottom:40px;
+  }
+}
+
+#content.elca-admin-benchmark-system {
+  width:685px;
+  min-width:685px;
+
+  .benchmark-system-group {
+    width:400px;
+  }
+
+  .benchmark-version-group {
+    position:relative;
+    width:685px;
+
+    .function-link.add-version {
+      position:absolute;
+      top:22px;
+      right:0;
+      padding-right:0;
+    }
+
+    .hl-row {
+      position:relative;
+    }
+
+    h5 {
+      position:absolute;
+      top:0;
+      left:0;
+      border:none;
+      font-weight:normal;
+      font-style:italic;
+      color:$labelColor;
+    }
+
+    h5.hl-process-db {
+      left:180px;
+    }
+    h5.hl-actions {
+      left:400px;
+    }
+    #benchmarkVersions {
+      margin-top:30px;
+    }
+
+    li.benchmark-version {
+      margin-bottom:5px;
+      position:relative;
+      clear:both;
+      background-color:#f9f9f9;
+      border-bottom: 1px solid $borderLightGrey;
+
+      .form-section {
+        display:inline-block;
+        padding:4px 20px 4px 5px;
+      }
+
+      .form-section.versionName { width: 150px }
+      .form-section.versionProcessDbId { width: 200px }
+
+      .function-link {
+        display:inline-block;
+        line-height:18px;
+
+        &.delete-link {
+          padding-right:0;
+        }
+      }
+    }
+  }
+
+  .benchmark-system-information {
+    p {
+      margin-bottom:0;
+    }
+    ul.list {
+      margin-top:2px;
+    }
+  }
+}
+

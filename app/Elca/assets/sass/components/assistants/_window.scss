@@ -1,0 +1,122 @@
+#tabContent.tab-window-assistant {
+
+  .assistantForm {
+
+    .form-section.width, .form-section.height, .form-section.sealingWidth {
+      width: 70px;
+      float: left;
+      padding-right: 15px;
+    }
+
+    .form-section.sealingWidth {
+      padding-left: 120px;
+      width:100px;
+
+      input {
+        width: 60px;
+      }
+    }
+
+    .form-section.area,  .form-section.openingArea {
+      float:right;
+      width:70px;
+    }
+
+
+    .form-section.tileWidth, .form-section.tileHeight {
+      float:left;
+      width:80px;
+
+      .form-elt {
+        width:50px;
+      }
+    }
+    .form-section.numberOfMullions, .form-section.numberOfTransoms, .form-section.mullion-transom-details {
+      width: 50px;
+      float: left;
+      padding-right: 15px;
+    }
+    .form-section.fixedMullionsTransoms {
+      float:left;
+      .label-holder {
+        float:none;
+      }
+    }
+
+    .form-section.mullion-transom-details {
+      left:0;
+      padding-top:25px;
+      a {
+        color:$linkFuncColor;
+        padding-left:12px;
+        background: transparent url('/img/elca/ic-arrow-open.png') left center no-repeat;
+
+        &.closed {
+          background:transparent url(/img/elca/ic-arrow-closed.png) 2px center no-repeat;
+        }
+      }
+    }
+    .mullions-transoms-dims .first {
+      margin-left: 120px;
+    }
+    .form-section.fixedFrameWidth, .form-section.sashFrameWidth, .form-section.frameRatio, .form-section.glassRatio {
+      width: 110px;
+      float: left;
+      padding-right: 15px;
+
+      input {
+        width:60px;
+      }
+    }
+
+    .form-section.frameRatio {
+      padding-left:120px;
+      clear:both;
+    }
+
+    .form-section.hasTopLight {
+      float:left;
+      .label-holder {
+        float:none;
+      }
+    }
+
+    .form-section.topLightHeight {
+      float:left;
+      width:70px;
+      padding-left:15px;
+    }
+
+    .form-section.fittings, .form-section.handles {
+      width: 45px;
+      float:left;
+      padding-left: 15px;
+    }
+    #processConfigSelector-fittings, #processConfigSelector-handles {
+      width:220px;
+    }
+
+    .form-section.sealing {
+      width:300px;
+    }
+
+    .form-section.sillIndoorDepth, .form-section.sillIndoorSize,
+    .form-section.sillOutdoorDepth, .form-section.sillOutdoorSize {
+      width:60px;
+      float:left;
+      padding-left:10px;
+    }
+
+    .form-section.soffitIndoorDepth, .form-section.soffitIndoorSize,
+    .form-section.soffitOutdoorDepth, .form-section.soffitOutdoorSize {
+      width:60px;
+      float:left;
+      padding-left:10px;
+    }
+
+    #processConfigSelector-sillIndoor, #processConfigSelector-sillOutdoor,
+    #processConfigSelector-soffitIndoor, #processConfigSelector-soffitOutdoor {
+      width:140px;
+    }
+  }
+}

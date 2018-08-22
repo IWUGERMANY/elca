@@ -1,0 +1,68 @@
+/** admin benchmarks form
+ *------------------------*/
+#tabContent.tab-common.elca-admin-benchmark-version {
+  form, .buttons {
+    width: 500px;
+  }
+
+  .selectize-control.multi {
+
+    min-width:100px;
+    .item,
+    .option {
+      font-size: 12px;
+    }
+
+    .selectize-input {
+      padding: 1px;
+      border-radius: 0;
+    }
+
+    .item {
+      padding-right:5px !important;
+      margin: 1px 3px 1px 0;
+
+      a {
+        margin-left:5px;
+      }
+    }
+  }
+
+  .form-section.displayLivingSpace .label-holder {
+    width:auto;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

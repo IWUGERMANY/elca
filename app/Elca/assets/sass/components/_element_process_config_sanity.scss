@@ -1,0 +1,52 @@
+#content div.elca-element-process-config-sanity {
+  h3 {
+    font-size:12px;
+    font-weight:normal;
+    font-style:italic;
+    color:#ff0000;
+    line-height:18px;
+    border-bottom:1px solid $borderGrey;
+    margin:40px 0 10px 0;
+  }
+
+  p {
+    font-size:12px;
+    color: #666;
+    line-height:18px;
+    margin:12px 0;
+  }
+  .warning {
+    color:#ff0000;
+  }
+  .ok {
+    color:#00aa00;
+  }
+
+  .element-sanity-table-wrapper {
+    padding:10px 20px 10px 10px;
+    width:80%;
+    max-height:300px;
+    overflow:scroll;
+    border:1px solid $borderGrey;
+    background-color: $bgLightGrey;
+  }
+  table {
+    td {
+      height:25px;
+    }
+    td.din-code, td.layer-position {
+      text-align: center;
+    }
+    th {
+      text-align:left;
+    }
+    td.element-name a {
+      color:$linkFuncColor;
+    }
+
+
+    tbody tr:hover td {
+      background-color:#f5f5f5;
+    }
+  }
+}

@@ -1,0 +1,99 @@
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  font-size:16px;
+  color:$textColor;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin:0;
+}
+h1 {
+  font-size:18px;
+}
+h2 {
+  font-size:16px;
+  font-weight:normal;
+}
+h3 {
+  font-size:14px;
+}
+h5 {
+  font-weight:bold;
+  font-style:italic;
+  line-height:22px;
+  border-bottom:1px solid $borderLightGrey;
+  font-size:12px;
+  color:#555;
+}
+ul, ol {
+  list-style-type:none;
+  margin:0;
+  padding:0;
+}
+p, li, label, input, th, td, a, pre {
+  font-size:12px;
+  color:$labelColor;
+}
+
+a {
+  text-decoration:none;
+}
+a:hover {
+  text-decoration:underline;
+}
+p a {
+  color:$linkColor;
+}
+ul.list {
+  margin:10px 0 20px 0;
+  padding-left:20px;
+  list-style-type:square;
+}
+
+ul.list li {
+  font-size:12px;
+  line-height:18px;
+}
+
+/** generic tables
+ *------------------*/
+table th,
+table td {
+  border-bottom: 1px solid $borderGrey;
+  border-right: 1px solid $borderGrey;
+  color:#333333;
+  padding:2px 4px;
+}
+table th { font-style:italic; font-weight: normal; color:#888; border-bottom: none }
+table th.firstColumn,
+table td.firstColumn { text-align:left; }
+table th.lastColumn,
+table td.lastColumn { border-right: none }
+table tr.lastRow td { border-bottom: none }
+
+/** noscript message
+ *---------------*/
+#noscript-message {
+  position:fixed;
+  top:0;
+  left:0;
+  background-color:#ae0000;
+  width:100%;
+  z-index:101;
+}
+#noscript-message p {
+  color:#fff;
+  font-size:14px;
+  font-weight:bold;
+  line-height:30px;
+  text-align:center;
+  margin:0;
+}
+
+/** Sonstiges
+ *------------------*/
+p.notice a,
+ul.last-changes a {
+  color:$linkColor;
+}

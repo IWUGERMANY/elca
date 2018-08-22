@@ -1,0 +1,48 @@
+#tabContent.pillar-assistants {
+
+  .assistantForm {
+
+    .type-images {
+
+      padding-left: 500px;
+
+      img {
+        height: 300px;
+      }
+    }
+
+    .form-section.width, .form-section.height, .form-section.length, .form-section.radius {
+      width: 70px;
+      float: left;
+      padding-right: 15px;
+    }
+
+    .form-section.surface {
+      float: right;
+      width: 120px;
+    }
+
+    .form-section.shape .HtmlRadiobox {
+      float:left;
+
+      label {
+        padding-left:4px;
+      }
+    }
+
+
+    #processConfigSelector-material1, #processConfigSelector-material2  {
+      clear:left;
+      float:left;
+      width:300px;
+    }
+
+    .form-section.material1Share, .form-section.material2Share {
+      width: 50px;
+      float: left;
+      padding-right: 15px;
+    }
+
+
+  }
+}

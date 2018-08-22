@@ -1,0 +1,158 @@
+#content.lcc { width: 950px; }
+
+#content.lcc .lcc-section { position: relative; }
+
+#content.lcc .lcc-section.collapsible div.legend { padding-left: 20px; background: transparent url("/img/elca/ic-arrow-open.png") 3px 25px no-repeat; cursor: pointer; }
+
+#content.lcc .lcc-section.collapsible.close div.legend { background-image: url("/img/elca/ic-arrow-closed.png"); background-position: 5px 22px; }
+
+#content.lcc h3, #content.lcc h4 { font-size: 14px; font-weight: normal; font-style: italic; padding-top: 10px; }
+
+#content.lcc .headline { position: absolute; top: 0; left: 0; height: 36px; }
+
+#content.lcc h3 { position: absolute; bottom: 0; width: 100px; padding-top: 23px; padding-bottom: 0; font-size: 12px; }
+
+#content.lcc .form-section, #content.lcc .buttons, #content.lcc h4 { clear: both; padding-left: 30px; }
+
+#content.lcc h4 { padding-left: 30px; font-size: 12px; }
+
+#content.lcc .ElcaHtmlNumericText { font-size: 14px; }
+
+#content.lcc .form-section { padding-top: 2px; padding-bottom: 2px; display: block; }
+
+#content.lcc .form-section:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+
+#content.lcc .form-section.row-highlight:hover { background-color: #f5f5f5; }
+
+#content.lcc .form-section.last { padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+
+#content.lcc .label-holder { float: left; width: 480px; padding: 0; }
+
+#content.lcc .form-elt { float: left; }
+
+#content.lcc .form-elt input.numeric-input { display: inline-block; width: 50px; }
+
+#content.lcc .form-elt input.read-only { border: none; color: #666 !important; }
+
+#content.lcc .form-elt span.ref-unit { font-size: 12px; padding-left: 5px; }
+
+#content.lcc .buttons { text-align: right; padding-right: 80px; }
+
+#content.lcc .buttons .submit.button { margin-left: 20px; }
+
+#content.lcc .totals { margin-top: 10px; margin-left: 30px; padding: 5px 0 0px 0; font-weight: bold; }
+
+#content.lcc .lcc-section div.totals .form-section { padding-left: 0; }
+
+#content.lcc .lcc-section div.totals .form-section .form-elt { width: 165px; text-align: right; }
+
+#content.lcc form.changed .lcc-section div.totals .form-section .form-elt { color: #ddd; }
+
+/** parameters **/
+#content.lcc .lcc-section.parameters { background-color: #f0f0f0; padding: 20px 10px; }
+
+#content.lcc .lcc-section.parameters .label-holder { width: 340px; }
+
+#content.lcc .lcc-section.parameters .parameter-group { float: left; width: 460px; }
+
+#content.lcc .lcc-section.parameters .form-section.versionId .form-elt { padding-right: 0; }
+
+#content.lcc .lcc-section.parameters .form-section.versionId .form-elt select { width: 220px; margin-left: 80px; }
+
+#content.lcc .lcc-section.parameters .form-section.versionId .label-holder, #content.lcc .lcc-section.parameters .form-section.category .label-holder { display: inline-block; width: 105px; }
+
+#content.lcc .lcc-section.parameters .form-section.category .label-holder { width: 330px; }
+
+#content.lcc .lcc-section.parameters .HtmlRadioGroup .HtmlRadiobox { display: inline-block; width: auto; }
+
+#content.lcc .lcc-section.parameters .form-section.costs300 .form-elt input, #content.lcc .lcc-section.parameters .form-section.costs400 .form-elt input, #content.lcc .lcc-section.parameters .form-section.costs500 .form-elt input { width: 80px; }
+
+#content.lcc .lcc-section a.delete-cost { color: #336699; padding-left: 10px; }
+
+/** media and cleaning **/
+#content.lcc .lcc-section.media-cleaning .label-holder { width: 600px; }
+
+#content.lcc .lcc-section.media-cleaning h3.hl-me-per-a { left: 630px; }
+
+#content.lcc .lcc-section.media-cleaning h3.hl-eur-per-me { left: 770px; }
+
+#content.lcc .lcc-section.media-cleaning .form-elt input.refValue { width: 50px; margin-left: 40px; }
+
+/** regular service **/
+#content.lcc .lcc-section.service h3 { padding-top: 8px; width: 85px; text-align: center; }
+
+#content.lcc .lcc-section.service h3.hl-maintenance-perc { left: 500px; }
+
+#content.lcc .lcc-section.service h3.hl-service-perc { left: 630px; }
+
+#content.lcc .lcc-section.service h3.hl-costs { left: 760px; }
+
+#content.lcc .lcc-section.service .form-elt input.servicePerc { margin-left: 70px; }
+
+#content.lcc .lcc-section.service .form-elt input.costs { width: 100px; margin-left: 60px; }
+
+#content.lcc .lcc-section.service .form-elt input.costsCalculated { width: 100px; margin-left: 15px; }
+
+#content.lcc .lcc-section.service .form-section.new input.din276Code { width: 30px; margin-right: 5px; }
+
+#content.lcc .lcc-section.service .form-section.new input.label { width: 400px; margin-right: 25px; }
+
+/** irregular costs **/
+#content.lcc .lcc-section.irregular h3 { padding-top: 8px; width: 100px; text-align: center; }
+
+#content.lcc .lcc-section.irregular h3.hl-life-time { left: 500px; }
+
+#content.lcc .lcc-section.irregular h3.hl-replacements { left: 630px; }
+
+#content.lcc .lcc-section.irregular h3.hl-costs { left: 760px; }
+
+#content.lcc .lcc-section.irregular .form-elt input.lifeTime { margin-right: 90px; }
+
+#content.lcc.general .lcc-section.irregular .form-elt input.costs { width: 100px; margin-left: 50px; }
+
+#content.lcc.detailed .lcc-section.irregular .form-elt input.costs { width: 100px; margin-left: 245px; }
+
+#content.lcc .lcc-section.irregular .form-section.kguAlt { background-color: #f0f0f0; padding: 5px 10px; margin-bottom: 20px; }
+
+#content.lcc .lcc-section.irregular .form-section.kguAlt .label-holder { width: 300px; }
+
+#content.lcc .lcc-section.irregular .form-section.kguAltPerc .form-elt { text-align: right; width: 165px; }
+
+#content.lcc .lcc-section.irregular .form-section.kguAlt .HtmlRadioGroup .HtmlRadiobox label { padding-left: 10px; }
+
+#content.lcc .form-elt span.replacements { display: inline-block; width: 50px; font-size: 14px; text-align: center; }
+
+#content.lcc .lcc-section.irregular .form-section.new input.din276Code { width: 30px; margin-right: 5px; }
+
+#content.lcc .lcc-section.irregular .form-section.new input.label { width: 400px; margin-right: 25px; }
+
+/* lcc versions */
+#content.lcc-versions { height: 22px; position: relative; width: 920px; }
+
+#content.lcc-versions .hl-row { height: 22px; position: relative; }
+
+#content.lcc-versions .version-row { position: relative; height: 24px; }
+
+#content.lcc-versions .hl-row h5 { position: absolute; color: #888; font-style: italic; font-weight: normal; border: none; }
+
+#content.lcc-versions li { background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; margin-bottom: 8px; padding: 3px 0; line-height: 33px; height: 33px; }
+
+#content.lcc-versions li.active { background-color: #f0f0f0; }
+
+#content.lcc-versions .hl-row h5.hl-name { left: 5px; }
+
+#content.lcc-versions .hl-row h5.hl-created { right: 460px; }
+
+#content.lcc-versions .hl-row h5.hl-actions { right: 80px; }
+
+#content.lcc-versions .version .name, #content.lcc-versions .version .created, #content.lcc-versions .version a.delete-link, #content.lcc-versions .version a.copy-link { position: absolute; padding: 0; top: 0; }
+
+#content.lcc-versions .version .name { left: 5px; width: 350px; overflow: hidden; }
+
+#content.lcc-versions .version .created { right: 317px; width: 200px; }
+
+#content.lcc-versions .version a.delete-link { width: 60px; text-align: left; right: 0; }
+
+#content.lcc-versions .version a.copy-link { width: 60px; text-align: left; right: 65px; }
+
+#content.lcc-versions .version .created .HtmlStaticText { font-size: 12px; color: #666; line-height: 33px; }

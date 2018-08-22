@@ -1,0 +1,116 @@
+/** admin benchmarks form
+ *------------------------*/
+#tabContent.elca-admin-benchmark-version.admin-benchmark-constructions {
+  min-width:inherit;
+
+  form {
+    width:800px;
+  }
+
+  .form-section.benchmarkVersionId {
+    width:300px;
+  }
+
+  .hl-row {
+    position: relative;
+    line-height:20px;
+    height:20px;
+    margin:0;
+  }
+
+  h5.hl-indicator,
+  h5.hl-value {
+    position:absolute;
+    color:#888;
+    font-style:italic;
+    font-weight:normal;
+    border:none;
+    line-height:14px;
+    width:auto;
+    font-size:12px;
+  }
+
+  h5.hl-indicator   {left:0}
+  h5.hl-value.min   {left:220px}
+  h5.hl-value.avg   {left:380px}
+  h5.hl-value.max   {left:520px}
+
+  .indicator-values {
+    padding:3px 0;
+    line-height:24px;
+    background-color:#f9f9f9;
+    margin-bottom:3px;
+    border-bottom:1px solid $borderLightGrey;
+  }
+  #indicatorBenchmarks .form-section {
+    padding:0;
+
+    .label-holder {
+      float:left;
+      width:200px;
+      padding:0;
+    }
+    .label-holder label {
+      padding:0 15px;
+      color:#666;
+    }
+    .form-elt  {
+      display:inline-block;
+    }
+    .form-elt .input-container {
+      float:left;
+      width: 120px;
+      margin-right:33px;
+      text-align:right;
+    }
+    .form-elt .input-container input {
+      width: 120px;
+      text-align:right;
+    }
+    .form-elt .input-container span.use-computed-value {
+      display:inline-block;
+      padding-right:15px;
+      width:5px;
+      height:9px;
+      background:transparent url(/img/elca/ic-arrow-closed.png) center no-repeat;
+      cursor:pointer;
+    }
+    .form-elt .input-container .computed-value {
+      display:inline-block;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

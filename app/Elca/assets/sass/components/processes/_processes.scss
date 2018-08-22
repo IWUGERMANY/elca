@@ -1,0 +1,28 @@
+/** Processes
+ *------------------*/
+#content.processes.overview {
+  width:900px;
+}
+
+.main-content.processes #navLeft {
+  h3 {
+    position:relative;
+    a.search-link {
+      position:absolute;
+      top:1px;
+      left:72px;
+      display: block;
+      width: 14px;
+      height: 14px;
+      background: transparent url(/img/elca/search16_light.png) no-repeat right bottom;
+      background-size: contain;
+      text-indent: -10000px;
+      overflow: hidden;
+
+      &:hover {
+        background-image: url(/img/elca/search16_dark.png);
+      }
+    }
+  }
+}
+

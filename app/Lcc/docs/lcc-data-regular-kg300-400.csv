@@ -1,0 +1,47 @@
+din276Code;label;maintenancePerc;servicePerc;grouping
+310;Baugrube;0;0;KGR300
+320;Gründung ohne KG 327 Drainage;0;0;KGR300
+327;Drainage;0,006;0,001;KGR300
+331;Außenwände;0;0;KGR300
+333;Außenstützen;0,006;0,001;KGR300
+334;Außentüren und -fenster;0,006;0,001;KGR300
+335;Außenwandbekleidungen außen;0,006;0,001;KGR300
+339;Außenwände sonstiges;0;0;KGR300
+341;Tragende Innenwände;0;0;KGR300
+342;Nichttragende Innenwände;0;0;KGR300
+344;Innentüren und -fenster;0,006;0,001;KGR300
+345;Innenwandbekleidungen;0,006;0,001;KGR300
+346;Elementierte Innenwände;0,006;0,001;KGR300
+349;Innenwände sonstiges;0;0;KGR300
+351;Deckenkonstruktion;0;0;KGR300
+352;Deckenbeläge;0,006;0,001;KGR300
+353;Deckenbekleidungen;0;0;KGR300
+359;Decken sonstiges;0;0;KGR300
+361;Dachkonstruktion;0;0;KGR300
+362;Dachfenster;0,006;0,001;KGR300
+363;Dachbeläge;0,006;0,001;KGR300
+364;Dachbekleidungen;0,006;0,001;KGR300
+369;Dächer sonstiges;0,006;0,001;KGR300
+379;Baukonstruktive Einbauten;0;0;KGR300
+391;Baustelleneinrichtung;0;0;KGR300
+392;Gerüste;0;0;KGR300
+411;Abwasseranlage;0,0055;0,007;KGR400
+412;Wasseranlagen;0,0055;0,007;KGR400
+419;Sonstiges;0,0055;0,007;KGR400
+421;Wärmepumpe mit Zubehör;0,005;0,009;KGR400
+422;Wärmeverteilnetze mit Kühlen;0,01;0;KGR400
+423;Kapillar-Rohrmatten Heizen Kühlen;0,01;0,01;KGR400
+429;solarthermische Anlagen;0,02;0,01;KGR400
+431;Lufttechnische Anlage;0,024;0,0205;KGR400
+442;Eigenstromversorgung;0,0065;0,0125;KGR400
+443;Niederspannungsschaltanlagen;0,0065;0,0125;KGR400
+444;Niederspannungsinstallationsanlagen;0,0065;0,0125;KGR400
+445;Beleuchtungsanlage;0,0065;0,0125;KGR400
+446;Blitz- und erdungsanlagen;0,0065;0,0125;KGR400
+449;Sonstiges;0,0065;0,0125;KGR400
+451;TK-Netze;0,0025;0,007;KGR400
+452;Such- und Signalanlagen;0,0025;0,007;KGR400
+455;Antennenanlagen;0,0025;0,007;KGR400
+456;Gefahrenmelde- und Alarmanlagen;0,0025;0,007;KGR400
+461;Aufzugsanlage;0,011;0,0205;KGR400
+481;Automationssysteme;0,005;0,005;KGR400

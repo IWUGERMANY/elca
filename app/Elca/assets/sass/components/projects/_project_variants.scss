@@ -1,0 +1,273 @@
+/* project variant form */
+.project-variants {
+  height: 22px;
+  position: relative;
+}
+
+.project-variants .hl-row {
+  height: 22px;
+  position: relative;
+}
+
+.project-variants .variant-row {
+  position: relative;
+  height: 24px;
+}
+
+.project-variants .hl-row h5 {
+  position: absolute;
+  color: #888;
+  font-style: italic;
+  font-weight: normal;
+  border: none;
+}
+
+.project-variants li {
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 8px;
+  padding: 3px 0;
+  line-height: 33px;
+  height: 33px;
+}
+
+.project-variants li.active {
+  background-color: #f0f0f0;
+}
+
+.project-variants .hl-row h5.hl-name {
+  left: 5px;
+}
+
+.project-variants .hl-row h5.hl-created {
+  left: 370px;
+}
+
+.project-variants .hl-row h5.hl-actions {
+  right: 353px;
+}
+
+.project-variants .variant .name,
+.project-variants .variant .created,
+.project-variants .variant a.delete-link,
+.project-variants .variant a.copy-link,
+.project-variants .variant a.replace-material-link,
+.project-variants .variant a.replace-elements-link {
+  position: absolute;
+  padding: 0;
+  top: 0;
+}
+
+.project-variants .variant .name {
+  left: 5px;
+  width: 350px;
+  overflow: hidden;
+}
+
+.project-variants .variant .created {
+  left: 370px;
+  width: 150px;
+}
+
+.project-variants .variant a.delete-link {
+  width: 60px;
+  text-align: left;
+  right: 0;
+}
+
+.project-variants .variant a.copy-link {
+  width: 60px;
+  text-align: left;
+  right: 65px;
+}
+
+.project-variants .variant a.replace-material-link {
+  width: 130px;
+  text-align: left;
+  right: 270px;
+}
+.project-variants .variant a.replace-elements-link {
+  width: 130px;
+  text-align: left;
+  right: 140px;
+}
+
+.project-variants .variant .created .HtmlStaticText {
+  font-size: 12px;
+  color: #666;
+  line-height: 33px;
+}
+
+
+.project-search-and-replace-processes {
+
+  form.projectSearchAndReplaceProcessesForm {
+    .label-holder {
+      float: left;
+      margin-right: 20px;
+      width:100px;
+    }
+    .HtmlTag {
+      input {
+        width: 350px;
+      }
+      a.open-modal {
+        color: #336699;
+        padding-left: 10px;
+      }
+      .disabled-but-clickable.d-b-c-o {
+        display: inline-block;
+        position: relative;
+        .d-b-c-i {
+          position:absolute; left:0; right:0; top:0; bottom:0;
+        }
+      }
+    }
+
+  }
+
+  .header {
+    position: relative;
+
+    p, a {
+      display: inline-block;
+      position: absolute;
+      top: 0px;
+      left: auto;
+      right: auto;
+      overflow: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    p.quantity {
+      left: 430px;
+    }
+    p.conversion {
+      left: 500px;
+    }
+    p.lifetime {
+      right: 163px;
+    }
+    p.lifetime-new {
+      right: 135px;
+    }
+    p.layer-size {
+      right: 292px;
+    }
+    p.layer-size-new {
+      right: 256px;
+    }
+    a {
+      color: #336699;
+    }
+    a.all {
+      right: 20px;
+    }
+    a.invert {
+      right: 50px;
+    }
+    .clear {
+      text-indent: -1000px;
+    }
+  }
+
+  ul.s-r-results {
+    li {
+      background-color: #f9f9f9;
+      border-bottom: 1px solid #e5e5e5;
+      margin-bottom: 3px;
+      padding: 3px 15px;
+      position: relative;
+
+      .element {
+        position: relative;
+        line-height: 25px;
+
+        a {
+          color: #336699;
+          line-height: 25px;
+        }
+
+        span.quantity {
+          position: absolute;
+
+          left: 375px;
+          width: 80px;
+          text-align:right;
+        }
+      }
+
+      .process-config {
+        position: relative;
+        line-height: 20px;
+
+        &.match {
+          background-color:#fcf8e3;
+          line-height: 30px;
+          color:#000;
+        }
+
+        overflow: hidden;
+        span {
+          display: inline-block;
+          position: absolute;
+          top: 0;
+          left: auto;
+          right: auto;
+          overflow: hidden;
+
+        }
+
+        span.layer-position {
+          left: 0px;
+        }
+        span.name {
+          left: 20px;
+          max-width: 290px;
+        }
+        span.ratio {
+          left: 310px;
+          width: 40px;
+        }
+        span.quantity {
+          left: 375px;
+          width: 80px;
+          text-align:right;
+        }
+        span.conversion {
+          left: 485px;
+        }
+        span.lifetime-old {
+          right: 170px;
+        }
+        span.lifetime-new {
+          right: 106px;
+          input {
+            width: 40px;
+          }
+        }
+
+        span.layer-size-old {
+          right: 283px;
+        }
+        span.layer-size-new {
+          right: 223px;
+          input {
+            width: 40px;
+          }
+        }
+
+        span.checkbox {
+          right: 0px;
+        }
+        span.forbidden {
+          right: 0px;
+        }
+        div.clear {
+          text-indent: -1000px;
+        }
+      }
+    }
+  }
+}

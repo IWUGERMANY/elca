@@ -1,0 +1,17 @@
+/** Process Datenbanken
+ *------------------*/
+#content.process-databases div.button.export {
+  margin:0 20px 15px 0;
+  float:left;
+}
+#processData {
+  overflow:auto;
+
+  table td {
+    white-space: nowrap;
+
+    &.firstColumn {
+      white-space: normal;
+    }
+  }
+}

@@ -1,0 +1,71 @@
+/** project element sanity check
+ *------------------------------*/
+#content div.elca-project-process-config-sanity {
+  h3 {
+    font-size:12px;
+    font-weight:normal;
+    font-style:italic;
+    line-height:18px;
+    border-bottom:1px solid $borderGrey;
+    margin:40px 0 10px 0;
+  }
+
+  p {
+    font-size:12px;
+    color: #666;
+    line-height:18px;
+    margin:12px 0;
+  }
+  .warning {
+    color:#ff0000;
+  }
+  .ok {
+    color:#00aa00;
+  }
+
+  table {
+    margin-top:35px;
+    width:95%;
+
+    td {
+      height:25px;
+    }
+
+    th {
+      text-align:left;
+    }
+    .current-process-db, .process-db-names {
+      text-align:center;
+    }
+
+    td.context-name a {
+      color:$linkFuncColor;
+    }
+    td.current-process-db,
+    td.process-config-name {
+      color:#ff0000;
+    }
+
+    td.replace-by {
+      a {
+        color: $linkFuncColor;
+      }
+
+      .changed a {
+        color:#00aa00;
+      }
+
+      span.text-mute {
+        color: #aaa;
+      }
+    }
+    tbody tr:hover td {
+      background-color:#f5f5f5;
+    }
+  }
+
+  input.submit.submit-changes {
+    box-shadow: 0 0 2px 1px #00aa00;
+  }
+}
+

@@ -1,0 +1,44 @@
+#content form.life-cycle-usages {
+  .form-section.construction, .form-section.maintenance {
+
+    min-width: 60px;
+    display:inline-block;
+    padding:0;
+
+    border-right:1px solid  $borderLightGrey;
+
+    &:last-child {
+      border-right:none;
+    }
+
+    .label-holder, .form-elt {
+      text-align: center;
+      float:none;
+      width:auto;
+      border-bottom: 1px solid $borderLightGrey;
+      background-color: $bgLightGrey;
+      padding:4px 6px;
+    }
+
+    .label-holder {
+
+      label {
+        font-size:13px;
+        font-style: italic;
+      }
+    }
+
+    .form-elt {
+      padding-right:0;
+
+      input {
+        float:none;
+        width:auto;
+      }
+    }
+
+    &.D {
+      padding-left:20px;
+    }
+  }
+}

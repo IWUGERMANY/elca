@@ -1,0 +1,169 @@
+#content.project-transports {
+  width:900px;
+
+  .includeInLca {
+    padding-bottom:30px;
+  }
+
+  .hl-row {
+    position:relative;
+
+    h5 {
+      position:absolute;
+      top:0;
+      color: $labelColor;
+      font-weight:normal;
+      border:none;
+    }
+
+    .hl-mat-process-config { left:20px }
+    .hl-name        { left:170px }
+    .hl-quantity           { left:360px }
+    .hl-process-config     { left:430px }
+    .hl-distance           { left:600px }
+    .hl-efficiency         { left:670px }
+  }
+
+  #transports {
+    margin-top: 30px;
+  }
+
+  li {
+    position:relative;
+    padding:3px 0;
+    line-height:24px;
+    min-height:28px;
+
+    &.transport {
+      background-color:$bgLightGrey;
+      border-bottom:1px solid $borderLightGrey;
+      margin-bottom:8px;
+    }
+
+    &.transport-mean {
+      margin-left:430px;
+      margin-right:15px;
+      border-bottom:1px solid #e0e0e0;
+    }
+
+    &.transport-mean.last {
+      border:none;
+    }
+    .form-section {
+      position:absolute;
+      top:0;
+    }
+
+    .matProcessConfigId { left:20px; width:140px }
+    .name            { left:170px; width:180px }
+    .quantity        { left:360px; width:60px }
+    .distance        { left:170px; width:60px }
+    .efficiency      { left:255px; width:40px }
+
+    .function-link {
+      position:absolute;
+      top:6px;
+    }
+
+    .function-link.toggle-link {
+      display: block;
+      top:6px;
+      padding: 0 5px 0 0;
+      width: 5px;
+      text-indent:-1000px;
+      overflow:hidden;
+      background: transparent url('/img/elca/ic-arrow-closed.png') center no-repeat;
+    }
+    .function-link.toggle-link.open {
+      background-image: url('/img/elca/ic-arrow-open.png');
+    }
+    .function-link.toggle-link {left:5px;}
+    .function-link.delete-link {right:80px;}
+    .function-link.cancel-link,
+    .function-link.add-link {right:-20px;}
+
+    .function-link {
+//      &.delete-link, &.cancel-link, &.add-link {
+//        background: no-repeat center;
+//        text-indent: -10000px;
+//        overflow: hidden;
+//        padding:0;
+//        height:34px;
+//      }
+//      &.delete-link {
+//        width:19px;
+//        background-image: url('/img/elca/ic-delete.gif');
+//      }
+//      &.cancel-link {
+//        width:15px;
+//        background-image: url('/img/elca/ic-cancel.png');
+//      }
+//      &.add-link {
+//        width:15px;
+//        background-image: url('/img/elca/ic-plus.png');
+//      }
+
+    }
+
+
+
+    .process-config-selector {
+      color:#004f80;
+      &.changed,
+      &.error {
+        color:#ff0000;
+      }
+    }
+  }
+
+  #transports.new-transport .function-link.add-link {
+    display:none;
+  }
+
+  /** results **/
+  table col.peGes,
+  table col.peNEm,
+  table col.peEm,
+  table col.pere,
+  table col.perm,
+  table col.pert,
+  table col.pet,
+  table col.penre,
+  table col.penrm,
+  table col.penrt,
+  table col.adp,
+  table col.adpe,
+  table col.adpf,
+  table col.ep,
+  table col.odp,
+  table col.pocp,
+  table col.gwp,
+  table col.ap { width:65px; }
+  table col.lifeCycleName,
+  table col.processConfigName { width:150px; }
+  table col.nameOrig { width:auto; }
+  table th,
+  table td { text-align:left; }
+  table tr.lastRow td {
+    border-top: 1px solid #999;
+  }
+
+  table {
+    width:100%;
+    margin:0;
+    &.process-databases {
+      width: 98%;
+      padding-top:30px;
+      margin:0 10px;
+      display: none;
+    }
+
+    th, td {
+      font-size:12px;
+    }
+  }
+
+  #section-summary {
+    margin-top:50px;
+  }
+}

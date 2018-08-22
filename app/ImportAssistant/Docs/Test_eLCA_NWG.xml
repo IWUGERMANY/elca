@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ This file is part of the eLCA project
+  ~
+  ~ eLCA
+  ~ A web based life cycle assessment application
+  ~
+  ~ Copyright (c) 2016 Tobias Lode <tobias@beibob.de>
+  ~               BEIBOB Medienfreunde GbR - http://beibob.de/
+  ~
+  ~ eLCA is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ eLCA is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with eLCA. If not, see <http://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<elca xmlns="https://www.bauteileditor.de/EnEV/2017" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.bauteileditor.de/EnEV/2017 https://www.bauteileditor.de/docs/EnEV/2017/export.xsd">
+    <project>
+        <projectInfo>
+            <name>Referenzprojekt mit Wärmepumpendaten</name>
+            <description/>
+            <projectNr>Referenz WP</projectNr>
+        </projectInfo>
+        <attributes>
+            <attr ident="bki.bauweise">
+                <caption><![CDATA[BKI Bauweise]]></caption>
+                <textValue>leicht</textValue>
+            </attr>
+            <attr ident="bki.gebaeudetyp">
+                <caption><![CDATA[BKI Gebaeudetyp]]></caption>
+                <textValue>Nichtwohngebäude</textValue>
+            </attr>
+        </attributes>
+        <projectVariants>
+            <variant>
+                <name>BKI Export</name>
+                <location>
+                    <street>Testweg 1</street>
+                    <postcode>80469</postcode>
+                    <city>München</city>
+                    <country>Deutschland</country>
+                </location>
+                <construction>
+                    <grossFloorSpace>0.0</grossFloorSpace>
+                    <netFloorSpace>419.2</netFloorSpace>
+                    <floorSpace>0.0</floorSpace>
+                    <propertySize/>
+                </construction>
+                <elements>
+                    <element uuid="D362D33C-2160-4730-A1A6-3875E174780B" din276Code="330" quantity="21.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro Ost AW Nord</name>
+                            <description>Bauteilaufbau 2</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Innenputz" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.2400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Expandierter Polystyrolschaum (EPS) 035 nach DIN E" layerPosition="3" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Leichtputz (&lt;=700 kg/m³)" layerPosition="4" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="E30EC9FF-0DA4-4E94-A21A-558C6C9962D6" din276Code="330" quantity="52.5" refUnit="m2">
+                        <elementInfo>
+                            <name>Buero</name>
+                            <description>Bauteilaufbau 2</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Innenputz" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.2400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Expandierter Polystyrolschaum (EPS) 035 nach DIN E" layerPosition="3" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Leichtputz (&lt;=700 kg/m³)" layerPosition="4" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="776DF9E5-3B03-46DE-B723-7322415ACC83" din276Code="330" quantity="21.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro Ost AW Süd</name>
+                            <description>Bauteilaufbau 2</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Innenputz" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.2400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Expandierter Polystyrolschaum (EPS) 035 nach DIN E" layerPosition="3" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Leichtputz (&lt;=700 kg/m³)" layerPosition="4" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="B628EFFA-B651-4CCC-9E95-CC97607508AF" din276Code="350" quantity="180.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro Ost Boden</name>
+                            <description>Bauteilaufbau 3</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Zementestrich" layerPosition="1" layerSize="0.0400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 040 nach DIN EN 13162" layerPosition="2" layerSize="0.0200" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 035 nach DIN EN 13162" layerPosition="3" layerSize="0.0800" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Normalbeton DIN 1045" layerPosition="4" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Kalkzementputz" layerPosition="5" layerSize="0.0150" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.31</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="21DE11FD-A2DF-46C2-A7C9-5180AAB4854B" din276Code="360" quantity="180.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro Ost Dach</name>
+                            <description>Bauteilaufbau 1</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Gipskarton-Platten" layerPosition="1" layerSize="0.0125" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 035 nach DIN EN 13162" layerPosition="2" layerSize="0.0300" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="OSB-Platten (650 kg/m³)" layerPosition="3" layerSize="0.0150" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 031 nach DIN EN 13162" layerPosition="4" layerSize="0.2400" layerAreaRatio="0.808" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Konstruktionsholz (500 kg/m³)" layerPosition="4" layerSize="0.2400" layerAreaRatio="0.192" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="DWD-Platte" layerPosition="5" layerSize="0.0160" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="89BDD919-7CA6-4E27-B97E-FE477BFD4CB8" din276Code="340" quantity="70.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro Ost IW Gang</name>
+                            <description>Bauteilaufbau 4</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Kalkgipsmörtel" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.1750" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Kalkgipsmörtel" layerPosition="3" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>1.57</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="8977B08C-6253-4324-8AA8-EE0B8912AB01" din276Code="340" quantity="35.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro Ost IW Sitzung</name>
+                            <description>Bauteilaufbau 4</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Kalkgipsmörtel" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.1750" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Kalkgipsmörtel" layerPosition="3" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>1.57</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="15E4621C-A44D-401C-84E8-1EF5C54CB3C8" din276Code="330" quantity="21.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro West AW Nord</name>
+                            <description>Bauteilaufbau 2</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Innenputz" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.2400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Expandierter Polystyrolschaum (EPS) 035 nach DIN E" layerPosition="3" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Leichtputz (&lt;=700 kg/m³)" layerPosition="4" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="956C7694-0E85-453E-89BC-51AC9F1821BE" din276Code="330" quantity="17.5" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro West AW West</name>
+                            <description>Bauteilaufbau 2</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Innenputz" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.2400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Expandierter Polystyrolschaum (EPS) 035 nach DIN E" layerPosition="3" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Leichtputz (&lt;=700 kg/m³)" layerPosition="4" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="D8FE7327-E594-40E9-A9B9-1ACF77E7E5B1" din276Code="350" quantity="60.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro West Boden</name>
+                            <description>Bauteilaufbau 3</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Zementestrich" layerPosition="1" layerSize="0.0400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 040 nach DIN EN 13162" layerPosition="2" layerSize="0.0200" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 035 nach DIN EN 13162" layerPosition="3" layerSize="0.0800" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Normalbeton DIN 1045" layerPosition="4" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Kalkzementputz" layerPosition="5" layerSize="0.0150" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.31</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="A7764B1E-5AFE-46E5-9310-0322BE460965" din276Code="360" quantity="60.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro West Dach</name>
+                            <description>Bauteilaufbau 1</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Gipskarton-Platten" layerPosition="1" layerSize="0.0125" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 035 nach DIN EN 13162" layerPosition="2" layerSize="0.0300" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="OSB-Platten (650 kg/m³)" layerPosition="3" layerSize="0.0150" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 031 nach DIN EN 13162" layerPosition="4" layerSize="0.2400" layerAreaRatio="0.808" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Konstruktionsholz (500 kg/m³)" layerPosition="4" layerSize="0.2400" layerAreaRatio="0.192" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="DWD-Platte" layerPosition="5" layerSize="0.0160" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="1F091624-F14F-462D-8B3A-CF4DBB48FED5" din276Code="340" quantity="35.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro West IW Gang</name>
+                            <description>Bauteilaufbau 4</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Kalkgipsmörtel" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.1750" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Kalkgipsmörtel" layerPosition="3" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>1.57</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="A7233D0D-BA26-465A-813D-43DF6F69BCFC" din276Code="340" quantity="21.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro West IW Gang</name>
+                            <description>Bauteilaufbau 4</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Kalkgipsmörtel" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.1750" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Kalkgipsmörtel" layerPosition="3" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>1.57</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="A4C3BD89-BA66-4FCD-ABC9-05F3CD74577E" din276Code="330" quantity="10.5" refUnit="m2">
+                        <elementInfo>
+                            <name>Flur AW Nord</name>
+                            <description>Bauteilaufbau 2</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Innenputz" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.2400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Expandierter Polystyrolschaum (EPS) 035 nach DIN E" layerPosition="3" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Leichtputz (&lt;=700 kg/m³)" layerPosition="4" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="9E7A9F00-FA61-4FDC-9118-72FF3F47FE4C" din276Code="350" quantity="60.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Flur Boden</name>
+                            <description>Bauteilaufbau 3</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Zementestrich" layerPosition="1" layerSize="0.0400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 040 nach DIN EN 13162" layerPosition="2" layerSize="0.0200" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 035 nach DIN EN 13162" layerPosition="3" layerSize="0.0800" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Normalbeton DIN 1045" layerPosition="4" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Kalkzementputz" layerPosition="5" layerSize="0.0150" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.31</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="59FD73AE-3F49-4B59-9F77-F218EAF2F3ED" din276Code="360" quantity="60.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Flur Dach</name>
+                            <description>Bauteilaufbau 1</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Gipskarton-Platten" layerPosition="1" layerSize="0.0125" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 035 nach DIN EN 13162" layerPosition="2" layerSize="0.0300" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="OSB-Platten (650 kg/m³)" layerPosition="3" layerSize="0.0150" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 031 nach DIN EN 13162" layerPosition="4" layerSize="0.2400" layerAreaRatio="0.808" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Konstruktionsholz (500 kg/m³)" layerPosition="4" layerSize="0.2400" layerAreaRatio="0.192" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="DWD-Platte" layerPosition="5" layerSize="0.0160" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="7E8DB736-F1CB-45ED-87E7-C7B1ADB52D62" din276Code="330" quantity="8.8" refUnit="m2">
+                        <elementInfo>
+                            <name>Sanitär AW West</name>
+                            <description>Bauteilaufbau 2</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Innenputz" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.2400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Expandierter Polystyrolschaum (EPS) 035 nach DIN E" layerPosition="3" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Leichtputz (&lt;=700 kg/m³)" layerPosition="4" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="85A31B8E-EB3B-4391-9EA3-9C148AECC323" din276Code="350" quantity="30.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Sanitär Boden</name>
+                            <description>Bauteilaufbau 3</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Zementestrich" layerPosition="1" layerSize="0.0400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 040 nach DIN EN 13162" layerPosition="2" layerSize="0.0200" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 035 nach DIN EN 13162" layerPosition="3" layerSize="0.0800" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Normalbeton DIN 1045" layerPosition="4" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Kalkzementputz" layerPosition="5" layerSize="0.0150" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.31</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="13422E99-DD7C-4D71-9F5F-C963F7067B43" din276Code="360" quantity="30.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Sanitär Dach</name>
+                            <description>Bauteilaufbau 1</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Gipskarton-Platten" layerPosition="1" layerSize="0.0125" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 035 nach DIN EN 13162" layerPosition="2" layerSize="0.0300" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="OSB-Platten (650 kg/m³)" layerPosition="3" layerSize="0.0150" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 031 nach DIN EN 13162" layerPosition="4" layerSize="0.2400" layerAreaRatio="0.808" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Konstruktionsholz (500 kg/m³)" layerPosition="4" layerSize="0.2400" layerAreaRatio="0.192" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="DWD-Platte" layerPosition="5" layerSize="0.0160" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="FA623DE5-A7F3-4741-B312-5CBA5B13F6DC" din276Code="330" quantity="31.5" refUnit="m2">
+                        <elementInfo>
+                            <name>Sitzung AW Süd</name>
+                            <description>Bauteilaufbau 2</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Innenputz" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.2400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Expandierter Polystyrolschaum (EPS) 035 nach DIN E" layerPosition="3" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Leichtputz (&lt;=700 kg/m³)" layerPosition="4" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="691CCB1C-41BC-4A92-8416-4856CC79CEFC" din276Code="330" quantity="17.5" refUnit="m2">
+                        <elementInfo>
+                            <name>Sitzung AW West</name>
+                            <description>Bauteilaufbau 2</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Innenputz" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.2400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Expandierter Polystyrolschaum (EPS) 035 nach DIN E" layerPosition="3" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Leichtputz (&lt;=700 kg/m³)" layerPosition="4" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="EF434E51-3A49-4345-95FD-747E5EBE2F0B" din276Code="350" quantity="90.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Sitzung Boden</name>
+                            <description>Bauteilaufbau 3</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Zementestrich" layerPosition="1" layerSize="0.0400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 040 nach DIN EN 13162" layerPosition="2" layerSize="0.0200" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 035 nach DIN EN 13162" layerPosition="3" layerSize="0.0800" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Normalbeton DIN 1045" layerPosition="4" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Kalkzementputz" layerPosition="5" layerSize="0.0150" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.31</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="53B7D73D-0835-497D-933B-2BD6AE7E9200" din276Code="360" quantity="90.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Sitzung Dach</name>
+                            <description>Bauteilaufbau 1</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Gipskarton-Platten" layerPosition="1" layerSize="0.0125" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 035 nach DIN EN 13162" layerPosition="2" layerSize="0.0300" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="OSB-Platten (650 kg/m³)" layerPosition="3" layerSize="0.0150" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 031 nach DIN EN 13162" layerPosition="4" layerSize="0.2400" layerAreaRatio="0.808" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Konstruktionsholz (500 kg/m³)" layerPosition="4" layerSize="0.2400" layerAreaRatio="0.192" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="DWD-Platte" layerPosition="5" layerSize="0.0160" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="67C3CF00-4681-448F-A6C3-8D84E357FA9E" din276Code="340" quantity="10.5" refUnit="m2">
+                        <elementInfo>
+                            <name>Sitzung zu Gang</name>
+                            <description>Bauteilaufbau 4</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Kalkgipsmörtel" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.1750" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Kalkgipsmörtel" layerPosition="3" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>1.57</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="BF28E727-9A52-4CA3-AE9D-4566CBD24A28" din276Code="340" quantity="21.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Sitzung zu Sanitär</name>
+                            <description>Bauteilaufbau 4</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Kalkgipsmörtel" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.1750" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Kalkgipsmörtel" layerPosition="3" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>1.57</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="5C874802-978E-4842-A463-24B909B40457" din276Code="330" quantity="8.8" refUnit="m2">
+                        <elementInfo>
+                            <name>Treppe AW West</name>
+                            <description>Bauteilaufbau 2</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Innenputz" layerPosition="1" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Hochlochziegel 1,2" layerPosition="2" layerSize="0.2400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Expandierter Polystyrolschaum (EPS) 035 nach DIN E" layerPosition="3" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Leichtputz (&lt;=700 kg/m³)" layerPosition="4" layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="B4A00B99-0A6C-4C0A-BA32-67C00678688A" din276Code="350" quantity="30.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Treppe Boden</name>
+                            <description>Bauteilaufbau 3</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Zementestrich" layerPosition="1" layerSize="0.0400" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 040 nach DIN EN 13162" layerPosition="2" layerSize="0.0200" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 035 nach DIN EN 13162" layerPosition="3" layerSize="0.0800" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Normalbeton DIN 1045" layerPosition="4" layerSize="0.2000" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Kalkzementputz" layerPosition="5" layerSize="0.0150" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.31</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="A3DB5343-7ACE-463D-83A1-48DB8DC6B55C" din276Code="360" quantity="30.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Treppe Dach</name>
+                            <description>Bauteilaufbau 1</description>
+                        </elementInfo>
+                        <components>
+                            <component isLayer="true" processConfigName="Gipskarton-Platten" layerPosition="1" layerSize="0.0125" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 035 nach DIN EN 13162" layerPosition="2" layerSize="0.0300" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="OSB-Platten (650 kg/m³)" layerPosition="3" layerSize="0.0150" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Mineralwolle (MW) 031 nach DIN EN 13162" layerPosition="4" layerSize="0.2400" layerAreaRatio="0.808" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="Konstruktionsholz (500 kg/m³)" layerPosition="4" layerSize="0.2400" layerAreaRatio="0.192" layerLength="1" layerWidth="1"/>
+                            <component isLayer="true" processConfigName="DWD-Platte" layerPosition="5" layerSize="0.0160" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                        </components>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.16</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="49AD6A25-4AE7-4097-9FA1-BEF691381458" din276Code="334" quantity="17.5" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro West Fenster West</name>
+                            <description>Fensteraufbau 1</description>
+                        </elementInfo>
+                        <components>
+                            <siblings>
+                                <component isLayer="true" processConfigName="Rahmenanteil" layerPosition="1" layerSize="0.1" layerAreaRatio="0.300" layerLength="1" layerWidth="1"/>
+                                <component isLayer="true" processConfigName="Glasanteil" layerPosition="1" layerSize="0.01" layerAreaRatio="0.700" layerLength="1" layerWidth="1"/>
+                            </siblings>
+                        </components>
+                        <attributes>
+                            <![CDATA[]]>
+                        </attributes>
+                    </element>
+                    <element uuid="1BBC5FBE-BFD3-4602-A7B7-6C4D3A9E94E9" din276Code="334" quantity="52.5" refUnit="m2">
+                        <elementInfo>
+                            <name>Büro Ost Fenster Ost</name>
+                            <description>Fensteraufbau 1</description>
+                        </elementInfo>
+                        <components>
+                            <siblings>
+                                <component isLayer="true" processConfigName="Rahmenanteil" layerPosition="1" layerSize="0.1" layerAreaRatio="0.300" layerLength="1" layerWidth="1"/>
+                                <component isLayer="true" processConfigName="Glasanteil" layerPosition="1" layerSize="0.01" layerAreaRatio="0.700" layerLength="1" layerWidth="1"/>
+                            </siblings>
+                        </components>
+                        <attributes>
+                            <![CDATA[]]>
+                        </attributes>
+                    </element>
+                    <element uuid="FF65FFCE-B8AE-41E7-93E6-BE7E271182E9" din276Code="334" quantity="17.5" refUnit="m2">
+                        <elementInfo>
+                            <name>Sitzung Fenster West</name>
+                            <description>Fensteraufbau 2</description>
+                        </elementInfo>
+                        <components>
+                            <siblings>
+                                <component isLayer="true" processConfigName="Rahmenanteil" layerPosition="1" layerSize="0.1" layerAreaRatio="0.300" layerLength="1" layerWidth="1"/>
+                                <component isLayer="true" processConfigName="Glasanteil" layerPosition="1" layerSize="0.01" layerAreaRatio="0.700" layerLength="1" layerWidth="1"/>
+                            </siblings>
+                        </components>
+                        <attributes>
+                            <![CDATA[]]>
+                        </attributes>
+                    </element>
+                    <element uuid="2FAE2C2A-8980-442E-8581-18996539540F" din276Code="334" quantity="8.8" refUnit="m2">
+                        <elementInfo>
+                            <name>Sanitär Fenster West</name>
+                            <description>Fensteraufbau 2</description>
+                        </elementInfo>
+                        <components>
+                            <siblings>
+                                <component isLayer="true" processConfigName="Rahmenanteil" layerPosition="1" layerSize="0.1" layerAreaRatio="0.300" layerLength="1" layerWidth="1"/>
+                                <component isLayer="true" processConfigName="Glasanteil" layerPosition="1" layerSize="0.01" layerAreaRatio="0.700" layerLength="1" layerWidth="1"/>
+                            </siblings>
+                        </components>
+                        <attributes>
+                            <![CDATA[]]>
+                        </attributes>
+                    </element>
+                    <element uuid="7465728D-0A6E-45E3-A1E9-FD2050956B4B" din276Code="334" quantity="8.8" refUnit="m2">
+                        <elementInfo>
+                            <name>Treppe Fenster West</name>
+                            <description>Fensteraufbau 2</description>
+                        </elementInfo>
+                        <components>
+                            <siblings>
+                                <component isLayer="true" processConfigName="Rahmenanteil" layerPosition="1" layerSize="0.1" layerAreaRatio="0.300" layerLength="1" layerWidth="1"/>
+                                <component isLayer="true" processConfigName="Glasanteil" layerPosition="1" layerSize="0.01" layerAreaRatio="0.700" layerLength="1" layerWidth="1"/>
+                            </siblings>
+                        </components>
+                        <attributes>
+                            <![CDATA[]]>
+                        </attributes>
+                    </element>
+                </elements>
+                <finalEnergy ngfEnEv="419.2" enEvVersion="2013">
+                    <finalEnergyDemands>
+                        <finalEnergyDemand processConfigName="Erdgas H">
+                            <heating>12.6</heating>
+                            <water>0.0</water>
+                            <lighting>0.0</lighting>
+                            <ventilation>0.0</ventilation>
+                            <cooling>0.7</cooling>
+                        </finalEnergyDemand>
+                        <finalEnergyDemand processConfigName="Strom-Mix">
+                            <heating>35.0</heating>
+                            <water>2.5</water>
+                            <lighting>13.8</lighting>
+                            <ventilation>3.5</ventilation>
+                            <cooling>1.6</cooling>
+                        </finalEnergyDemand>
+                    </finalEnergyDemands>
+                    <refFinalEnergyDemands>
+                        <finalEnergyDemand processConfigName="Heizöl EL">
+                            <heating>114.0</heating>
+                            <water>3.4</water>
+                            <lighting>0.0</lighting>
+                            <ventilation>0.0</ventilation>
+                            <cooling>0.0</cooling>
+                        </finalEnergyDemand>
+                        <finalEnergyDemand processConfigName="Erdgas H">
+                            <heating>0.0</heating>
+                            <water>0.0</water>
+                            <lighting>0.0</lighting>
+                            <ventilation>0.0</ventilation>
+                            <cooling>1.1</cooling>
+                        </finalEnergyDemand>
+                        <finalEnergyDemand processConfigName="Strom-Mix">
+                            <heating>1.5</heating>
+                            <water>0.3</water>
+                            <lighting>14.5</lighting>
+                            <ventilation>2.7</ventilation>
+                            <cooling>1.2</cooling>
+                        </finalEnergyDemand>
+                    </refFinalEnergyDemands>
+                    <finalEnergySupplies>
+                        <finalEnergySupply processConfigName="Strom-Mix" quantity="2419.4" enevRatio="0.10"/>
+                    </finalEnergySupplies>
+                </finalEnergy>
+            </variant>
+        </projectVariants>
+    </project>
+</elca>

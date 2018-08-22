@@ -1,0 +1,67 @@
+{
+  "name": "beibob/elca",
+  "description": "eLCA",
+  "minimum-stability": "dev",
+  "license": "AGPLv3",
+  "authors": [
+    {
+      "name": "Tobias Lode",
+      "email": "tobias.lode@beibob.de",
+      "homepage": "http://beibob.de"
+    }
+  ],
+
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "": "app/"
+    }
+  },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "git@bitbucket.org:beibob/blibs.git"
+    },
+    {
+      "type": "git",
+      "url": "git@bitbucket.org:beibob/htmltools.git"
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "antialize/wkhtmltopdf-bindings",
+        "version": "1.0.0",
+        "source": {
+          "url": "https://github.com/antialize/wkhtmltopdf-bindings.git",
+          "type": "git",
+          "reference": "master"
+        },
+        "autoload": {
+          "classmap": ["php/"]
+        }
+      }
+    }
+
+  ],
+  "require": {
+    "php": ">=7.1",
+    "beibob/blibs": "^2.0@dev",
+    "beibob/htmltools": "^2.0@dev",
+    "erusev/parsedown": "dev-master",
+    "php-di/php-di": "5.4.*",
+    "doctrine/cache": "1.4",
+    "beberlei/assert": "^2.3@dev",
+    "minmb/phpmailer": "dev-master",
+    "symfony/translation": "~2.7",
+    "litipk/php-bignumbers": "^0.7.3",
+    "ramsey/uuid": "^3.5",
+    "doctrine/instantiator": "^1.0",
+    "tijsverkoyen/css-to-inline-styles": "^2.2",
+    "ocramius/proxy-manager": "~1.0"
+  },
+  "require-dev": {
+    "firephp/firephp-core": "dev-master",
+    "phpunit/phpunit": "6.4.1"
+  }
+
+}

@@ -1,0 +1,37 @@
+/** lca processing
+ *---------------------*/
+#elca-modal-content.processing div.spinning-wheel {
+  float:left;
+  height:64px;
+  width:64px;
+  text-align:center;
+  vertical-align:middle;
+  background-position:center center;
+  background-repeat:no-repeat;
+}
+
+#elca-modal-content.processing.spin div.spinning-wheel {
+  background-image:url(/img/elca/ajax-loader.gif);
+}
+#elca-modal-content.processing.done div.spinning-wheel {
+  background-image:url(/img/elca/ic-select.png);
+}
+#elca-modal-content.processing p.processing {
+  padding-top:10px;
+}
+#elca-modal-content.processing p.processing-done {
+  padding-top:25px;
+  display:none;
+}
+#elca-modal-content.processing.done p.processing {
+  display:none;
+}
+#elca-modal-content.processing.done p.processing-done {
+  display:block;
+}
+#elca-modal-content.processing #elca-modal-close {
+  display:none;
+}
+#elca-modal-content.processing.done #elca-modal-close {
+  display:inline;
+}

@@ -1,0 +1,22 @@
+#content.bnb-water { width: 700px; min-width: inherit; }
+#content.bnb-water .bnb-section { position: relative; }
+#content.bnb-water .bnb-section.collapsible div.legend { padding-left: 20px; background: transparent url("/img/elca/ic-arrow-open.png") 3px 25px no-repeat; cursor: pointer; }
+#content.bnb-water .bnb-section.collapsible.close div.legend { background-image: url("/img/elca/ic-arrow-closed.png"); background-position: 5px 22px; }
+#content.bnb-water h3, #content.bnb-water h4 { font-size: 14px; font-weight: normal; font-style: italic; padding-top: 10px; }
+#content.bnb-water .headline { position: absolute; top: 0; left: 0; height: 36px; }
+#content.bnb-water h3 { position: absolute; bottom: 0; width: 100px; padding-top: 23px; padding-bottom: 0; font-size: 12px; }
+#content.bnb-water .form-section, #content.bnb-water .buttons, #content.bnb-water h4 { clear: both; padding-left: 30px; }
+#content.bnb-water h4 { margin-top: 10px; font-size: 12px; }
+#content.bnb-water .form-section { padding-top: 2px; padding-bottom: 2px; display: block; }
+#content.bnb-water .form-section:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+#content.bnb-water .ElcaHtmlNumericText { font-size: 14px; text-align: right; width: 70px; }
+#content.bnb-water .label-holder { float: left; width: 480px; padding: 0; }
+#content.bnb-water .form-elt { float: left; }
+#content.bnb-water .form-elt input.numeric-input { display: inline-block; width: 70px; }
+#content.bnb-water .form-elt input.read-only { border: none; color: #666 !important; }
+#content.bnb-water .form-elt span.ref-unit { font-size: 12px; padding-left: 5px; }
+#content.bnb-water .buttons { text-align: right; }
+#content.bnb-water .form-section.sum { font-weight: bold; }
+#content.bnb-water .totals { margin-top: 10px; padding: 5px 0 0 0; font-weight: bold; }
+#content.bnb-water .totals .rating { margin: 10px 0; border: 1px solid #ddd; }
+#content.bnb-water .totals .rating label, #content.bnb-water .totals .rating .form-elt { font-size: 18px; color: #333; }

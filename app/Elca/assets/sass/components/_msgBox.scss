@@ -1,0 +1,93 @@
+/** msgBox
+ *---------------*/
+#msgBox {
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  display:none;
+
+  .content-wrapper {
+    background: url(/img/elca/ic-msg-box-notice.png) 260px center no-repeat;
+    border-bottom: 2px solid transparent;
+    padding: 4px 0 4px 300px;
+  }
+
+  ul {
+    list-style-type:none;
+    margin:0;
+    padding:10px 0 10px 20px;
+    text-align:left;
+    border-left:1px solid transparent;
+
+    li p {
+      float:left;
+      margin:2px 0 4px 0;
+      line-height:14px;
+
+      &.message {
+        max-width:400px;
+        font-style:italic;
+        font-size:14px;
+      }
+    }
+
+    li.confirm a,
+    li.confirm span.cancel {
+      -webkit-border-radius:4px;
+      -moz-border-radius:4px;
+      border-radius:4px;
+      padding:1px 10px;
+      margin-left:10px;
+      font-size:12px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+  }
+
+  &.notice,
+  &.info {
+    .content-wrapper {
+      background-color: $msgBoxDefault;
+      border-bottom-color: lighten($msgBoxDefault, 5); //#f9f87c;
+    }
+
+    ul {
+      border-left-color: darken($msgBoxDefault, 20); //#c7c600;
+
+      li p {
+        color:darken($msgBoxDefault, 60); //#4a4a00;
+      }
+
+      li.confirm a,
+      li.confirm span.cancel {
+        background-color: darken($msgBoxDefault, 50); //#545422
+        color:#fff;
+      }
+    }
+  }
+
+  &.error,
+  &.confirm {
+    .content-wrapper {
+      background-color: $msgBoxError;
+      border-bottom-color: darken($msgBoxError, 5);
+    }
+
+    ul {
+      border-left-color: lighten($msgBoxError, 20);
+
+      li p {
+        color:lighten($msgBoxError, 60);
+      }
+
+      li.confirm a,
+      li.confirm span.cancel {
+        background-color: darken($msgBoxError, 50);
+        color:#fff;
+      }
+    }
+  }
+}
+
+
