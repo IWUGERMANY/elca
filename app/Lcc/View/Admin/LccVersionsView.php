@@ -22,10 +22,10 @@
  * along with eLCA. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace Lcc\View;
+namespace Lcc\View\Admin;
 
-use Beibob\Blibs\HtmlView;
 use Beibob\Blibs\FrontController;
+use Beibob\Blibs\HtmlView;
 use Beibob\Blibs\Url;
 use Beibob\HtmlTools\HtmlElement;
 use Beibob\HtmlTools\HtmlForm;
@@ -75,7 +75,7 @@ class LccVersionsView extends HtmlView
     {
         $Container = $this->appendChild($this->getDiv(['id' => 'content', 'class' => 'lcc-versions']));
 
-        $Form = new HtmlForm('lccVersionsForm', '/lcc/versions/save/');
+        $Form = new HtmlForm('lccVersionsForm', '/lcc/admin/versions/save/');
         $Form->addClass('clearfix highlight-changes');
         $Form->setRequest(FrontController::getInstance()->getRequest());
         $Form->setDataObject($this->Data);
@@ -137,15 +137,18 @@ class LccVersionsView extends HtmlView
             $Label->addClass('created');
         }
 
+        $Container->add(new HtmlLink(t('Bearbeiten'), Url::factory('/lcc/admin/energySourceCosts/', ['versionId' => $key])))
+                  ->addClass('function-link edit-link');
+
         /**
          * Delete and create version
          */
-        $Container->add(new HtmlLink(t('Kopieren'), Url::factory('/lcc/versions/copy/', ['id' => $key])))
+        $Container->add(new HtmlLink(t('Kopieren'), Url::factory('/lcc/admin/versions/copy/', ['id' => $key])))
             ->addClass('function-link copy-link');
 
 
         if (LccVersionSet::dbCount(['calc_method' => $this->Data->calcMethod]) > 1) {
-            $Container->add(new HtmlLink(t('Löschen'), Url::factory('/lcc/versions/delete/', ['id' => $key])))
+            $Container->add(new HtmlLink(t('Löschen'), Url::factory('/lcc/admin/versions/delete/', ['id' => $key])))
                       ->addClass('function-link delete-link');
         }
     }

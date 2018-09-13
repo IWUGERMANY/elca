@@ -266,9 +266,9 @@ div.tooltip { position: absolute; text-align: center; width: auto; min-width: 50
 
 #content.lcc-versions .hl-row h5.hl-created { right: 460px; }
 
-#content.lcc-versions .hl-row h5.hl-actions { right: 80px; }
+#content.lcc-versions .hl-row h5.hl-actions { right: 160px; }
 
-#content.lcc-versions .version .name, #content.lcc-versions .version .created, #content.lcc-versions .version a.delete-link, #content.lcc-versions .version a.copy-link { position: absolute; padding: 0; top: 0; }
+#content.lcc-versions .version .name, #content.lcc-versions .version .created, #content.lcc-versions .version a.edit-link, #content.lcc-versions .version a.delete-link, #content.lcc-versions .version a.copy-link { position: absolute; padding: 0; top: 0; }
 
 #content.lcc-versions .version .name { left: 5px; width: 350px; overflow: hidden; }
 
@@ -277,6 +277,8 @@ div.tooltip { position: absolute; text-align: center; width: auto; min-width: 50
 #content.lcc-versions .version a.delete-link { width: 60px; text-align: left; right: 0; }
 
 #content.lcc-versions .version a.copy-link { width: 60px; text-align: left; right: 65px; }
+
+#content.lcc-versions .version a.edit-link { width: 80px; text-align: left; right: 125px; }
 
 #content.lcc-versions .version .created .HtmlStaticText { font-size: 12px; color: #666; line-height: 33px; }
 
