@@ -239,7 +239,8 @@ class Soda4LcaParser
         $XPath->registerNamespace('epd', 'http://www.iai.kit.edu/EPD/2013');
 
         $DO->uuid = $XPath->query('//p:processDataSet/p:processInformation/p:dataSetInformation/common:UUID')->item(0)->textContent;
-        $DO->nameOrig = $this->getTextContentByPreferredLang(['de', 'en'], $XPath, '//p:processDataSet/p:processInformation/p:dataSetInformation/p:name/p:baseName');
+        $DO->multiLangNames = $this->getMultiLangTextContent($XPath, '//p:processDataSet/p:processInformation/p:dataSetInformation/p:name/p:baseName');
+        $DO->nameOrig = $this->getPreferredLanguageTextContent($DO->multiLangNames, ['de', 'en']);
 
         $Descriptions = $XPath->query('//p:processDataSet/p:processInformation/p:dataSetInformation/common:generalComment');
         $DO->description = $Descriptions->length? (string)$Descriptions->item(0)->textContent : '';
@@ -592,37 +593,45 @@ class Soda4LcaParser
 
     /**
      * Returns the text contents preferred for the given languageIdent
-     *
-     * @param  array
-     * @param  DOMXPath $XPath
-     * @param  string $query
-     * @param  DOMNode $ContextNode
-     * @return array
      */
-    private function getTextContentByPreferredLang(array $preferredLangIdents, DOMXPath $XPath, $query, $ContextNode = null)
+    private function getTextContentByPreferredLang(array $preferredLangIdents, DOMXPath $xPath, $query,
+        $contextNode = null) : ?string
     {
-        $contents = [];
-        $Nodes = $XPath->query($query, $ContextNode);
-        foreach($Nodes as $Node)
-        {
-            $lang = null;
-            if($Node->hasAttribute('xml:lang'))
-                $lang = \trim($Node->getAttribute('xml:lang'));
+        $multiLangContent = $this->getMultiLangTextContent($xPath, $query, $contextNode);
 
-            if(!is_null($lang))
-                $contents[$lang] = \trim($Node->textContent);
-            else
-                $contents[] = \trim($Node->textContent);
+        return $this->getPreferredLanguageTextContent($multiLangContent, $preferredLangIdents);
+    }
+
+    private function getPreferredLanguageTextContent(array $multiLangContent, array $preferredLangIdents) : ?string
+    {
+        foreach($preferredLangIdents as $lang) {
+            if (isset($multiLangContent[$lang])) {
+                return $multiLangContent[$lang];
+            }
         }
 
-        foreach($preferredLangIdents as $lang)
-            if(isset($contents[$lang]))
-                return $contents[$lang];
-
-        return array_shift($contents);
+        return array_shift($multiLangContent);
     }
-    // End getTextContentByPreferredLang
 
+
+    private function getMultiLangTextContent(DOMXPath $xPath, $query, $contextNode = null) : array
+    {
+        $content = [];
+        $nodes = $xPath->query($query, $contextNode);
+        foreach($nodes as $node)
+        {
+            $lang = null;
+            if($node->hasAttribute('xml:lang'))
+                $lang = \trim($node->getAttribute('xml:lang'));
+
+            if(null !== $lang)
+                $content[$lang] = \trim($node->textContent);
+            else
+                $content[] = \trim($node->textContent);
+        }
+
+        return $content;
+    }
 
 
     /**
