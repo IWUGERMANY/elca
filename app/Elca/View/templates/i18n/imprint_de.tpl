@@ -35,4 +35,5 @@
   Eine vollständige Fassung des Lizenztextes liegt dem Quelltext in der Datei COPYING bei. Sie kann auch über den nachfolgenden Link eingesehen werden.
   <a class="no-xhr" target="_blank" href="http://www.gnu.org/licenses/agpl.html">http://www.gnu.org/licenses/agpl.html</a>
   </p>
+  <p>Der Quellcode ist unter <a class="no-xhr" target="_blank" href="https://bitbucket.org/beibob/elca">https://bitbucket.org/beibob/elca</a> verfügbar.</p>
 </div>

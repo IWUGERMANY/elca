@@ -33,4 +33,7 @@
   <p>La aplicación de eLCA es bajo licencia de la versión Licencia Pública General de GNU Affero 3 (AGPLv3). Esto garantiza que cada usuario las libertades de usar, distribuir y modificar el software para dürfen.Eine versión completa de la licencia es el código fuente de la copia de archivos en. También se pueden ver en el siguiente enlace.
   <a class="no-xhr" target="_blank" href="http://www.gnu.org/licenses/agpl.html">http://www.gnu.org/licenses/agpl.html</a>
   </p>
+
+  <p><a class="no-xhr" target="_blank" href="https://bitbucket.org/beibob/elca">https://bitbucket.org/beibob/elca</a></p>
+
 </div>
