@@ -36,4 +36,7 @@
         the source code in the file COPYING. They can also be viewed using the following link.
         <a class="no-xhr" target="_blank" href="http://www.gnu.org/licenses/agpl.html">http://www.gnu.org/licenses/agpl.html</a>
     </p>
+
+    <p>Source code is available here: <a class="no-xhr" target="_blank" href="https://bitbucket.org/beibob/elca">https://bitbucket.org/beibob/elca</a></p>
+
 </div>
