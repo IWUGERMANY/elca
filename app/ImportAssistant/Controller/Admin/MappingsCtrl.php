@@ -554,6 +554,7 @@ class MappingsCtrl extends AppCtrl
             $inUnit   = $this->Request->has('u') ? $this->Request->get('u') : null;
             $Results  = ElcaProcessConfigSearchSet::findByKeywords(
                 $keywords,
+                $this->Elca->getLocale(),
                 $inUnit,
                 !$this->Access->hasAdminPrivileges(),
                 [$this->Request->db],
@@ -566,7 +567,7 @@ class MappingsCtrl extends AppCtrl
                 $DO           = $returnValues[] = new \stdClass();
                 $DO->id       = $Result->id;
                 $DO->catId    = $Result->process_category_node_id;
-                $DO->label    = $Result->name;
+                $DO->label    = \processConfigName($Result->id);
                 $DO->category = $Result->process_category_parent_node_name.' > '.$Result->process_category_node_name;
             }
 

@@ -104,7 +104,7 @@ class ElcaProcessConfigSheetView extends ElcaSheetView
         $Processes = ElcaProcessViewSet::findWithProcessDbByProcessConfigId($this->get('itemId'));
         $materials = [];
         foreach($Processes as $Process)
-            $materials[$Process->lifeCyclePhase][] = $Process->name.' ['.$Process->processDb.']';
+            $materials[$Process->lifeCyclePhase][] = \processName($Process->processId) .' ['.$Process->processDb.']';
 
         foreach($materials as $phase => $processes)
             $this->addInfo(implode(', ', $processes), Elca::$lcPhases[$phase], null, true);

@@ -126,6 +126,13 @@ class ElcaHtmlProjectElementSanity extends HtmlFormElement
 
                 break;
 
+            case "process_config_name":
+                return $htmlDOMFactory->getText(
+                    $DataObject->process_config_id
+                        ? \processConfigName($DataObject->process_config_id)
+                        : $value
+                );
+
             default:
                 return $htmlDOMFactory->getText($value);
         }

@@ -30,6 +30,7 @@ use Beibob\Blibs\StringFactory;
 use Beibob\Blibs\Url;
 use Elca\Db\ElcaCompositeElementSet;
 use Elca\Db\ElcaElement;
+use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessConfigSet;
 use Elca\Db\ElcaProcessDbSet;
 use Elca\Security\ElcaAccess;
@@ -184,7 +185,14 @@ class ElcaElementSheetView extends ElcaSheetView
         }
 
         $this->addInfo(
-            $processConfigSet->count() ? $processConfigSet->join(', ', 'name') : t('keine'),
+            $processConfigSet->count()
+                ? implode(', ', $processConfigSet->map(
+                                function(ElcaProcessConfig $processConfig) {
+                                    return \processConfigName($processConfig->getId());
+                                }
+                                )
+                )
+                : t('keine'),
             t('Baustoffe'),
             null,
             true

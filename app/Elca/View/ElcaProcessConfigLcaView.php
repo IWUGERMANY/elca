@@ -492,7 +492,7 @@ class ElcaProcessConfigLcaView extends HtmlView
             $Body = $Table->createTableBody();
             $Row  = $Body->addTableRow();
             $Row->getColumn('refValue')->setOutputElement(new HtmlText('refValue', $Converter));
-            $Row->getColumn('nameOrig')->setOutputElement(new ElcaHtmlProcessWithDatasheetLink('nameOrig'));
+            $Row->getColumn('nameOrig')->setOutputElement(new ElcaHtmlProcessWithDatasheetLink('nameOrig', $Converter));
             $Row->getColumn('epdType')->setOutputElement(new HtmlText('epdType', $Converter));
             $Row->getColumn('geographicalRepresentativeness')->setOutputElement(new HtmlText('geographicalRepresentativeness', $Converter));
             $Body->setDataSet($ProcessSet);

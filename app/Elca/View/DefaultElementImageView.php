@@ -797,7 +797,7 @@ class DefaultElementImageView extends ElementImageView
                 $componentConfig->ratio     = $component->layerAreaRatio ?? 1;
 
                 $processConfig         = $component->getProcessConfig();
-                $componentConfig->name = $processConfig->getName();
+                $componentConfig->name = \processConfigName($processConfig->getId());
 
                 $svgPattern = $processConfig->getSvgPatternId() ? $processConfig->getSvgPattern()
                     : ElcaSvgPattern::findByElementComponentId($component->id);
@@ -843,7 +843,7 @@ class DefaultElementImageView extends ElementImageView
 
             foreach ($singleComponents as $component) {
                 $componentConfig = new \stdClass();
-                $componentConfig->name = $component->getProcessConfig()->getName();
+                $componentConfig->name = \processConfigName($component->getProcessConfigId());
                 $componentConfig->quantity = $component->getQuantity();
                 $componentConfig->unit = $component->getProcessConversion()->getInUnit();
 

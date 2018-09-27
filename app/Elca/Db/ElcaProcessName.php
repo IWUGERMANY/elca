@@ -91,9 +91,9 @@ class ElcaProcessName extends DbObject
         return $elcaProcessName;
     }
 
-    public static function findByProcessIdAndLang(int $processId, string $lang, bool $force = false): ElcaProcessName
+    public static function findByProcessIdAndLang($processId, $lang, bool $force = false): ElcaProcessName
     {
-        if (!$processId) {
+        if (!$processId || !$lang) {
             return new ElcaProcessName();
         }
 

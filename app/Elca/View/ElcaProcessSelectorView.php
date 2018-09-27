@@ -149,7 +149,7 @@ class ElcaProcessSelectorView extends HtmlView
              */
             foreach($ProcessSet as $Process)
             {
-                $caption = $Process->getName();
+                $caption = \processName($Process->getId());
 
                 if ($Process->getGeographicalRepresentativeness()) {
                     $caption .= ' ['. $Process->getGeographicalRepresentativeness().']';

@@ -237,7 +237,7 @@ class ElcaHtmlProcessConfigSelectorLink extends HtmlFormElement
         $processConfig = ElcaProcessConfig::findById($procConfigId);
 
         if ($procConfigId) {
-            $procConfigName              = $processConfig->getName();
+            $procConfigName              = \processConfigName($processConfig->getId());
             $this->processCategoryNodeId = $processConfig->getProcessCategoryNodeId();
         } else {
             $procConfigName = $this->isReadonly() ? '-' : $this->caption();

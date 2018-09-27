@@ -159,7 +159,7 @@ class SearchView extends HtmlView
                 $include = $li->appendChild($this->createElement('include'));
                 $include->setAttribute('name', ElcaProcessConfigSheetView::class);
                 $include->setAttribute('itemId', $processConfig->getId());
-                $include->setAttribute('headline', $processConfig->getName());
+                $include->setAttribute('headline', \processConfigName($processConfig->getId()));
                 $include->setAttribute('readOnly', $this->get('readOnly'));
                 $include->setAttribute('isReference', $processConfig->isReference());
                 $include->setAttribute('backReference', null === $this->categoryId ? 'search' : '');

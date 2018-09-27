@@ -37,6 +37,7 @@ use Elca\Db\ElcaLifeCycleSet;
 use Elca\Db\ElcaProcess;
 use Elca\Db\ElcaProcessCategory;
 use Elca\Db\ElcaProcessConfig;
+use Elca\Db\ElcaProcessConfigName;
 use Elca\Db\ElcaProcessConfigSet;
 use Elca\Db\ElcaProcessConfigVariant;
 use Elca\Db\ElcaProcessConfigVariantSet;
@@ -50,6 +51,7 @@ use Elca\Db\ElcaProcessScenarioSet;
 use Elca\Db\ElcaProcessSet;
 use Elca\Model\Common\CategoryClassId;
 use Elca\Model\Common\Unit;
+use Elca\Model\Process\Module;
 use Elca\Model\ProcessConfig\Conversion\ConversionType;
 use Exception;
 use Soda4Lca\Db\Soda4LcaImport;
@@ -1155,6 +1157,13 @@ class Soda4LcaImporter
                             }
 
                             $numAssignments++;
+
+                            if ($ProcessConfig->getName() === $Process->getName()) {
+                                $stage = Module::fromValue($Process->getLifeCycleIdent())->stage();
+                                if ($stage->isProduction() || $stage->isUsage()) {
+                                    $this->updateProcessConfigNames($ProcessDO, $ProcessConfig);
+                                }
+                            }
                         }
 
                     } else {
@@ -1698,15 +1707,18 @@ class Soda4LcaImporter
         return ElcaProcessCategory::create($newNode->getId(), $categoryClassName, (string)$categoryClassId);
     }
 
-    private function updateProcessNames($ProcessDO, $Process): void
+    private function updateProcessNames($processDO, $process): void
     {
-        foreach ($ProcessDO->cleanMultiLangNames as $langIdent => $multiLangName) {
+        foreach ($processDO->cleanMultiLangNames as $langIdent => $multiLangName) {
             if (!$langIdent) {
                 continue;
             }
 
-            $processName = ElcaProcessName::findByProcessIdAndLang($Process->getId(), $langIdent);
-            if ($processName->isInitialized() && $processName->getName() !== $multiLangName) {
+            $processName = ElcaProcessName::findByProcessIdAndLang($process->getId(), $langIdent);
+            if ($processName->isInitialized()) {
+                if ($processName->getName() === $multiLangName) {
+                    continue;
+                }
                 $processName->setName($multiLangName);
                 $processName->update();
                 $this->Log->debug(
@@ -1714,9 +1726,37 @@ class Soda4LcaImporter
                     __METHOD__
                 );
             } else {
-                $processName = ElcaProcessName::create($Process->getId(), $langIdent, $multiLangName);
+                $processName = ElcaProcessName::create($process->getId(), $langIdent, $multiLangName);
                 $this->Log->debug(
                     'ProcessName `' . $processName->getName() . '\' [' . $processName->getLang() . '] added',
+                    __METHOD__
+                );
+            }
+        }
+    }
+
+    private function updateProcessConfigNames($processDO, ElcaProcessConfig $processConfig): void
+    {
+        foreach ($processDO->cleanMultiLangNames as $langIdent => $multiLangName) {
+            if (!$langIdent) {
+                continue;
+            }
+
+            $processConfigName = ElcaProcessConfigName::findByProcessConfigIdAndLang($processConfig->getId(), $langIdent);
+            if ($processConfigName->isInitialized()) {
+                if ($processConfigName->getName() === $multiLangName) {
+                    continue;
+                }
+                $processConfigName->setName($multiLangName);
+                $processConfigName->update();
+                $this->Log->debug(
+                    'ProcessConfigName `' . $processConfigName->getName() . '\' [' . $processConfigName->getLang() . '] updated',
+                    __METHOD__
+                );
+            } else {
+                $processConfigName = ElcaProcessConfigName::create($processConfig->getId(), $langIdent, $multiLangName);
+                $this->Log->debug(
+                    'ProcessConfigName `' . $processConfigName->getName() . '\' [' . $processConfigName->getLang() . '] added',
                     __METHOD__
                 );
             }

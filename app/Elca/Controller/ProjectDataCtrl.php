@@ -1596,6 +1596,7 @@ class ProjectDataCtrl extends AppCtrl
                 case ElcaProcessConfigSelectorView::BUILDMODE_FINAL_ENERGY_SUPPLY:
                     $Results = ElcaProcessConfigSearchSet::findFinalEnergySuppliesByKeywords(
                         $keywords,
+                        $this->Elca->getLocale(),
                         $inUnit,
                         !$this->Access->hasAdminPrivileges(),
                         $this->Elca->getProject()->getProcessDbId()
@@ -1605,6 +1606,7 @@ class ProjectDataCtrl extends AppCtrl
                 default:
                     $Results = ElcaProcessConfigSearchSet::findByKeywords(
                         $keywords,
+                        $this->Elca->getLocale(),
                         $inUnit,
                         !$this->Access->hasAdminPrivileges(),
                         [$this->Elca->getProject()->getProcessDbId()],
@@ -1617,7 +1619,7 @@ class ProjectDataCtrl extends AppCtrl
                 $DO           = $returnValues[] = new \stdClass();
                 $DO->id       = $Result->id;
                 $DO->catId    = $Result->process_category_node_id;
-                $DO->label    = $Result->name;
+                $DO->label    = \processConfigName($Result->id);
                 $DO->category = $Result->process_category_parent_node_name . ' > ' . $Result->process_category_node_name;
             }
 

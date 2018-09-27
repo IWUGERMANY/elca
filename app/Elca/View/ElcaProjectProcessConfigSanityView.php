@@ -196,6 +196,7 @@ class ElcaProjectProcessConfigSanityView extends HtmlView
             $row->getColumn('context_name')->setOutputElement(new ElcaHtmlProjectElementSanity('context_name'));
             $row->getColumn('current_process_db')->setOutputElement(new HtmlStaticText($processDb->getName()));
             $row->getColumn('process_db_names')->setOutputElement(new ElcaHtmlProjectElementSanity('process_db_names'));
+            $row->getColumn("process_config_name")->setOutputElement(new ElcaHtmlProjectElementSanity("process_config_name"));
             $row->getColumn('newProcessConfigId')->setOutputElement(
                 $newProcessConfig = new ElcaHtmlProjectElementSanity('newProcessConfigId')
             );

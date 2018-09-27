@@ -45,6 +45,7 @@ use Elca\Controller\ProjectElementsCtrl;
 use Elca\Db\ElcaCacheElement;
 use Elca\Db\ElcaCompositeElement;
 use Elca\Db\ElcaElement;
+use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessConfigSet;
 use Elca\Db\ElcaProcessDbSet;
 use Elca\Db\ElcaProcessViewSet;
@@ -611,7 +612,11 @@ class ElcaElementCompositeView extends HtmlView
         $InfoDiv = $Container->add(new HtmlTag('div', null, ['class' => 'results clearfix']));
 
         $ProcessConfigs = ElcaProcessConfigSet::findByElementId($elementId, ['name' => 'ASC']);
-        $this->appendInfo($InfoDiv, t('Baustoffe'), $ProcessConfigs->join(', ', 'name'));
+        $this->appendInfo(
+            $InfoDiv,
+            t('Baustoffe'),
+            implode(', ', $ProcessConfigs->map(function(ElcaProcessConfig $processConfig) {return \processConfigName($processConfig->getId());}))
+        );
 
         $processDbNames = ElcaProcessDbSet::findElementCompatibles(ElcaElement::findById($elementId), ['version' => 'ASC'])
             ->getArrayBy('name');

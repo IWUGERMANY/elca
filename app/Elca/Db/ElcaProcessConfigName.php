@@ -77,27 +77,27 @@ class ElcaProcessConfigName extends DbObject
 
     private $modified;
 
-    public static function create(int $processConfigId, string $lang, string $name): ElcaProcessName
+    public static function create(int $processConfigId, string $lang, string $name): ElcaProcessConfigName
     {
-        $elcaProcessName = new ElcaProcessName();
-        $elcaProcessName->setProcessConfigId($processConfigId);
-        $elcaProcessName->setLang($lang);
-        $elcaProcessName->setName($name);
+        $elcaProcessConfigName = new ElcaProcessConfigName();
+        $elcaProcessConfigName->setProcessConfigId($processConfigId);
+        $elcaProcessConfigName->setLang($lang);
+        $elcaProcessConfigName->setName($name);
 
-        if ($elcaProcessName->getValidator()->isValid()) {
-            $elcaProcessName->insert();
+        if ($elcaProcessConfigName->getValidator()->isValid()) {
+            $elcaProcessConfigName->insert();
         }
 
-        return $elcaProcessName;
+        return $elcaProcessConfigName;
     }
 
-    public static function findByprocessConfigIdAndLang(
+    public static function findByProcessConfigIdAndLang(
         int $processConfigId,
         string $lang,
         bool $force = false
-    ): ElcaProcessName {
+    ): ElcaProcessConfigName {
         if (!$processConfigId) {
-            return new ElcaProcessName();
+            return new ElcaProcessConfigName();
         }
 
         $sql = sprintf(

@@ -63,11 +63,11 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
      * @throws Exception
      * @return ElcaProcessConfigSearchSet
      */
-    public static function findByKeywords(array $keywords, $inUnit = null, $referenceOnly = false, array $processDbIds = null, $filterByProjectVariantId = null, $epdSubType = null, $force = false)
+    public static function findByKeywords(array $keywords, $languageIdent, $inUnit = null, $referenceOnly = false, array $processDbIds = null, $filterByProjectVariantId = null, $epdSubType = null, $force = false)
     {
-        $initValues = array();
+        $initValues = array('locale' => $languageIdent);
 
-        if (!$conditions = self::getSearchConditions($keywords, 'name', $initValues))
+        if (!$conditions = self::getSearchConditions($keywords, 'p.name', 'names.name', $initValues))
             return new ElcaProcessConfigSearchSet();
 
         if ($inUnit) {
@@ -84,7 +84,6 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
                 $initValues['inUnit'] = $inUnit;
                 $conditions .= ' AND c.in_unit = :inUnit';
             }
-
         }
 
         if ($referenceOnly)
@@ -111,11 +110,13 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
         $sql = sprintf("SELECT DISTINCT p.*
                           FROM %s p
                           JOIN %s c ON p.id = c.process_config_id
+                          LEFT JOIN %s names ON p.id = names.process_config_id AND names.lang = :locale
                          WHERE %s
                       ORDER BY process_category_node_name
-                             , name"
+                             , p.name"
             , self::VIEW_PROCESS_CONFIG_SEARCH
             , ElcaProcessConversion::TABLE_NAME
+            , ElcaProcessConfigName::TABLE_NAME
             , $conditions
         );
 
@@ -132,14 +133,15 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
      *
      * @return string
      */
-    private static function getSearchConditions(array $keywords, $searchField, array &$initValues)
+    private static function getSearchConditions(array $keywords, $searchField, $multiLanguageField, array &$initValues)
     {
         $lftBoundary = $rgtBoundary = '%';
 
-        $conditions = false;
         $queries = array();
         foreach ($keywords as $index => $token) {
-            $queries[] = sprintf("%s ilike :%s", $searchField, $varName = 'token' . $index);
+            $varName = 'token' . $index;
+
+            $queries[] = sprintf("(%s ilike :%s OR %s ilike :%s)", $searchField, $varName, $multiLanguageField, $varName);
             $initValues[$varName] = $lftBoundary . $token . $rgtBoundary;
         }
 
@@ -162,11 +164,11 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
      * @throws Exception
      * @return ElcaProcessConfigSearchSet
      */
-    public static function findFinalEnergySuppliesByKeywords(array $keywords, $inUnit = null, $referenceOnly = false, $activeProcessesOnly = false, $force = false)
+    public static function findFinalEnergySuppliesByKeywords(array $keywords, $languageIdent, $inUnit = null, $referenceOnly = false, $activeProcessesOnly = false, $force = false)
     {
-        $initValues = array('opAsSupply' => ElcaProcessConfigAttribute::IDENT_OP_AS_SUPPLY);
+        $initValues = ['locale' => $languageIdent, 'opAsSupply' => ElcaProcessConfigAttribute::IDENT_OP_AS_SUPPLY];
 
-        if (!$conditions = self::getSearchConditions($keywords, 'name', $initValues))
+        if (!$conditions = self::getSearchConditions($keywords, 'name', 'names.name',$initValues))
             return new ElcaProcessConfigSearchSet();
 
         if ($inUnit) {
@@ -188,12 +190,14 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
                           FROM %s p
                           JOIN %s pca ON p.id = pca.process_config_id AND pca.ident = :opAsSupply AND pca.numeric_value = 1
                           JOIN %s c ON p.id = c.process_config_id
+                          LEFT JOIN %s names ON p.id = names.process_config_id AND names.lang = :locale
                          WHERE %s
                       ORDER BY process_category_node_name
                              , name"
             , self::VIEW_PROCESS_CONFIG_SEARCH
             , ElcaProcessConfigAttribute::TABLE_NAME
             , ElcaProcessConversion::TABLE_NAME
+            , ElcaProcessConfigName::TABLE_NAME
             , $conditions
         );
 

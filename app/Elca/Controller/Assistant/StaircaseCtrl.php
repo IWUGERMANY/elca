@@ -184,7 +184,7 @@ class StaircaseCtrl extends TabsCtrl
         {
             $keywords = explode(' ', \trim((string)$this->Request->term));
             $inUnit = $this->Request->has('u')? $this->Request->get('u') : null;
-            $Results = ElcaProcessConfigSearchSet::findByKeywords($keywords, $inUnit, !$this->Access->hasAdminPrivileges(),
+            $Results = ElcaProcessConfigSearchSet::findByKeywords($keywords, $this->Elca->getLocale(), $inUnit, !$this->Access->hasAdminPrivileges(),
                 $this->context == ProjectElementsCtrl::CONTEXT? null : [$this->Elca->getProject()->getProcessDbId()], null, $this->Request->epdSubType);
 
             $returnValues = [];
@@ -193,7 +193,7 @@ class StaircaseCtrl extends TabsCtrl
                 $DO = $returnValues[] = new \stdClass();
                 $DO->id = $Result->id;
                 $DO->catId = $Result->process_category_node_id;
-                $DO->label = $Result->name;
+                $DO->label = \processConfigName($Result->id);
                 $DO->category = $Result->process_category_parent_node_name .' > '. $Result->process_category_node_name;
             }
 

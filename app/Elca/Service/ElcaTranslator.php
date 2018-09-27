@@ -216,18 +216,10 @@ namespace Elca\Service {
 // End ElcaTranslator
 
 namespace {
-
     use Beibob\Blibs\Environment;
+    use Elca\Service\ProcessConfigNameTranslator;
+    use Elca\Service\ProcessNameTranslator;
 
-    /**
-     * @param       $id
-     * @param null  $domain
-     * @param array $parameters
-     * @param null  $locale
-     *
-     * @return mixed
-     * @throws \DI\NotFoundException
-     */
     function t($id, $domain = null, $parameters = array(), $locale = null)
     {
         return Environment::getInstance()->getContainer()->get('Elca\Service\ElcaTranslator')->trans(
@@ -237,5 +229,26 @@ namespace {
             $locale
         );
     }
-    // End t
+
+    function processConfigName(int $processConfigId, string $locale = null): string
+    {
+        return Environment::getInstance()
+                          ->getContainer()
+                          ->get(ProcessConfigNameTranslator::class)
+                          ->trans(
+                              $processConfigId,
+                              $locale
+                          );
+    }
+
+    function processName(int $processId, string $locale = null): string
+    {
+        return Environment::getInstance()
+                          ->getContainer()
+                          ->get(ProcessNameTranslator::class)
+                          ->trans(
+                              $processId,
+                              $locale
+                          );
+    }
 }
