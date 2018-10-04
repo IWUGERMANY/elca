@@ -39,6 +39,7 @@ class UnitNameMapper
         'Item(s)' => Unit::PIECE,
         'stück'   => Unit::PIECE,
         'Bauteil' => Unit::PIECE,
+        'pcs.'    => Unit::PIECE,
     ];
 
     public static function unitByName($unit): Unit
