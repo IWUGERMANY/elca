@@ -320,7 +320,7 @@ CREATE OR REPLACE VIEW elca.element_search_v AS
 -------------------------------------------------------------------------------
 
 DROP VIEW IF EXISTS elca.process_configs_extended_search_v;
-CREATE VIEW elca.process_configs_extended_search_v AS
+CREATE OR REPLACE VIEW elca.process_configs_extended_search_v AS
     SELECT
         pc.id
         , pc.process_category_node_id
@@ -345,10 +345,12 @@ CREATE VIEW elca.process_configs_extended_search_v AS
         , pc.created
         , pc.modified
         , to_tsvector('german', pc.name || ' ' ||
+                                coalesce(array_to_string(array_agg(DISTINCT n.name :: text), ' '), '') || ' ' ||
                                 coalesce(array_to_string(array_agg(DISTINCT p.uuid :: text), ' '), '') || ' ' ||
                                 coalesce(array_to_string(array_agg(DISTINCT p.name_orig), ' '), '')) AS search_vector
     FROM elca.process_configs pc
         LEFT JOIN elca.process_assignments_v p ON pc.id = p.process_config_id
+        LEFT JOIN elca.process_config_names n ON pc.id = n.process_config_id
     GROUP BY pc.id
         , pc.process_category_node_id
         , pc.name
