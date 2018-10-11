@@ -22,6 +22,7 @@
  * along with eLCA. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 namespace Elca\View;
 
 use Beibob\Blibs\Environment;
@@ -50,6 +51,7 @@ use Elca\Db\ElcaLifeCycle;
 use Elca\Db\ElcaProcessCategory;
 use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessConfigAttribute;
+use Elca\Db\ElcaProcessConfigName;
 use Elca\Db\ElcaProcessConfigVariantSet;
 use Elca\Db\ElcaProcessConversion;
 use Elca\Db\ElcaProcessSet;
@@ -65,6 +67,7 @@ use Elca\Model\ProcessConfig\Conversion\RecommendedConversion;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycle;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycleRepository;
 use Elca\Model\ProcessConfig\ProcessConfigId;
+use Elca\Service\ElcaLocale;
 use Elca\Service\ProcessConfig\Conversions;
 use Elca\View\helpers\ElcaHtmlFormElementLabel;
 use Elca\View\helpers\ElcaHtmlNumericInput;
@@ -91,26 +94,26 @@ class ElcaProcessConfigGeneralView extends HtmlView
     const BUILDMODE_CONVERSIONS = 'conv';
 
     /**
+     * @translate value 'Ergänzt durch das BBSR'
+     */
+    const NO_IDENT = 'Ergänzt durch das BBSR';
+
+    /**
      * Conversion ident string map
      *
      * @translate array Elca\View\ElcaProcessConfigGeneralView::$conversionIdents
      */
     public static $conversionIdents = [
-        ElcaProcessConversion::IDENT_INITIAL         => 'Umrechnung nach Baustoffdatenbank',
-        ElcaProcessConversion::IDENT_PRODUCTION      => 'Bezugsgröße aus Baustoffdatenbank',
-        ConversionType::GROSS_DENSITY   => 'Rohdichte',
-        ConversionType::BULK_DENSITY    => 'Schüttdichte',
-        ConversionType::AVG_MPUA        => 'Flächengewicht',
-        ConversionType::LAYER_THICKNESS => 'Schichtdicke',
-        ConversionType::PRODUCTIVENESS  => 'Ergiebigkeit',
-        ConversionType::LINEAR_DENSITY  => 'Längengewicht',
-        ConversionType::ENERGY_EQUIVALENT  => 'Energieäquivalent',
+        ElcaProcessConversion::IDENT_INITIAL    => 'Umrechnung nach Baustoffdatenbank',
+        ElcaProcessConversion::IDENT_PRODUCTION => 'Bezugsgröße aus Baustoffdatenbank',
+        ConversionType::GROSS_DENSITY           => 'Rohdichte',
+        ConversionType::BULK_DENSITY            => 'Schüttdichte',
+        ConversionType::AVG_MPUA                => 'Flächengewicht',
+        ConversionType::LAYER_THICKNESS         => 'Schichtdicke',
+        ConversionType::PRODUCTIVENESS          => 'Ergiebigkeit',
+        ConversionType::LINEAR_DENSITY          => 'Längengewicht',
+        ConversionType::ENERGY_EQUIVALENT       => 'Energieäquivalent',
     ];
-
-    /**
-     * @translate value 'Ergänzt durch das BBSR'
-     */
-    const NO_IDENT = 'Ergänzt durch das BBSR';
 
     /**
      * Process config
@@ -128,6 +131,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
      * Current buildmode
      */
     private $buildMode;
+
     private $processCategoryNodeId;
 
     /**
@@ -161,11 +165,15 @@ class ElcaProcessConfigGeneralView extends HtmlView
          */
         $this->processConfig = ElcaProcessConfig::findById($this->get('processConfigId'));
 
-        $this->buildMode = $this->get('buildMode', self::BUILDMODE_DEFAULT);
-        $this->processCategoryNodeId = $this->get('processCategoryNodeId', $this->processConfig->getProcessCategoryNodeId());
+        $this->buildMode             = $this->get('buildMode', self::BUILDMODE_DEFAULT);
+        $this->processCategoryNodeId = $this->get(
+            'processCategoryNodeId',
+            $this->processConfig->getProcessCategoryNodeId()
+        );
 
-        if ($this->get('readOnly', false))
+        if ($this->get('readOnly', false)) {
             $this->readOnly = true;
+        }
 
         $container                        = Environment::getInstance()->getContainer();
         $this->conversionService          = $container->get(Conversions::class);
@@ -186,8 +194,9 @@ class ElcaProcessConfigGeneralView extends HtmlView
         $Form->setAttribute('id', 'processConfig');
 
 
-        if ($this->readOnly)
+        if ($this->readOnly) {
             $Form->setReadonly();
+        }
 
         if ($this->has('Validator')) {
             $Form->setValidator($this->get('Validator'));
@@ -198,8 +207,9 @@ class ElcaProcessConfigGeneralView extends HtmlView
             $Form->addClass('highlight-changes');
             $Form->setDataObject($this->processConfig);
             $Form->add(new HtmlHiddenField('processConfigId', $this->processConfig->getId()));
-        } else
+        } else {
             $Form->add(new HtmlHiddenField('processCategoryNodeId', $this->processCategoryNodeId));
+        }
 
         switch ($this->buildMode) {
             case self::BUILDMODE_CONVERSIONS:
@@ -254,27 +264,87 @@ class ElcaProcessConfigGeneralView extends HtmlView
         $lftGroup->addClass('clearfix properties column');
 
         $lftGroup->add(new ElcaHtmlFormElementLabel(t('Name'), new HtmlTextInput('name'), true));
+        $processConfigName = ElcaProcessConfigName::findByProcessConfigIdAndLang(
+            $this->processConfig->getId(),
+            Environment::getInstance()->getContainer()->get(ElcaLocale::class)->getLocale()
+        );
+        $lftGroup->add(
+            new ElcaHtmlFormElementLabel(
+                t('Übersetzung'), new HtmlStaticText(
+                    $processConfigName->isInitialized()
+                    ? $processConfigName->getName() .' ['. $processConfigName->getLang() .']'
+                    : 'keine Übersetzung'
+            )
+            )
+        );
         $lftGroup->add(new ElcaHtmlFormElementLabel(t('Notizen'), new HtmlTextarea('description')));
         $lftGroup->add(new ElcaHtmlFormElementLabel(t('Sichtbar für Anwender'), new HtmlCheckbox('isReference')));
 
-        $is4108Compat = ElcaProcessConfigAttribute::findValue($this->processConfig->getId(), ElcaProcessConfigAttribute::IDENT_4108_COMPAT);
-        $lftGroup->add(new ElcaHtmlFormElementLabel(t('4108 Baustoff'), new HtmlCheckbox('is4108Compat', $is4108Compat, '', $this->readOnly)));
+        $is4108Compat = ElcaProcessConfigAttribute::findValue(
+            $this->processConfig->getId(),
+            ElcaProcessConfigAttribute::IDENT_4108_COMPAT
+        );
+        $lftGroup->add(
+            new ElcaHtmlFormElementLabel(
+                t('4108 Baustoff'),
+                new HtmlCheckbox('is4108Compat', $is4108Compat, '', $this->readOnly)
+            )
+        );
 
 
         $rgtGroup = $form->add(new HtmlFormGroup(t(t('Nutzungsdauern'))));
         $rgtGroup->addClass('clearfix life-times column right');
-        $rgtGroup->add(new ElcaHtmlFormElementLabel(t('Allgemeine Information zur Nutzungsdauer'), new HtmlTextInput('lifeTimeInfo')));
+        $rgtGroup->add(
+            new ElcaHtmlFormElementLabel(
+                t('Allgemeine Information zur Nutzungsdauer'),
+                new HtmlTextInput('lifeTimeInfo')
+            )
+        );
         $rgtGroup->add(new ElcaHtmlFormElementLabel(t('Min.'), new ElcaHtmlNumericInput('minLifeTime'), false, 'a'));
-        $rgtGroup->add(new ElcaHtmlFormElementLabel(t('Info zur minimalen Nutzungsdauer'), new HtmlTextInput('minLifeTimeInfo')));
+        $rgtGroup->add(
+            new ElcaHtmlFormElementLabel(t('Info zur minimalen Nutzungsdauer'), new HtmlTextInput('minLifeTimeInfo'))
+        );
         $rgtGroup->add(new ElcaHtmlFormElementLabel(t('Mittel'), new ElcaHtmlNumericInput('avgLifeTime'), false, 'a'));
-        $rgtGroup->add(new ElcaHtmlFormElementLabel(t('Info zur mittleren Nutzungsdauer'), new HtmlTextInput('avgLifeTimeInfo')));
+        $rgtGroup->add(
+            new ElcaHtmlFormElementLabel(t('Info zur mittleren Nutzungsdauer'), new HtmlTextInput('avgLifeTimeInfo'))
+        );
         $rgtGroup->add(new ElcaHtmlFormElementLabel(t('Max.'), new ElcaHtmlNumericInput('maxLifeTime'), false, 'a'));
-        $rgtGroup->add(new ElcaHtmlFormElementLabel(t('Info zur maximalen Nutzungsdauer'), new HtmlTextInput('maxLifeTimeInfo')));
+        $rgtGroup->add(
+            new ElcaHtmlFormElementLabel(t('Info zur maximalen Nutzungsdauer'), new HtmlTextInput('maxLifeTimeInfo'))
+        );
 
         $numberFormatConverter = new ElcaNumberFormatConverter(2);
-        $lftGroup->add(new ElcaHtmlFormElementLabel(t('Rohdichte'), new ElcaHtmlNumericInput('density', null, $this->readOnly, $numberFormatConverter), false, 'kg / m³'));
-        $lftGroup->add(new ElcaHtmlFormElementLabel(t('Dicke'), new ElcaHtmlNumericInput('defaultSize', $this->processConfig->getDefaultSize() * 1000, $this->readOnly, $numberFormatConverter), false, 'mm', t('Vorgabewert für die Dicke')));
-        $lftGroup->add(new ElcaHtmlFormElementLabel(t('Faktor Hs/Hi'), new ElcaHtmlNumericInput('fHsHi', null, $this->readOnly, $numberFormatConverter), false, null, t('Vorgabewert für Nutzungsbaustoffe')));
+        $lftGroup->add(
+            new ElcaHtmlFormElementLabel(
+                t('Rohdichte'),
+                new ElcaHtmlNumericInput('density', null, $this->readOnly, $numberFormatConverter),
+                false,
+                'kg / m³'
+            )
+        );
+        $lftGroup->add(
+            new ElcaHtmlFormElementLabel(
+                t('Dicke'),
+                new ElcaHtmlNumericInput(
+                    'defaultSize',
+                    $this->processConfig->getDefaultSize() * 1000,
+                    $this->readOnly,
+                    $numberFormatConverter
+                ),
+                false,
+                'mm',
+                t('Vorgabewert für die Dicke')
+            )
+        );
+        $lftGroup->add(
+            new ElcaHtmlFormElementLabel(
+                t('Faktor Hs/Hi'),
+                new ElcaHtmlNumericInput('fHsHi', null, $this->readOnly, $numberFormatConverter),
+                false,
+                null,
+                t('Vorgabewert für Nutzungsbaustoffe')
+            )
+        );
         //$LftGroup->add(new ElcaHtmlFormElementLabel(t('Wärmeleitfähigkeit'), new ElcaHtmlNumericInput('thermalConductivity'), false, 'W / mk'));
         //$LftGroup->add(new ElcaHtmlFormElementLabel(t('Wärmedurchgangswiderstand'), new ElcaHtmlNumericInput('thermalResistance'), false, 'Km² / W'));
 
@@ -285,7 +355,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
 
             // only show in transport category
             if ($ProcessCategory->getRefNum() == '9.03') {
-                $payLoad = ElcaProcessConfigAttribute::findValue(
+                $payLoad    = ElcaProcessConfigAttribute::findValue(
                     $this->processConfig->getId(),
                     ElcaProcessConfigAttribute::IDENT_TRANSPORT_PAYLOAD
                 );
@@ -331,13 +401,16 @@ class ElcaProcessConfigGeneralView extends HtmlView
                 $PatternSelect->setDefaultSvgPatternId($ProcessCategory->getSvgPatternId());
             }
         }
-        
+
         /**
          * Add operational attributes
          */
         if ($this->processConfig &&
             $this->processConfig->isInitialized() &&
-            ElcaProcessSet::dbCountByProcessConfigId($this->processConfig->getId(), ['life_cycle_phase' => ElcaLifeCycle::PHASE_OP]) > 0
+            ElcaProcessSet::dbCountByProcessConfigId(
+                $this->processConfig->getId(),
+                ['life_cycle_phase' => ElcaLifeCycle::PHASE_OP]
+            ) > 0
         ) {
 
             $opAsSupply     = ElcaProcessConfigAttribute::findValue(
@@ -377,9 +450,12 @@ class ElcaProcessConfigGeneralView extends HtmlView
             $processConfigId   = new ProcessConfigId($this->processConfig->getId());
             $processLifeCycles = $this->processLifeCycleRepository->findAllByProcessConfigId($processConfigId);
 
-            usort($processLifeCycles, function(ProcessLifeCycle $a, ProcessLifeCycle $b) {
-               return $a->processDbId()->value() <=> $b->processDbId()->value();
-            });
+            usort(
+                $processLifeCycles,
+                function (ProcessLifeCycle $a, ProcessLifeCycle $b) {
+                    return $a->processDbId()->value() <=> $b->processDbId()->value();
+                }
+            );
 
             $table = new HtmlTable('quantitative-references');
             $table->addColumn('processDb', t('Baustoffdatenbank'))->addClass('process-db');
@@ -389,8 +465,10 @@ class ElcaProcessConfigGeneralView extends HtmlView
             $head->addTableRow(new HtmlTableHeadRow());
 
             $body = $table->createTableBody();
-            $row = $body->addTableRow();
-            $row->getColumn('quantitativeReference')->setOutputElement(new ElcaHtmlNumericText('quantitativeReference'));
+            $row  = $body->addTableRow();
+            $row->getColumn('quantitativeReference')->setOutputElement(
+                new ElcaHtmlNumericText('quantitativeReference')
+            );
 
             $dataSet = [];
             foreach ($processLifeCycles as $processLifeCycle) {
@@ -402,8 +480,11 @@ class ElcaProcessConfigGeneralView extends HtmlView
                 }
 
                 $dataSet[] = (object)[
-                    'processDb' => $processDb->name(),
-                    'quantitativeReference' => ElcaNumberFormat::formatQuantity($quantitativeReference->value(), (string)$quantitativeReference->unit()),
+                    'processDb'             => $processDb->name(),
+                    'quantitativeReference' => ElcaNumberFormat::formatQuantity(
+                        $quantitativeReference->value(),
+                        (string)$quantitativeReference->unit()
+                    ),
                 ];
             }
 
@@ -433,8 +514,9 @@ class ElcaProcessConfigGeneralView extends HtmlView
         if (!$Form->isReadonly()) {
             $ButtonGroup->add(new ElcaHtmlSubmitButton('saveGeneral', t('Speichern'), true));
 
-            if (!$this->processConfig instanceOf ElcaProcessConfig || !$this->processConfig->isInitialized())
+            if (!$this->processConfig instanceOf ElcaProcessConfig || !$this->processConfig->isInitialized()) {
                 $ButtonGroup->add(new ElcaHtmlSubmitButton('cancel', t('Abbruch')));
+            }
         }
     }
     // End appendButtons
@@ -448,15 +530,21 @@ class ElcaProcessConfigGeneralView extends HtmlView
      */
     private function appendConversions(HtmlForm $Form, $addNew = false)
     {
-        if (!$this->processConfig instanceOf ElcaProcessConfig || !$this->processConfig->isInitialized())
+        if (!$this->processConfig instanceOf ElcaProcessConfig || !$this->processConfig->isInitialized()) {
             return;
+        }
 
         $rightGroup = $Form->add(new HtmlFormGroup(t('Umrechnungsfaktoren')));
         $rightGroup->setAttribute('id', 'conversions');
         $rightGroup->addClass('clearfix column clear');
 
         if (!$this->readOnly) {
-            $Link = $rightGroup->add(new HtmlLink('+ ' . t('Hinzufügen'), Url::factory('/processes/addConversion/', ['p' => $this->processConfig->getId()])));
+            $Link = $rightGroup->add(
+                new HtmlLink(
+                    '+ ' . t('Hinzufügen'),
+                    Url::factory('/processes/addConversion/', ['p' => $this->processConfig->getId()])
+                )
+            );
             $Link->addClass('function-link add-conversion');
             $Link->setAttribute('title', t('Einen neuen Umrechnungsfaktor hinzufügen'));
         }
@@ -469,14 +557,15 @@ class ElcaProcessConfigGeneralView extends HtmlView
         $Row->add(new HtmlTag('h5', t('Informationen'), ['class' => 'hl-ident']));
 
         if ($this->processConfig instanceOf ElcaProcessConfig && $this->processConfig->isInitialized()) {
-            $processConfigId       = new ProcessConfigId($this->processConfig->getId());
-            $requiredConversions   = $this->conversionService->findAllRequiredConversions($processConfigId);
-            $requiredUnits         = $this->conversionService->findAllRequiredUnits($processConfigId);
-            $additionalConversions = $this->conversionService->findAllAdditionalConversions($processConfigId);
+            $processConfigId        = new ProcessConfigId($this->processConfig->getId());
+            $requiredConversions    = $this->conversionService->findAllRequiredConversions($processConfigId);
+            $requiredUnits          = $this->conversionService->findAllRequiredUnits($processConfigId);
+            $additionalConversions  = $this->conversionService->findAllAdditionalConversions($processConfigId);
             $recommendedConversions = $this->conversionService->findRecommendedConversions($processConfigId);
 
-            foreach ($requiredConversions as $requiredConversion)
+            foreach ($requiredConversions as $requiredConversion) {
                 $this->appendConversionRow($rightGroup, $requiredConversion, $requiredUnits, true);
+            }
 
             if (!$additionalConversions->isEmpty()) {
                 $rightGroup->add(new HtmlTag('br'));
@@ -494,16 +583,22 @@ class ElcaProcessConfigGeneralView extends HtmlView
                 }
             }
 
-            if ($addNew)
+            if ($addNew) {
                 $this->appendConversionRow($rightGroup, null, $requiredUnits);
+            }
         }
     }
 
 
-    private function appendConversionRow(HtmlElement $container, Conversion $conversion = null, array $requiredUnits = [], bool $isRequired = false)
-    {
+    private function appendConversionRow(
+        HtmlElement $container,
+        Conversion $conversion = null,
+        array $requiredUnits = [],
+        bool $isRequired = false
+    ) {
         if (null === $conversion) {
             $this->appendNewConversionRow($container, $requiredUnits, $isRequired);
+
             return;
         }
 
@@ -511,11 +606,12 @@ class ElcaProcessConfigGeneralView extends HtmlView
             return;
         }
 
-        $isImported = $conversion instanceof ImportedLinearConversion;
-        $isInUse = $this->conversionService->isBeingUsed($conversion);
-        $inUnit = (string)$conversion->fromUnit();
-        $outUnit = (string)$conversion->toUnit();
-        $conversionId = $conversion instanceof LinearConversion && $conversion->hasSurrogateId() ? $conversion->surrogateId() : 'new_'.$inUnit.'_'.$outUnit;
+        $isImported     = $conversion instanceof ImportedLinearConversion;
+        $isInUse        = $this->conversionService->isBeingUsed($conversion);
+        $inUnit         = (string)$conversion->fromUnit();
+        $outUnit        = (string)$conversion->toUnit();
+        $conversionId   = $conversion instanceof LinearConversion && $conversion->hasSurrogateId()
+            ? $conversion->surrogateId() : 'new_' . $inUnit . '_' . $outUnit;
         $isGrossDensity = $conversion->type()->isGrossDensity();
 
         $row = $container->add(new HtmlTag('div'));
@@ -526,13 +622,18 @@ class ElcaProcessConfigGeneralView extends HtmlView
          */
         if ($isRequired || $isImported || $isGrossDensity) {
             $row->add(new HtmlHiddenField('inUnit_' . $conversionId, $inUnit));
-            $this->appendElement($row, new HtmlStaticText(ElcaNumberFormat::formatQuantity(1, $inUnit)))->addClass('elt-in-unit');
+            $this->appendElement($row, new HtmlStaticText(ElcaNumberFormat::formatQuantity(1, $inUnit)))->addClass(
+                'elt-in-unit'
+            );
         } else {
-            $this->appendElement($row, $inSelect = new HtmlSelectbox('inUnit_' . $conversionId, $conversion ? $inUnit : null))->addClass('elt-in-unit');
+            $this->appendElement(
+                $row,
+                $inSelect = new HtmlSelectbox('inUnit_' . $conversionId, $conversion ? $inUnit : null)
+            )->addClass('elt-in-unit');
             $inSelect->add(new HtmlSelectOption('', ''));
 
             foreach (Elca::$units as $unit => $prettyUnit) {
-                $inSelect->add(new HtmlSelectOption('1 '.$prettyUnit, $unit));
+                $inSelect->add(new HtmlSelectOption('1 ' . $prettyUnit, $unit));
             }
         }
 
@@ -543,9 +644,18 @@ class ElcaProcessConfigGeneralView extends HtmlView
          */
         if (!$conversion instanceof RecommendedConversion && ($isImported || $isGrossDensity)) {
             $row->add(new HtmlHiddenField('factor_' . $conversionId, $conversion->factor()));
-            $this->appendElement($row, new HtmlStaticText(ElcaNumberFormat::toString($conversion->factor(), 3)))->addClass('elt-factor');
+            $this->appendElement(
+                $row,
+                new HtmlStaticText(ElcaNumberFormat::toString($conversion->factor(), 3))
+            )->addClass('elt-factor');
         } else {
-            $this->appendElement($row, new ElcaHtmlNumericInput('factor_' . $conversionId, $conversion instanceof LinearConversion ? $conversion->factor() : null))->addClass('elt-factor');
+            $this->appendElement(
+                $row,
+                new ElcaHtmlNumericInput(
+                    'factor_' . $conversionId,
+                    $conversion instanceof LinearConversion ? $conversion->factor() : null
+                )
+            )->addClass('elt-factor');
         }
 
         /**
@@ -553,10 +663,14 @@ class ElcaProcessConfigGeneralView extends HtmlView
          */
         if ($isRequired || $isImported || $isGrossDensity) {
             $row->add(new HtmlHiddenField('outUnit_' . $conversionId, $outUnit));
-            $this->appendElement($row, new HtmlStaticText(ElcaNumberFormat::formatUnit($outUnit)))->addClass('elt-out-unit');
-        }
-        else {
-            $this->appendElement($row, $outSelect = new HtmlSelectbox('outUnit_' . $conversionId, $conversion ? $outUnit : null))->addClass('elt-out-unit');
+            $this->appendElement($row, new HtmlStaticText(ElcaNumberFormat::formatUnit($outUnit)))->addClass(
+                'elt-out-unit'
+            );
+        } else {
+            $this->appendElement(
+                $row,
+                $outSelect = new HtmlSelectbox('outUnit_' . $conversionId, $conversion ? $outUnit : null)
+            )->addClass('elt-out-unit');
 
             if (\count($requiredUnits) !== 1) {
                 $outSelect->add(new HtmlSelectOption('', ''));
@@ -576,7 +690,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
 
         if (!($isRequired || $isImported || $isInUse || $isGrossDensity || $conversion instanceof RecommendedConversion)) {
             if (!$this->readOnly && !$isRequired) {
-                $row->add(new HtmlLink(t('Löschen'), '/processes/deleteConversion/?id='.$conversionId))->addClass(
+                $row->add(new HtmlLink(t('Löschen'), '/processes/deleteConversion/?id=' . $conversionId))->addClass(
                     'delete-link no-history'
                 );
             }
@@ -592,7 +706,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
         $inSelect->add(new HtmlSelectOption('', ''));
 
         foreach (Elca::$units as $unit => $prettyUnit) {
-            $inSelect->add(new HtmlSelectOption('1 '.$prettyUnit, $unit));
+            $inSelect->add(new HtmlSelectOption('1 ' . $prettyUnit, $unit));
         }
 
         $this->appendElement($row, new HtmlEntityReference('rArr'))->addClass('elt-arrow');
@@ -610,7 +724,9 @@ class ElcaProcessConfigGeneralView extends HtmlView
         $this->appendElement($row, new HtmlStaticText(t(self::NO_IDENT)))->addClass('elt-ident');
 
         if (!$this->readOnly && !$isRequired) {
-            $row->add(new HtmlLink(t('Abbrechen'), '/processes/' . $this->processConfig->getId().'/'))->addClass('cancel-link no-history');
+            $row->add(new HtmlLink(t('Abbrechen'), '/processes/' . $this->processConfig->getId() . '/'))->addClass(
+                'cancel-link no-history'
+            );
         }
     }
 
@@ -624,8 +740,12 @@ class ElcaProcessConfigGeneralView extends HtmlView
      *
      * @return HtmlElement -
      */
-    private function appendElement(HtmlElement $container, HtmlElement $element, array $changedElements = [], $caption = '') : HtmlElement
-    {
+    private function appendElement(
+        HtmlElement $container,
+        HtmlElement $element,
+        array $changedElements = [],
+        $caption = ''
+    ): HtmlElement {
         $elt = $container->add(new ElcaHtmlFormElementLabel($caption, $element));
         if ($element instanceof HtmlFormElement && isset($changedElements[$element->getName()])) {
             $elt->addClass('changed');
@@ -643,13 +763,18 @@ class ElcaProcessConfigGeneralView extends HtmlView
      */
     private function appendVariants(DOMElement $Context)
     {
-        if (!$processConfigId = $this->processConfig->getId())
+        if (!$processConfigId = $this->processConfig->getId()) {
             return;
+        }
 
-        $ProcessConfigVariants = ElcaProcessConfigVariantSet::find(['process_config_id' => $processConfigId], ['name' => 'ASC']);
+        $ProcessConfigVariants = ElcaProcessConfigVariantSet::find(
+            ['process_config_id' => $processConfigId],
+            ['name' => 'ASC']
+        );
 
-        if (!$ProcessConfigVariants->count())
+        if (!$ProcessConfigVariants->count()) {
             return;
+        }
 
         $Container = $Context->appendChild($this->getDiv(['id' => 'processConfigVariants']));
 
@@ -658,12 +783,12 @@ class ElcaProcessConfigGeneralView extends HtmlView
         $Table = new HtmlTable('elca-process-config-variants');
         $Table->addColumn('name', t('Name'))->addClass('name');
         $Table->addColumn('refValue', t('Bezugsgröße'))->addClass('refValue');
-        $Head = $Table->createTableHead();
+        $Head    = $Table->createTableHead();
         $HeadRow = $Head->addTableRow(new HtmlTableHeadRow());
         $HeadRow->addClass('table-headlines');
 
         $Body = $Table->createTableBody();
-        $Row = $Body->addTableRow();
+        $Row  = $Body->addTableRow();
         $Row->getColumn('refValue')->setOutputElement(new HtmlText('refValue', new ElcaProcessesConverter()));
 
         $Body->setDataSet($ProcessConfigVariants);
@@ -686,11 +811,9 @@ class ElcaProcessConfigGeneralView extends HtmlView
 
         if ($conversion instanceof ImportedLinearConversion) {
             $parts[] = t('Umrechnung nach Baustoffdatenbank');
-        }
-        elseif ($conversion instanceof RecommendedConversion) {
+        } elseif ($conversion instanceof RecommendedConversion) {
             $parts[] = t('Empfohlene Umrechnung');
-        }
-        else {
+        } else {
             $parts[] = self::NO_IDENT;
         }
 

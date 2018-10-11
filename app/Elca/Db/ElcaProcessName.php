@@ -40,7 +40,7 @@ class ElcaProcessName extends DbObject
     /**
      * Primary key
      */
-    private static $primaryKey = array('id');
+    private static $primaryKey = ['processId', 'lang'];
 
     /**
      * Column types
