@@ -25,6 +25,7 @@ CREATE TABLE elca.process_config_names
     , FOREIGN KEY ("process_config_id") REFERENCES elca.process_configs ("id") ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+DROP VIEW IF EXISTS elca.process_configs_extended_search_v;
 CREATE OR REPLACE VIEW elca.process_configs_extended_search_v AS
     SELECT
         pc.id
