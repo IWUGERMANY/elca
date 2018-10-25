@@ -36,6 +36,7 @@ use Beibob\HtmlTools\HtmlLink;
 use Beibob\HtmlTools\HtmlTag;
 use Beibob\HtmlTools\HtmlTextInput;
 use Elca\View\helpers\ElcaHtmlFormElementLabel;
+use Elca\View\helpers\ElcaHtmlNumericInput;
 use Elca\View\helpers\ElcaHtmlSubmitButton;
 
 /**
@@ -69,7 +70,7 @@ class EnergySourceCostsView extends HtmlView
     {
         $container = $this->appendChild($this->getDiv(['id' => 'content', 'class' => 'lcc-energy-costs']));
 
-        $form = new HtmlForm('lccEnergyCostsForm', '/lcc/admin/versions/saveEnergySourceCosts/');
+        $form = new HtmlForm('lccEnergyCostsForm', '/lcc/admin/energySourceCosts/save');
         $form->addClass('clearfix highlight-changes');
         $form->setRequest(FrontController::getInstance()->getRequest());
         $form->setDataObject($this->energySourceCosts);
@@ -78,7 +79,7 @@ class EnergySourceCostsView extends HtmlView
             $form->setValidator($this->get('validator'));
         }
 
-        $form->add(new HtmlHiddenField('id', $this->versionId));
+        $form->add(new HtmlHiddenField('versionId', $this->versionId));
 
         $group = $form->add(new HtmlFormGroup(''));
 
@@ -88,8 +89,8 @@ class EnergySourceCostsView extends HtmlView
         $row = $group->add(new HtmlTag('div'));
         $row->addClass('hl-row clearfix');
 
-        $row->add(new HtmlTag('h5', t('Name'), ['class' => 'hl-name']));
-        $row->add(new HtmlTag('h5', t('Preis / kWh'), ['class' => 'hl-costs']));
+        $row->add(new HtmlTag('h5', \t('Name'), ['class' => 'hl-name']));
+        $row->add(new HtmlTag('h5', \t('Preis / kWh'), ['class' => 'hl-costs']));
         $row->add(new HtmlTag('h5', '', ['class' => 'hl-actions']));
 
         $ul = $group->add(new HtmlTag('ul'));
@@ -98,12 +99,23 @@ class EnergySourceCostsView extends HtmlView
             $this->appendEnergyCosts($li, $key);
         }
 
+        if ($this->get('add', false) || 0 === \count($this->energySourceCosts->name)) {
+            $li = $ul->add(new HtmlTag('li', null, ['class' => 'version-row']));
+            $this->appendEnergyCosts($li);
+        }
+
         /**
          * Submit button
          */
         $buttonGroup = $form->add(new HtmlFormGroup(''));
         $buttonGroup->addClass('buttons');
-        $buttonGroup->add(new ElcaHtmlSubmitButton('save', t('Speichern'), true));
+
+        if (\count($this->energySourceCosts->name) > 0) {
+            $buttonGroup->add(new ElcaHtmlSubmitButton('add', \t('Hinzufügen'), false));
+        }
+
+        $buttonGroup->add(new ElcaHtmlSubmitButton('save', \t('Speichern'), true));
+
 
         $form->appendTo($container);
     }
@@ -113,10 +125,18 @@ class EnergySourceCostsView extends HtmlView
     /**
      * Appends a variant row
      *
-     * @param  HtmlForm $Form
+     * @throws \DI\NotFoundException
+     * @param HtmlElement $li
+     * @param null        $key
      */
-    protected function appendEnergyCosts(HtmlElement $li, $key)
+    protected function appendEnergyCosts(HtmlElement $li, $key = null)
     {
+        $isNew = false;
+        if (null === $key) {
+            $key = 'new';
+            $isNew = true;
+        }
+
         $container = $li->add(new HtmlTag('div'));
         $container->addClass('clearfix version');
 
@@ -130,19 +150,30 @@ class EnergySourceCostsView extends HtmlView
         $container->add(
             new ElcaHtmlFormElementLabel(
                 '',
-                new HtmlTextInput('costs[' . $key . ']', $this->energySourceCosts->costs[$key])
+                $input = new ElcaHtmlNumericInput('costs[' . $key . ']', $this->energySourceCosts->costs[$key])
             )
         );
+        $input->setPrecision(2);
 
-        $container->add(
-            new HtmlLink(
-                t('Löschen'),
-                Url::factory('/lcc/admin/versions/deleteEnergySourceCosts/', ['energySourceCostId' => $key])
+        if (\is_numeric($key)) {
+            $container->add(
+                new HtmlLink(
+                    t('Löschen'),
+                    Url::factory('/lcc/admin/energySourceCosts/delete', ['id' => $key, 'versionId' => $this->versionId])
+                )
             )
-        )
-                  ->addClass('function-link delete-link');
+                      ->addClass('function-link delete-link');
+        }
+        else {
+            $container->add(
+                new HtmlLink(
+                    t('Abbrechen'),
+                    Url::factory('/lcc/admin/energySourceCosts/', ['versionId' => $this->versionId])
+                )
+            )
+                      ->addClass('function-link cancel-link');
+        }
+
     }
-    // End appendVersion
 }
-// End LccVersionsView
 

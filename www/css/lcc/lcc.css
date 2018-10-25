@@ -121,6 +121,20 @@ div.tooltip { position: absolute; text-align: center; width: auto; min-width: 50
 #costs-table-total .scroll table { padding-top: 42px; }
 #costs-table-total .no-data-available { padding-left: 0; font-size: 14px; }
 
+#content.lcc-energy-costs .lccEnergyCostsForm { width: 600px; }
+#content.lcc-energy-costs .hl-row { height: 22px; position: relative; }
+#content.lcc-energy-costs .hl-row h5 { position: absolute; color: #888; font-style: italic; font-weight: normal; border: none; }
+#content.lcc-energy-costs .hl-row h5.hl-name { left: 5px; }
+#content.lcc-energy-costs .hl-row h5.hl-costs { left: 280px; }
+#content.lcc-energy-costs .hl-row h5.hl-actions { right: 160px; }
+#content.lcc-energy-costs .version-row { position: relative; height: 24px; }
+#content.lcc-energy-costs li { background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; margin-bottom: 8px; padding: 3px 0; line-height: 33px; height: 33px; }
+#content.lcc-energy-costs li.active { background-color: #f0f0f0; }
+#content.lcc-energy-costs .version .name, #content.lcc-energy-costs .version .costs, #content.lcc-energy-costs .version a.delete-link, #content.lcc-energy-costs .version a.cancel-link { position: absolute; padding: 0; top: 0; }
+#content.lcc-energy-costs .version .name { left: 5px; width: 250px; }
+#content.lcc-energy-costs .version .costs { left: 280px; width: 80px; }
+#content.lcc-energy-costs .version a.delete-link, #content.lcc-energy-costs .version a.cancel-link { width: 60px; text-align: left; right: 5px; }
+
 #content.lcc { width: 950px; }
 
 #content.lcc .lcc-section { position: relative; }

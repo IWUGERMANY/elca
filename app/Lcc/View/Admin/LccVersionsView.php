@@ -138,7 +138,7 @@ class LccVersionsView extends HtmlView
         }
 
         $Container->add(new HtmlLink(t('Bearbeiten'), Url::factory('/lcc/admin/energySourceCosts/', ['versionId' => $key])))
-                  ->addClass('function-link edit-link');
+                  ->addClass('function-link edit-link page');
 
         /**
          * Delete and create version
