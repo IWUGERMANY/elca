@@ -109,6 +109,10 @@ if (typeof jQuery != 'undefined') {
                                 $section.find('div.legend').off('click');
                             }
                         });
+
+                        $('.energy-source-costs').on('change', function (e) {
+                            $(this).parent().siblings('input.refValue').val($('option:selected', this).data('costs'));
+                        });
                     },
 
                     prepareCostsTable: function ($context) {

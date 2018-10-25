@@ -67,6 +67,7 @@ class LccCost extends DbObject
     const IDENT_RAIN_WATER = 'RAIN_WATER';
 
     const IDENT_CREDIT_EEG = 'CREDIT_EEG';
+    const IDENT_EEG = 'EEG';
     const IDENT_HEATING = 'HEATING';
     const IDENT_WATER = 'WATER';
     const IDENT_VENTILATION = 'VENTILATION';

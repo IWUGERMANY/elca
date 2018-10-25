@@ -71,6 +71,8 @@ class LccProjectCost extends DbObject
      */
     private $refValue;
 
+    private $energySourceCostId;
+
     /**
      * Primary key
      */
@@ -84,7 +86,8 @@ class LccProjectCost extends DbObject
         'calcMethod'       => PDO::PARAM_INT,
         'costId'           => PDO::PARAM_INT,
         'quantity'         => PDO::PARAM_STR,
-        'refValue'         => PDO::PARAM_STR
+        'refValue'         => PDO::PARAM_STR,
+        'energySourceCostId' => PDO::PARAM_INT,
     );
 
     /**
@@ -106,7 +109,7 @@ class LccProjectCost extends DbObject
      * @param  number  $refValue         - refValue
      * @return LccProjectCost
      */
-    public static function create($projectVariantId, $calcMethod, $costId, $quantity = null, $refValue = null)
+    public static function create($projectVariantId, $calcMethod, $costId, $quantity = null, $refValue = null, $energySourceCostId = null)
     {
         $LccProjectCost = new LccProjectCost();
         $LccProjectCost->setProjectVariantId($projectVariantId);
@@ -114,6 +117,7 @@ class LccProjectCost extends DbObject
         $LccProjectCost->setCostId($costId);
         $LccProjectCost->setQuantity($quantity);
         $LccProjectCost->setRefValue($refValue);
+        $LccProjectCost->setEnergySourceCostId($energySourceCostId);
 
         if ($LccProjectCost->getValidator()->isValid()) {
             $LccProjectCost->insert();
@@ -145,6 +149,7 @@ class LccProjectCost extends DbObject
                              , cost_id
                              , quantity
                              , ref_value
+                             , energy_source_cost_id
                           FROM %s
                          WHERE (project_variant_id, calc_method, cost_id) = (:projectVariantId, :calcMethod, :costId)"
             ,
@@ -183,7 +188,8 @@ class LccProjectCost extends DbObject
             $this->calcMethod,
             $this->costId,
             $this->quantity,
-            $this->refValue
+            $this->refValue,
+            $this->energySourceCostId
         );
     }
     // End copy
@@ -252,6 +258,10 @@ class LccProjectCost extends DbObject
     }
     // End setRefValue
 
+    public function setEnergySourceCostId($energySourceCostId)
+    {
+        $this->energySourceCostId = $energySourceCostId;
+    }
     //////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -334,6 +344,14 @@ class LccProjectCost extends DbObject
         $this->calcMethod = $calcMethod;
     }
 
+    public function getEnergySourceCostId()
+    {
+        return $this->energySourceCostId;
+    }
+    public function getEnergySourceCost()
+    {
+        return LccEnergySourceCost::findById($this->energySourceCostId);
+    }
     /**
      * Checks, if the object exists
      *
@@ -362,6 +380,7 @@ class LccProjectCost extends DbObject
             "UPDATE %s
                            SET quantity         = :quantity
                              , ref_value        = :refValue
+                             , energy_source_cost_id = :energySourceCostId
                          WHERE (project_variant_id, calc_method, cost_id) = (:projectVariantId, :calcMethod, :costId)"
             ,
             self::TABLE_NAME
@@ -374,7 +393,8 @@ class LccProjectCost extends DbObject
                 'calcMethod'       => $this->calcMethod,
                 'costId'           => $this->costId,
                 'quantity'         => $this->quantity,
-                'refValue'         => $this->refValue
+                'refValue'         => $this->refValue,
+                'energySourceCostId' => $this->energySourceCostId,
             )
         );
     }
@@ -478,8 +498,8 @@ class LccProjectCost extends DbObject
     {
 
         $sql = sprintf(
-            "INSERT INTO %s (project_variant_id, calc_method, cost_id, quantity, ref_value)
-                               VALUES  (:projectVariantId, :calcMethod, :costId, :quantity, :refValue)"
+            "INSERT INTO %s (project_variant_id, calc_method, cost_id, quantity, ref_value, energy_source_cost_id)
+                               VALUES  (:projectVariantId, :calcMethod, :costId, :quantity, :refValue, :energySourceCostId)"
             ,
             self::TABLE_NAME
         );
@@ -491,7 +511,8 @@ class LccProjectCost extends DbObject
                 'calcMethod'       => $this->calcMethod,
                 'costId'           => $this->costId,
                 'quantity'         => $this->quantity,
-                'refValue'         => $this->refValue
+                'refValue'         => $this->refValue,
+                'energySourceCostId' => $this->energySourceCostId,
             )
         );
     }
@@ -512,6 +533,7 @@ class LccProjectCost extends DbObject
         $this->costId           = (int)$DO->cost_id;
         $this->quantity         = $DO->quantity;
         $this->refValue         = $DO->ref_value;
+        $this->energySourceCostId = $DO->energy_source_cost_id;
 
         /**
          * Set extensions
