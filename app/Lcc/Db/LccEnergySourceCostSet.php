@@ -5,7 +5,10 @@ use Beibob\Blibs\DbObjectSet;
 
 class LccEnergySourceCostSet extends DbObjectSet
 {
-    public static function findByVersionId(int $versionId, array $orderBy = null, $force = false)
+    /**
+     * @return LccEnergySourceCost[]
+     */
+    public static function findByVersionId(int $versionId, array $orderBy = null, $force = false) : LccEnergySourceCostSet
     {
         return self::find(['version_id' => $versionId], $orderBy, null, null, $force);
     }

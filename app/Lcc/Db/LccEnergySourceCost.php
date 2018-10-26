@@ -120,6 +120,11 @@ class LccEnergySourceCost extends DbObject
         return self::findBySql(get_class(), $sql, ['versionId' => $versionId, 'name' => $name], $force);
     }
 
+    public function copy($newVersionId)
+    {
+        return self::create($newVersionId, $this->getName(), $this->getCosts());
+    }
+
 
     /**
      * Sets the property versionId

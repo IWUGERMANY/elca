@@ -268,6 +268,10 @@ class LccVersion extends DbObject
             foreach(LccIrregularCostSet::findByVersionId($this->id) as $Cost)
                 $Cost->copy($versionId);
 
+            foreach (LccEnergySourceCostSet::findByVersionId($this->id) as $energySourceCost) {
+                $energySourceCost->copy($versionId);
+            }
+
             $this->Dbh->commit();
         }
         catch(Exception $Exception)
