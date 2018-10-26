@@ -22,6 +22,7 @@
  * along with eLCA. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 namespace Lcc\Controller;
 
 use Beibob\Blibs\DbObjectCache;
@@ -36,6 +37,7 @@ use Elca\Service\Messages\ElcaMessages;
 use Elca\View\ElcaProjectNavigationLeftView;
 use Lcc\Db\LccCost;
 use Lcc\Db\LccCostSet;
+use Lcc\Db\LccEnergySourceCost;
 use Lcc\Db\LccProjectCost;
 use Lcc\Db\LccProjectCostSet;
 use Lcc\Db\LccProjectTotalSet;
@@ -51,7 +53,7 @@ use Lcc\View\LccDetailedView;
  * Project data controller
  *
  * @package lcc
- * @author Tobias Lode <tobias@beibob.de>
+ * @author  Tobias Lode <tobias@beibob.de>
  */
 class DetailedCtrl extends AppCtrl
 {
@@ -59,101 +61,119 @@ class DetailedCtrl extends AppCtrl
     /**
      * Default action
      *
-     * @param -
+     * @param  -
      * @return -
      */
-    protected function defaultAction($addNavigationViews = true, $Validator = null, $adminMode = false, $newVersionId = null)
-    {
-        if(!$this->isAjax())
+    protected function defaultAction(
+        $addNavigationViews = true,
+        $Validator = null,
+        $adminMode = false,
+        $newVersionId = null
+    ) {
+        if (!$this->isAjax()) {
             return;
+        }
 
         $Data = new \stdClass();
 
-        $projectVariantId = $this->Elca->getProjectVariantId();
-        $Project = $this->Elca->getProject();
+        $projectVariantId    = $this->Elca->getProjectVariantId();
+        $Project             = $this->Elca->getProject();
         $ProjectConstruction = ElcaProjectConstruction::findByProjectVariantId($projectVariantId);
-        $ProjectVersion = LccProjectVersion::findByPK($projectVariantId, LccModule::CALC_METHOD_DETAILED);
+        $ProjectVersion      = LccProjectVersion::findByPK($projectVariantId, LccModule::CALC_METHOD_DETAILED);
 
         // initial version to recent version or saved one
         if ($newVersionId) {
             $LccVersion = LccVersion::findById($newVersionId);
-        }
-        elseif ($ProjectVersion->isInitialized()) {
+        } elseif ($ProjectVersion->isInitialized()) {
             $LccVersion = $ProjectVersion->getVersion();
-        }
-        else {
+        } else {
             $LccVersion = LccVersion::findRecent(LccModule::CALC_METHOD_DETAILED);
         }
 
         // parameters
         $Data->projectLifeTime = $Project->getLifeTime();
-        $Data->bgf = $ProjectConstruction->getGrossFloorSpace();
+        $Data->bgf             = $ProjectConstruction->getGrossFloorSpace();
 
-        foreach(['rate', 'commonPriceInc', 'energyPriceInc', 'waterPriceInc', 'cleaningPriceInc'] as $property)
+        foreach (['rate', 'commonPriceInc', 'energyPriceInc', 'waterPriceInc', 'cleaningPriceInc'] as $property) {
             $Data->$property = $LccVersion->$property;
+        }
 
-        if($ProjectVersion->isInitialized())
-        {
+        if ($ProjectVersion->isInitialized()) {
             $Data->isInitialized = true;
 
-            $Data->versionId = $newVersionId? (int)$newVersionId : $ProjectVersion->getVersionId();
+            $Data->versionId    = $newVersionId ? (int)$newVersionId : $ProjectVersion->getVersionId();
             $Data->oldVersionId = $ProjectVersion->getVersionId();
 
-            foreach([300, 400, 500] as $code)
-            {
-                $costProperty = 'costs'. $code;
+            foreach ([300, 400, 500] as $code) {
+                $costProperty        = 'costs' . $code;
                 $Data->$costProperty = $ProjectVersion->$costProperty;
 
-                $grouping = LccCost::GROUPING_KGU . $code;
-                $property = \utf8_strtolower($grouping) .'Alt';
-                $Data->kguAlt[$grouping] = $ProjectVersion->$property;
+                $grouping                    = LccCost::GROUPING_KGU . $code;
+                $property                    = \utf8_strtolower($grouping) . 'Alt';
+                $Data->kguAlt[$grouping]     = $ProjectVersion->$property;
                 $Data->kguAltPerc[$grouping] = $ProjectVersion->$costProperty * LccProjectVersion::KGU_ALTERNATIVE_PERCENTAGE / 100;
             }
+        } else {
+            $Data->isInitialized = false;
+            $Data->versionId     = $LccVersion->getId();
         }
-        else {
-        $Data->isInitialized = false;
-        $Data->versionId = $LccVersion->getId();
-    }
 
         // all stored project data
         $Data->quantity = [];
         $Data->refValue = [];
 
-        $projectCosts = LccProjectCostSet::find([
-            'project_variant_id' => $projectVariantId,
-            'calc_method' => LccModule::CALC_METHOD_DETAILED
-        ]);
+        $projectCosts = LccProjectCostSet::find(
+            [
+                'project_variant_id' => $projectVariantId,
+                'calc_method'        => LccModule::CALC_METHOD_DETAILED,
+            ]
+        );
 
-        foreach($projectCosts as $projectCost)
-        {
-            $key = $projectCost->getCostId();
-            $Data->quantity[$key] = $projectCost->getQuantity();
+        foreach ($projectCosts as $projectCost) {
+            $key                            = $projectCost->getCostId();
+            $Data->quantity[$key]           = $projectCost->getQuantity();
             $Data->quantityCalculated[$key] = $projectCost->getQuantity();
-            $Data->refValue[$key] = $projectCost->getRefValue();
+            $Data->refValue[$key]           = $projectCost->getRefValue();
+            if ($newVersionId) {
+                $Data->energySourceCostId[$key] = LccEnergySourceCost::findByVersionIdAndName(
+                    $newVersionId,
+                    $projectCost->getEnergySourceCost()->getName()
+                )->getId();
+            } else {
+                $Data->energySourceCostId[$key] = $projectCost->getEnergySourceCostId();
+            }
         }
 
         // add totals
-        foreach(LccProjectTotalSet::find(['project_variant_id' => $projectVariantId, 'calc_method' => LccModule::CALC_METHOD_DETAILED]) as $ProjectTotal)
+        foreach (
+            LccProjectTotalSet::find(
+                ['project_variant_id' => $projectVariantId, 'calc_method' => LccModule::CALC_METHOD_DETAILED]
+            ) as $ProjectTotal
+        ) {
             $Data->sum[$ProjectTotal->getGrouping()] = $ProjectTotal->getCosts();
+        }
 
         $View = $this->addView(new LccDetailedView());
         $View->assign('Data', $Data);
         $View->assign('toggleStates', $this->Request->getArray('toggleStates'));
         $View->assign('readOnly', !$this->Access->isProjectOwnerOrAdmin($this->Elca->getProject()));
 
-        if($Validator)
+        if ($Validator) {
             $View->assign('Validator', $Validator);
+        }
 
-        if($adminMode)
+        if ($adminMode) {
             $View->assign('adminMode', true);
+        }
 
         /**
          * Add navigation
          */
-        if($addNavigationViews)
-        {
+        if ($addNavigationViews) {
             $this->addView(new ElcaProjectNavigationLeftView());
-            $this->Osit->add(new ElcaOsitItem(t('Gebäudebezogene Kosten im Lebenszyklus'), null, t('Ökonomische Qualtität')));
+            $this->Osit->add(
+                new ElcaOsitItem(t('Gebäudebezogene Kosten im Lebenszyklus'), null, t('Ökonomische Qualtität'))
+            );
         }
     }
     // End defaultAction
@@ -162,13 +182,14 @@ class DetailedCtrl extends AppCtrl
     /**
      * Default action
      *
-     * @param -
+     * @param  -
      * @return -
      */
     protected function saveAction()
     {
-        if(!$this->isAjax() || !$this->Request->isPost())
+        if (!$this->isAjax() || !$this->Request->isPost()) {
             return;
+        }
 
         if (!$this->checkProjectAccess()) {
             return;
@@ -178,31 +199,35 @@ class DetailedCtrl extends AppCtrl
             return;
         }
 
-        if($this->Request->has('save'))
-        {
-            $Project = Elca::getInstance()->getProject();
+        if ($this->Request->has('save')) {
+            $Project   = Elca::getInstance()->getProject();
             $projectId = $Project->getId();
 
             $projectVariantId = $this->Request->projectVariantId;
-            $isAdminMode = (bool)$this->Request->isAdminMode;
-            $ProjectVersion = LccProjectVersion::findByPK($projectVariantId, LccModule::CALC_METHOD_DETAILED);
-            $Validator = new Validator($this->Request);
+            $isAdminMode      = (bool)$this->Request->isAdminMode;
+            $ProjectVersion   = LccProjectVersion::findByPK($projectVariantId, LccModule::CALC_METHOD_DETAILED);
+            $Validator        = new Validator($this->Request);
 
             $quantities = $this->Request->getArray('quantity');
-            $refValues = $this->Request->getArray('refValue');
+            $refValues  = $this->Request->getArray('refValue');
+            $energySourceCostIds = $this->Request->getArray('energySourceCostId');
 
             /**
              * If version has changed, keep it separate from old version.
              * This will be handled at end of the update
              */
             $newVersionId = $this->Request->versionId;
-            $versionId = $ProjectVersion->isInitialized()? $ProjectVersion->getVersionId() : $newVersionId;
+            $versionId    = $ProjectVersion->isInitialized() ? $ProjectVersion->getVersionId() : $newVersionId;
 
             /**
              * Save project life cycle cost data
              */
-            if(!$ProjectVersion->isInitialized()) {
-                $ProjectVersion = LccProjectVersion::create($projectVariantId, LccModule::CALC_METHOD_DETAILED, $versionId);
+            if (!$ProjectVersion->isInitialized()) {
+                $ProjectVersion = LccProjectVersion::create(
+                    $projectVariantId,
+                    LccModule::CALC_METHOD_DETAILED,
+                    $versionId
+                );
                 $detailedMethod = new DetailedMethod($projectVariantId, $ProjectVersion);
                 $detailedMethod->updateAll();
             }
@@ -223,10 +248,8 @@ class DetailedCtrl extends AppCtrl
             // if bgf was not set, save it now
             $ProjectConstruction = ElcaProjectConstruction::findByProjectVariantId($projectVariantId);
 
-            if(!$ProjectConstruction->getGrossFloorSpace())
-            {
-                if($Validator->assertNotEmpty('bgf', null, t('Bitte geben Sie einen Wert für die BGF an')))
-                {
+            if (!$ProjectConstruction->getGrossFloorSpace()) {
+                if ($Validator->assertNotEmpty('bgf', null, t('Bitte geben Sie einen Wert für die BGF an'))) {
                     $bgf = ElcaNumberFormat::fromString($this->Request->bgf);
                     $ProjectConstruction->setGrossFloorSpace($bgf);
                     $ProjectConstruction->update();
@@ -236,45 +259,72 @@ class DetailedCtrl extends AppCtrl
             /**
              * Save regular cleaning, energy and water costs
              */
-            foreach([LccCost::GROUPING_WATER, LccCost::GROUPING_ENERGY, LccCost::GROUPING_CLEANING] as $grouping)
-            {
-                foreach($Set = LccCostSet::findRegular($versionId, $grouping) as $LccCost)
-                {
-                    $costId = $LccCost->getId();
+            foreach ([LccCost::GROUPING_WATER, LccCost::GROUPING_ENERGY, LccCost::GROUPING_CLEANING] as $grouping) {
+                foreach ($Set = LccCostSet::findRegular($versionId, $grouping) as $lccCost) {
+                    $costId = $lccCost->getId();
 
                     $refValue = null;
                     if ($isAdminMode || isset($refValues[$costId])) {
                         $refValue = ElcaNumberFormat::fromString($refValues[$costId]);
                     }
 
-                    if($isAdminMode)
-                    {
+                    if ($isAdminMode) {
                         $RegularCost = LccRegularCost::findByCostId($costId);
                         $RegularCost->setRefValue($refValue);
                         $RegularCost->update();
                     }
 
-                    if (!isset($quantities[$costId]))
-                        continue;
+                    $hasQuantity = isset($quantities[$costId]);
+                    $hasEnergySourceCosts  = isset($energySourceCostId[$costId]);
+                    $refValueEditIsEnabled = ($isAdminMode && !$hasEnergySourceCosts) ||
+                                             LccCost::IDENT_EEG === $lccCost->getIdent();
 
-                    $quantity = ElcaNumberFormat::fromString($quantities[$costId]);
+                    $projectCost = LccProjectCost::findByPk(
+                        $projectVariantId,
+                        LccModule::CALC_METHOD_DETAILED,
+                        $costId
+                    );
+
+                    $quantity = $hasQuantity
+                        ? ElcaNumberFormat::fromString($quantities[$costId])
+                        : $projectCost->getQuantity();
 
                     // assert that refValue is set when quantity value given
-                    $refValNotEmpty = $quantity && is_null($LccCost->getRefValue())? $Validator->assertNotEmpty('quantity['.$costId.']', $refValue, t('Ein Wert für die Kosten pro ME muss gesetzt sein')) : false;
+                    $refValueMayNotBeEmpty = $quantity && LccCost::IDENT_EEG === $lccCost->getIdent()
+                        ? $Validator->assertNotEmpty(
+                            'quantity[' . $costId . ']',
+                            $refValue,
+                            t('Ein Wert für die Kosten pro ME muss gesetzt sein')
+                        )
+                        : false;
 
-                    $ProjectCost = LccProjectCost::findByPk($projectVariantId, LccModule::CALC_METHOD_DETAILED, $costId);
-                    if($ProjectCost->isInitialized())
-                    {
-                        $ProjectCost->setQuantity($quantity);
-
-                        if(!$isAdminMode && (!$quantity || $refValNotEmpty && $refValue != $ProjectCost->getRefValue()))
-                            $ProjectCost->setRefValue($refValue);
-
-                        $ProjectCost->update();
+                    if (!$refValueEditIsEnabled && isset($energySourceCostIds[$costId])) {
+                        $energySourceCost = LccEnergySourceCost::findById($energySourceCostIds[$costId]);
+                        $refValue         = $energySourceCost->getCosts();
                     }
-                    else
-                    {
-                        $ProjectCost = LccProjectCost::create($projectVariantId, LccModule::CALC_METHOD_DETAILED, $costId, $quantity, $refValue);
+
+                    if ($projectCost->isInitialized()) {
+                        $energySourceCostId = $energySourceCostIds[$costId] ?? null;
+                        if ($hasEnergySourceCosts && $ProjectVersion->getVersionId() != $newVersionId) {
+                            $energySourceCostId = LccEnergySourceCost::findByVersionIdAndName(
+                                $newVersionId,
+                                LccEnergySourceCost::findById($energySourceCostIds[$costId])->getName()
+                            )->getId();
+                        }
+
+                        $projectCost->setQuantity($quantity);
+                        $projectCost->setRefValue($refValue);
+                        $projectCost->setEnergySourceCostId($energySourceCostId);
+                        $projectCost->update();
+                    } else {
+                        LccProjectCost::create(
+                            $projectVariantId,
+                            LccModule::CALC_METHOD_DETAILED,
+                            $costId,
+                            $quantity,
+                            $refValue,
+                            $energySourceCostIds[$costId] ?? null
+                        );
                     }
                 }
 
@@ -288,8 +338,8 @@ class DetailedCtrl extends AppCtrl
             // admin mode
             if ($isAdminMode) {
                 foreach ([300, 400, 500] as $code) {
-                    foreach ($Set = LccCostSet::findRegularService($versionId, $code, $projectId) as $LccCost) {
-                        $costId   = $LccCost->getId();
+                    foreach ($Set = LccCostSet::findRegularService($versionId, $code, $projectId) as $lccCost) {
+                        $costId = $lccCost->getId();
 
                         $maintenancePerc = ElcaNumberFormat::fromString(
                             $this->Request->maintenancePerc[$costId],
@@ -318,8 +368,7 @@ class DetailedCtrl extends AppCtrl
              *
              * if version has changed...
              */
-            if($ProjectVersion->getVersionId() != $newVersionId)
-            {
+            if ($ProjectVersion->getVersionId() != $newVersionId) {
                 /**
                  * ... this should fire the `trigger_lcc_on_version_update_also_update_project_costs'
                  * on next update which will do the rest
@@ -335,30 +384,23 @@ class DetailedCtrl extends AppCtrl
             /**
              * Check validator and add error messages
              */
-            if($Validator->isValid())
-            {
+            if ($Validator->isValid()) {
                 /**
                  * Compute results
                  */
                 $ProjectVersion->computeLcc();
-            }
-            else
-            {
-                foreach(array_unique($Validator->getErrors()) as $message)
+            } else {
+                foreach (array_unique($Validator->getErrors()) as $message) {
                     $this->messages->add($message, ElcaMessages::TYPE_ERROR);
+                }
             }
 
-            $this->defaultAction(false, !$Validator->isValid()? $Validator : null, $isAdminMode);
-        }
-        elseif($this->Request->has('setAdminMode'))
-        {
+            $this->defaultAction(false, !$Validator->isValid() ? $Validator : null, $isAdminMode);
+        } elseif ($this->Request->has('setAdminMode')) {
             $this->defaultAction(false, null, true);
-        }
-        elseif($this->Request->has('cancel'))
-        {
+        } elseif ($this->Request->has('cancel')) {
             $this->defaultAction(false);
-        }
-        else {
+        } else {
             $this->defaultAction(false, null, false, $this->Request->versionId);
         }
     }
@@ -373,8 +415,9 @@ class DetailedCtrl extends AppCtrl
      */
     protected function deleteAction()
     {
-        if(!$this->isAjax() || !is_numeric($this->Request->id))
+        if (!$this->isAjax() || !is_numeric($this->Request->id)) {
             return;
+        }
 
         if (!$this->checkProjectAccess()) {
             return;
@@ -385,36 +428,43 @@ class DetailedCtrl extends AppCtrl
         }
 
         $Cost = LccCost::findById($this->Request->id);
-        if(!$Cost->isInitialized() || !$Cost->getProjectId())
+        if (!$Cost->isInitialized() || !$Cost->getProjectId()) {
             return;
+        }
 
-        if($this->Request->has('confirmed'))
-        {
+        if ($this->Request->has('confirmed')) {
             // find and re-compute all affected project variants
-            $projectVariantIds = LccProjectCostSet::findCostsNotNull($Cost->getId(), LccModule::CALC_METHOD_DETAILED)->getArrayBy('projectVariantId', 'projectVariantId');
+            $projectVariantIds = LccProjectCostSet::findCostsNotNull(
+                $Cost->getId(),
+                LccModule::CALC_METHOD_DETAILED
+            )->getArrayBy('projectVariantId', 'projectVariantId');
 
             // delete the item
             $Cost->delete();
 
-            foreach($projectVariantIds as $projectVariantId)
-            {
+            foreach ($projectVariantIds as $projectVariantId) {
                 $ProjectVersion = LccProjectVersion::findByPK($projectVariantId, LccModule::CALC_METHOD_DETAILED);
                 $ProjectVersion->computeLcc();
             }
 
             $this->defaultAction(false);
-        }
-        else
-        {
+        } else {
             $Url = Url::parse($this->Request->getURI());
             $Url->addParameter(['confirmed' => null]);
 
-            $count = LccProjectCostSet::countCostsNotNull($Cost->getId(), LccModule::CALC_METHOD_DETAILED, $this->Elca->getProjectVariantId());
+            $count = LccProjectCostSet::countCostsNotNull(
+                $Cost->getId(),
+                LccModule::CALC_METHOD_DETAILED,
+                $this->Elca->getProjectVariantId()
+            );
 
-            if($count > 0)
-                $message = t('Diese Kostengruppe wird noch in mindestens einer anderen Projektvariante verwendet! Sind Sie sicher, dass Sie alle damit verbundenen Werte löschen wollen?');
-            else
+            if ($count > 0) {
+                $message = t(
+                    'Diese Kostengruppe wird noch in mindestens einer anderen Projektvariante verwendet! Sind Sie sicher, dass Sie alle damit verbundenen Werte löschen wollen?'
+                );
+            } else {
                 $message = t('Soll diese Kostengruppe wirklich gelöscht werden?');
+            }
 
             $this->messages->add($message, ElcaMessages::TYPE_CONFIRM, (string)$Url);
         }

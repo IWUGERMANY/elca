@@ -30,7 +30,6 @@ use Beibob\HtmlTools\HtmlElement;
 use Beibob\HtmlTools\HtmlForm;
 use Beibob\HtmlTools\HtmlFormGroup;
 use Beibob\HtmlTools\HtmlHiddenField;
-use Beibob\HtmlTools\HtmlLink;
 use Beibob\HtmlTools\HtmlRadiobox;
 use Beibob\HtmlTools\HtmlRadioGroup;
 use Beibob\HtmlTools\HtmlSelectbox;
@@ -231,9 +230,6 @@ class LccGeneralView extends HtmlView
      */
     protected function appendRegularCosts(HtmlElement $group, HtmlElement $Buttons, LccCostSet $lccCostSet, $grouping = null)
     {
-        $energySourceCostSet = LccEnergySourceCostSet::findByVersionId($this->Data->versionId);
-
-
         $group->addClass('media-cleaning collapsable');
 
         $Hl = $group->add(new HtmlTag('div', null, ['class' => 'headline']));
@@ -243,6 +239,8 @@ class LccGeneralView extends HtmlView
         $lastHeadline = null;
         $allValuesSet = true;
         $formSection = null;
+        $energySourceCostSet = LccEnergySourceCostSet::findByVersionId($this->Data->versionId, ['name' => 'ASC']);
+
         foreach ($lccCostSet as $lccCost) {
             $costId = $lccCost->getId();
             if ($lastHeadline != t($lccCost->getHeadline())) {
@@ -556,7 +554,7 @@ class LccGeneralView extends HtmlView
         return $Group;
     }
 
-    protected function addEnergySourceCostSelect($Elts, $costId, $energySourceCostSet): void
+    protected function addEnergySourceCostSelect($Elts, $costId, LccEnergySourceCostSet $energySourceCostSet): void
     {
         $selectbox = $Elts->add(new Selectbox('energySourceCostId[' . $costId . ']'));
         $selectbox->addClass('energy-source-costs');

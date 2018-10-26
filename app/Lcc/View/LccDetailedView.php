@@ -45,8 +45,11 @@ use Elca\View\helpers\ElcaHtmlNumericInput;
 use Elca\View\helpers\ElcaHtmlNumericText;
 use Elca\View\helpers\ElcaHtmlSubmitButton;
 use Elca\View\helpers\ElcaNumberFormatConverter;
+use Elca\View\helpers\Selectbox;
 use Lcc\Db\LccCost;
 use Lcc\Db\LccCostSet;
+use Lcc\Db\LccEnergySourceCost;
+use Lcc\Db\LccEnergySourceCostSet;
 use Lcc\Db\LccProjectTotalSet;
 use Lcc\Db\LccProjectVersion;
 use Lcc\Db\LccVersionSet;
@@ -230,7 +233,7 @@ class LccDetailedView extends HtmlView
      * @param  HtmlForm $Form
      * @return HtmlElement
      */
-    protected function appendRegularCosts(HtmlElement $Group, HtmlElement $Buttons, LccCostSet $LccCostSet)
+    protected function appendRegularCosts(HtmlElement $Group, HtmlElement $Buttons, LccCostSet $lccCostSet, $grouping = null)
     {
         $Group->addClass('media-cleaning collapsable');
 
@@ -240,45 +243,66 @@ class LccDetailedView extends HtmlView
 
         $lastHeadline = null;
         $allValuesSet = true;
-        $grouping = null;
-        $FormSection = null;
-        foreach($LccCostSet as $LccCost)
-        {
-            $costId = $LccCost->getId();
-            if($lastHeadline != $LccCost->getHeadline())
-                $Group->add(new HtmlTag('h4', $LccCost->getHeadline()));
+        $formSection = null;
+        $energySourceCostSet = LccEnergySourceCostSet::findByVersionId($this->Data->versionId, ['name' => 'ASC']);
 
-            $refValue = $LccCost->getRefValue();
+        foreach($lccCostSet as $lccCost)
+        {
+            $costId = $lccCost->getId();
+            if($lastHeadline != $lccCost->getHeadline())
+                $Group->add(new HtmlTag('h4', $lccCost->getHeadline()));
+
+            $hasEnergySourceCosts = isset($this->Data->energySourceCostId[$costId]);
+            if ($hasEnergySourceCosts) {
+                $refValue = LccEnergySourceCost::findById($this->Data->energySourceCostId[$costId])->getCosts();
+            }
+            else {
+                $refValue = $lccCost->getRefValue();
+            }
+
             $allValuesSet &= isset($this->Data->quantity[$costId]) && !is_null($this->Data->quantity[$costId]);
 
-            $Elts = new HtmlTag('div');
-            $Elts->add(new ElcaHtmlNumericInput('quantity['.$costId.']', null, (bool)$LccCost->getIdent()));
+            $elts = new HtmlTag('div');
+            $elts->add(new ElcaHtmlNumericInput('quantity['.$costId.']', null, (bool)$lccCost->getIdent()));
 
-            $AdminElt = $Elts->add(new ElcaHtmlNumericInput('refValue['.$costId.']', $refValue, !($this->isAdminMode || is_null($refValue))));
+            $refValueEditIsEnabled = ($this->isAdminMode && !$hasEnergySourceCosts) || LccCost::IDENT_EEG === $lccCost->getIdent();
+
+            $AdminElt = $elts->add(
+                new ElcaHtmlNumericInput(
+                    'refValue[' . $costId . ']',
+                    $refValue,
+                    !$refValueEditIsEnabled
+                )
+            );
             $AdminElt->addClass('refValue');
 
-            if(!$this->isAdminMode && !is_null($refValue))
+            if (!$refValueEditIsEnabled) {
                 $AdminElt->setAttribute('disabled', 'disabled');
+            }
 
-            $Elts->add(new HtmlTag('span', $LccCost->getRefUnit(), ['class' => 'ref-unit']));
+            $elts->add(new HtmlTag('span', $lccCost->getRefUnit(), ['class' => 'ref-unit']));
 
-            $FormSection = $Group->add(new ElcaHtmlFormElementLabel($LccCost->getDin276Code().' '.$LccCost->getLabel()));
-            $FormSection->addClass('row-highlight');
-            $FormSection->add($Elts);
+            if (LccCost::GROUPING_ENERGY === $grouping && LccCost::IDENT_EEG !== $lccCost->getIdent()) {
+                $this->addEnergySourceCostSelect($elts, $costId, $energySourceCostSet);
+            }
 
-            $lastHeadline = $LccCost->getHeadline();
-            $grouping = $LccCost->getGrouping();
+            $formSection = $Group->add(new ElcaHtmlFormElementLabel($lccCost->getDin276Code().' '.$lccCost->getLabel()));
+            $formSection->addClass('row-highlight');
+            $formSection->add($elts);
+
+            $lastHeadline = $lccCost->getHeadline();
+            $grouping = $lccCost->getGrouping();
         }
-        if($FormSection)
-            $FormSection->addClass('last');
+        if($formSection)
+            $formSection->addClass('last');
 
         if($allValuesSet)
             $Group->addClass('close');
 
         // append totals for this group
         $Totals = $Group->add(new HtmlTag('div', null, ['class' => 'totals']));
-        $FormSection = $Totals->add(new ElcaHtmlFormElementLabel(t('Barwert'), new ElcaHtmlNumericText('sum['.$grouping.']', 2)));
-        $FormSection->add(new HtmlTag('span', '€', ['class' => 'ref-unit']));
+        $formSection = $Totals->add(new ElcaHtmlFormElementLabel(t('Barwert'), new ElcaHtmlNumericText('sum['.$grouping.']', 2)));
+        $formSection->add(new HtmlTag('span', '€', ['class' => 'ref-unit']));
     }
     // End appendMediaCosts
 
@@ -480,6 +504,17 @@ class LccDetailedView extends HtmlView
 
         return $Group;
     }
-    // End appendGroup
+
+    protected function addEnergySourceCostSelect($Elts, $costId, LccEnergySourceCostSet $energySourceCostSet): void
+    {
+        $selectbox = $Elts->add(new Selectbox('energySourceCostId[' . $costId . ']'));
+        $selectbox->addClass('energy-source-costs');
+        foreach ($energySourceCostSet as $energySourceCosts) {
+            $option = $selectbox->add(
+                new HtmlSelectOption($energySourceCosts->getName(), $energySourceCosts->getId())
+            );
+            $option->setAttribute('data-costs', ElcaNumberFormat::toString($energySourceCosts->getCosts(), 2));
+        }
+    }
 }
 // End LccDetailedView
