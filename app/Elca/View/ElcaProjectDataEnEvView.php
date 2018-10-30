@@ -34,6 +34,7 @@ use Elca\Db\ElcaCacheFinalEnergyDemand;
 use Elca\Db\ElcaCacheFinalEnergyRefModel;
 use Elca\Db\ElcaCacheFinalEnergySupply;
 use Elca\Db\ElcaIndicatorSet;
+use Elca\Db\ElcaProcessCategory;
 use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessViewSet;
 use Elca\Db\ElcaProjectConstruction;
@@ -105,13 +106,7 @@ class ElcaProjectDataEnEvView extends HtmlView
         ElcaBenchmarkRefProcessConfig::IDENT_PROCESS_ENERGY => 'Prozessenergie'
     ];
 
-    /**
-     * Init
-     *
-     * @param  array $args
-     *
-     * @return void -
-     */
+
     protected function init(array $args = [])
     {
         parent::init($args);
@@ -181,8 +176,8 @@ class ElcaProjectDataEnEvView extends HtmlView
          * Append final energy demand form
          */
         $Form = $this->getSectionForm('projectFinalEnergyDemandForm', $this->Data->Demand);
-
         $Form->add(new HtmlHiddenField('addDemand', $this->addNewProjectFinalEnergyDemand));
+
         $this->appendEnergyDemandSection($Form, $refModelProcessEnergyProcessConfigId);
         $Form->appendTo($Container);
 
@@ -419,23 +414,23 @@ class ElcaProjectDataEnEvView extends HtmlView
         /**
          * ProcessConfig selector
          *
-         * @var ElcaHtmlProcessConfigSelectorLink $Selector
+         * @var ElcaHtmlProcessConfigSelectorLink $selector
          */
-        $Selector = $Container->add(new ElcaHtmlProcessConfigSelectorLink('processConfigId[' . $key . ']'));
-        $Selector->addClass('process-config-selector');
-        $Selector->setRelId($key);
-        $Selector->setProjectVariantId($this->projectVariantId);
-        $Selector->setBuildMode(ElcaProcessConfigSelectorView::BUILDMODE_OPERATION);
-        $Selector->setContext(ProjectDataCtrl::CONTEXT);
+        $selector = $Container->add(new ElcaHtmlProcessConfigSelectorLink('processConfigId[' . $key . ']'));
+        $selector->addClass('process-config-selector');
+        $selector->setRelId($key);
+        $selector->setProjectVariantId($this->projectVariantId);
+        $selector->setBuildMode(ElcaProcessConfigSelectorView::BUILDMODE_OPERATION);
+        $selector->setContext(ProjectDataCtrl::CONTEXT);
 
-        $this->checkElementChange($Selector);
+        $this->checkElementChange($selector);
 
         $Request = FrontController::getInstance()->getRequest();
 
         if ((isset($this->Data->Demand->processConfigId[$key]) && $this->Data->Demand->processConfigId[$key]) || (isset($Request->processConfigId[$key]) && $Request->processConfigId[$key])) {
             $ProcessConfig = ElcaProcessConfig::findById(isset($Request->processConfigId[$key]) ? $Request->processConfigId[$key] : $this->Data->Demand->processConfigId[$key]);
             if ($ProcessConfig->isInitialized())
-                $Selector->setProcessCategoryNodeId($ProcessConfig->getProcessCategoryNodeId());
+                $selector->setProcessCategoryNodeId($ProcessConfig->getProcessCategoryNodeId());
 
             if ($FinalEnergyDemand !== null) {
                 $CacheDemand = ElcaCacheFinalEnergyDemand::findByFinalEnergyDemandId($FinalEnergyDemand->getId());

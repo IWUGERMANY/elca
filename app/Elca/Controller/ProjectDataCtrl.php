@@ -38,6 +38,7 @@ use Elca\Db\ElcaConstrDesignSet;
 use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaElementComponentSet;
 use Elca\Db\ElcaIndicator;
+use Elca\Db\ElcaProcessCategory;
 use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessConfigSearchSet;
 use Elca\Db\ElcaProcessDb;
@@ -101,6 +102,7 @@ class ProjectDataCtrl extends AppCtrl
     const CONTEXT = 'project-data';
     const DUMMY_PASSWORD = '*****************';
     const PROJECT_PASSWORD_LENGTH = 6;
+    const PROCESS_CATEGORY_DEFAULT_REF = '8.06';
 
     /**
      * Default action
@@ -1275,6 +1277,8 @@ class ProjectDataCtrl extends AppCtrl
                  */
                 $modified = $this->saveEnergyDemand($key);
                 $this->Request->__set('b', ElcaProcessConfigSelectorView::BUILDMODE_OPERATION);
+                $this->Request->__set('processCategoryNodeId',
+                    ElcaProcessCategory::findByRefNum(self::PROCESS_CATEGORY_DEFAULT_REF)->getNodeId());
                 $this->selectProcessConfigAction($key);
             } else {
                 $addNewDemand = true;
@@ -1300,6 +1304,8 @@ class ProjectDataCtrl extends AppCtrl
                      */
                     $modified = $this->saveEnergySupply($key);
                     $this->Request->__set('b', ElcaProcessConfigSelectorView::BUILDMODE_FINAL_ENERGY_SUPPLY);
+                    $this->Request->__set('processCategoryNodeId',
+                        ElcaProcessCategory::findByRefNum(self::PROCESS_CATEGORY_DEFAULT_REF)->getNodeId());
                     $this->selectProcessConfigAction($key);
                 } else {
                     $addNewSupply = true;
