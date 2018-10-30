@@ -132,7 +132,8 @@ class ElcaProcessViewSet extends DataObjectSet
             $initValues['ratio'] = $ratio;
         }
 
-        $sql = sprintf('SELECT CASE WHEN p.scenario_id IS NOT NULL THEN p.name_orig ||\' [\'|| s.description ||\']\'
+        $sql = sprintf('SELECT p.id AS "processId" 
+                             , CASE WHEN p.scenario_id IS NOT NULL THEN p.name_orig ||\' [\'|| s.description ||\']\'
                                     ELSE p.name_orig
                                END AS "nameOrig"
                              , (p.ratio * 100)::int ||\'%%\'  AS "ratio"
@@ -181,7 +182,8 @@ class ElcaProcessViewSet extends DataObjectSet
         $initValues['processConfigId'] = $processConfigId;
         $initValues['lifeCyclePhase'] = $lifeCyclePhase;
 
-        $sql = sprintf('SELECT p.name_orig AS "nameOrig"
+        $sql = sprintf('SELECT p.id AS "processId" 
+                             , p.name_orig AS "nameOrig"
                              , (p.ratio * 100)::int ||\'%%\'  AS "ratio"
                              , p.uuid
                              , p.ref_value AS "refValue"
@@ -218,7 +220,8 @@ class ElcaProcessViewSet extends DataObjectSet
         $initValues = array();
         $initValues['processConfigId'] = $processConfigId;
 
-        $sql = sprintf('SELECT p.name AS "name"
+        $sql = sprintf('SELECT p.id AS "processId"
+                             , p.name AS "name"
                              , (p.ratio * 100)::int ||\'%%\'  AS "ratio"
                              , p.uuid
                              , p.ref_unit AS "refUnit"

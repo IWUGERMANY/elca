@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * This file is part of the eLCA project
  *
@@ -23,29 +23,42 @@
  *
  */
 
-namespace Soda4Lca\Model\Import;
+namespace Elca\Service;
 
-use Elca\Model\Common\Unit;
+use Elca\Db\ElcaProcess;
+use Elca\Db\ElcaProcessName;
 
-class UnitNameMapper
+class ProcessNameTranslator
 {
     /**
-     * Mappings
+     * @var ElcaLocale
      */
-    private static $unitToRefUnitMap = [
-        'm²'      => Unit::SQUARE_METER,
-        'qm'      => Unit::SQUARE_METER,
-        'm³'      => Unit::CUBIC_METER,
-        'Item(s)' => Unit::PIECE,
-        'stück'   => Unit::PIECE,
-        'Bauteil' => Unit::PIECE,
-        'pcs.'    => Unit::PIECE,
-    ];
+    private $locale;
 
-    public static function unitByName($unit): Unit
+    public function __construct(ElcaLocale $locale)
     {
-        return Unit::fromString(
-            self::$unitToRefUnitMap[$unit] ?? $unit
-        );
+        $this->locale = $locale;
+    }
+
+    /**
+     * @param string $id
+     * @param array  $parameters
+     * @param null   $domain
+     * @param null   $locale
+     *
+     * @return string
+     */
+    public function trans(int $processId, string $locale = null): string
+    {
+        if (null === $locale) {
+            $locale = $this->locale->getLocale();
+        }
+
+        $processName = ElcaProcessName::findByProcessIdAndLang($processId, $locale);
+
+        return $processName->isInitialized()
+            ? $processName->getName()
+            : ElcaProcess::findById($processId)->getName();
     }
 }
+

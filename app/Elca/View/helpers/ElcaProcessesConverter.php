@@ -42,6 +42,8 @@ class ElcaProcessesConverter extends ObjectPropertyConverter
     {
         switch($property)
         {
+            case 'nameOrig':
+                return $DataObject->processId ? \processName($DataObject->processId) : $DataObject->nameOrig;
             case 'refValue':
                 return ElcaNumberFormat::toString($DataObject->refValue, 2). ' '. ElcaNumberFormat::formatUnit($DataObject->refUnit);
             case 'epdType':

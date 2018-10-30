@@ -109,7 +109,7 @@ class ElcaHtmlProcessSelectorLink extends HtmlFormElement
         if($procId = $this->getConvertedTextValue())
         {
             $Process = ElcaProcess::findById($procId);
-            $procName = $Process->getName();
+            $procName = \processName($procId);
 
             if($Process->getScenarioId())
                 $procName .= ' ['. $Process->getScenario()->getDescription() .']';

@@ -25,9 +25,12 @@
 namespace Elca\View\helpers;
 
 use Beibob\Blibs\DbObject;
+use Beibob\Blibs\Environment;
 use Beibob\HtmlTools\HtmlInputElement;
 use Beibob\HtmlTools\HtmlTextInput;
 use Beibob\HtmlTools\Interfaces\Converter;
+use Elca\ElcaNumberFormat;
+use Elca\Service\ElcaLocale;
 
 /**
  * Numeric input form element
@@ -63,6 +66,16 @@ class ElcaHtmlNumericInput extends HtmlTextInput
 
         if ($precision = $defaultConverter->get('precision'))
             $this->setPrecision($precision);
+
+        if ($decPoint = $defaultConverter->get('decPoint')) {
+            $this->setDecimal(
+                ElcaNumberFormat::formatCharacters(
+                    Environment::getInstance()->getContainer()->get(ElcaLocale::class)->getLocale(),
+                    'decPoint',
+                    ','
+                )
+            );
+        }
     }
     // End __construct
 
@@ -83,6 +96,11 @@ class ElcaHtmlNumericInput extends HtmlTextInput
     public function disableNegative($disable = true)
     {
         $this->setAttribute('data-negative', $disable? 'false' : 'true');
+    }
+
+    public function setDecimal($decPoint)
+    {
+        $this->setAttribute('data-decimal', $decPoint);
     }
     // End disableNegative
 }

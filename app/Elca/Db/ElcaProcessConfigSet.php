@@ -438,7 +438,6 @@ class ElcaProcessConfigSet extends DbObjectSet
      */
     public static function searchExtended(array $keywords, array $initValues = null, array $orderBy = null, $limit = null, $offset = null, $force = false)
     {
-        $rankSql = '';
         $conditions = array();
 
         if ($filter = self::buildConditions($initValues))
@@ -448,32 +447,24 @@ class ElcaProcessConfigSet extends DbObjectSet
         foreach ($keywords as $keyword) {
             $keyword = \trim($keyword);
 
-            if ($keyword == '\'')
+            if ($keyword === '\'')
                 continue;
 
-            $keyword = str_replace('\'', '\'\'', $keyword);
-            $keyword = str_replace('\\', '\\\\', $keyword);
-            $keyword = str_replace('(', '\(', $keyword);
-            $keyword = str_replace(')', '\)', $keyword);
-            $keyword = str_replace('|', '\|', $keyword);
+            $keyword = str_replace('*', '%', $keyword);
 
-            if ($keyword == '')
+            if ($keyword === '')
                 continue;
 
-            $searchTerms[] = '\'' . $keyword . '\':*';
+            $searchTerms[] = $keyword;
         }
 
         if (count($searchTerms)) {
-            $initValues['searchQuery'] = join(' & ', $searchTerms);
-            $conditions[] = 'search_vector @@ to_tsquery(\'german\', :searchQuery)';
-
-            $arr = array_reverse($orderBy, true);
-            $arr['rank'] = 'DESC';
-            $orderBy = array_reverse($arr, true);
-            $rankSql = 'ts_rank_cd(search_vector, to_tsquery(\'german\', :searchQuery)) AS rank, ';
+            if ($searchConditions = self::getSearchConditions($searchTerms, 'pc.search_vector', $initValues)) {
+                $conditions[] = $searchConditions;
+            }
         }
 
-        $sql = sprintf('SELECT DISTINCT %s
+        $sql = sprintf('SELECT DISTINCT
                                         pc.id
                                       , pc.process_category_node_id
                                       , pc.name
@@ -497,12 +488,11 @@ class ElcaProcessConfigSet extends DbObjectSet
                                       , pc.created
                                       , pc.modified
                           FROM %s pc'
-            , $rankSql
             , self::VIEW_PROCESS_CONFIG_EXTENDED_SEARCH
         );
 
         if ($conditions)
-            $sql .= ' WHERE ' . join(' AND ', $conditions);
+            $sql .= ' WHERE ' . \implode(' AND ', $conditions);
 
         if ($orderView = self::buildOrderView($orderBy, $limit, $offset))
             $sql .= ' ' . $orderView;
@@ -632,7 +622,7 @@ class ElcaProcessConfigSet extends DbObjectSet
         }
 
         if ($epdSubType) {
-            $sql .= ' AND plca.epd_type = :epdSubType';
+            $sql .= ' AND (plca.epd_type = :epdSubType OR plca.epd_type IS NULL)';
             $initValues['epdSubType'] = $epdSubType;
         }
 
@@ -680,5 +670,33 @@ class ElcaProcessConfigSet extends DbObjectSet
         return self::_count(get_class(), ElcaProcessConfig::getTablename(), $initValues, $force);
     }
     // End dbCount
+
+    /**
+     * Returns the search conditions
+     *
+     * @param array   $keywords
+     * @param  string $searchField
+     * @param array   $initValues
+     *
+     * @return string
+     */
+    private static function getSearchConditions(array $keywords, $searchField, array &$initValues)
+    {
+        $lftBoundary = $rgtBoundary = '%';
+
+        $queries = array();
+        foreach ($keywords as $index => $token) {
+            $varName = 'token' . $index;
+
+            $queries[] = sprintf("%s ilike :%s", $searchField, $varName);
+            $initValues[$varName] = $lftBoundary . $token . $rgtBoundary;
+        }
+
+        $conditions = null;
+        if (count($queries))
+            $conditions = '(' . join(' AND ', $queries) . ')';
+
+        return $conditions;
+    }
 }
 // End class ElcaProcessConfigSet

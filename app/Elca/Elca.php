@@ -35,6 +35,7 @@ use Elca\Db\ElcaProjectVariant;
 use Elca\Model\ElcaModuleInterface;
 use Elca\Model\Navigation\ElcaNavigationInterface;
 use Elca\Service\ElcaTranslator;
+use Elca\Service\ProcessConfigNameTranslator;
 use Exception;
 
 /**

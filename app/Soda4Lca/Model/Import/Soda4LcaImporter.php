@@ -37,6 +37,7 @@ use Elca\Db\ElcaLifeCycleSet;
 use Elca\Db\ElcaProcess;
 use Elca\Db\ElcaProcessCategory;
 use Elca\Db\ElcaProcessConfig;
+use Elca\Db\ElcaProcessConfigName;
 use Elca\Db\ElcaProcessConfigSet;
 use Elca\Db\ElcaProcessConfigVariant;
 use Elca\Db\ElcaProcessConfigVariantSet;
@@ -44,11 +45,13 @@ use Elca\Db\ElcaProcessConversion;
 use Elca\Db\ElcaProcessIndicator;
 use Elca\Db\ElcaProcessLifeCycleAssignment;
 use Elca\Db\ElcaProcessLifeCycleAssignmentSet;
+use Elca\Db\ElcaProcessName;
 use Elca\Db\ElcaProcessScenario;
 use Elca\Db\ElcaProcessScenarioSet;
 use Elca\Db\ElcaProcessSet;
 use Elca\Model\Common\CategoryClassId;
 use Elca\Model\Common\Unit;
+use Elca\Model\Process\Module;
 use Elca\Model\ProcessConfig\Conversion\ConversionType;
 use Exception;
 use Soda4Lca\Db\Soda4LcaImport;
@@ -634,6 +637,13 @@ class Soda4LcaImporter
 
         $processDO->name = $this->getCleanedName($processDO->nameOrig);
 
+        $processDO->cleanMultiLangNames = [];
+        foreach ($processDO->multiLangNames as $langIdent => $multiLangName) {
+            if ($langIdent) {
+                $processDO->cleanMultiLangNames[$langIdent] = $this->getCleanedName($multiLangName);
+            }
+        }
+
         if (isset($processDO->refUnit)) {
             $processDO->refUnit = $this->getRefUnitByUnit($processDO->refUnit);
         }
@@ -971,6 +981,8 @@ class Soda4LcaImporter
                         );
                     }
 
+                    $this->updateProcessNames($ProcessDO, $Process);
+
                     /**
                      * create update process indicators
                      */
@@ -999,6 +1011,7 @@ class Soda4LcaImporter
                             );
                         }
                     }
+
 
                     /**
                      * Assign to processConfigs if this is a prod phase process or this is
@@ -1144,6 +1157,13 @@ class Soda4LcaImporter
                             }
 
                             $numAssignments++;
+
+                            if ($ProcessConfig->getName() === $Process->getName()) {
+                                $stage = Module::fromValue($Process->getLifeCycleIdent())->stage();
+                                if ($stage->isProduction() || $stage->isUsage()) {
+                                    $this->updateProcessConfigNames($ProcessDO, $ProcessConfig);
+                                }
+                            }
                         }
 
                     } else {
@@ -1685,6 +1705,62 @@ class Soda4LcaImporter
         $newNode = NestedNode::createAsChildOf($parentCategory->getNode(), (string)$categoryClassId);
 
         return ElcaProcessCategory::create($newNode->getId(), $categoryClassName, (string)$categoryClassId);
+    }
+
+    private function updateProcessNames($processDO, $process): void
+    {
+        foreach ($processDO->cleanMultiLangNames as $langIdent => $multiLangName) {
+            if (!$langIdent) {
+                continue;
+            }
+
+            $processName = ElcaProcessName::findByProcessIdAndLang($process->getId(), $langIdent);
+            if ($processName->isInitialized()) {
+                if ($processName->getName() === $multiLangName) {
+                    continue;
+                }
+                $processName->setName($multiLangName);
+                $processName->update();
+                $this->Log->debug(
+                    'ProcessName `' . $processName->getName() . '\' [' . $processName->getLang() . '] updated',
+                    __METHOD__
+                );
+            } else {
+                $processName = ElcaProcessName::create($process->getId(), $langIdent, $multiLangName);
+                $this->Log->debug(
+                    'ProcessName `' . $processName->getName() . '\' [' . $processName->getLang() . '] added',
+                    __METHOD__
+                );
+            }
+        }
+    }
+
+    private function updateProcessConfigNames($processDO, ElcaProcessConfig $processConfig): void
+    {
+        foreach ($processDO->cleanMultiLangNames as $langIdent => $multiLangName) {
+            if (!$langIdent) {
+                continue;
+            }
+
+            $processConfigName = ElcaProcessConfigName::findByProcessConfigIdAndLang($processConfig->getId(), $langIdent);
+            if ($processConfigName->isInitialized()) {
+                if ($processConfigName->getName() === $multiLangName) {
+                    continue;
+                }
+                $processConfigName->setName($multiLangName);
+                $processConfigName->update();
+                $this->Log->debug(
+                    'ProcessConfigName `' . $processConfigName->getName() . '\' [' . $processConfigName->getLang() . '] updated',
+                    __METHOD__
+                );
+            } else {
+                $processConfigName = ElcaProcessConfigName::create($processConfig->getId(), $langIdent, $multiLangName);
+                $this->Log->debug(
+                    'ProcessConfigName `' . $processConfigName->getName() . '\' [' . $processConfigName->getLang() . '] added',
+                    __METHOD__
+                );
+            }
+        }
     }
 }
 // End Soda4LcaImporter

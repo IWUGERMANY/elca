@@ -24,6 +24,7 @@
  */
 namespace Elca;
 use Beibob\Blibs\Environment;
+use Elca\Service\ElcaLocale;
 
 /**
  * Number formatter
@@ -61,7 +62,7 @@ class ElcaNumberFormat
     {
         if ($decPoint == '?')
         {
-            $ElcaLocale = Environment::getInstance()->getContainer()->get('Elca\Service\ElcaLocale');
+            $ElcaLocale = Environment::getInstance()->getContainer()->get(ElcaLocale::class);
             if (!isset(self::$formatCharacters[$ElcaLocale->getLocale()]))
                 throw new \Exception('decPoint definition missing for locale `' . $ElcaLocale->getLocale() . '\' in ElcaNumberFormat::$formatCharacters');
             $decPoint = self::$formatCharacters[$ElcaLocale->getLocale()]['decPoint'];
@@ -92,7 +93,7 @@ class ElcaNumberFormat
     {
         if ($decPoint == '?')
         {
-            $ElcaLocale = Environment::getInstance()->getContainer()->get('Elca\Service\ElcaLocale');
+            $ElcaLocale = Environment::getInstance()->getContainer()->get(ElcaLocale::class);
             if (!isset(self::$formatCharacters[$ElcaLocale->getLocale()]))
                 throw new \Exception('decPoint and thousendSep definition missing for locale `' . $ElcaLocale->getLocale() . '\' in ElcaNumberFormat::$formatCharacters');
 

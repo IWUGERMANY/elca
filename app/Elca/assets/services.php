@@ -37,6 +37,7 @@ use Elca\Service\ElcaElementImageCache;
 use Elca\Service\ElcaTemplateTranslation;
 use Elca\Service\Element\ElementService;
 use Elca\Service\Event\EventPublisher;
+use Elca\Service\ProcessConfigNameTranslator;
 use Elca\Service\Project\AccessToken\ProjectAccessTokenMailer;
 use Elca\Service\Project\ProjectElementService;
 use Elca\Service\Project\ProjectVariant\ProjectVariantService;

@@ -650,7 +650,7 @@ class ElcaProcessConfigSelectorView extends HtmlView
         }
 
         foreach ($processConfigSet as $processConfig) {
-            $caption = $processConfig->getName();
+            $caption = \processConfigName($processConfig->getId());
 
             $Opt = $select->add(new HtmlSelectOption($caption, $processConfig->getId()));
 

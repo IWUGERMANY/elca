@@ -374,19 +374,9 @@ class ElcaElementComponentsView extends HtmlView
         else
             $Container->add(new HtmlHiddenField('position[' . $key . ']', ''));
 
-        /**
-         * <<<<<<< HEAD
-         * =======
-         * Toggler
-         */
         if ($key != 'new_' . $this->buildMode)
             $Container->add(new ElcaHtmlToggleLink(Url::factory('/' . $this->context . '/toggleComponent/', ['componentId' => $key,
                                                                                                              'b'           => $this->buildMode]), $this->Data->toggleState[$key]));
-
-        /**
-         * >>>>>>> feature/i18n
-         * ProcessConfig selector
-         */
         $Container->add($Selector = new ElcaHtmlProcessConfigSelectorLink('processConfigId[' . $key . ']'));
 
         if ($this->isLockedProperty(ElementAssistant::PROPERTY_COMPONENT_PROCESS_CONFIG_ID, $Component))
@@ -769,11 +759,12 @@ class ElcaElementComponentsView extends HtmlView
             $HeadRow = $Head->addTableRow(new HtmlTableHeadRow());
             $HeadRow->addClass('table-headlines');
 
-            $Converter = new ElcaProcessesConverter();
+            $processConverter = new ElcaProcessesConverter();
 
             $Body = $Table->createTableBody();
             $Row = $Body->addTableRow();
-            $Row->getColumn('refValue')->setOutputElement(new HtmlText('refValue', $Converter));
+            $Row->getColumn('refValue')->setOutputElement(new HtmlText('refValue', $processConverter));
+            $Row->getColumn('nameOrig')->setOutputElement(new HtmlText('nameOrig', $processConverter));
 
             $Body->setDataSet($doList);
         } else {
@@ -820,7 +811,7 @@ class ElcaElementComponentsView extends HtmlView
                 $key = $indicator->life_cycle_ident.$indicator->process_id;
                 if (!isset($doList[$key])) {
                     $DO                = $doList[$key] = new \stdClass();
-                    $DO->nameOrig      = $indicator->name_orig;
+                    $DO->nameOrig      = $indicator->process_id ? \processName($indicator->process_id) : $indicator->name_orig;
                     $DO->lifeCycleName = $indicator->life_cycle_name;
 
                     if ($indicator->ratio != 1) {

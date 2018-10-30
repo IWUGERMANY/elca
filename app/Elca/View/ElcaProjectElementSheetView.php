@@ -27,6 +27,7 @@ namespace Elca\View;
 use Beibob\Blibs\BlibsDateTime;
 use Beibob\Blibs\Url;
 use Elca\Db\ElcaCompositeElementSet;
+use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessConfigSet;
 use Elca\ElcaNumberFormat;
 use Elca\Security\ElcaAccess;
@@ -152,12 +153,14 @@ class ElcaProjectElementSheetView extends ElcaElementSheetView
         else
             $ProcessConfigs = ElcaProcessConfigSet::findByElementId($this->get('itemId'), ['name' => 'ASC']);
 
-        $this->addInfo($ProcessConfigs->join(', ', 'name'), t('Baustoffe'), null, true);
-
+        $this->addInfo(
+            implode(', ', $ProcessConfigs->map(function(ElcaProcessConfig $processConfig) {return \processConfigName($processConfig->getId());})),
+            \t('Baustoffe'), null, true
+        );
 
         $ownerName = $this->element->getOwnerId() !== ElcaAccess::getInstance()->getUserId()
             ? $this->element->getOwner()->getIdentifier()
-            : t('Ihnen');
+            : \t('Ihnen');
 
         $this->addInfo($ownerName, t('Erstellt von'), null, true);
 

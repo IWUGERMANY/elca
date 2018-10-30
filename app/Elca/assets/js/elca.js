@@ -573,7 +573,7 @@ $(window).load(function () {
                     $("input.numeric-input", $context).each(function () {
                         var $numIn = $(this);
                         $numIn.numeric({
-                            decimal: ',',
+                            decimal: $numIn.data('decimal'),
                             precision: $numIn.data('precision'),
                             decimalPlaces: $numIn.data('scale'),
                             negative: $numIn.data('negative')

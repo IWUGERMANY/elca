@@ -582,7 +582,7 @@ class ElcaProcessDb extends DbObject
      */
     public function update()
     {
-        $this->modified = self::getCurrentTime();
+
 
         $sql = sprintf("UPDATE %s
                            SET name           = :name
