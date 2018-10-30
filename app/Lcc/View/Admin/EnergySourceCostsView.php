@@ -143,14 +143,14 @@ class EnergySourceCostsView extends HtmlView
         $container->add(
             new ElcaHtmlFormElementLabel(
                 '',
-                new HtmlTextInput('name[' . $key . ']', $this->energySourceCosts->name[$key])
+                new HtmlTextInput('name[' . $key . ']', $this->energySourceCosts->name[$key] ?? null)
             )
         );
 
         $container->add(
             new ElcaHtmlFormElementLabel(
                 '',
-                $input = new ElcaHtmlNumericInput('costs[' . $key . ']', $this->energySourceCosts->costs[$key])
+                $input = new ElcaHtmlNumericInput('costs[' . $key . ']', $this->energySourceCosts->costs[$key] ?? null)
             )
         );
         $input->setPrecision(2);
