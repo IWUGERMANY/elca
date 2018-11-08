@@ -50,9 +50,7 @@ CREATE OR REPLACE VIEW elca.process_configs_extended_search_v AS
          , pc.is_stale
          , pc.created
          , pc.modified
-         , to_tsvector('german', pc.name || ' ' ||
-                                 coalesce(array_to_string(array_agg(DISTINCT n.name :: text), ' '), '') || ' '
-        ) AS search_vector
+         , pc.name || ' ' || coalesce(array_to_string(array_agg(DISTINCT n.name :: text), ' '), '') AS search_vector
     FROM elca.process_configs pc
              LEFT JOIN elca.process_config_names n ON pc.id = n.process_config_id
     GROUP BY pc.id
