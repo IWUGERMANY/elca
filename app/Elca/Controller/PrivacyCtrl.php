@@ -28,14 +28,14 @@ use Beibob\Blibs\HtmlView;
 use Elca\View\ElcaBaseView;
 
 /**
- * Imprint controller
+ * Privacy controller
  *
  * @package elca
  * @author Tobias Lode <tobias@beibob.de>
  * @author Fabian Möller <fab@beibob.de>
  *
  */
-class ImprintCtrl extends AppCtrl
+class PrivacyCtrl extends AppCtrl
 {
     /**
      * Will be called on initialization.
@@ -50,7 +50,7 @@ class ImprintCtrl extends AppCtrl
         $this->Elca->unsetProjectId();
 
         if ($this->isAjax()) {
-            $this->setView(new HtmlView('i18n/imprint_' . $this->Elca->getLocale()));
+            $this->setView(new HtmlView('i18n/privacy_' . $this->Elca->getLocale(), 'elca'));
         }
 
         if($this->hasBaseView()) {
@@ -70,4 +70,3 @@ class ImprintCtrl extends AppCtrl
     }
     // End isPublic
 }
-// End ImprintCtrl
