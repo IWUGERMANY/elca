@@ -49,7 +49,9 @@ class PrivacyCtrl extends AppCtrl
 
         $this->Elca->unsetProjectId();
 
-        $this->setView(new HtmlView('i18n/privacy_' . $this->Elca->getLocale()));
+        if ($this->isAjax()) {
+            $this->setView(new HtmlView('i18n/privacy_' . $this->Elca->getLocale(), 'elca'));
+        }
 
         if($this->hasBaseView()) {
             $this->getBaseView()->disableSidebar(ElcaBaseView::SIDEBAR_LEFT);
