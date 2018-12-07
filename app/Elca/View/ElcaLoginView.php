@@ -426,7 +426,10 @@ class ElcaLoginView extends HtmlView
         $Group->add(new ElcaHtmlFormElementLabel(t('Passwort'), new HtmlPasswordInput('authKey', ''), true));
 
         $Group = $Form->add(new HtmlFormGroup(''));
-        $Group->add(new HtmlTag('p', t('Mit dem Absenden erklären Sie sich mit den nebenstehenden Nutzungsbedingungen einverstanden.'), ['class' => 'notice']));
+        $pTag = $Group->add(new HtmlTag('p', t('Mit dem Absenden erklären Sie sich mit den nebenstehenden Nutzungsbedingungen und der aktuellen '), ['class' => 'notice']));
+        $pTag->add(new HtmlTag('a', t('Datenschutzvereinbarung'), ['href' => '/privacy/', 'target' => '_blank', 'class' => 'page no-xhr']));
+        $pTag->add(new HtmlTag('span', t(' einverstanden.')));
+
         $Group->add(new ElcaHtmlSubmitButton('login', t('Absenden')));
 
         $Form->appendTo($Container);
