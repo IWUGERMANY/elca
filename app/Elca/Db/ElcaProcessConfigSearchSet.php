@@ -168,7 +168,7 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
     {
         $initValues = ['locale' => $languageIdent, 'opAsSupply' => ElcaProcessConfigAttribute::IDENT_OP_AS_SUPPLY];
 
-        if (!$conditions = self::getSearchConditions($keywords, 'name', 'names.name',$initValues))
+        if (!$conditions = self::getSearchConditions($keywords, 'p.name', 'names.name',$initValues))
             return new ElcaProcessConfigSearchSet();
 
         if ($inUnit) {
@@ -193,7 +193,7 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
                           LEFT JOIN %s names ON p.id = names.process_config_id AND names.lang = :locale
                          WHERE %s
                       ORDER BY process_category_node_name
-                             , name"
+                             , p.name"
             , self::VIEW_PROCESS_CONFIG_SEARCH
             , ElcaProcessConfigAttribute::TABLE_NAME
             , ElcaProcessConversion::TABLE_NAME
