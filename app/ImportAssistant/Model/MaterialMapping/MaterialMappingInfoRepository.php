@@ -45,7 +45,7 @@ class MaterialMappingInfoRepository
 
         $result = [];
         foreach ($map as $materialName => $mappings) {
-            $result[$materialName] = $this->buildMaterialMappingInfo($mappings);
+            $result[\utf8_strtolower($materialName)] = $this->buildMaterialMappingInfo($mappings);
         }
 
         return $result;

@@ -30,6 +30,7 @@ class ImportAssistantProcessConfigMapping extends DbObject
         'isSibling'               => PDO::PARAM_BOOL,
         'siblingRatio'            => PDO::PARAM_STR,
         'requiredAdditionalLayer' => PDO::PARAM_BOOL,
+        'created'                 => PDO::PARAM_STR,
     );
 
     /**
@@ -78,6 +79,8 @@ class ImportAssistantProcessConfigMapping extends DbObject
     private $epdSubTypes = [];
 
     private $processDbIds = [];
+
+    private $created;
 
     /**
      * Creates the object
@@ -380,6 +383,12 @@ class ImportAssistantProcessConfigMapping extends DbObject
         return $this->processDbIds;
     }
 
+    public function created()
+    {
+        return $this->created;
+    }
+
+
     /**
      * Updates the object in the table
      *
@@ -467,10 +476,11 @@ class ImportAssistantProcessConfigMapping extends DbObject
     protected function insert()
     {
         $this->id = $this->getNextSequenceValue();
+        $this->created           = self::getCurrentTime();
 
         $sql = sprintf(
-            "INSERT INTO %s (id, material_name, process_db_id, process_config_id, is_sibling, sibling_ratio, required_additional_layer)
-                               VALUES  (:id, :materialName, :processDbId, :processConfigId, :isSibling, :siblingRatio, :requiredAdditionalLayer)"
+            "INSERT INTO %s (id, material_name, process_db_id, process_config_id, is_sibling, sibling_ratio, required_additional_layer, created)
+                               VALUES  (:id, :materialName, :processDbId, :processConfigId, :isSibling, :siblingRatio, :requiredAdditionalLayer, :created)"
             ,
             self::TABLE_NAME
         );
@@ -485,6 +495,7 @@ class ImportAssistantProcessConfigMapping extends DbObject
                 'isSibling'               => $this->isSibling,
                 'siblingRatio'            => $this->siblingRatio,
                 'requiredAdditionalLayer' => $this->requiredAdditionalLayer,
+                'created' => $this->created,
             )
         );
     }
@@ -509,6 +520,7 @@ class ImportAssistantProcessConfigMapping extends DbObject
         $this->isSibling               = (bool)$DO->is_sibling;
         $this->siblingRatio            = $DO->sibling_ratio;
         $this->requiredAdditionalLayer = (bool)$DO->required_additional_layer;
+        $this->created = $DO->created;
 
         if (isset($DO->units)) {
             $this->units = str_getcsv(trim($DO->units, '{}'));

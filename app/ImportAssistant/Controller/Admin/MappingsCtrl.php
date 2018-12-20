@@ -25,6 +25,7 @@
 
 namespace ImportAssistant\Controller\Admin;
 
+use Beibob\Blibs\DbHandle;
 use Beibob\Blibs\Environment;
 use Beibob\Blibs\File;
 use Beibob\Blibs\Url;
@@ -486,17 +487,19 @@ class MappingsCtrl extends AppCtrl
 
                 $file = File::fromUpload('importFile', $tmpDir);
 
-
                 try {
+                    DbHandle::getInstance()->begin();
                     $importedMappingCount = $importer->fromCsvFile($file, $activeProcessDbId, $this->Request->has('removeMappings'));
 
                     $this->flashMessages->add(
                         t(':count: Datensätze wurden importiert', null, [':count:' => $importedMappingCount])
                     );
                     $this->reloadHashUrl();
+                    DbHandle::getInstance()->commit();
 
                     return;
                 } catch (\Exception $exception) {
+                    DbHandle::getInstance()->rollback();
                     $this->messages->add($exception->getMessage(), ElcaMessages::TYPE_ERROR);
                 }
             } else {

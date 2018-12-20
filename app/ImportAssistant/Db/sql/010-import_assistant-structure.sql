@@ -16,6 +16,7 @@ CREATE TABLE import_assistant.process_config_mapping
     , "sibling_ratio"             numeric
     , "required_additional_layer" boolean      NOT NULL DEFAULT false
     , "process_db_id"             int          NOT NULL
+    , "created"                   timestamptz(0)  NOT NULL DEFAULT now()  -- creation time
     , PRIMARY KEY ("id")
     , FOREIGN KEY ("process_config_id") REFERENCES elca.process_configs ("id") ON DELETE CASCADE
     , FOREIGN KEY ("process_db_id") REFERENCES elca.process_dbs ("id") ON DELETE CASCADE

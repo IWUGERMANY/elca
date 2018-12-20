@@ -595,6 +595,46 @@ class ElcaProcessConfig extends DbObject
         return self::findBySql(get_class(), $sql, array('processName' => $processName, 'processDbId' => $processDbId), $force);
     }
 
+    public static function findCaseInsensitiveByProcessNameAndProcessDbId($processName, $processDbId, $force = false)
+    {
+        if(!$processName || !$processDbId)
+            return new ElcaProcessConfig();
+
+        $sql = sprintf("SELECT pc.id
+                             , pc.name
+                             , pc.process_category_node_id
+                             , pc.description
+                             , pc.avg_life_time
+                             , pc.min_life_time
+                             , pc.max_life_time
+                             , pc.life_time_info
+                             , pc.avg_life_time_info
+                             , pc.min_life_time_info
+                             , pc.max_life_time_info
+                             , pc.density
+                             , pc.thermal_conductivity
+                             , pc.thermal_resistance
+                             , pc.is_reference
+                             , pc.f_hs_hi
+                             , pc.default_size
+                             , pc.uuid
+                             , pc.svg_pattern_id
+                             , pc.is_stale
+                             , pc.created
+                             , pc.modified
+                          FROM %s pc
+                          JOIN %s plca ON plca.process_config_id = pc.id
+                         WHERE plca.process_db_id = :processDbId 
+                           AND lower(plca.name) = lower(:processName)
+                         LIMIT 1"
+            , self::TABLE_NAME
+            , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
+        );
+
+        return self::findBySql(get_class(), $sql, array('processName' => $processName, 'processDbId' => $processDbId), $force);
+    }
+
+
     /**
      *
      */

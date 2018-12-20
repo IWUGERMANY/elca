@@ -470,12 +470,13 @@ class Importer
      */
     private function getMaterialMappingInfo($processConfigName): MaterialMappingInfo
     {
-        if (isset($this->materialMappingInfos[$processConfigName])) {
-            return $this->materialMappingInfos[$processConfigName];
+        $processConfigNameCI = \utf8_strtolower($processConfigName);
+        if (isset($this->materialMappingInfos[$processConfigNameCI])) {
+            return $this->materialMappingInfos[$processConfigNameCI];
         }
 
         if ($this->processDbId) {
-            $processConfig = ElcaProcessConfig::findByProcessNameAndProcessDbId($processConfigName, $this->processDbId);
+            $processConfig = ElcaProcessConfig::findCaseInsensitiveByProcessNameAndProcessDbId($processConfigName, $this->processDbId);
 
             $units = array_keys($processConfig->getRequiredUnits());
 
