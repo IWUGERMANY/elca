@@ -2,8 +2,8 @@
     <div id="formWrapper" class="form-wrapper"></div>
 
     <div class="buttons">
-        <div class="button add"><a href="/importAssistant/admin/mappings/add">_(Hinzufügen)_ +</a></div>
-        <div class="button import"><a href="/importAssistant/admin/mappings/import">_(Importieren / Kopieren)_</a></div>
+        <div class="button add"><a href="/importAssistant/admin/mappings/add/">_(Hinzufügen)_ +</a></div>
+        <div class="button import"><a href="/importAssistant/admin/mappings/import/">_(Importieren / Kopieren)_</a></div>
     </div>
 
     <table id="adminMaterialMappings" class="hover order-column compact">
