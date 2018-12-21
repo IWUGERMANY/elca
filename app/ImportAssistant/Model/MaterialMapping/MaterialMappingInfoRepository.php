@@ -84,7 +84,7 @@ class MaterialMappingInfoRepository
         $foundMappingInfo = $this->findByMaterialName($mappingInfo->materialName(), $mappingInfo->processDbId());
 
         if (null !== $foundMappingInfo && false === $foundMappingInfo->equals($mappingInfo)) {
-            throw new \UnexpectedValueException('A mapping with that name already exists');
+            throw new \UnexpectedValueException('A mapping with the name `'.$mappingInfo->materialName().'\' already exists');
         }
 
         DbHandle::getInstance()
