@@ -27,6 +27,7 @@ namespace Elca\Controller;
 use Beibob\Blibs\DbHandle;
 use Beibob\Blibs\Environment;
 use Beibob\Blibs\File;
+use Beibob\Blibs\FrontController;
 use Beibob\Blibs\Url;
 use Beibob\Blibs\UserStore;
 use Beibob\Blibs\Validator;
@@ -54,6 +55,7 @@ use Elca\Service\Assistant\ElementAssistantRegistry;
 use Elca\Service\ElcaElementImageCache;
 use Elca\Service\ElcaLocale;
 use Elca\Service\Element\ElementService;
+use Elca\Service\Mailer;
 use Elca\Service\Messages\ElcaMessages;
 use Elca\Service\Project\LifeCycleUsageService;
 use Elca\Validator\ElcaValidator;
@@ -874,20 +876,31 @@ class ElementsCtrl extends TabsCtrl
             $msg[] = t('Bauteil / Vorlage') . ': '.$Element->getElementTypeNode()->getDinCode().' ' . t($Element->getElementTypeNode()->getName()) . ' / '. $Element->getName();
             $msg[] = '';
 
+            $proto = Environment::sslActive() ? 'https' : 'http';
+
             if($Element->isTemplate())
-                $msg[] = 'http://'.Environment::getServerHost().'/elements/'.$Element->getId().'/';
+                $msg[] = $proto .'://'.Environment::getServerHost().'/elements/'.$Element->getId().'/';
             else
             {
                 $ProjectVariant = $Element->getProjectVariant();
-                $msg[] = 'http://'.Environment::getServerHost().'/projects/'. $ProjectVariant->getProjectId(). '/#!/project-elements/'.$Element->getId().'/';
+                $msg[] = $proto .'://'.Environment::getServerHost().'/projects/'. $ProjectVariant->getProjectId(). '/#!/project-elements/'.$Element->getId().'/';
             }
 
             $msg[] = '';
             $msg[] = t('Freundliche Grüße,');
             $msg[] = 'eLCA';
 
-            if(mail($Config->mailAddress, 'eLCA: ' . t('Vorschlag für eine neue Bauteilvorlage'), join("\r\n", $msg), join("\r\n", $headers)))
-            {
+            $subject = 'eLCA: ' . t('Vorschlag für eine neue Bauteilvorlage');
+            $messageContent    = \implode("\r\n", $msg);
+
+            try {
+
+                /** @var Mailer $mail */
+                $mail = FrontController::getInstance()->getEnvironment()->getContainer()->get('Elca\Service\Mailer');
+                $mail->setSubject($subject);
+                $mail->setTextContent($messageContent);
+                $mail->send($Config->mailAddress);
+
                 $this->messages->add(t('Der Administrator wurde per E-Mail informiert'));
 
                 /**
@@ -895,6 +908,10 @@ class ElementsCtrl extends TabsCtrl
                  */
                 $proposedElements[$Element->getId()] = true;
                 $this->Namespace->proposedElements = $proposedElements;
+            }
+            catch (\Exception $exception) {
+                $this->messages->add(t('Ein Fehler ist aufgetreten: ' . $exception->getMessage()), ElcaMessages::TYPE_ERROR);
+                $this->Log->error($exception);
             }
         }
 

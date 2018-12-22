@@ -342,19 +342,20 @@ class ElcaAccess
     /**
      * Current user can propose an element
      *
-     * @param  ElcaElement $Element
+     * @param  ElcaElement $element
      *
      * @return boolean
      */
-    public function canProposeElement(ElcaElement $Element)
+    public function canProposeElement(ElcaElement $element)
     {
-        if (!$Element->isInitialized() || $this->hasAdminPrivileges() || $Element->isPublic()) {
+        if (!$element->isInitialized() || $this->hasAdminPrivileges() || $element->isPublic() ||
+            !$this->hasRole(Elca::ELCA_ROLE_PROPOSE_ELEMENTS)
+        ) {
             return false;
         }
 
-        return $Element->getAccessGroupId() == $this->groupId;
+        return $element->getAccessGroupId() == $this->groupId;
     }
-    // End canEditUser
 
     /**
      * Current user can edit users

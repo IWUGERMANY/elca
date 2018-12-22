@@ -95,6 +95,7 @@ class Elca
     const ELCA_ROLE_BETA = 'BETA';
     const ELCA_ROLE_ORGA = 'ORGA';
     const ELCA_ROLE_TESTING = 'TESTING';
+    const ELCA_ROLE_PROPOSE_ELEMENTS = 'PROPOSE_ELEMENTS';
 
     /**
      * Default user group name
