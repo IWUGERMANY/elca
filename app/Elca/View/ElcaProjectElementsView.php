@@ -94,14 +94,15 @@ class ElcaProjectElementsView extends ElcaElementsView
         /**
          * Buttons
          */
-        $ElementType = ElcaElementType::findByNodeId($this->elementTypeNodeId);
-        if($ElementType->isCompositeLevel())
-            $buttonTxt = t('Neues Bauteil');
-        else
-            $buttonTxt = t('Neue Bauteilkomponente');
+        $elementType = ElcaElementType::findByNodeId($this->elementTypeNodeId);
+        $isComposite = $elementType->isCompositeLevel();
+        $buttonTxt   = $isComposite ? t('Neues Bauteil') : t('Neue Bauteilkomponente');
 
-        $ButtonContainer = $Container->appendChild($this->getDiv(['class' => 'button add']));
-        $ButtonContainer->appendChild($this->getA(['href' => '/project-elements/create/?t='.$this->elementTypeNodeId], '+ '.$buttonTxt));
+        $buttonContainer = $Container->appendChild($this->getDiv(['class' => 'button add']));
+        if ($isComposite) {
+            $this->addClass($buttonContainer, 'composite');
+        }
+        $buttonContainer->appendChild($this->getA(['href' => '/project-elements/create/?t='.$this->elementTypeNodeId], '+ '.$buttonTxt));
 
         /**
          * Add create from button action if at least one template element exists for this element type
@@ -109,7 +110,7 @@ class ElcaProjectElementsView extends ElcaElementsView
         $TplElements = ElcaElementSet::findExtended(['element_type_node_id' => $this->elementTypeNodeId, 'project_variant_id' => null],
                                                     $this->access->hasAdminPrivileges(), $this->access->getUserGroupIds(), null, 1);
         if($TplElements->count())
-            $ButtonContainer->appendChild($this->getA(['href' => '/project-elements/createFromTemplate/?t='.$this->elementTypeNodeId], '+ ' . $buttonTxt . ' ' . t('von Vorlage')));
+            $buttonContainer->appendChild($this->getA(['href' => '/project-elements/createFromTemplate/?t='.$this->elementTypeNodeId], '+ ' . $buttonTxt . ' ' . t('von Vorlage')));
 
         if ($this->assistantRegistry->hasAssistantsForElementType($this->elementType, $this->context)) {
             $assistants = $this->assistantRegistry
@@ -117,7 +118,10 @@ class ElcaProjectElementsView extends ElcaElementsView
 
             foreach ($assistants as $assistant) {
                 $buttonTxt = $assistant->getConfiguration()->getCaption();
-                $ButtonContainer = $Container->appendChild($this->getDiv(['class' => 'button add assistant']));
+                $buttonContainer = $Container->appendChild($this->getDiv(['class' => 'button add assistant']));
+                if ($isComposite) {
+                    $this->addClass($buttonContainer, 'composite');
+                }
 
                 $url = Url::factory(
                     '/project-elements/create/', [
@@ -125,7 +129,7 @@ class ElcaProjectElementsView extends ElcaElementsView
                         'assistant' => $assistant->getConfiguration()->getIdent()
                     ]
                 );
-                $ButtonContainer->appendChild($this->getA(['href' => $url], '+ ' . $buttonTxt));
+                $buttonContainer->appendChild($this->getA(['href' => $url], '+ ' . $buttonTxt));
             }
         }
     }

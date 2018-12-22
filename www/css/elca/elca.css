@@ -1150,6 +1150,8 @@ form.adminSvgPatternForm .buttons fieldset { margin-top: 20px; width: 400px; }
 
 #content.project-elements .button.add a { margin-left: 20px; }
 
+#content.elements .button.composite a, #content.project-elements .button.composite a { background-color: #2E8B57; }
+
 /** elements ------------------------*/
 #tabContent.elements h2, #tabContent.project-elements h2 { font-size: 16px; margin-top: 20px; padding-top: 20px; color: #888; }
 
