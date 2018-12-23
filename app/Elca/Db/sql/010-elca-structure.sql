@@ -385,6 +385,7 @@ CREATE TABLE elca.benchmark_versions
     , "process_db_id"         int                                     -- processDbId
     , "is_active"             boolean         NOT NULL DEFAULT false  -- active flag
     , "use_reference_model"   boolean         NOT NULL DEFAULT false  -- useReferenceModel
+    , "project_life_time"     int                                     -- projectLifeTime
     , PRIMARY KEY ("id")
     , FOREIGN KEY ("benchmark_system_id") REFERENCES elca.benchmark_systems ("id") ON UPDATE CASCADE ON DELETE CASCADE
     , FOREIGN KEY ("process_db_id") REFERENCES elca.process_dbs ("id") ON UPDATE CASCADE ON DELETE CASCADE

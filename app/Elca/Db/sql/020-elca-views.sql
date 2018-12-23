@@ -601,7 +601,7 @@ SELECT v.id,
        v.process_db_id,
        v.is_active,
        v.use_reference_model,
-       v.reference_area,
+       v.project_life_time,
        array_agg(c.constr_class_id) FILTER (WHERE c.id IS NOT NULL) as constr_class_ids
  FROM elca.benchmark_versions v
     LEFT JOIN elca.benchmark_version_constr_classes c ON v.id = c.benchmark_version_id
@@ -610,7 +610,9 @@ SELECT v.id,
         v.name,
         v.process_db_id,
         v.is_active,
-        v.use_reference_model;
+        v.use_reference_model,
+        v.project_life_time;
+
 
 -------------------------------------------------------------------------------
 COMMIT;

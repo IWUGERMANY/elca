@@ -1396,6 +1396,7 @@ $(window).load(function () {
                         $constrClassSelect = $('select[name=constrClassId]'),
                         $selectedConstrClassOption = $('option:selected', $constrClassSelect),
                         $constrClassOptions = $('option', $constrClassSelect).detach(),
+                        $projectLifeTime = $('input[name=lifeTime]', $context),
                         $livingSpaceElt = $('.form-section.livingSpace', $context),
                         processDbIdOrig = $processDbSelect.val(),
                         processDbId = null;
@@ -1419,8 +1420,8 @@ $(window).load(function () {
                         var $selectedVersion = $('option:selected', $benchmarkVersionSelect),
                             processDbId = $selectedVersion.data('process-db-id'),
                             constrClassIds = $selectedVersion.data('constr-class-ids') || [],
-                            displayLivingSpace = parseInt($selectedVersion.data('display-living-space'))
-                        ;
+                            displayLivingSpace = parseInt($selectedVersion.data('display-living-space')),
+                            projectLifeTime = $selectedVersion.data('project-life-time');
 
                         if ($selectedConstrClassOption.length === 0) {
                             $selectedConstrClassOption = $('option:first', $constrClassSelect);
@@ -1456,7 +1457,6 @@ $(window).load(function () {
                             $constrClassSelect.val($selectedConstrClassOption.attr('value'));
                         }
 
-
                         var $livingSpaceInput = $livingSpaceElt.find('input');
                         if (displayLivingSpace) {
                             if (!$selectedVersion.val()) {
@@ -1476,6 +1476,28 @@ $(window).load(function () {
                             $livingSpaceInput
                                 .addClass('read-only')
                                 .prop('readonly', true);
+                        }
+
+                        if (projectLifeTime) {
+                            if ($projectLifeTime.val() != projectLifeTime) {
+                                $projectLifeTime.addClass('changed');
+                            }
+
+                            $projectLifeTime
+                                .val(projectLifeTime)
+                                .addClass('read-only')
+                                .prop('readonly', true);
+
+                        } else {
+                            $projectLifeTime
+                                .removeClass('read-only')
+                                .prop('readonly', false);
+
+                            if (!$projectLifeTime.val()) {
+                                $projectLifeTime
+                                    .val(50)
+                                    .addClass('changed');
+                            }
                         }
 
                         return processDbId;

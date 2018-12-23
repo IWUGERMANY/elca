@@ -73,6 +73,8 @@ class ElcaBenchmarkVersion extends DbObject
 	 */
 	private $useReferenceModel;
 
+	private $projectLifeTime;
+
     /**
      * Primary key
      */
@@ -87,6 +89,7 @@ class ElcaBenchmarkVersion extends DbObject
                                         'processDbId'       => PDO::PARAM_INT,
                                         'isActive'          => PDO::PARAM_BOOL,
                                         'useReferenceModel' => PDO::PARAM_BOOL,
+                                        'projectLifeTime'   => PDO::PARAM_INT,
     );
 
     /**
@@ -105,7 +108,7 @@ class ElcaBenchmarkVersion extends DbObject
      * @param  boolean $isActive - active flag
      * @return ElcaBenchmarkVersion
      */
-    public static function create($benchmarkSystemId, $name, $processDbId = null, $isActive = false, $useReferenceModel = false)
+    public static function create($benchmarkSystemId, $name, $processDbId = null, $isActive = false, $useReferenceModel = false, $projectLifeTime = null)
     {
         $benchmarkVersion = new ElcaBenchmarkVersion();
         $benchmarkVersion->setBenchmarkSystemId($benchmarkSystemId);
@@ -113,6 +116,7 @@ class ElcaBenchmarkVersion extends DbObject
         $benchmarkVersion->setProcessDbId($processDbId);
         $benchmarkVersion->setIsActive($isActive);
 	    $benchmarkVersion->setUseReferenceModel($useReferenceModel);
+        $benchmarkVersion->setProjectLifeTime($projectLifeTime);
 
         if($benchmarkVersion->getValidator()->isValid())
             $benchmarkVersion->insert();
@@ -141,6 +145,7 @@ class ElcaBenchmarkVersion extends DbObject
                              , process_db_id
                              , is_active
                              , use_reference_model
+                             , project_life_time
                           FROM %s
                          WHERE id = :id"
                        , self::TABLE_NAME
@@ -330,6 +335,16 @@ class ElcaBenchmarkVersion extends DbObject
 		return $this->useReferenceModel;
 	}
 
+    public function getProjectLifeTime()
+    {
+        return $this->projectLifeTime;
+    }
+
+    public function setProjectLifeTime($projectLifeTime)
+    {
+        $this->projectLifeTime = $projectLifeTime;
+    }
+
     public function getConstrClassIds()
     {
         if (null !== $this->constrClassIds) {
@@ -367,6 +382,7 @@ class ElcaBenchmarkVersion extends DbObject
                              , process_db_id     = :processDbId
                              , is_active         = :isActive
                              , use_reference_model = :useReferenceModel
+                             , project_life_time = :projectLifeTime
                          WHERE id = :id"
                        , self::TABLE_NAME
                        );
@@ -378,6 +394,7 @@ class ElcaBenchmarkVersion extends DbObject
                                         'processDbId'      => $this->processDbId,
                                         'isActive'         => $this->isActive,
                                         'useReferenceModel' => $this->useReferenceModel,
+                                        'projectLifeTime' => $this->projectLifeTime,
                                   )
                                   );
     }
@@ -474,8 +491,8 @@ class ElcaBenchmarkVersion extends DbObject
     {
         $this->id                = $this->getNextSequenceValue();
         
-        $sql = sprintf("INSERT INTO %s (id, benchmark_system_id, name, process_db_id, is_active, use_reference_model)
-                               VALUES  (:id, :benchmarkSystemId, :name, :processDbId, :isActive, :useReferenceModel)"
+        $sql = sprintf("INSERT INTO %s (id, benchmark_system_id, name, process_db_id, is_active, use_reference_model, project_life_time)
+                               VALUES  (:id, :benchmarkSystemId, :name, :processDbId, :isActive, :useReferenceModel, :projectLifeTime)"
                        , self::TABLE_NAME
                        );
         
@@ -486,6 +503,7 @@ class ElcaBenchmarkVersion extends DbObject
                                         'processDbId'      => $this->processDbId,
                                         'isActive'         => $this->isActive,
                                         'useReferenceModel' => $this->useReferenceModel,
+                                        'projectLifeTime' => $this->projectLifeTime,
                                   )
         );
     }
@@ -507,6 +525,7 @@ class ElcaBenchmarkVersion extends DbObject
         $this->processDbId       = $DO->process_db_id;
         $this->isActive          = (bool)$DO->is_active;
 	    $this->useReferenceModel = (bool)$DO->use_reference_model;
+	    $this->projectLifeTime = $DO->project_life_time;
 
         /**
          * Set extensions
@@ -522,4 +541,3 @@ class ElcaBenchmarkVersion extends DbObject
     }
     // End initByDataObject
 }
-// End class ElcaBenchmarkVersion

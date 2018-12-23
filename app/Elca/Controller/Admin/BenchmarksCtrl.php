@@ -486,6 +486,8 @@ class BenchmarksCtrl extends TabsCtrl
         $data->constrClassIds = ElcaBenchmarkVersionConstrClassSet::findByBenchmarkVersionId($benchmarkVersionId)
                                                                   ->getArrayBy('constrClassId');
 
+        $data->projectLifeTime = ElcaBenchmarkVersion::findById($benchmarkVersionId)->getProjectLifeTime();
+
         $view = $this->setView(new ElcaAdminBenchmarkVersionCommonView());
         $view->assign('benchmarkVersionId', $benchmarkVersionId);
         $view->assign('activeTabIdent', 'common');
@@ -690,6 +692,8 @@ class BenchmarksCtrl extends TabsCtrl
             $oldConstrClassIds = ElcaBenchmarkVersionConstrClassSet::findByBenchmarkVersionId($benchmarkVersionId)
                                                                    ->getArrayBy('id', 'constrClassId');
 
+            $projectLifeTime = $this->Request->projectLifeTime;
+
             $dbHandle = DbHandle::getInstance();
 
             try {
@@ -707,6 +711,10 @@ class BenchmarksCtrl extends TabsCtrl
                 foreach ($oldConstrClassIds as $constrClassId => $benchmarkVersionConstrClassId) {
                     ElcaBenchmarkVersionConstrClass::findById($benchmarkVersionConstrClassId)->delete();
                 }
+
+                $benchmarkVersion = ElcaBenchmarkVersion::findById($benchmarkVersionId);
+                $benchmarkVersion->setProjectLifeTime($projectLifeTime ? (int)$projectLifeTime : null);
+                $benchmarkVersion->update();
 
                 $this->messages->add('Die Änderungen wurden übernommen');
 

@@ -245,6 +245,7 @@ class ProjectDataCtrl extends AppCtrl
         $processDbHasChanged        = false;
         $benchmarkVersionHasChanged = false;
         $benchmarkVersion = ElcaBenchmarkVersion::findById($this->Request->benchmarkVersionId);
+        $projectLifeTimeIsReadOnly = null !== $benchmarkVersion->getProjectLifeTime();
 
         $validator = new ElcaValidator($this->Request);
         $validator->assertTrue(
@@ -264,8 +265,19 @@ class ProjectDataCtrl extends AppCtrl
                 );
             }
             $validator->assertNumber('processDbId', null, t('Bitte wählen sie eine Baustoff Datenbank aus'));
-            $validator->assertNotEmpty('lifeTime', null, t('Bitte geben Sie eine Gebäude Nutzungsdauer in Jahren ein'));
-            $validator->assertNumber('lifeTime', null, t('Bitte geben Sie eine Gebäude Nutzungsdauer in Jahren ein'));
+
+            if (!$projectLifeTimeIsReadOnly) {
+                $validator->assertNotEmpty(
+                    'lifeTime',
+                    null,
+                    t('Bitte geben Sie eine Gebäude Nutzungsdauer in Jahren ein')
+                );
+                $validator->assertNumber(
+                    'lifeTime',
+                    null,
+                    t('Bitte geben Sie eine Gebäude Nutzungsdauer in Jahren ein')
+                );
+            }
             if ($this->Request->has('create')) {
                 $validator->assertNotEmpty('constrMeasure', null, t('Bitte wählen Sie eine Baumaßnahme aus'));
             }
@@ -318,10 +330,15 @@ class ProjectDataCtrl extends AppCtrl
         if ($validator->isValid()) {
 
             $lifeCycleUsages = $this->container->get(LifeCycleUsageService::class);
+            $projectLifeTime = $this->Request->lifeTime;
 
             if ($benchmarkVersion->isInitialized()) {
                 $benchmarkVersionId = $benchmarkVersion->getId();
                 $processDbId        = $benchmarkVersion->getProcessDbId();
+
+                if ($benchmarkVersion->getProjectLifeTime()) {
+                    $projectLifeTime = $benchmarkVersion->getProjectLifeTime();
+                }
             } else {
                 $benchmarkVersionId = null;
                 $processDbId        = $this->Request->processDbId;
@@ -338,7 +355,7 @@ class ProjectDataCtrl extends AppCtrl
                     UserStore::getInstance()->getUser()->getGroupId(),
                     // access_group_id
                     $this->Request->name,
-                    $this->Request->lifeTime,
+                    $projectLifeTime,
                     null,
                     strlen($this->Request->description) ? $this->Request->description : null,
                     // description = null
@@ -398,7 +415,7 @@ class ProjectDataCtrl extends AppCtrl
                 /**
                  * Check for changes, require lca re-computation
                  */
-                if ($this->Request->lifeTime != $Project->getLifeTime()) {
+                if ($projectLifeTime != $Project->getLifeTime()) {
                     $needLcaProcessing = true;
                 }
 
@@ -425,7 +442,7 @@ class ProjectDataCtrl extends AppCtrl
                     $benchmarkVersionHasChanged = true;
                 }
 
-                $Project->setLifeTime($this->Request->lifeTime);
+                $Project->setLifeTime($projectLifeTime);
                 $Project->setBenchmarkVersionId($benchmarkVersionId);
                 $Project->setProcessDbId($processDbId);
                 $Project->setEditor(\trim($this->Request->editor));

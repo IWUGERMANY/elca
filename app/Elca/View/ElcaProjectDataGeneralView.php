@@ -162,7 +162,8 @@ class ElcaProjectDataGeneralView extends HtmlView
         if($this->has('Validator'))
             $Form->setValidator($this->get('Validator'));
 
-        ////// Kopfdaten ////
+        $benchmarkVersion = ElcaBenchmarkVersion::findById($DO->benchmarkVersionId);
+
         $group = $Form->add(new HtmlFormGroup(''));
         $group->addClass('column clear');
         $group->add(new ElcaHtmlFormElementLabel(t(self::$captions['name']), new HtmlTextInput('name'), true));
@@ -184,7 +185,11 @@ class ElcaProjectDataGeneralView extends HtmlView
             )->addClass('start-with-projection');
         }
 
-        $group->add(new ElcaHtmlFormElementLabel(t(self::$captions['lifeTime']), new ElcaHtmlNumericInput('lifeTime'),true, 'Jahre'));
+
+        $lifeTimeIsReadOnly = null !== $benchmarkVersion->getProjectLifeTime();
+
+        $group->add(new ElcaHtmlFormElementLabel(t(self::$captions['lifeTime']), $projectLifeTimeInput = new ElcaHtmlNumericInput('lifeTime'),true, 'Jahre'));
+        $projectLifeTimeInput->setReadonly($this->readOnly || $lifeTimeIsReadOnly, false);
 
         $select = $group->add(new ElcaHtmlFormElementLabel(t(self::$captions['constrClassId']), new HtmlSelectbox('constrClassId'), true));
         $select->add(new HtmlSelectOption('-- ' . t('Bitte wählen') . ' --', ''));
@@ -229,6 +234,7 @@ class ElcaProjectDataGeneralView extends HtmlView
                 $selectOpt->setAttribute('data-process-db-id', $benchmarkVersion->getProcessDbId());
                 $selectOpt->setAttribute('data-constr-class-ids', json_encode($benchmarkVersion->getConstrClassIds()));
                 $selectOpt->setAttribute('data-display-living-space', null !== $benchmarkSystemModel ? (int)$benchmarkSystemModel->displayLivingSpace() : null);
+                $selectOpt->setAttribute('data-project-life-time', null !== $benchmarkSystemModel ? $benchmarkVersion->getProjectLifeTime() : null);
             }
         }
 
@@ -258,7 +264,6 @@ class ElcaProjectDataGeneralView extends HtmlView
         }
 
         ////// project constructions ////
-        $benchmarkVersion = ElcaBenchmarkVersion::findById($DO->benchmarkVersionId);
 
         $group = $Form->add(new HtmlFormGroup(t(self::$captions['areas'])));
         $group->addClass('column');

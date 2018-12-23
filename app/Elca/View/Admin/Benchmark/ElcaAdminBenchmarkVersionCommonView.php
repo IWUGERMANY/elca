@@ -33,6 +33,7 @@ use Beibob\HtmlTools\HtmlMultiSelectbox;
 use Beibob\HtmlTools\HtmlSelectOption;
 use Elca\Db\ElcaConstrClassSet;
 use Elca\View\helpers\ElcaHtmlFormElementLabel;
+use Elca\View\helpers\ElcaHtmlNumericInput;
 use Elca\View\helpers\ElcaHtmlSubmitButton;
 
 /**
@@ -108,6 +109,8 @@ class ElcaAdminBenchmarkVersionCommonView extends HtmlView
         foreach (ElcaConstrClassSet::find(null, ['ref_num' => 'ASC']) as $constrClass) {
             $select->add(new HtmlSelectOption($constrClass->getRefNum() .' '.$constrClass->getName(), $constrClass->getId()));
         }
+
+        $group->add(new ElcaHtmlFormElementLabel(t('Nutzungsdauer'), new ElcaHtmlNumericInput('projectLifeTime'), null, t('Jahre')));
 
         /**
          * Add buttons
