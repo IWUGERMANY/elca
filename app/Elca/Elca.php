@@ -57,7 +57,7 @@ class Elca
     /**
      * Version
      */
-    const VERSION = '1.6.2';
+    const VERSION = '1.6.3';
     const VERSION_BBSR = '0.9.5';
 
     /**

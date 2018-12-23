@@ -1,3 +1,13 @@
+# 1.6.3 
++ Ergänzt mehrsprachige Baustoffnamen
++ Ergänzt eine spanische Sprachversion
++ Ergänzt die Datenschutz-Seite
++ Optimiert die Suche nach Baustoffkonfigurationen
++ Setzt Vorgabewerte für die Gebäude-Nutzungsdauer in Abhängigkeit des gewählten Benchmarksystems
++ Setzt im Bereich Endenergiebilanz passende Baustoff-Kategorien als Standardauswahl
++ Behebt Fehler beim Material-Datensatz-Mapping für den Projektimport-Assistenten
++ Behebt einen Fehler beim Kopieren von Bauteilen, die mit dem Fenster-Assistenten erstellt wurden
+
 # 1.6.2
 + Behebt einen Fehler im Bauteileditor bei der Eingabe des Austauschzyklus
 + Behebt einen Fehler bei der Ermittlung kompatibler Baustoffdatenbanken von Bauteilvorlagen
