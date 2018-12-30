@@ -2,6 +2,7 @@
 + Ergänzt mehrsprachige Baustoffnamen
 + Ergänzt eine spanische Sprachversion
 + Ergänzt die Datenschutz-Seite
++ Ergänzt eine Auswertung nicht-bilanzierter Komponenten
 + Optimiert die Suche nach Baustoffkonfigurationen
 + Setzt Vorgabewerte für die Gebäude-Nutzungsdauer in Abhängigkeit des gewählten Benchmarksystems
 + Setzt im Bereich Endenergiebilanz passende Baustoff-Kategorien als Standardauswahl

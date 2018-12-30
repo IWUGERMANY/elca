@@ -66,6 +66,7 @@ class ElcaReportAssetsView extends ElcaReportsView
     const BUILDMODE_TRANSPORTS = 'transports';
     const BUILDMODE_TOP_ASSETS = 'top-assets';
     const BUILDMODE_NON_DEFAULT_LIFE_TIME_ASSETS = 'non-default-life-time';
+    const BUILDMODE_NOT_CALCULATED_COMPONENTS = 'not-calculated-components';
 
 
     /**
@@ -123,6 +124,11 @@ class ElcaReportAssetsView extends ElcaReportsView
             case self::BUILDMODE_NON_DEFAULT_LIFE_TIME_ASSETS:
                 $TdContainer->appendChild($this->getP(t('Folgenden Baustoffen wurden eigene Nutzungsdauern zugewiesen.')));
                 $this->buildAssets($TdContainer, ElcaReportSet::findNonDefaultLifeTimeAssets($this->projectVariantId));
+                break;
+
+            case self::BUILDMODE_NOT_CALCULATED_COMPONENTS:
+                $TdContainer->appendChild($this->getP(t('Folgende Baustoffe werden in der Ökobilanzierung des Projekts nicht berücksichtigt.')));
+                $this->buildAssets($TdContainer, ElcaReportSet::findNotCalculatedComponents($this->projectVariantId));
                 break;
 
             case self::BUILDMODE_SYSTEMS:
@@ -301,7 +307,9 @@ class ElcaReportAssetsView extends ElcaReportsView
         }
 
 
-        if($this->buildMode !== self::BUILDMODE_NON_DEFAULT_LIFE_TIME_ASSETS && $DO->has_element_image) {
+        if (!\in_array($this->buildMode,
+                [self::BUILDMODE_NON_DEFAULT_LIFE_TIME_ASSETS, self::BUILDMODE_NOT_CALCULATED_COMPONENTS], true)
+           && $DO->has_element_image) {
             $this->appendElementImage($Container, $elementId);
         }
     }

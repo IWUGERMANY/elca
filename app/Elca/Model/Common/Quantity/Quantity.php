@@ -99,6 +99,11 @@ class Quantity
         return $this->unit;
     }
 
+    public function scale(float $factor): Quantity
+    {
+        return new self($this->value * $factor, $this->unit);
+    }
+
     public function __toString(): string
     {
         return sprintf('%s %s', $this->value(), (string)$this->unit());

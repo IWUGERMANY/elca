@@ -56,6 +56,7 @@ class ElcaReportSet extends DataObjectSet
     const VIEW_REPORT_ELEMENT_TYPE_EFFECTS = 'elca_cache.report_element_type_effects_v';
     const VIEW_REPORT_LIFE_CYCLE_EFFECTS = 'elca_cache.report_life_cycle_effects_v';
     const VIEW_REPORT_ASSETS = 'elca_cache.report_assets_v';
+    const VIEW_REPORT_ASSETS_NOT_CALCULATED = 'elca_cache.report_assets_not_calculated_v';
     const VIEW_REPORT_TOP_ASSETS = 'elca_cache.report_top_assets_v';
     const VIEW_REPORT_EFFECTS = 'elca_cache.report_effects_v';
     const VIEW_REPORT_FINAL_ENERGY_DEMAND_EFFECTS = 'elca_cache.report_final_energy_demand_effects_v';
@@ -1293,6 +1294,45 @@ class ElcaReportSet extends DataObjectSet
                                , process_life_cycle_p_order'
             ,
             self::VIEW_REPORT_ASSETS
+        );
+
+        if ($limit) {
+            $sql .= ' LIMIT ' . $limit;
+        }
+
+        return self::_findBySql(
+            get_class(),
+            $sql,
+            [
+                'projectVariantId' => $projectVariantId,
+                'processDbId'      => $project->getProcessDbId(),
+            ],
+            $force
+        );
+    }
+
+    /**
+     * @param            $projectVariantId
+     * @param bool|false $force
+     *
+     * @return ElcaReportSet
+     * @throws \Beibob\Blibs\Exception
+     */
+    public static function findNotCalculatedComponents($projectVariantId, $limit = null, $force = false)
+    {
+        $project = ElcaProjectVariant::findById($projectVariantId)->getProject();
+
+        $sql = sprintf(
+            'SELECT *
+                         FROM %s
+                        WHERE project_variant_id = :projectVariantId
+                          AND process_db_id = :processDbId
+                        ORDER BY element_type_din_code
+                               , component_is_layer
+                               , component_layer_position
+                               , process_life_cycle_p_order'
+            ,
+            self::VIEW_REPORT_ASSETS_NOT_CALCULATED
         );
 
         if ($limit) {

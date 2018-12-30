@@ -195,7 +195,18 @@ class ProjectReportAssetsCtrl extends BaseReportsCtrl
             $this->Osit->add(new ElcaOsitItem(t('Eigene Nutzungsdauern'), null, t('Auswertung')));
         }
     }
-    // End nonDefaultLifeTimeAction
+
+    protected function notCalculatedComponentsAction() {
+        $View = $this->setView(new ElcaReportAssetsView());
+        $View->assign('buildMode', ElcaReportAssetsView::BUILDMODE_NOT_CALCULATED_COMPONENTS);
+        $View->assign('projectVariantId', $this->Elca->getProjectVariantId());
+
+        if (!$this->Request->isPost()) {
+            $this->addView(new ElcaProjectReportsNavigationLeftView());
+            $this->Osit->add(new ElcaOsitItem(t('Nicht-bilanzierte Komponenten'), null, t('Auswertung')));
+        }
+    }
+
 
     /**
      * @return SessionNamespace

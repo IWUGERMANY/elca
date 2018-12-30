@@ -24,13 +24,19 @@
  */
 namespace Elca\View\helpers;
 
+use Beibob\Blibs\Environment;
 use Beibob\Blibs\HtmlDOMFactory;
 use Beibob\HtmlTools\HtmlDataElement;
 use Beibob\HtmlTools\HtmlTable;
 use Beibob\HtmlTools\HtmlTableHeadRow;
 use Beibob\HtmlTools\HtmlText;
 use DOMDocument;
+use Elca\Db\ElcaProcessConversion;
 use Elca\ElcaNumberFormat;
+use Elca\Model\Common\Quantity\Quantity;
+use Elca\Model\Common\Unit;
+use Elca\Model\Processing\ElcaLcaProcessor;
+use Elca\Model\Processing\Element\ElementComponentQuantity;
 
 /**
  * @package elca
@@ -45,7 +51,7 @@ class ElcaHtmlComponentAssets extends HtmlDataElement
      */
     public function build(DOMDocument $Document)
     {
-        $DataObject = $this->getDataObject();
+        $dataObject = $this->getDataObject();
         $Factory = new HtmlDOMFactory($Document);
 
         switch($name = $this->getName())
@@ -53,7 +59,7 @@ class ElcaHtmlComponentAssets extends HtmlDataElement
             case 'component_layer_position':
                 $Container = $Factory->getDiv();
                 $Container->setAttribute('class', 'component-details');
-                $processes = $DataObject->processes;
+                $processes = $dataObject->processes;
 
                 $Table = new HtmlTable('report-assets-details');
                 $Table->addColumn('process_life_cycle_description', t('Lebenszyklus'));
@@ -79,58 +85,86 @@ class ElcaHtmlComponentAssets extends HtmlDataElement
 
             case 'process_config_name':
                 $Container = $Factory->getSpan();
-                $Container->appendChild($Factory->getSpan($DataObject->process_config_name, ['class' => 'process-config-name']));
+                $Container->appendChild($Factory->getSpan($dataObject->process_config_name, ['class' => 'process-config-name']));
 
                 // add extant info
-                if ($DataObject->component_is_extant) {
+                if ($dataObject->component_is_extant) {
                     $Container->appendChild($Factory->getSpan(t('Altsubstanz'), ['class' => 'info info-is-extant']));
                 } else {
                     $Container->appendChild($Factory->getSpan(t('Neusubstanz'), ['class' => 'info info-is-extant']));
                 }
 
                 // add quantity info
-                $quantity = ElcaNumberFormat::toString($DataObject->cache_component_quantity) .' '. ElcaNumberFormat::formatUnit($DataObject->cache_component_ref_unit);
-                $Span = $Container->appendChild($Factory->getSpan(t('Menge '), ['class' => 'info info-quantity']));
-                $Span->appendChild($Factory->getSpan($quantity));
+                if ($dataObject->cache_component_quantity) {
+                    $formatQuantity = ElcaNumberFormat::toString(
+                            $dataObject->cache_component_quantity
+                        ) . ' ' . ElcaNumberFormat::formatUnit($dataObject->cache_component_ref_unit);
+                }
+                else {
+                    $processConversion = ElcaProcessConversion::findById(
+                        $dataObject->process_conversion_id
+                    )->toConversion();
 
-                if($DataObject->component_layer_area_ratio != 1) {
-                    $Span = $Container->appendChild($Factory->getSpan('Flächenanteil ', ['class' => 'info info-area-ratio']));
-                    $Span->appendChild($Factory->getSpan(ElcaNumberFormat::toString($DataObject->component_layer_area_ratio, 1, true) .'%'));
+                    $componentQuantity   = new ElementComponentQuantity(
+                        new Quantity($dataObject->component_quantity * $dataObject->element_quantity,
+                            $processConversion->fromUnit()
+                        ),
+                        $processConversion,
+                        $dataObject->component_is_layer,
+                        $dataObject->component_layer_width,
+                        $dataObject->component_layer_length,
+                        $dataObject->component_size,
+                        $dataObject->component_layer_area_ratio
+                    );
+
+                    $convertedQuantity = $componentQuantity->convertedQuantity();
+                    $formatQuantity  = ElcaNumberFormat::formatQuantity($convertedQuantity->value(), (string)$convertedQuantity->unit(), 2);
+                }
+
+                $span = $Container->appendChild(
+                    $Factory->getSpan(t('Menge '), ['class' => 'info info-quantity'])
+                );
+                $span->appendChild($Factory->getSpan($formatQuantity));
+
+
+                if($dataObject->component_layer_area_ratio != 1) {
+                    $span = $Container->appendChild($Factory->getSpan('Flächenanteil ', ['class' => 'info info-area-ratio']));
+                    $span->appendChild($Factory->getSpan(ElcaNumberFormat::toString($dataObject->component_layer_area_ratio, 1, true) .'%'));
                 }
 
                 // add maintenance info
-                if ($DataObject->component_is_extant && $DataObject->component_life_time_delay > 0) {
+                if ($dataObject->component_is_extant && $dataObject->component_life_time_delay > 0) {
 
-                    if ($DataObject->component_life_time_delay > 1)
-                        $label = t('Restnutzung für %years% Jahre', null, ['%years%' => $DataObject->component_life_time_delay]);
+                    if ($dataObject->component_life_time_delay > 1)
+                        $label = t('Restnutzung für %years% Jahre', null, ['%years%' => $dataObject->component_life_time_delay]);
                     else
                         $label = t('Restnutzung für ein Jahr');
 
                     $Container->appendChild($Factory->getSpan($label, ['class' => 'info info-life-time-delay']));
                 }
 
-                $lifeTime = $DataObject->component_life_time;
+                $lifeTime = $dataObject->component_life_time;
 
                 if ($lifeTime > 1)
                     $label = t('Austausch nach %years% Jahren', null, ['%years%' => $lifeTime]);
                 else
                     $label = t('Austauch nach einem Jahr');
 
-                if($DataObject->cache_component_num_replacements)
-                    $label .= ' (' . t('%count% mal', null, ['%count%' => $DataObject->cache_component_num_replacements]) . ')';
+                if ($dataObject->cache_component_num_replacements)
+                    $label .= ' (' . t('%count% mal', null, ['%count%' => $dataObject->cache_component_num_replacements]) . ')';
 
                 $Container->appendChild($Factory->getSpan($label, ['class' => 'info info-life-time']));
 
-                if ($DataObject->has_non_default_life_time) {
+                if ($dataObject->has_non_default_life_time) {
                     $span = $Container->appendChild($Factory->getSpan(t('Hinterlegte Nutzungsdauern') . ' ', ['class' => 'info info-default-life-times']));
-                    $span->appendChild($Factory->getSpan(t('min') . ': '. $DataObject->min_life_time));
-                    if ($DataObject->avg_life_time)
-                        $span->appendChild($Factory->getSpan(t('mittel') . ': '. $DataObject->avg_life_time));
-                    if ($DataObject->max_life_time)
-                        $span->appendChild($Factory->getSpan(t('max') . ': '. $DataObject->max_life_time));
+                    $span->appendChild($Factory->getSpan(t('min') . ': '. $dataObject->min_life_time));
+                    if ($dataObject->avg_life_time)
+                        $span->appendChild($Factory->getSpan(t('mittel') . ': '. $dataObject->avg_life_time));
+                    if ($dataObject->max_life_time)
+                        $span->appendChild($Factory->getSpan(t('max') . ': '. $dataObject->max_life_time));
 
                     $span = $Container->appendChild($Factory->getSpan(t('Grund') . ' ', ['class' => 'info info-life-time-info']));
-                    $span->appendChild($Factory->getSpan($DataObject->component_life_time_info?  $DataObject->component_life_time_info : '-', ['class' => $DataObject->component_life_time_info ? '' : 'no-value']));
+                    $span->appendChild($Factory->getSpan($dataObject->component_life_time_info?  $dataObject->component_life_time_info : '-', ['class' => $dataObject->component_life_time_info ? '' : 'no-value']));
                 }
 
                 break;
@@ -139,7 +173,7 @@ class ElcaHtmlComponentAssets extends HtmlDataElement
         /**
          * Set remaining attributes
          */
-        $this->buildAndSetAttributes($Container, $DataObject, $name);
+        $this->buildAndSetAttributes($Container, $dataObject, $name);
 
         foreach($this->getChildren() as $Child)
             $Child->appendTo($Container);

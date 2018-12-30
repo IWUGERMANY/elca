@@ -65,6 +65,6 @@ class LinearConversion extends AbstractConversion
 
     public function __toString(): string
     {
-        return parent::__toString() .': '.$this->factor;
+        return parent::__toString() . ': ' . $this->factor;
     }
 }

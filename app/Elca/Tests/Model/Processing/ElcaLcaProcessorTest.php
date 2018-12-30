@@ -150,8 +150,7 @@ class ElcaLcaProcessorTest extends TestCase
         $this->lcaProcessor = new ElcaLcaProcessor([], $this->processConfigRepository, $this->processLifeCycleRepository, $this->indicatorRepository, $this->lifeCycleUsageService, $this->cache, $this->logger);
     }
 
-    public function test_computeElementComponentQuantity_component_quantity_is_component_quantity_multiplied_with_element_quantity(
-    )
+    public function test_computeElementComponentQuantity_component_quantity_is_component_quantity_multiplied_with_element_quantity()
     {
         $conversion    = $this->given_trivial_process_conversion(Elca::UNIT_STK);
         $processConfig = $this->given_process_config_with_conversions([$conversion]);

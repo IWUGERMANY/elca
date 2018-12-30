@@ -69,6 +69,7 @@ class ElcaProjectReportsNavigationLeftView extends HtmlView
         if ($dbIsEn15804Compliant) {
             $Item->add(t('Zusätzliche Indikatoren'), 'elca', ProjectReportsCtrl::class, 'summaryAdditionalIndicators');
         }
+        $Item->add(t('Nicht bilanziert'), 'elca', ProjectReportAssetsCtrl::class, 'notCalculatedComponents');
 
         $Item = $Navigation->add(t('Massenbilanz'));
         $Item->add(t('Gebäudekonstruktion'), 'elca', ProjectReportAssetsCtrl::class, 'construction');

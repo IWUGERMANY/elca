@@ -146,9 +146,6 @@ class ElcaNumberFormat
     }
     // End formatUnit
 
-    /**
-     *
-     */
     public static function formatQuantity($number, $unit, $precision = null, $isPercentage = false, $decPoint = '?', $inScientific = false)
     {
         return self::toString($number, $precision, $isPercentage, $decPoint, $inScientific) . ' ' . self::formatUnit($unit);

@@ -25,8 +25,9 @@
 
 namespace Elca\Model\ProcessConfig\Conversion;
 
+use Elca\Model\Common\Quantity\Quantity;
 use Elca\Model\Common\Unit;
-use Utils\Model\SurrogateIdTrait;
+use Elca\Model\Exception\InvalidArgumentException;
 
 abstract class AbstractConversion implements Conversion
 {
@@ -62,8 +63,22 @@ abstract class AbstractConversion implements Conversion
     }
 
     abstract public function convert(float $value): float;
-
     abstract public function invert(): Conversion;
+
+    public function convertQuantity(Quantity $quantity): Quantity
+    {
+        if (!$quantity->unit()->equals($this->fromUnit)) {
+            throw new InvalidArgumentException(
+                'Unit :unit: does not match conversion unit :conversionUnit:', [
+                    ':unit:' => (string)$quantity->unit(),
+                    ':conversionUnit:' => (string)$this->fromUnit,
+                ]);
+        }
+        return new Quantity(
+            $this->convert($quantity->value()),
+            $this->toUnit()
+        );
+    }
 
     public function type(): ConversionType
     {

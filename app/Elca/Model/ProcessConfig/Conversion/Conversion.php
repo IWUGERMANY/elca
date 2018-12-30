@@ -25,6 +25,7 @@
 
 namespace Elca\Model\ProcessConfig\Conversion;
 
+use Elca\Model\Common\Quantity\Quantity;
 use Elca\Model\Common\Unit;
 
 interface Conversion
@@ -34,6 +35,8 @@ interface Conversion
     public function toUnit(): Unit;
 
     public function convert(float $value): float;
+
+    public function convertQuantity(Quantity $quantity): Quantity;
 
     public function invert(): Conversion;
 

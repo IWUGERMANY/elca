@@ -56,6 +56,7 @@ use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycleRepository;
 use Elca\Model\ProcessConfig\ProcessConfigId;
 use Elca\Model\ProcessConfig\ProcessConfigRepository;
 use Elca\Model\ProcessConfig\UsefulLife;
+use Elca\Model\Processing\Element\ElementComponentQuantity;
 use Elca\Model\Project\ProjectId;
 use Elca\Service\Project\LifeCycleUsageService;
 use Exception;
@@ -367,46 +368,32 @@ class ElcaLcaProcessor
     /**
      * Conputes the quantity for an ElementComponent
      *
-     * @param ElcaElementComponent $elementComponent
+     * @param ElcaElementComponent $elcaElementComponent
      * @return Quantity
      */
-    public function computeElementComponentQuantity(ElcaElementComponent $elementComponent): Quantity
+    public function computeElementComponentQuantity(ElcaElementComponent $elcaElementComponent): Quantity
     {
-        $conversion = $elementComponent
-            ->getProcessConversion()
-            ->toConversion();
-
-        $quantity = $elementComponent->getQuantity() * $elementComponent->getElement()->getQuantity();
-
-        if ($elementComponent->isLayer()) {
-            $quantity = $elementComponent->getLayerLength()
-                        * $elementComponent->getLayerWidth()
-                        * $elementComponent->getLayerSize()
-                        * $elementComponent->getLayerAreaRatio()
-                        * $quantity;
-        }
+        $elementComponent = ElementComponentQuantity::fromElcaElementComponent($elcaElementComponent);
 
         /**
          * Convert quantity into outUnits
          */
-        $convertedQuantity = $conversion->convert($quantity);
+        $convertedQuantity = $elementComponent->convertedQuantity();
 
         $this->logger->debug(
             sprintf(
-                '%s %s: apply conversion: %s %s >> %s %s',
-                $elementComponent->isLayer()
-                    ? $elementComponent->getLayerPosition().'. Layer'
+                '%s %s: apply conversion: %s >> %s',
+                $elcaElementComponent->isLayer()
+                    ? $elcaElementComponent->getLayerPosition() . '. Layer'
                     : 'Component',
-                $elementComponent->getProcessConfig()->getName(),
-                $quantity,
-                $conversion->fromUnit(),
-                $convertedQuantity,
-                $conversion->toUnit()
+                $elcaElementComponent->getProcessConfig()->getName(),
+                $elementComponent->quantity(),
+                $convertedQuantity
             ),
             __METHOD__
         );
 
-        return new Quantity($convertedQuantity, $conversion->toUnit());
+        return $convertedQuantity;
     }
 
     /**
