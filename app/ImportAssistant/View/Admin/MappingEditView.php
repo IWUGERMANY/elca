@@ -226,7 +226,7 @@ class MappingEditView extends HtmlView
         $selector->setContext($this->context);
         $selector->setRelId($this->data->mappingId[$index] ?? null);
         $selector->setData($index);
-        $selector->setBuildMode(ElcaProcessConfigSelectorView::BUILDMODE_DEFAULT);
+        $selector->setBuildMode(ElcaProcessConfigSelectorView::BUILDMODE_ALL);
         $selector->setProcessDbId($this->data->processDbId);
 
         $this->checkMappingChange($selector, $index);

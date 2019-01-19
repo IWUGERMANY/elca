@@ -562,7 +562,8 @@ class MappingsCtrl extends AppCtrl
                 !$this->Access->hasAdminPrivileges(),
                 [$this->Request->db],
                 null,
-                $this->Request->epdSubType
+                $this->Request->epdSubType,
+                false
             );
 
             $returnValues = [];

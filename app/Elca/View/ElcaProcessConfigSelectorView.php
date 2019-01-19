@@ -70,6 +70,7 @@ class ElcaProcessConfigSelectorView extends HtmlView
     const BUILDMODE_OPERATION = 'operation';
     const BUILDMODE_FINAL_ENERGY_SUPPLY = 'finalEnergySupply';
     const BUILDMODE_TRANSPORTS = 'transports';
+    const BUILDMODE_ALL = 'all';
 
     /**
      * Buildmode
@@ -334,6 +335,7 @@ class ElcaProcessConfigSelectorView extends HtmlView
     {
         return $this->buildMode === ElcaElementComponentsView::BUILDMODE_LAYERS ||
                $this->buildMode === ElcaElementComponentsView::BUILDMODE_COMPONENTS ||
+               $this->buildMode === self::BUILDMODE_ALL ||
                $this->buildMode === self::BUILDMODE_DEFAULT;
     }
 
@@ -635,6 +637,19 @@ class ElcaProcessConfigSelectorView extends HtmlView
                     $activeProcessDbId
                 );
                 break;
+            case self::BUILDMODE_ALL:
+                $processConfigSet = ElcaProcessConfigSet::findByProcessCategoryNodeId(
+                    $categoryId,
+                    $this->buildMode == ElcaElementComponentsView::BUILDMODE_LAYERS ? 'm3' : $inUnit,
+                    ['name' => 'ASC'],
+                    !$access->hasAdminPrivileges(),
+                    $filterByProcessDbId,
+                    false,
+                    $this->filterByProjectVariantId,
+                    $epdSubType ?: null,
+                    false
+                );
+                break;
 
             default:
                 $processConfigSet = ElcaProcessConfigSet::findByProcessCategoryNodeId(
@@ -645,7 +660,8 @@ class ElcaProcessConfigSelectorView extends HtmlView
                     $filterByProcessDbId,
                     false,
                     $this->filterByProjectVariantId,
-                    $epdSubType ?: null
+                    $epdSubType ?: null,
+                    true
                 );
         }
 

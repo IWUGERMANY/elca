@@ -14,7 +14,7 @@ CREATE OR REPLACE VIEW import_assistant.process_config_mapping_conversions_view 
          , pc.process_db_ids
          , array_agg(DISTINCT c.in_unit) FILTER (WHERE c.id IS NOT NULL) AS units
         FROM import_assistant.process_config_mapping m
-        JOIN elca.process_config_process_dbs_view pc ON pc.id = m.process_config_id
+        JOIN elca.all_process_config_process_dbs_view pc ON pc.id = m.process_config_id
         JOIN elca.process_conversions c ON c.process_config_id = m.process_config_id
     GROUP BY m.id
         , m.material_name

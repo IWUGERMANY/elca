@@ -84,6 +84,7 @@ class Soda4LcaDatabaseSheetView extends ElcaSheetView
         {
             $this->addInfo(Soda4LcaProcessSet::dbCount(['import_id' => $this->DatabaseDO->import_id]), t('Datensätze gesamt'), null, true);
             $this->addInfo(Soda4LcaProcessSet::dbCountImported($this->DatabaseDO->import_id), t('Importierte Datensätze'));
+            $this->addInfo($this->DatabaseDO->version, t('Version'));
 
             if($this->DatabaseDO->date_of_import)
             {

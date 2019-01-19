@@ -41,6 +41,8 @@ class ElcaProcessConfigSet extends DbObjectSet
      */
     const VIEW_PROCESS_CONFIG_EXTENDED_SEARCH = 'elca.process_configs_extended_search_v';
     const VIEW_PROCESS_CONFIG_PROCESS_DBS = 'elca.process_config_process_dbs_view';
+    const VIEW_ALL_PROCESS_CONFIG_PROCESS_DBS = 'elca.all_process_config_process_dbs_view';
+
 
     // public
 
@@ -154,7 +156,7 @@ class ElcaProcessConfigSet extends DbObjectSet
      *
      * @return ElcaProcessConfigSet
      */
-    public static function findByProcessCategoryNodeId($processCategoryNodeId, $inUnit = null, array $orderBy = null, $referenceOnly = false, array $processDbIds = null, $includeStale = false, $filterByProjectVariantId = null, $epdSubType = null, $force = false)
+    public static function findByProcessCategoryNodeId($processCategoryNodeId, $inUnit = null, array $orderBy = null, $referenceOnly = false, array $processDbIds = null, $includeStale = false, $filterByProjectVariantId = null, $epdSubType = null, $onlyProdConfigs = true, $force = false)
     {
         if (!$processCategoryNodeId)
             return new ElcaProcessConfigSet();
@@ -166,7 +168,7 @@ class ElcaProcessConfigSet extends DbObjectSet
                           JOIN %s c ON p.id = c.process_config_id
                          WHERE p.process_category_node_id = :processCategoryNodeId
                            '
-            , self::VIEW_PROCESS_CONFIG_PROCESS_DBS
+            , $onlyProdConfigs ? self::VIEW_PROCESS_CONFIG_PROCESS_DBS : self::VIEW_ALL_PROCESS_CONFIG_PROCESS_DBS
             , ElcaProcessConversion::TABLE_NAME
         );
         

@@ -50,6 +50,7 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
      * Views
      */
     const VIEW_PROCESS_CONFIG_SEARCH = 'elca.process_config_search_v';
+    const VIEW_PROCESS_CONFIG_SEARCH_ALL = 'elca.process_config_search_all_v';
 
 
     /**
@@ -63,7 +64,7 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
      * @throws Exception
      * @return ElcaProcessConfigSearchSet
      */
-    public static function findByKeywords(array $keywords, $languageIdent, $inUnit = null, $referenceOnly = false, array $processDbIds = null, $filterByProjectVariantId = null, $epdSubType = null, $force = false)
+    public static function findByKeywords(array $keywords, $languageIdent, $inUnit = null, $referenceOnly = false, array $processDbIds = null, $filterByProjectVariantId = null, $epdSubType = null, $onlyProdConfigs = true, $force = false)
     {
         $initValues = array('locale' => $languageIdent);
 
@@ -114,7 +115,7 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
                          WHERE %s
                       ORDER BY process_category_node_name
                              , p.name"
-            , self::VIEW_PROCESS_CONFIG_SEARCH
+            , $onlyProdConfigs ? self::VIEW_PROCESS_CONFIG_SEARCH : self::VIEW_PROCESS_CONFIG_SEARCH_ALL
             , ElcaProcessConversion::TABLE_NAME
             , ElcaProcessConfigName::TABLE_NAME
             , $conditions
