@@ -7,12 +7,12 @@
       <projectNr>Test eLCA</projectNr>
     </projectInfo>
     <attributes>
-      <attr ident="bki.bauweise">
-        <caption><![CDATA[BKI Bauweise]]></caption>
+      <attr ident="enev.bauweise">
+        <caption><![CDATA[EnEV Bauweise]]></caption>
         <textValue>leicht</textValue>
       </attr>
-      <attr ident="bki.gebaeudetyp">
-        <caption><![CDATA[BKI Gebaeudetyp]]></caption>
+      <attr ident="enev.gebaeudetyp">
+        <caption><![CDATA[EnEV Gebaeudetyp]]></caption>
         <textValue>Nichtwohngebäude</textValue>
       </attr>
     </attributes>

@@ -25,6 +25,7 @@
 
 namespace Elca;
 use Beibob\Blibs\Environment;
+use Elca\Service\ElcaLocale;
 
 
 /**

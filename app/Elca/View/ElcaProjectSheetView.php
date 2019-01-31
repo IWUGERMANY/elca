@@ -107,7 +107,7 @@ class ElcaProjectSheetView extends ElcaSheetView
             $this->addFunction('cancel', '/projects/removeProjectAccess/?id=$$itemId$$', t('Freigabe entfernen'));
         }
 
-        if ($this->Project->hasPassword()) {
+        if ($this->Project->hasPassword() && !$access->passwordIsExpired($this->Project)) {
             $this->getHeadline()->appendChild($this->getSpan(null, ['class' => 'protected']));
             $this->addClass($Container, 'is-protected');
         }

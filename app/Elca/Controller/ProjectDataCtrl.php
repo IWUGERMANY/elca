@@ -345,10 +345,11 @@ class ProjectDataCtrl extends AppCtrl
             }
 
             $passwordPlain = $this->Request->pw;
+            $passwordHasChanged = false;
 
             if ($this->Request->has('create')) {
                 // save project
-                $Project = ElcaProject::create(
+                $project = ElcaProject::create(
                     $processDbId,
                     UserStore::getInstance()->getUser()->getId(),
                     // ownerId
@@ -371,55 +372,57 @@ class ProjectDataCtrl extends AppCtrl
                     $passwordPlain ? (string)EncryptedPassword::fromPlainPassword($passwordPlain) : null
                 );
 
+                $passwordHasChanged = (bool)$passwordPlain;
+
                 // project variant
                 $ProjectPhase   = ElcaProjectPhase::findMinIdByConstrMeasure(
-                    $Project->getConstrMeasure(),
+                    $project->getConstrMeasure(),
                     $this->Request->has('startWithProjection') ? 0 : 1
                 );
                 $ProjectVariant = ElcaProjectVariant::create(
-                    $Project->getId(),
+                    $project->getId(),
                     $ProjectPhase->getId(),
                     $ProjectPhase->getName()
                 );
 
-                $Project->setCurrentVariantId($ProjectVariant->getId());
-                $Project->update();
+                $project->setCurrentVariantId($ProjectVariant->getId());
+                $project->update();
 
-                $lifeCycleUsages->updateForProject($Project);
+                $lifeCycleUsages->updateForProject($project);
 
             } // update project
             else {
-                $Project        = $this->Elca->getProject();
+                $project        = $this->Elca->getProject();
                 $ProjectVariant = $this->Elca->getProjectVariant();
 
-                if ($Project->getName() != \trim($this->Request->name)) {
-                    $Project->setName(trim($this->Request->name));
+                if ($project->getName() != \trim($this->Request->name)) {
+                    $project->setName(trim($this->Request->name));
 
                     /**
                      * update content head view
                      */
                     $ContentHead = $this->addView(new ElcaContentHeadView());
-                    $ContentHead->assign('Project', $Project);
+                    $ContentHead->assign('Project', $project);
                 }
-                $Project->setProjectNr(\trim($this->Request->projectNr));
-                $Project->setDescription(\trim($this->Request->description));
+                $project->setProjectNr(\trim($this->Request->projectNr));
+                $project->setDescription(\trim($this->Request->description));
                 if (in_array(
                     $this->Request->constrMeasure,
                     [Elca::CONSTR_MEASURE_PRIVATE, Elca::CONSTR_MEASURE_PUBLIC]
                 )) {
-                    $Project->setConstrMeasure($this->Request->constrMeasure);
+                    $project->setConstrMeasure($this->Request->constrMeasure);
                 }
 
-                $Project->setConstrClassId($this->Request->constrClassId ? $this->Request->constrClassId : null);
+                $project->setConstrClassId($this->Request->constrClassId ? $this->Request->constrClassId : null);
 
                 /**
                  * Check for changes, require lca re-computation
                  */
-                if ($projectLifeTime != $Project->getLifeTime()) {
+                if ($projectLifeTime != $project->getLifeTime()) {
                     $needLcaProcessing = true;
                 }
 
-                if ($processDbId != $Project->getProcessDbId()) {
+                if ($processDbId != $project->getProcessDbId()) {
                     $needLcaProcessing   = true;
                     $processDbHasChanged = true;
 
@@ -436,31 +439,32 @@ class ProjectDataCtrl extends AppCtrl
                     }
                 }
 
-                $oldBenchmarkVersion = $Project->getBenchmarkVersion();
+                $oldBenchmarkVersion = $project->getBenchmarkVersion();
 
                 if ($oldBenchmarkVersion->getId() !== $benchmarkVersionId) {
                     $benchmarkVersionHasChanged = true;
                 }
 
-                $Project->setLifeTime($projectLifeTime);
-                $Project->setBenchmarkVersionId($benchmarkVersionId);
-                $Project->setProcessDbId($processDbId);
-                $Project->setEditor(\trim($this->Request->editor));
-                $Project->setCurrentVariantId($this->Request->currentVariantId ?: $Project->getCurrentVariantId());
+                $project->setLifeTime($projectLifeTime);
+                $project->setBenchmarkVersionId($benchmarkVersionId);
+                $project->setProcessDbId($processDbId);
+                $project->setEditor(\trim($this->Request->editor));
+                $project->setCurrentVariantId($this->Request->currentVariantId ?: $project->getCurrentVariantId());
 
                 $encryptedPassword = EncryptedPassword::fromPlainPassword($passwordPlain);
                 if ($passwordPlain !== self::DUMMY_PASSWORD &&
-                    !$encryptedPassword->equals($Project->getPassword())
+                    !$encryptedPassword->equals($project->getPassword())
                 ) {
-                    $Project->setPassword(
+                    $project->setPassword(
                         $passwordPlain ? (string)$encryptedPassword : null
                     );
 
                     $projectAccess = $this->container->get(ProjectAccess::class);
-                    $projectAccess->updateEncryptedPasswordInSessionForProject($Project);
+                    $projectAccess->updateEncryptedPasswordInSessionForProject($project);
+                    $passwordHasChanged = true;
                 }
 
-                $Project->update();
+                $project->update();
 
                 /**
                  * Remove process energy demand, if reference model is not used
@@ -484,8 +488,17 @@ class ProjectDataCtrl extends AppCtrl
                 }
 
                 if ($processDbHasChanged || $benchmarkVersionHasChanged) {
-                    $lifeCycleUsages->updateForProject($Project);
+                    $lifeCycleUsages->updateForProject($project);
                 }
+            }
+
+            if ($passwordHasChanged) {
+                ElcaProjectAttribute::updateValue(
+                    $project->getId(),
+                    ElcaProjectAttribute::IDENT_PW_DATE,
+                    date('Y-m-d'), true,
+                    "Passwort gültig seit"
+                );
             }
 
             /**
@@ -585,17 +598,17 @@ class ProjectDataCtrl extends AppCtrl
              * Attributes
              */
             ElcaProjectAttribute::updateValue(
-                $Project->getId(),
+                $project->getId(),
                 ElcaProjectAttribute::IDENT_IS_LISTED,
                 (int)$this->Request->has('isListed')
             );
             ElcaProjectAttribute::updateValue(
-                $Project->getId(),
+                $project->getId(),
                 ElcaProjectAttribute::IDENT_BNB_NR,
                 $this->Request->get('bnbNr')
             );
             ElcaProjectAttribute::updateValue(
-                $Project->getId(),
+                $project->getId(),
                 ElcaProjectAttribute::IDENT_EGIS_NR,
                 $this->Request->get('eGisNr')
             );
@@ -605,7 +618,7 @@ class ProjectDataCtrl extends AppCtrl
              */
             if ($needLcaProcessing) {
                 $View = $this->addView(new ElcaModalProcessingView());
-                $View->assign('action', $this->getActionLink('lcaProcessing', ['id' => $Project->getId()]));
+                $View->assign('action', $this->getActionLink('lcaProcessing', ['id' => $project->getId()]));
                 $View->assign('headline', t('Neuberechnung erforderlich'));
                 $View->assign('reload', true);
                 $View->assign(
@@ -621,7 +634,7 @@ class ProjectDataCtrl extends AppCtrl
             }
 
             if ($this->Request->has('create')) {
-                return $this->Response->setHeader('X-Redirect: /projects/' . $Project->getId() . '/');
+                return $this->Response->setHeader('X-Redirect: /projects/' . $project->getId() . '/');
             }
 
             $this->generalAction();

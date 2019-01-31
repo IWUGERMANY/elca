@@ -33,6 +33,7 @@ use Beibob\Blibs\User;
 use Beibob\Blibs\UserStore;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaProject;
+use Elca\Db\ElcaProjectAttribute;
 use Elca\Db\ElcaProjectSet;
 use Elca\Elca;
 use Elca\Model\Project\ProjectAccessTokenRepository;
@@ -48,6 +49,8 @@ use Elca\Model\User\UserId;
  */
 class ElcaAccess
 {
+    const ONE_DAY_IN_SECONDS = 3600 * 24;
+
     /**
      * Singleton instance
      */
@@ -213,6 +216,10 @@ class ElcaAccess
         }
 
         if ($project->hasPassword()) {
+            if ($this->passwordIsExpired($project)) {
+                return true;
+            }
+
             if (null === $encryptedPassword) {
                 return false;
             }
@@ -461,6 +468,24 @@ class ElcaAccess
     {
         $this->userId  = (int)$user->getId();
         $this->groupId = (int)$user->getGroupId();
+    }
+
+    public function passwordIsExpired(ElcaProject $project): bool
+    {
+        if (!$project->hasPassword()) {
+            return true;
+        }
+
+        if (!$this->hasRole(Elca::ELCA_ROLE_ORGA)) {
+            return false;
+        }
+
+        if ($project->passwordIsExpired(self::ONE_DAY_IN_SECONDS * 180)) {
+            $project->clearPassword();
+            return true;
+        }
+
+        return false;
     }
 
     /**

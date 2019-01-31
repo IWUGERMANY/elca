@@ -47,6 +47,7 @@ class ElcaProjectAttribute extends DbObject
     const IDENT_IS_LISTED = 'elca.IS_LISTED';
     const IDENT_BNB_NR = 'elca.bnb_nr';
     const IDENT_EGIS_NR = 'elca.egis_nr';
+    const IDENT_PW_DATE = 'elca.pw.date';
 
     /**
      * All available idents

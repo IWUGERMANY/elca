@@ -946,6 +946,33 @@ class ElcaProject extends DbObject
         return in_array($userId, $this->accessUserIds, true);
     }
 
+    public function passwordIsExpired(int $expirationInterval, int $now = null): bool
+    {
+        if (!$this->hasPassword()) {
+            return false;
+        }
+
+        if (!$pwSetDate = $this->getPasswordSetDate()) {
+            return false;
+        }
+
+        $now = $now ?? \time();
+
+        return ($now - $pwSetDate->getTimestamp()) > $expirationInterval;
+    }
+
+    public function getPasswordSetDate(): ?\DateTime {
+        $pwSetDateString = ElcaProjectAttribute::findValue(
+            $this->id,ElcaProjectAttribute::IDENT_PW_DATE
+        );
+
+        if (!$pwSetDateString) {
+            return null;
+        }
+
+        return \DateTime::createFromFormat('Y-m-d', $pwSetDateString);
+    }
+
 
     /**
      * Updates the object in the table
@@ -1113,7 +1140,24 @@ class ElcaProject extends DbObject
         return ElcaProjectLifeCycleUsageSet::findByProjectId($this->id, ['use_in_energy_demand' => true]);
     }
 
-    // protected
+    public function clearPassword()
+    {
+        try {
+            $this->Dbh->begin();
+
+            $this->setPassword(null);
+            $this->update();
+
+            $attribute = ElcaProjectAttribute::findByProjectIdAndIdent($this->id, ElcaProjectAttribute::IDENT_PW_DATE);
+            $attribute->delete();
+
+            $this->Dbh->commit();
+        } catch (Exception $exception) {
+            $this->Dbh->rollback();
+            throw $exception;
+        }
+    }
+
 
     /**
      * Inserts a new object in the table

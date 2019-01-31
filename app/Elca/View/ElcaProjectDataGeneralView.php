@@ -39,10 +39,12 @@ use Elca\Db\ElcaBenchmarkSystemSet;
 use Elca\Db\ElcaBenchmarkVersion;
 use Elca\Db\ElcaBenchmarkVersionSet;
 use Elca\Db\ElcaConstrClassSet;
+use Elca\Db\ElcaProject;
 use Elca\Db\ElcaProjectAttribute;
 use Elca\Db\ElcaProjectAttributeSet;
 use Elca\Db\ElcaProjectVariantSet;
 use Elca\Elca;
+use Elca\ElcaTimeFormat;
 use Elca\Service\Admin\BenchmarkSystemsService;
 use Elca\View\helpers\ElcaHtmlFormElementLabel;
 use Elca\View\helpers\ElcaHtmlNumericInput;
@@ -94,6 +96,7 @@ class ElcaProjectDataGeneralView extends HtmlView
                                     'projectAttributes'    => 'Projekt Attribute',
                                     'pw'          => 'Passwort',
                                     'pwRepeat'    => 'Wiederholen',
+                               'pwSetDate' => 'Passwort gesetzt am',
                                     ];
 
 
@@ -244,11 +247,12 @@ class ElcaProjectDataGeneralView extends HtmlView
         foreach ($this->ElcaProcessDbSet as $ElcaProcessDb) {
             $SelectDb->add(new HtmlSelectOption($ElcaProcessDb->name, $ElcaProcessDb->id));
         }
+        $projectId = Elca::getInstance()->getProjectId();
         if ($this->buildMode == self::BUILDMODE_DEFAULT)
         {
             $variantLabel = $group->add(new ElcaHtmlFormElementLabel(t('Aktive Projektvariante'), new HtmlSelectbox('currentVariantId')));
             $variantLabel->add(new HtmlSelectOption('-- ' . t('Bitte wählen') . ' --', ''));
-            foreach( ElcaProjectVariantSet::findByProjectId(Elca::getInstance()->getProjectId()) as $variant) {
+            foreach( ElcaProjectVariantSet::findByProjectId($projectId) as $variant) {
                 $variantLabel->add(new HtmlSelectOption($variant->getName().' ['. t($variant->getPhase()->getName()).']', $variant->getId()));
             }
 
@@ -300,7 +304,7 @@ class ElcaProjectDataGeneralView extends HtmlView
         );
         $repeatField->setAttribute('autocomplete', 'new-password');
 
-        $projectAttributes = ElcaProjectAttributeSet::find(['project_id' => Elca::getInstance()->getProjectId()], ['ident' => 'ASC']);
+        $projectAttributes = ElcaProjectAttributeSet::find(['project_id' => $projectId], ['ident' => 'ASC']);
 
         /**
          * @var ElcaProjectAttribute[] $filteredAttributes
