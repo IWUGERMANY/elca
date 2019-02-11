@@ -26,7 +26,6 @@ class EnergySourceCostsCtrl extends AppCtrl
     protected function init(array $args = [])
     {
         parent::init();
-
     }
 
     protected function defaultAction($addNavigationViews = true, Validator $validator = null, bool $addNew = false)
@@ -59,7 +58,7 @@ class EnergySourceCostsCtrl extends AppCtrl
             );
             $this->Osit->add(new ElcaOsitItem(\t('Energiekosten'), null, t('LCC')));
 
-            $this->setActiveNavItem($version);
+            $this->setActiveNavItem($version->getCalcMethod());
         }
     }
 
@@ -145,9 +144,11 @@ class EnergySourceCostsCtrl extends AppCtrl
         }
     }
 
-    private function setActiveNavItem(LccVersion $version): void
+    private function setActiveNavItem($calcMethod): void
     {
-        $this->addView(new ElcaAdminNavigationLeftView())->assign('activeCtrlName', VersionsCtrl::class);
+        $navView = $this->addView(new ElcaAdminNavigationLeftView());
+        $navView->assign('activeCtrlName', VersionsCtrl::class);
+        $navView->assign('activeCtrlArgs', ['calcMethod' => $calcMethod]);
     }
 
     private function provideEnergySourceCosts(LccVersion $version): \stdClass

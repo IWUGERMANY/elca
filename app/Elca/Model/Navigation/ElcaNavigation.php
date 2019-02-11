@@ -46,6 +46,7 @@ class ElcaNavigation extends ElcaNavItem
      */
     public $activeCtrlName;
     public $activeAction;
+    public $activeArgs;
 
     /**
      * active nav item
@@ -62,12 +63,12 @@ class ElcaNavigation extends ElcaNavItem
      * @param null $activeAction
      * @return ElcaNavigation
      */
-    public static function getInstance($name = 'default', $activeCtrlName = null, $activeAction = null)
+    public static function getInstance($name = 'default', $activeCtrlName = null, $activeAction = null, $activeArgs = null)
     {
         if(isset(self::$instances[$name]) && self::$instances[$name] instanceOf ElcaNavigation)
             return self::$instances[$name];
 
-        return self::$instances[$name] = new ElcaNavigation($name, $activeCtrlName, $activeAction);
+        return self::$instances[$name] = new ElcaNavigation($name, $activeCtrlName, $activeAction, $activeArgs);
     }
     // End getInstance
 
@@ -126,7 +127,7 @@ class ElcaNavigation extends ElcaNavItem
      * @param bool $resetActiveItem
      * @return void -
      */
-    public function setActiveController($ctrlName = null, $action = null, $resetActiveItem = false)
+    public function setActiveController($ctrlName = null, $action = null, $args = null, $resetActiveItem = false)
     {
         $FrontController = FrontController::getInstance();
 
@@ -134,6 +135,7 @@ class ElcaNavigation extends ElcaNavItem
         {
             $this->activeCtrlName = $ctrlName;
             $this->activeAction   = $action;
+            $this->activeArgs     = $args;
         }
         else
         {
@@ -159,7 +161,7 @@ class ElcaNavigation extends ElcaNavItem
      */
     public function getActiveController()
     {
-        return [$this->activeCtrlName, $this->activeAction];
+        return [$this->activeCtrlName, $this->activeAction, $this->activeArgs];
     }
     // End getActiveController
 
@@ -175,11 +177,11 @@ class ElcaNavigation extends ElcaNavItem
      * @param null $action
      * @return ElcaNavigation
      */
-    protected function __construct($name, $ctrlName = null, $action = null)
+    protected function __construct($name, $ctrlName = null, $action = null, $args = null)
     {
         parent::__construct($name);
         $this->RootItem = $this;
-        $this->setActiveController($ctrlName, $action);
+        $this->setActiveController($ctrlName, $action, $args);
     }
     // End __construct
 
