@@ -260,6 +260,8 @@ class LccDetailedView extends HtmlView
                 $refValue = $lccCost->getRefValue();
             }
 
+            $refValue = ElcaNumberFormat::toString($refValue, 2);
+
             $allValuesSet &= isset($this->Data->quantity[$costId]) && !is_null($this->Data->quantity[$costId]);
 
             $elts = new HtmlTag('div');

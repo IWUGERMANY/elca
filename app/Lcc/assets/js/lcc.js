@@ -110,9 +110,14 @@ if (typeof jQuery != 'undefined') {
                             }
                         });
 
-                        $('.energy-source-costs').on('change', function (e) {
+                        $('.energy-source-costs')
+                            .each(setEnergySourceCosts)
+                            .on('change', setEnergySourceCosts);
+
+                        function setEnergySourceCosts() {
                             $(this).parent().siblings('input.refValue').val($('option:selected', this).data('costs'));
-                        });
+                        }
+
                     },
 
                     prepareCostsTable: function ($context) {
