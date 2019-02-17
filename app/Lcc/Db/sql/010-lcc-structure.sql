@@ -48,6 +48,15 @@ CREATE TABLE lcc.versions
  , PRIMARY KEY ("id")
 );
 
+CREATE TABLE lcc.energy_source_costs
+(
+      "id"            serial              NOT NULL
+    , "version_id"    int                 NOT NULL
+    , "name"          varchar(200)        NOT NULL
+    , "costs"         numeric             NOT NULL
+    , PRIMARY KEY ("id")
+    , FOREIGN KEY ("version_id") REFERENCES lcc.versions ON UPDATE CASCADE ON DELETE CASCADE
+);
 -------------------------------------------------------------------------------
 
 CREATE TABLE lcc.costs
@@ -98,6 +107,8 @@ CREATE TABLE lcc.irregular_costs
  , PRIMARY KEY ("cost_id")
  , FOREIGN KEY ("cost_id") REFERENCES lcc.costs("id") ON DELETE CASCADE
 );
+
+
 
 -------------------------------------------------------------------------------
 -- project data
@@ -155,9 +166,11 @@ CREATE TABLE lcc.project_costs
  , "cost_id"                    int     NOT NULL                 -- regularCostId
  , "quantity"                   numeric                          -- quantity
  , "ref_value"                  numeric                          -- refValue
+ , "energy_source_cost_id"      int                              -- energySourceCostId
  , PRIMARY KEY ("project_variant_id", "calc_method", "cost_id")
  , FOREIGN KEY ("project_variant_id") REFERENCES elca.project_variants ("id") ON DELETE CASCADE
  , FOREIGN KEY ("cost_id") REFERENCES lcc.costs ("id") ON DELETE CASCADE
+ , FOREIGN KEY ("energy_source_cost_id") REFERENCES lcc.energy_source_costs ("id") ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 -------------------------------------------------------------------------------
@@ -184,6 +197,7 @@ CREATE TABLE lcc.project_cost_progressions
  , PRIMARY KEY ("project_variant_id", "calc_method", "grouping", "life_time")
  , FOREIGN KEY ("project_variant_id") REFERENCES elca.project_variants ("id") ON DELETE CASCADE
 );
+
 
 -------------------------------------------------------------------------------
 

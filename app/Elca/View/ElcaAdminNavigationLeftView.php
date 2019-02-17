@@ -57,7 +57,12 @@ class ElcaAdminNavigationLeftView extends HtmlView
 
         $access = ElcaAccess::getInstance();
 
-        $navigation = ElcaNavigation::getInstance(self::ADMIN_NAVIGATION_NAME, $this->get('activeCtrlName'), $this->get('activeCtrlAction'));
+        $navigation = ElcaNavigation::getInstance(
+            self::ADMIN_NAVIGATION_NAME,
+            $this->get('activeCtrlName'),
+            $this->get('activeCtrlAction'),
+            $this->get('activeCtrlArgs')
+        );
 
         if ($access->hasAdminPrivileges()) {
             $navItem = $navigation->add(t('Nutzerverwaltung'));

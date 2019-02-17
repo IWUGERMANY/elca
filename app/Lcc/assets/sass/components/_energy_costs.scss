@@ -1,0 +1,72 @@
+#content.lcc-energy-costs {
+
+  .lccEnergyCostsForm {
+    width: 600px;
+
+  }
+  .hl-row {
+    height: 22px;
+    position: relative;
+
+    h5 {
+      position: absolute;
+      color: #888;
+      font-style: italic;
+      font-weight: normal;
+      border: none;
+
+      &.hl-name {
+        left: 5px;
+      }
+      &.hl-costs {
+        left: 280px;
+      }
+      &.hl-actions {
+        right: 160px;
+      }
+    }
+  }
+  .version-row {
+    position: relative;
+    height: 24px;
+  }
+
+  li {
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 8px;
+    padding: 3px 0;
+    line-height: 33px;
+    height: 33px;
+
+    &.active {
+      background-color: #f0f0f0;
+    }
+  }
+
+  .version {
+    .name,
+    .costs,
+    a.delete-link,
+    a.cancel-link {
+      position: absolute;
+      padding: 0;
+      top: 0;
+    }
+    .name {
+      left: 5px;
+      width: 250px;
+    }
+    .costs {
+      left: 280px;
+      width: 80px;
+    }
+
+    a.delete-link,
+    a.cancel-link {
+      width: 60px;
+      text-align: left;
+      right: 5px;
+    }
+  }
+}

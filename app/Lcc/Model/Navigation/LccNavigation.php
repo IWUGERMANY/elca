@@ -25,11 +25,12 @@
 namespace Lcc\Model\Navigation;
 
 use Elca\Elca;
-use Elca\Model\Navigation\ElcaNavigationInterface;
 use Elca\Model\Navigation\ElcaNavigation;
+use Elca\Model\Navigation\ElcaNavigationInterface;
 use Elca\Model\Navigation\ElcaTabItem;
 use Elca\Security\ElcaAccess;
 use Lcc\Controller\Admin\BenchmarksCtrl;
+use Lcc\Controller\Admin\VersionsCtrl;
 use Lcc\Db\LccProjectTotalSet;
 use Lcc\LccModule;
 
@@ -129,8 +130,8 @@ class LccNavigation implements ElcaNavigationInterface
     {
         $Navigation = ElcaNavigation::getInstance('lcc-admin');
         $Item = $Navigation->add(t('LCC Versionen'));
-        $Item->add(t('Einfaches Verfahren'), 'lcc', 'Lcc\Controller\VersionsCtrl', null, ['calcMethod' => LccModule::CALC_METHOD_GENERAL]);
-        $Item->add(t('Ausführliches Verfahren'), 'lcc', 'Lcc\Controller\VersionsCtrl', null, ['calcMethod' => LccModule::CALC_METHOD_DETAILED]);
+        $Item->add(t('Einfaches Verfahren'), 'lcc', VersionsCtrl::class, null, ['calcMethod' => LccModule::CALC_METHOD_GENERAL]);
+        $Item->add(t('Ausführliches Verfahren'), 'lcc', VersionsCtrl::class, null, ['calcMethod' => LccModule::CALC_METHOD_DETAILED]);
 
         return $Navigation;
     }

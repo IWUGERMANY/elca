@@ -359,21 +359,25 @@ class ElcaNavItem
      */
     public function isActive()
     {
-        if(!isset($this->isActive))
+        if (!isset($this->isActive))
         {
-            foreach($this->getChildren() as $Child)
+            foreach ($this->getChildren() as $Child)
             {
                 if($Child->isActive())
                     return $this->isActive = true;
             }
 
-            list($activeCtrlName, $activeAction) = $this->RootItem->getActiveController();
+            list($activeCtrlName, $activeAction, $activeArgs) = $this->RootItem->getActiveController();
 
-            if($activeCtrlName === $this->ctrlName &&
+            if ($activeCtrlName === $this->ctrlName &&
                (($activeAction == $this->action) || (($this->ctrlName == 'Elca\Controller\ProjectsCtrl') && is_numeric($activeAction))))
             {
-                if(is_array($this->args))
+                if (\is_array($this->args))
                 {
+                    if (\is_array($activeArgs) && $this->args == $activeArgs) {
+                        return $this->isActive = true;
+                    }
+
                     $Request = FrontController::getInstance()->getRequest();
 
                     foreach($this->args as $key => $value)
@@ -386,6 +390,7 @@ class ElcaNavItem
                     return $this->isActive = true;
             }
         }
+
         return $this->isActive;
     }
     // End hasChildren

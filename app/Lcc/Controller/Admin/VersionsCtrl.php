@@ -22,19 +22,19 @@
  * along with eLCA. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace Lcc\Controller;
+namespace Lcc\Controller\Admin;
 
 use Beibob\Blibs\Url;
 use Elca\Controller\AppCtrl;
-use Elca\Service\Messages\ElcaMessages;
 use Elca\Model\Navigation\ElcaOsitItem;
+use Elca\Service\Messages\ElcaMessages;
 use Elca\Validator\ElcaValidator;
 use Elca\View\ElcaAdminNavigationLeftView;
 use Lcc\Db\LccProjectVersionSet;
 use Lcc\Db\LccVersion;
 use Lcc\Db\LccVersionSet;
 use Lcc\LccModule;
-use Lcc\View\LccVersionsView;
+use Lcc\View\Admin\LccVersionsView;
 
 /**
  * LccVersions controller
