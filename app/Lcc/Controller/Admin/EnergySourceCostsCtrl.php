@@ -94,7 +94,7 @@ class EnergySourceCostsCtrl extends AppCtrl
                 );
 
                 if ($validator->isValid()) {
-                    $costs = ElcaNumberFormat::fromString($allCosts[$key], 2);
+                    $costs = ElcaNumberFormat::fromString($allCosts[$key], 3);
 
                     if ($energySourceCosts->isInitialized()) {
                         $energySourceCosts->setName(\trim($name));

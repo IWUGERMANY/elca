@@ -153,7 +153,7 @@ class EnergySourceCostsView extends HtmlView
                 $input = new ElcaHtmlNumericInput('costs[' . $key . ']', $this->energySourceCosts->costs[$key] ?? null)
             )
         );
-        $input->setPrecision(2);
+        $input->setPrecision(3);
 
         if (\is_numeric($key)) {
             $container->add(
