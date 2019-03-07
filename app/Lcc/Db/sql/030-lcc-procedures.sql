@@ -41,7 +41,7 @@ AS $$
             , p.grouping
             , iteration AS life_time
             , SUM(coalesce(p.quantity, 0)                  -- quantity per year
-                  * COALESCE(c.ref_value, p.ref_value)     -- project specific refValue
+                  * COALESCE(c.ref_value, p.ref_value, 0)  -- project specific refValue
                   * (1 + CASE WHEN p.grouping = 'WATER'
             THEN v.water_price_inc
                          WHEN p.grouping = 'ENERGY'
