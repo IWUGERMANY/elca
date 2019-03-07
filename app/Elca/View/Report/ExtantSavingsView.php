@@ -160,7 +160,9 @@ class ExtantSavingsView extends ElcaReportsView
             }
         }
 
-        $dolist = array_values($results[$isEn15804Compliant ? (string)Module::a13() : (string)Module::production()]);
+        if (!$dolist = array_values($results[$isEn15804Compliant ? (string)Module::a13() : (string)Module::production()])) {
+            return;
+        }
 
         $this->buildEffects($tdContainer, $dolist);
     }
