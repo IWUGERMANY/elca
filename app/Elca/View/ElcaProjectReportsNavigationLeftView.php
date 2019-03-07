@@ -29,6 +29,7 @@ use Elca\Controller\ProjectReportAssetsCtrl;
 use Elca\Controller\ProjectReportEffectsCtrl;
 use Elca\Controller\ProjectReportsCtrl;
 use Elca\Controller\Report\EpdTypesCtrl;
+use Elca\Controller\Report\ExtantSavingsCtrl;
 use Elca\Elca;
 use Elca\Model\Navigation\ElcaNavigation;
 
@@ -70,6 +71,10 @@ class ElcaProjectReportsNavigationLeftView extends HtmlView
             $Item->add(t('Zusätzliche Indikatoren'), 'elca', ProjectReportsCtrl::class, 'summaryAdditionalIndicators');
         }
         $Item->add(t('Nicht bilanziert'), 'elca', ProjectReportAssetsCtrl::class, 'notCalculatedComponents');
+
+        if (Elca::getInstance()->getProject()->getProjectConstruction()->isExtantBuilding()) {
+            $Item->add(t('Ersparnis im Bestand'), 'elca', ExtantSavingsCtrl::class, 'savings');
+        }
 
         $Item = $Navigation->add(t('Massenbilanz'));
         $Item->add(t('Gebäudekonstruktion'), 'elca', ProjectReportAssetsCtrl::class, 'construction');

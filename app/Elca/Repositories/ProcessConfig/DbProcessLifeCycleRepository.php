@@ -40,6 +40,7 @@ use Elca\Model\Process\ProcessDbId;
 use Elca\Model\Process\ProcessId;
 use Elca\Model\Process\ProcessName;
 use Elca\Model\Process\Scenario;
+use Elca\Model\Process\Stage;
 use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\ProcessConfig\LifeCycle\Process;
@@ -55,6 +56,24 @@ class DbProcessLifeCycleRepository implements ProcessLifeCycleRepository
         $processSet         = ElcaProcessSet::findByProcessConfigId(
             $processConfigId->value(),
             ['process_db_id' => $processDbId->value()]
+        );
+        $conversionSet      = ElcaProcessConversionSet::findByProcessConfigId($processConfigId->value());
+        $indicatorValuesSet = ElcaProcessIndicatorSet::findByProcessIds(
+            $processSet->getArrayBy()
+        );
+
+        return $this->build($processConfigId, $processDbId, $processSet, $conversionSet, $indicatorValuesSet);
+    }
+
+    public function findByIdAndStage(
+        ProcessConfigId $processConfigId,
+        ProcessDbId $processDbId,
+        Stage $stage
+    ): ProcessLifeCycle {
+
+        $processSet         = ElcaProcessSet::findByProcessConfigId(
+            $processConfigId->value(),
+            ['process_db_id' => $processDbId->value(), 'life_cycle_phase' => $stage->value()]
         );
         $conversionSet      = ElcaProcessConversionSet::findByProcessConfigId($processConfigId->value());
         $indicatorValuesSet = ElcaProcessIndicatorSet::findByProcessIds(

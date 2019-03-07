@@ -44,9 +44,8 @@ class NumberOfReplacementsCalculator
             /**
              * Always round up. Reduce project life time by delay value
              */
-            return $usefulLife->inYears() < $this->projectLifeTime ? max(
-                0,
-                ceil(($this->projectLifeTime - $usefulLife->delayInYears()) / $usefulLife->inYears())
+            return $usefulLife->inYears() < $this->projectLifeTime ?
+                max(0, ceil(($this->projectLifeTime - $usefulLife->delayInYears()) / $usefulLife->inYears())
             ) : 0;
 
         }
