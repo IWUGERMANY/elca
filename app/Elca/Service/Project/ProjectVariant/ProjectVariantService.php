@@ -186,7 +186,7 @@ class ProjectVariantService
             }
 
             if ($ElementSet->count() || $FinalEnergyDemandSet->count()) {
-                $this->lcaProcessor->updateCache($projectVariant->getProjectId());
+                $this->lcaProcessor->updateCache($copy->getProjectId(), $copy->getId());
             }
 
             $this->dbh->commit();
