@@ -92,7 +92,7 @@ class ExtantSavingsView extends ElcaReportsView
         ElcaProjectVariant $projectVariant,
         $lifeTime
     ) {
-        $this->addClass($Container, 'report-summary report-summary-'.$this->buildMode);
+        $this->addClass($Container, 'report-summary report-summary-total');
 
         $projectConstruction = ElcaProjectConstruction::findByProjectVariantId($this->projectVariantId);
 
@@ -160,7 +160,7 @@ class ExtantSavingsView extends ElcaReportsView
             }
         }
 
-        if (!$dolist = array_values($results[$isEn15804Compliant ? (string)Module::a13() : (string)Module::production()])) {
+        if (!$dolist = \array_values($results[$module])) {
             return;
         }
 
