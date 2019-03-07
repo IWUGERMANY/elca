@@ -160,6 +160,10 @@ class ExtantSavingsView extends ElcaReportsView
             }
         }
 
+        if (!$module || !isset($results[$module])) {
+            return;
+        }
+
         if (!$dolist = \array_values($results[$module])) {
             return;
         }
