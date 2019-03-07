@@ -132,6 +132,7 @@ class ExtantSavingsView extends ElcaReportsView
         );
 
         $results = [];
+        $module = null;
 
         foreach ($extantComponents as $component) {
 
