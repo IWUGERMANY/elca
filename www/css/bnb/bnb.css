@@ -35,6 +35,10 @@
 #content.bnb-report-4-1-4 table.report tfoot td { background-color: transparent; border-bottom: none; font-weight: bold; padding-top: 10px; }
 #content.bnb-report-4-1-4 table.report tfoot td.firstColumn { text-align: left; font-weight: normal; font-style: italic; color: #666; border-right: none; }
 
+#content.bnb-material-export table tfoot td { border: none; }
+#content.bnb-material-export table td.lastColumn { text-align: right; }
+#content.bnb-material-export a { color: #004f80; display: block; margin-top: 20px; text-align: right; }
+
 #content.bnb-water { width: 790px; min-width: inherit; }
 #content.bnb-water .bnb-section { position: relative; }
 #content.bnb-water .bnb-section.collapsible div.legend { padding-left: 20px; background: transparent url("/img/elca/ic-arrow-open.png") 3px 25px no-repeat; cursor: pointer; }

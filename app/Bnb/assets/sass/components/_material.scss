@@ -1,0 +1,17 @@
+#content.bnb-material-export {
+  table {
+    tfoot td {
+      border:none;
+    }
+  }
+  table td.lastColumn {
+    text-align:right;
+  }
+
+  a {
+    color: $linkFuncColor;
+    display:block;
+    margin-top:20px;
+    text-align: right;
+  }
+}

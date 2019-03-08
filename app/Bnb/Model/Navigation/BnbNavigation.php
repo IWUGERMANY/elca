@@ -24,6 +24,10 @@
  */
 namespace Bnb\Model\Navigation;
 
+use Bnb\Controller\CsvExportCtrl;
+use Bnb\Controller\MaterialExportCtrl;
+use Bnb\Controller\XmlExportCtrl;
+use Elca\Controller\ExportsCtrl;
 use Elca\Elca;
 use Elca\Model\Navigation\ElcaNavigation;
 use Elca\Model\Navigation\ElcaNavigationInterface;
@@ -51,8 +55,9 @@ class BnbNavigation implements ElcaNavigationInterface
 
         if ($access->isProjectOwnerOrAdmin(Elca::getInstance()->getProject())) {
             $Item = $Navigation->add(t('Export'));
-            $Item->add(t('eBNB'), 'bnb', 'Bnb\Controller\XmlExportCtrl');
-            $Item->add(t('CSV'), 'bnb', 'Bnb\Controller\CsvExportCtrl');
+            $Item->add(t('eBNB'), 'bnb', XmlExportCtrl::class);
+            $Item->add(t('CSV'), 'bnb', CsvExportCtrl::class);
+            $Item->add(t('Baustoffe im Projekt'), 'bnb', MaterialExportCtrl::class);
         }
 
         return $Navigation;
