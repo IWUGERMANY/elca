@@ -124,7 +124,7 @@ class ExtantSavingsView extends ElcaReportsView
         $tdContainer->appendChild(
             $this->getP(
                 t(
-                    'Für :count: Baustoffe im Bestand wird folgende Ersparnis in der Herstellung erzielt.',
+                    'Für :count: Baustoffe im Bestand wird folgende Ersparnis gegenüber einem Neubau erzielt.',
                     null,
                     [':count:' => $extantComponents->count()]
                 )

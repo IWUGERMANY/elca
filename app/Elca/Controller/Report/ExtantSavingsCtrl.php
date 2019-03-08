@@ -81,7 +81,7 @@ class ExtantSavingsCtrl extends BaseReportsCtrl
         $view = $this->setView(new ExtantSavingsView());
         $view->assign('projectVariantId', $this->Elca->getProjectVariantId());
 
-        $this->Osit->add(new ElcaOsitItem(t('Ersparnis im Bestand'), null, t('Auswertung')));
+        $this->Osit->add(new ElcaOsitItem(t('Eingesparte Umweltwirkungen'), null, t('Auswertung')));
         $this->addView(new ElcaProjectReportsNavigationLeftView());
 
         /**

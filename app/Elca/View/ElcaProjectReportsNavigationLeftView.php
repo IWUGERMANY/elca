@@ -73,7 +73,7 @@ class ElcaProjectReportsNavigationLeftView extends HtmlView
         $Item->add(t('Nicht bilanziert'), 'elca', ProjectReportAssetsCtrl::class, 'notCalculatedComponents');
 
         if (Elca::getInstance()->getProject()->getProjectConstruction()->isExtantBuilding()) {
-            $Item->add(t('Ersparnis im Bestand'), 'elca', ExtantSavingsCtrl::class, 'savings');
+            $Item->add(t('Eingesparte Umweltwirkungen'), 'elca', ExtantSavingsCtrl::class, 'savings');
         }
 
         $Item = $Navigation->add(t('Massenbilanz'));
