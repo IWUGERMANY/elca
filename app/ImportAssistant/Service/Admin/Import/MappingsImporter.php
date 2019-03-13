@@ -72,7 +72,7 @@ class MappingsImporter
                 ];
             }
 
-            $mappingInfos[$materialName]->mappings[] = new MaterialMapping($materialName, $processConfigId, $siblingRatio);
+            $mappingInfos[$materialName]->mappings[$processConfigId] = new MaterialMapping($materialName, $processConfigId, $siblingRatio);
         }
 
         if ($removeAllMappingsBeforeCopy) {
@@ -83,7 +83,7 @@ class MappingsImporter
             $mappingInfo = new MaterialMappingInfo(
                 $materialName,
                 $processDbId,
-                $dataObject->mappings,
+                \array_values($dataObject->mappings),
                 $dataObject->requiresSibling,
                 $dataObject->requiresAdditionalComponent
             );
