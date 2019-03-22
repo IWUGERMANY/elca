@@ -50,6 +50,7 @@ use Elca\View\ElcaProjectReportsNavigationLeftView;
 use Elca\View\Report\ElcaReportEffectsView;
 use Elca\View\Report\ElcaReportElementTypeEffectsView;
 use Elca\View\Report\ElcaReportSummaryComparisonView;
+use Elca\View\Report\ElcaReportSummaryPerResidentView;
 use Elca\View\Report\ElcaReportSummaryView;
 
 /**
@@ -153,6 +154,29 @@ class ProjectReportsCtrl extends BaseReportsCtrl
     }
     // End systemsAction
 
+    /**
+     * systems action
+     */
+    protected function summaryPerResidentAction()
+    {
+        $filterDO = new \stdClass();
+        $filterDO->residents = $this->Request->has('residents') ? $this->Request->get('residents') : 1;
+
+
+        $view = $this->setView(new ElcaReportSummaryPerResidentView());
+        $view->assign('buildMode', ElcaReportSummaryView::BUILDMODE_TOTAL);
+        $view->assign('projectVariantId', $this->Elca->getProjectVariantId());
+        $view->assign('filterDO', $filterDO);
+
+        $this->Osit->add(new ElcaOsitItem(t('Gesamtbilanz pro Person und Jahr'), null, t('Auswertung')));
+        $this->addView(new ElcaProjectReportsNavigationLeftView());
+
+        /**
+         * Summary is the default action, highlight current nav item in project navigation view
+         */
+        $view = $this->addView(new ElcaProjectNavigationView());
+        $view->assign('activeCtrlName', get_class());
+    }
 
     /**
      *

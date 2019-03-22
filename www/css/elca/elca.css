@@ -2036,3 +2036,6 @@ form.projectForm .column { width: 250px; padding-right: 40px; }
 #elca-modal-content.pdf-gen.done #elca-modal-close { display: inline; }
 
 #elca-modal-content.pdf-gen.done p a { margin-left: 10px; }
+
+#content.report-summary-residents .reportResidentsForm .form-section.residents input.numeric-input { width: 60px; }
+#content.report-summary-residents .reportResidentsForm .form-section.residents input.submit.button { width: auto; color: #fff; font-size: 12px; margin-left: 20px; }

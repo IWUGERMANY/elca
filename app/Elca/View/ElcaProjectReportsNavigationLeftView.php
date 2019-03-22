@@ -76,6 +76,9 @@ class ElcaProjectReportsNavigationLeftView extends HtmlView
             $Item->add(t('Eingesparte Umweltwirkungen'), 'elca', ExtantSavingsCtrl::class, 'savings');
         }
 
+        $Item->add(t('Auswertung pro Person'), 'elca', ProjectReportsCtrl::class, 'summaryPerResident');
+
+
         $Item = $Navigation->add(t('Massenbilanz'));
         $Item->add(t('Gebäudekonstruktion'), 'elca', ProjectReportAssetsCtrl::class, 'construction');
         $Item->add(t('Anlagentechnik'), 'elca', ProjectReportAssetsCtrl::class, 'systems');
