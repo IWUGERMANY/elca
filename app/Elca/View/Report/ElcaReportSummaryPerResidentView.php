@@ -92,11 +92,6 @@ class ElcaReportSummaryPerResidentView extends ElcaReportsView
      */
     private $indicatorId;
 
-    /**
-     * Just update the charts
-     */
-    private $updateCharts = false;
-
     private $readOnly;
 
     private $filterDO;
@@ -117,7 +112,6 @@ class ElcaReportSummaryPerResidentView extends ElcaReportsView
 
         $this->buildMode          = $this->get('buildMode', self::BUILDMODE_TOTAL);
         $this->indicatorId        = $this->get('indicatorId');
-        $this->updateCharts       = $this->get('updateCharts', false);
         $this->readOnly           = $this->get('readOnly', false);
         $this->filterDO           = $this->get('filterDO', new \stdClass());
     }
@@ -205,7 +199,6 @@ class ElcaReportSummaryPerResidentView extends ElcaReportsView
         $label = $group->add(new ElcaHtmlFormElementLabel(t('Anzahl Bewohner P')));
         $label->add(new ElcaHtmlNumericInput('residents'));
 
-        //$group = $form->add(new HtmlFormGroup(t('')));
         $label->add(new HtmlSubmitButton("refreshResidents", t('Aktualisieren')));
 
         $form->appendTo($tdContainer);
