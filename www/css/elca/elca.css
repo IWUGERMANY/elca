@@ -1113,6 +1113,8 @@ form.adminSvgPatternForm .buttons fieldset { margin-top: 20px; width: 400px; }
 
 #section-summary .fieldset .legend span { font-size: 11px; font-weight: bold; color: #333; }
 
+.elements .submit.button.refresh-opaque-elements, .project-elements .submit.button.refresh-opaque-elements { background-color: #fd695e; }
+
 /** Element overview ------------------*/
 #content.elements.overview h3.import a { padding-left: 18px; background: transparent url("/img/elca/ic-arrow-closed.png") 7px 2px no-repeat; text-decoration: none; }
 
