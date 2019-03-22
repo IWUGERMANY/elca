@@ -46,6 +46,8 @@ use Elca\View\ReportsPdfModalView;
  */
 abstract class BaseReportsCtrl extends AppCtrl
 {
+    const TIMEOUT = '5m';
+
     /**
      * @return SessionNamespace
      */
@@ -136,7 +138,8 @@ abstract class BaseReportsCtrl extends AppCtrl
         $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('cacheDir', true, 'tmp/cache');
         
         $cmd = sprintf(
-            '/usr/local/bin/wkhtmltopdf --quiet --window-status ready_to_print --cache-dir %s --title %s -s A4 --margin-top 55 --margin-bottom 30 --margin-right 10 --margin-left 25 --print-media-type --no-stop-slow-scripts --javascript-delay %d --header-html %s --header-spacing 15 --footer-html %s %s %s',
+            'timeout %s /usr/local/bin/wkhtmltopdf --quiet --window-status ready_to_print --cache-dir %s --title %s -s A4 --margin-top 55 --margin-bottom 30 --margin-right 10 --margin-left 25 --print-media-type --no-stop-slow-scripts --javascript-delay %d --header-html %s --header-spacing 15 --footer-html %s %s %s',
+            self::TIMEOUT,
             escapeshellarg($tmpCacheDir),
             escapeshellarg(date('Ymd') . '_' . $this->buildFilename($this->Elca->getProject()->getName()) . '.pdf'),
             1000, // javascript-delay
@@ -147,8 +150,7 @@ abstract class BaseReportsCtrl extends AppCtrl
         );
 
         Log::getInstance()->debug($cmd);
-        //exec($cmd);
-        $this->exec_timeout($cmd, 10);
+        exec($cmd);
 
         // delete tmp header and footer files
         $tmpHeaderFile->delete();
