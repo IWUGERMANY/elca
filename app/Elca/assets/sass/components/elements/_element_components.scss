@@ -165,6 +165,7 @@
   .element-component .isExtant,
   .cancel-link,
   .delete-link,
+  .clone-link,
   .unassign-link,
   .edit-link,
   .element .quantity,
@@ -183,12 +184,13 @@
   .toggle-link { left:10px; width:20px; }
   a.edit-link { width:60px; text-align:left; right:140px }
   a.delete-link,
-  a.cancel-link { width: 60px; text-align: left; right: 65px; }
+  a.cancel-link { width: 60px; text-align: left; right: 85px; }
+  a.clone-link { width: 60px; text-align: left; right: 29px; }
 
   .element-component {
     .layer-position { left:5px; width:20px; }
     .process-config-selector {left:30px; width:400px; max-width: 32%; max-height: 20px; overflow: hidden;}
-    a.add-sibling-link { right:135px; width:50px;}
+    a.add-sibling-link { right:145px; width:50px;}
     .areaRatio { right:390px; width:50px; }
     .size { right:470px; width:50px; }
     .show-dimension-icon { right:460px; width:40px; }
@@ -203,7 +205,8 @@
     .isExtant { right: 195px; width:40px; text-align: center; }
     .calcLca .HtmlCheckbox,
     .isExtant .HtmlCheckbox { float:none; }
-    span.function-separator { width: 5px; text-align: center; right: 134px; color:#666}
+    span.function-separator { width: 5px; text-align: center; right: 148px; color:#666}
+    span.function-separator-2 { width: 5px; text-align: center; right: 92px; color:#666}
     .sibling-label { width: 60px; text-align: left; right: 135px; font-size: 12px;}
 
     .show-dimension-icon {
@@ -328,6 +331,7 @@
   .element {
     span.function-separator { width: 5px; text-align: center; right: 131px; color:#666}
     a.edit-link { width:60px; text-align:left; right:210px }
+    a.delete-link { width:60px; text-align:left; right:62px }
     span.function-separator-2 { width: 5px; text-align: center; right: 202px; color:#666}
     a.unassign-link { width:60px; text-align:left; right:135px }
     .element-selector {left:30px; width: 320px; max-height: 20px; overflow: hidden;}

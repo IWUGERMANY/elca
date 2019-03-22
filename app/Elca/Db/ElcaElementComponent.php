@@ -24,9 +24,10 @@
  */
 namespace Elca\Db;
 
-use PDO;
-use Exception;
 use Beibob\Blibs\DbObject;
+use Exception;
+use PDO;
+
 /**
  *
  * @package elca
@@ -330,14 +331,31 @@ class ElcaElementComponent extends DbObject
      * @param  int $layerSiblingId
      * @return ElcaElementComponent - the new element component copy
      */
-    public function copy($elementId, $layerSiblingId = null, $copyCacheItems = false)
+    public function copy($elementId, $layerSiblingId = null, $copyCacheItems = false, $resetAreaRatio = false)
     {
         if(!$this->isInitialized() || !$elementId)
             return new ElcaElementComponent();
 
-        $Copy = self::create($elementId, $this->processConfigId, $this->processConversionId, $this->lifeTime,
-                             $this->isLayer, $this->quantity, $this->calcLca, $this->isExtant, $this->layerPosition, $this->layerSize,
-                             $layerSiblingId, $this->layerAreaRatio, $this->layerLength, $this->layerWidth, $this->lifeTimeDelay, $this->lifeTimeInfo);
+        $Copy = self::create(
+            $elementId,
+            $this->processConfigId,
+            $this->processConversionId,
+            $this->lifeTime,
+            $this->isLayer,
+            $this->quantity,
+            $this->calcLca,
+            $this->isExtant,
+            $this->layerPosition,
+            $this->layerSize,
+            $layerSiblingId,
+            $resetAreaRatio
+                ? 1
+                : $this->layerAreaRatio,
+            $this->layerLength,
+            $this->layerWidth,
+            $this->lifeTimeDelay,
+            $this->lifeTimeInfo
+        );
 
         if($copyCacheItems)
             ElcaCacheElementComponent::findByElementComponentId($this->id)->copy($Copy->getId());

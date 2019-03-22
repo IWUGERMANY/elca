@@ -509,6 +509,17 @@ class ElcaElementComponentsView extends HtmlView
                     ->addClass('function-link cancel-link');
         }
 
+        if (!$this->readOnly) {
+            if (is_numeric($key)) {
+                $Container->add(new HtmlTag('span', '|'))->addClass('function-separator-2');
+
+                $Container->add(
+                    new HtmlLink(t('Klonen'), Url::factory('/' . $this->context . '/cloneComponent/', ['componentId' => $key]))
+                )
+                          ->addClass('function-link clone-link');
+            }
+        }
+
         if (!$this->readOnly && !$isSibling)
             $Container->add(new HtmlTag('div', null, ['class' => 'drag-handle']));
 
@@ -712,6 +723,17 @@ class ElcaElementComponentsView extends HtmlView
             } else
                 $Container->add(new HtmlLink(t('Abbrechen'), Url::factory('/' . $this->context . '/general/', ['e' => $this->Element->getId()])))
                     ->addClass('function-link cancel-link');
+        }
+
+        if (!$this->readOnly) {
+            if (is_numeric($key)) {
+                $Container->add(new HtmlTag('span', '|'))->addClass('function-separator-2');
+
+                $Container->add(
+                    new HtmlLink(t('Klonen'), Url::factory('/' . $this->context . '/cloneComponent/', ['componentId' => $key]))
+                )
+                          ->addClass('function-link clone-link');
+            }
         }
 
         /**

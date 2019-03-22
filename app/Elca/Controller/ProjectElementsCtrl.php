@@ -1009,7 +1009,22 @@ class ProjectElementsCtrl extends ElementsCtrl
     }
     // End addComponentSibling
 
+    /**
+     * Copies a component
+     */
+    protected function cloneComponentAction()
+    {
+        if (!$copiedComponentId = parent::cloneComponentAction())
+            return null;
 
+        $copiedComponent = ElcaElementComponent::findById($copiedComponentId);
+
+        $this->container->get(ElcaLcaProcessor::class)
+                        ->computeElementComponent($copiedComponent)
+                        ->updateCache($copiedComponent->getElement()->getProjectVariant()->getProjectId());
+
+        return true;
+    }
 
     /**
      * Deletes components

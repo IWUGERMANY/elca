@@ -1012,13 +1012,14 @@ form.adminSvgPatternForm .buttons fieldset { margin-top: 20px; width: 400px; }
 .element-section li, .element-section .element-component, .element-section .element, .element-section ol li.drag-placeholder { min-height: 24px; }
 .element-section ol li.drag-placeholder { padding: 3px 0; background-color: transparent; border: 1px solid #e5e5e5; }
 .element-section .element, .element-section .element-component { position: relative; width: 100%; }
-.element-section .toggle-link, .element-section .element-component .layer-position, .element-section .element-component .process-config-selector, .element-section .element .element-selector, .element-section .element-component a.add-sibling-link, .element-section span.function-separator, .element-section span.function-separator-2, .element-section .element-component .areaRatio, .element-section .element-component .size, .element-section .element-component .show-dimension-icon, .element-section .element-component .length, .element-section .element-component .width, .element-section .element-component .quantity, .element-section .element-component .conversionId, .element-section .element-component .lifeTime, .element-section .element-component .lifeTimeDelay, .element-section .element-component .show-lifeTimeDelay-icon, .element-section .element-component .calcLca, .element-section .element-component .isExtant, .element-section .cancel-link, .element-section .delete-link, .element-section .unassign-link, .element-section .edit-link, .element-section .element .quantity, .element-section .element .surface, .element-section .element .refUnit, .element-section .element .dinCode, .element-section .element .elementType, .element-section .element .isExtant, .element-section div.drag-handle { position: absolute; padding: 0; top: 0; background-color: inherit; }
+.element-section .toggle-link, .element-section .element-component .layer-position, .element-section .element-component .process-config-selector, .element-section .element .element-selector, .element-section .element-component a.add-sibling-link, .element-section span.function-separator, .element-section span.function-separator-2, .element-section .element-component .areaRatio, .element-section .element-component .size, .element-section .element-component .show-dimension-icon, .element-section .element-component .length, .element-section .element-component .width, .element-section .element-component .quantity, .element-section .element-component .conversionId, .element-section .element-component .lifeTime, .element-section .element-component .lifeTimeDelay, .element-section .element-component .show-lifeTimeDelay-icon, .element-section .element-component .calcLca, .element-section .element-component .isExtant, .element-section .cancel-link, .element-section .delete-link, .element-section .clone-link, .element-section .unassign-link, .element-section .edit-link, .element-section .element .quantity, .element-section .element .surface, .element-section .element .refUnit, .element-section .element .dinCode, .element-section .element .elementType, .element-section .element .isExtant, .element-section div.drag-handle { position: absolute; padding: 0; top: 0; background-color: inherit; }
 .element-section .toggle-link { left: 10px; width: 20px; }
 .element-section a.edit-link { width: 60px; text-align: left; right: 140px; }
-.element-section a.delete-link, .element-section a.cancel-link { width: 60px; text-align: left; right: 65px; }
+.element-section a.delete-link, .element-section a.cancel-link { width: 60px; text-align: left; right: 85px; }
+.element-section a.clone-link { width: 60px; text-align: left; right: 29px; }
 .element-section .element-component .layer-position { left: 5px; width: 20px; }
 .element-section .element-component .process-config-selector { left: 30px; width: 400px; max-width: 32%; max-height: 20px; overflow: hidden; }
-.element-section .element-component a.add-sibling-link { right: 135px; width: 50px; }
+.element-section .element-component a.add-sibling-link { right: 145px; width: 50px; }
 .element-section .element-component .areaRatio { right: 390px; width: 50px; }
 .element-section .element-component .size { right: 470px; width: 50px; }
 .element-section .element-component .show-dimension-icon { right: 460px; width: 40px; }
@@ -1032,7 +1033,8 @@ form.adminSvgPatternForm .buttons fieldset { margin-top: 20px; width: 400px; }
 .element-section .element-component .calcLca { right: 235px; width: 40px; text-align: center; }
 .element-section .element-component .isExtant { right: 195px; width: 40px; text-align: center; }
 .element-section .element-component .calcLca .HtmlCheckbox, .element-section .element-component .isExtant .HtmlCheckbox { float: none; }
-.element-section .element-component span.function-separator { width: 5px; text-align: center; right: 134px; color: #666; }
+.element-section .element-component span.function-separator { width: 5px; text-align: center; right: 148px; color: #666; }
+.element-section .element-component span.function-separator-2 { width: 5px; text-align: center; right: 92px; color: #666; }
 .element-section .element-component .sibling-label { width: 60px; text-align: left; right: 135px; font-size: 12px; }
 .element-section .element-component .show-dimension-icon { display: inline-block; width: 5px; text-indent: -10000px; overflow: hidden; background: transparent url("/img/elca/ic-arrow-grey.png") center no-repeat; }
 .element-section .element-component .show-lifeTimeDelay-icon { display: none; width: 5px; text-indent: -10000px; overflow: hidden; background: transparent url("/img/elca/ic-arrow-grey.png") center no-repeat; }
@@ -1059,6 +1061,7 @@ form.adminSvgPatternForm .buttons fieldset { margin-top: 20px; width: 400px; }
 .element-section .element .form-section.elementType { height: 25px; overflow: hidden; }
 .element-section .element span.function-separator { width: 5px; text-align: center; right: 131px; color: #666; }
 .element-section .element a.edit-link { width: 60px; text-align: left; right: 210px; }
+.element-section .element a.delete-link { width: 60px; text-align: left; right: 62px; }
 .element-section .element span.function-separator-2 { width: 5px; text-align: center; right: 202px; color: #666; }
 .element-section .element a.unassign-link { width: 60px; text-align: left; right: 135px; }
 .element-section .element .element-selector { left: 30px; width: 320px; max-height: 20px; overflow: hidden; }

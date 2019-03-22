@@ -973,6 +973,35 @@ class ElementsCtrl extends TabsCtrl
     // End addComponentSibling
 
 
+    /**
+     * Copies a component
+     */
+    protected function cloneComponentAction()
+    {
+        if(!$this->Request->componentId)
+            return null;
+
+        $elementComponent = ElcaElementComponent::findById($this->Request->componentId);
+
+        if (!$elementComponent->isInitialized())
+            return null;
+
+        /**
+         * Check if user is allowed to add a component sibling
+         */
+        $element = $elementComponent->getElement();
+        if (!$this->Access->canEditElement($element))
+            return null;
+
+        $copy = $elementComponent->copy($element->getId(), null, true, true);
+
+        if (!$copy->isInitialized())
+            return null;
+
+        $this->generalAction($elementComponent->getElementId());
+
+        return $copy->getId();
+    }
 
     /**
      * Sorts the components
