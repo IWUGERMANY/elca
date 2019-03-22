@@ -453,7 +453,7 @@ class MappingsCtrl extends AppCtrl
         $activeProcessDbId = $this->getActiveProcessDbId();
 
         $mappingRepository = $this->get(MaterialMappingInfoRepository::class);
-        $importer = new MappingsImporter($mappingRepository);
+        $importer = new MappingsImporter($mappingRepository, $this->Log);
 
         $importedMappingCount = null;
 

@@ -26,6 +26,7 @@
 namespace ImportAssistant\Service\Admin\Import;
 
 use Beibob\Blibs\File;
+use Beibob\Blibs\Log;
 use ImportAssistant\Model\MaterialMapping\MaterialMapping;
 use ImportAssistant\Model\MaterialMapping\MaterialMappingInfo;
 use ImportAssistant\Model\MaterialMapping\MaterialMappingInfoRepository;
@@ -38,14 +39,20 @@ class MappingsImporter
     private $mappingInfoRepository;
 
     /**
+     * @var Log
+     */
+    private $log;
+
+    /**
      * CsvMappingsImporter constructor.
      *
      * @param MaterialMappingInfoRepository $mappingInfoRepository
      * @internal param DbHandle $dbh
      */
-    public function __construct(MaterialMappingInfoRepository $mappingInfoRepository)
+    public function __construct(MaterialMappingInfoRepository $mappingInfoRepository, Log $log)
     {
         $this->mappingInfoRepository = $mappingInfoRepository;
+        $this->log = $log;
     }
 
     public function fromCsvFile(File $file, int $processDbId, bool $removeAllMappingsBeforeCopy = false) : int
@@ -87,8 +94,11 @@ class MappingsImporter
                 $dataObject->requiresSibling,
                 $dataObject->requiresAdditionalComponent
             );
-
-            $this->mappingInfoRepository->add($mappingInfo);
+            try {
+                $this->mappingInfoRepository->add($mappingInfo);
+            } catch (\UnexpectedValueException $exception) {
+                $this->log->notice($exception->getMessage(), __METHOD__);
+            }
         }
 
         return count($mappingInfos);
