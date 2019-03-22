@@ -22,19 +22,16 @@
  * along with eLCA. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 namespace Elca\Validator;
 
-use Assert\Assertion;
-use Assert\AssertionFailedException;
 use Beibob\HtmlTools\HtmlFormValidator;
-use Closure;
 use Elca\Db\ElcaBenchmarkRefProcessConfig;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaIndicator;
 use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProjectFinalEnergyDemand;
-use Elca\Db\ElcaProjectFinalEnergyRefModel;
 use Elca\ElcaNumberFormat;
 use Elca\numeric;
 
@@ -62,8 +59,9 @@ class ElcaValidator extends HtmlFormValidator
     {
         $value = $this->getValue($property, $value);
 
-        if ($value != '' && !ElcaNumberFormat::isNumeric($value))
+        if ($value != '' && !ElcaNumberFormat::isNumeric($value)) {
             return $this->setError($property, $error);
+        }
 
         return $this->setAsserted($property);
     }
@@ -78,9 +76,15 @@ class ElcaValidator extends HtmlFormValidator
      * @param string $error
      * @return bool
      */
-    public function assertProjectPassword($property, $repeatProperty, $minLength = 8, $dummyValue = null, $minLengthError, $repeatError = self::ERR_INVALID)
-    {
-        $value = $this->getValue($property);
+    public function assertProjectPassword(
+        $property,
+        $repeatProperty,
+        $minLength = 8,
+        $dummyValue = null,
+        $minLengthError,
+        $repeatError = self::ERR_INVALID
+    ) {
+        $value       = $this->getValue($property);
         $valueRepeat = $this->getValue($repeatProperty);
 
         if (($value === '' && $valueRepeat === '') ||
@@ -96,6 +100,7 @@ class ElcaValidator extends HtmlFormValidator
         if ($value !== $valueRepeat) {
             $this->setError($property, $repeatError);
             $this->setError($repeatProperty, $repeatError);
+
             return false;
         }
 
@@ -120,11 +125,13 @@ class ElcaValidator extends HtmlFormValidator
         $value = ElcaNumberFormat::toString($this->getValue($property));
 
         if ($value != '') {
-            if (!is_null($minValue) && $value < $minValue)
+            if (!is_null($minValue) && $value < $minValue) {
                 return $this->setError($property, $error);
+            }
 
-            if (!is_null($maxValue) && $value > $maxValue)
+            if (!is_null($maxValue) && $value > $maxValue) {
                 return $this->setError($property, $error);
+            }
         }
 
         return $this->setAsserted($property);
@@ -140,8 +147,9 @@ class ElcaValidator extends HtmlFormValidator
     public function assertLayers()
     {
         $processConfigIds = $this->getValue('processConfigId');
-        if (!is_array($processConfigIds))
+        if (!is_array($processConfigIds)) {
             return;
+        }
 
         $siblings = [];
         foreach ($processConfigIds as $key => $processConfigId) {
@@ -150,8 +158,9 @@ class ElcaValidator extends HtmlFormValidator
 
             $Component = ElcaElementComponent::findById($key);
 
-            if ($Component->hasLayerSibling() && !isset($siblings[$Component->getLayerSiblingId()]))
+            if ($Component->hasLayerSibling() && !isset($siblings[$Component->getLayerSiblingId()])) {
                 $siblings[$key] = $Component->getLayerSiblingId();
+            }
         }
 
         /**
@@ -164,12 +173,16 @@ class ElcaValidator extends HtmlFormValidator
             $ratio1 = ElcaNumberFormat::fromString($this->getValue('areaRatio' . $suffix1));
             $ratio2 = ElcaNumberFormat::fromString($this->getValue('areaRatio' . $suffix2));
 
-            $this->assertTrue('areaRatio' . $suffix1,
+            $this->assertTrue(
+                'areaRatio' . $suffix1,
                 $ratio1 + $ratio2 == 100,
-                t('Die Summe der Gefachanteile muss 100% ergeben'));
-            $this->assertTrue('areaRatio' . $suffix2,
+                t('Die Summe der Gefachanteile muss 100% ergeben')
+            );
+            $this->assertTrue(
+                'areaRatio' . $suffix2,
                 $ratio1 + $ratio2 == 100,
-                '');
+                ''
+            );
         }
 
         return true;
@@ -186,18 +199,22 @@ class ElcaValidator extends HtmlFormValidator
     public function assertLayer($key, array $lifeTimes)
     {
         $processConfigIds = $this->getValue('processConfigId');
-        if (!is_array($processConfigIds) || !isset($processConfigIds[$key]))
+        if (!is_array($processConfigIds) || !isset($processConfigIds[$key])) {
             return;
+        }
 
         $suffix = '[' . $key . ']';
         $this->assertNotEmpty('processConfigId' . $suffix, null, t('Kein Baustoff gewählt'));
-        if ($this->isValid())
-        {
+        if ($this->isValid()) {
             $this->assertNotEmpty('size' . $suffix, null, t('Keine Dicke angegeben'));
             $this->assertNotEmpty('length' . $suffix, null, t('Keine Länge angegeben'));
             $this->assertNotEmpty('width' . $suffix, null, t('Keine Breite angegeben'));
             $this->assertNotEmpty('lifeTime' . $suffix, null, t('Keine Nutzungsdauer angegeben'));
-            $this->assertTrue('lifeTime' . $suffix, (int)$this->getValue('lifeTime' . $suffix) > 0, t('Keine Nutzungsdauer angegeben'));
+            $this->assertTrue(
+                'lifeTime' . $suffix,
+                (int)$this->getValue('lifeTime' . $suffix) > 0,
+                t('Keine Nutzungsdauer angegeben')
+            );
         }
 
 
@@ -206,10 +223,18 @@ class ElcaValidator extends HtmlFormValidator
             $lifeTime = (int)$this->getValue('lifeTime' . $suffix);
             if (!(isset($lifeTimes[$lifeTime]) || array_key_exists($lifeTime, $lifeTimes))) {
                 if (!$this->assertNotEmpty('lifeTimeInfo' . $suffix, null, '')) {
-                    $this->setError('lifeTime' . $suffix, t('Bitte geben Sie eine Begründung für die eigene Nutzungsdauer an'));
+                    $this->setError(
+                        'lifeTime' . $suffix,
+                        t('Bitte geben Sie eine Begründung für die eigene Nutzungsdauer an')
+                    );
                 }
             }
-            $this->assertNumberRange('lifeTimeDelay' . $suffix, 0, max(0, $this->getValue('lifeTime' . $suffix) - 1), t('Restnutzungsdauer muss kleiner als die Nutzungsdauer sein.'));
+            $this->assertNumberRange(
+                'lifeTimeDelay' . $suffix,
+                0,
+                max(0, $this->getValue('lifeTime' . $suffix) - 1),
+                t('Restnutzungsdauer muss kleiner als die Nutzungsdauer sein.')
+            );
         }
     }
     // End assertLayer
@@ -221,7 +246,7 @@ class ElcaValidator extends HtmlFormValidator
     public function checkExtantComponents(array $componentPositions, array $extantComponents)
     {
         $extantPositions = [];
-        $needExtantFix = [];
+        $needExtantFix   = [];
 
         foreach ($componentPositions as $key => $pos) {
             if (isset($extantComponents[$key])) {
@@ -230,12 +255,12 @@ class ElcaValidator extends HtmlFormValidator
         }
 
         $firstExtantPos = reset($extantPositions);
-        $lastExtantPos = end($extantPositions);
-        $keyPositions = array_flip($componentPositions);
+        $lastExtantPos  = end($extantPositions);
+        $keyPositions   = array_flip($componentPositions);
 
         $previousExtantPosition = null;
         foreach ($keyPositions as $pos => $key) {
-            $Layer = ElcaElementComponent::findById($key);
+            $Layer     = ElcaElementComponent::findById($key);
             $siblingId = $Layer->getLayerSiblingId();
 
             if (isset($extantComponents[$key]) || isset($extantComponents[$siblingId])) {
@@ -267,7 +292,7 @@ class ElcaValidator extends HtmlFormValidator
     public function checkExtantElements(array $elementPositions, array $extantElements)
     {
         $extantPositions = [];
-        $needExtantFix = [];
+        $needExtantFix   = [];
 
         foreach ($elementPositions as $pos => $elementId) {
             $Element = ElcaElement::findById($elementId);
@@ -284,7 +309,7 @@ class ElcaValidator extends HtmlFormValidator
         }
 
         $firstExtantPos = reset($extantPositions);
-        $lastExtantPos = end($extantPositions);
+        $lastExtantPos  = end($extantPositions);
 
         $previousExtantPosition = null;
         foreach ($elementPositions as $pos => $Element) {
@@ -299,8 +324,9 @@ class ElcaValidator extends HtmlFormValidator
                 if (!is_null($previousExtantPosition) && ($pos - $previousExtantPosition > 1)) {
                     for ($x = 1; $x < ($pos - $previousExtantPosition); $x++) {
                         $Elt = $elementPositions[$pos - $x];
-                        if ($Elt->isExtant() === false)
+                        if ($Elt->isExtant() === false) {
                             $needExtantFix[] = $pos - $x;
+                        }
                     }
                 }
                 $previousExtantPosition = $pos;
@@ -311,6 +337,46 @@ class ElcaValidator extends HtmlFormValidator
     }
     // End checkExtantComponents
 
+    /**
+     * Check condition for extant components:
+     */
+    public function checkLifeTimeComponents(array $componentPositions, array $lifeTimes)
+    {
+        $lifeTimePositions = [];
+        $needFix           = [];
+
+        foreach ($componentPositions as $key => $pos) {
+            $lifeTimePositions[$pos] = $lifeTimes[$key];
+        }
+
+        $firstLifeTimePos = reset($componentPositions);
+        $lastLifeTimePos  = end($componentPositions);
+        $keyPositions     = array_flip($componentPositions);
+
+        $previousLifeTime = null;
+        foreach ($keyPositions as $pos => $key) {
+            if (!isset($lifeTimes[$key])) {
+                continue;
+            }
+
+            $lifeTime = $lifeTimes[$key];
+
+            if ($pos > $firstLifeTimePos && $pos < $lastLifeTimePos &&
+                null !== $previousLifeTime && $lifeTime < $previousLifeTime) {
+
+                $maxLifeTime = \max(\array_slice($lifeTimePositions, $pos));
+                for ($x = $pos; $x < $lastLifeTimePos; $x++) {
+                    if ($lifeTimes[$keyPositions[$x] ] >= $maxLifeTime) {
+                        break;
+                    }
+                    $needFix[$x] = $keyPositions[$x];
+                }
+            }
+            $previousLifeTime = $lifeTime;
+        }
+
+        return $needFix;
+    }
 
     /**
      * Asserts single components
@@ -320,8 +386,9 @@ class ElcaValidator extends HtmlFormValidator
     public function assertSingleComponents()
     {
         $processConfigIds = $this->getValue('processConfigId');
-        if (!is_array($processConfigIds))
+        if (!is_array($processConfigIds)) {
             return;
+        }
 
         foreach ($processConfigIds as $key => $processConfigId) {
             $processConfig = ElcaProcessConfig::findById($processConfigId);
@@ -339,29 +406,41 @@ class ElcaValidator extends HtmlFormValidator
     public function assertSingleComponent($key, array $lifeTimes)
     {
         $processConfigIds = $this->getValue('processConfigId');
-        if (!is_array($processConfigIds) || !isset($processConfigIds[$key]))
+        if (!is_array($processConfigIds) || !isset($processConfigIds[$key])) {
             return;
+        }
 
         $suffix = '[' . $key . ']';
 
         $this->assertNotEmpty('processConfigId' . $suffix, null, t('Kein Baustoff gewählt'));
-        if ($this->isValid())
-        {
+        if ($this->isValid()) {
             $this->assertNotEmpty('quantity' . $suffix, null, t('Keine Menge angegeben'));
             $this->assertNotEmpty('conversionId' . $suffix, null, t('Keine Mengeneinheit angegeben'));
             $this->assertNotEmpty('lifeTime' . $suffix, null, t('Keine Nutzungsdauer angegeben'));
-            $this->assertTrue('lifeTime' . $suffix, (int)$this->getValue('lifeTime' . $suffix) > 0, t('Keine Nutzungsdauer angegeben'));
+            $this->assertTrue(
+                'lifeTime' . $suffix,
+                (int)$this->getValue('lifeTime' . $suffix) > 0,
+                t('Keine Nutzungsdauer angegeben')
+            );
         }
 
         if ($this->isValid()) {
             $lifeTime = (int)$this->getValue('lifeTime' . $suffix);
             if (!(isset($lifeTimes[$lifeTime]) || array_key_exists($lifeTime, $lifeTimes))) {
                 if (!$this->assertNotEmpty('lifeTimeInfo' . $suffix, null, '')) {
-                    $this->setError('lifeTime' . $suffix, t('Bitte geben Sie eine Begründung für die eigene Nutzungsdauer an'));
+                    $this->setError(
+                        'lifeTime' . $suffix,
+                        t('Bitte geben Sie eine Begründung für die eigene Nutzungsdauer an')
+                    );
                 }
             }
 
-            $this->assertNumberRange('lifeTimeDelay' . $suffix, 0, max(0, $this->getValue('lifeTime' . $suffix) - 1), t('Restnutzungsdauer muss kleiner als die Nutzungsdauer sein.'));
+            $this->assertNumberRange(
+                'lifeTimeDelay' . $suffix,
+                0,
+                max(0, $this->getValue('lifeTime' . $suffix) - 1),
+                t('Restnutzungsdauer muss kleiner als die Nutzungsdauer sein.')
+            );
         }
 
     }
@@ -376,12 +455,21 @@ class ElcaValidator extends HtmlFormValidator
     public function assertProjectFinalEnergySupplies()
     {
         $processConfigIds = $this->getValue('processConfigId');
-        if (!is_array($processConfigIds))
+        if (!is_array($processConfigIds)) {
             return;
+        }
 
         foreach ($processConfigIds as $key => $processConfigId) {
-            $this->assertNotEmpty('quantity[' . $key . ']', null, t('Bitte geben Sie einen Wert für die Energiebereitstellung an'));
-            $this->assertNotEmpty('description[' . $key . ']', null, t('Bitte geben Sie eine Beschreibung für die Energiebereitstellung an'));
+            $this->assertNotEmpty(
+                'quantity[' . $key . ']',
+                null,
+                t('Bitte geben Sie einen Wert für die Energiebereitstellung an')
+            );
+            $this->assertNotEmpty(
+                'description[' . $key . ']',
+                null,
+                t('Bitte geben Sie eine Beschreibung für die Energiebereitstellung an')
+            );
         }
 
         return true;
@@ -397,12 +485,14 @@ class ElcaValidator extends HtmlFormValidator
     public function assertProjectFinalEnergyDemands()
     {
         $processConfigIds = $this->getValue('processConfigId');
-        if (!is_array($processConfigIds))
+        if (!is_array($processConfigIds)) {
             return;
+        }
 
         foreach ($processConfigIds as $key => $processConfigId) {
-            if ($key === ElcaProjectFinalEnergyDemand::IDENT_PROCESS_ENERGY)
+            if ($key === ElcaProjectFinalEnergyDemand::IDENT_PROCESS_ENERGY) {
                 continue;
+            }
 
             $this->assertProjectFinalEnergyDemand($key);
         }
@@ -417,8 +507,9 @@ class ElcaValidator extends HtmlFormValidator
     public function assertProjectFinalEnergyDemand($key)
     {
         $processConfigIds = $this->getValue('processConfigId');
-        if (!is_array($processConfigIds) || !isset($processConfigIds[$key]))
+        if (!is_array($processConfigIds) || !isset($processConfigIds[$key])) {
             return;
+        }
 
         $isset = false;
 
@@ -430,8 +521,9 @@ class ElcaValidator extends HtmlFormValidator
         }
 
         if (!$this->assertTrue('atleastonereq', $isset, t('Mindestens ein Wert muss angegeben sein'))) {
-            foreach (['heating', 'water', 'lighting', 'ventilation', 'cooling'] as $property)
+            foreach (['heating', 'water', 'lighting', 'ventilation', 'cooling'] as $property) {
                 $this->setError($property . $suffix);
+            }
         }
     }
     // End assertProjectFinalEnergyDemand
@@ -445,12 +537,14 @@ class ElcaValidator extends HtmlFormValidator
     public function assertProjectFinalEnergyRefModels()
     {
         $processConfigIds = $this->getValue('processConfigId');
-        if (!is_array($processConfigIds))
+        if (!is_array($processConfigIds)) {
             return;
+        }
 
         foreach ($processConfigIds as $ident => $processConfigId) {
-            if ($processConfigId && $ident !== ElcaBenchmarkRefProcessConfig::IDENT_PROCESS_ENERGY)
+            if ($processConfigId && $ident !== ElcaBenchmarkRefProcessConfig::IDENT_PROCESS_ENERGY) {
                 $this->assertProjectFinalEnergyRefModel($ident);
+            }
         }
 
         return true;
@@ -463,8 +557,9 @@ class ElcaValidator extends HtmlFormValidator
     public function assertProjectFinalEnergyRefModel($ident)
     {
         $processConfigIds = $this->getValue('processConfigId');
-        if (!is_array($processConfigIds) || !isset($processConfigIds[$ident]))
+        if (!is_array($processConfigIds) || !isset($processConfigIds[$ident])) {
             return;
+        }
 
         $isset = false;
 
@@ -476,8 +571,9 @@ class ElcaValidator extends HtmlFormValidator
         }
 
         if (!$this->assertTrue('atleastonereq', $isset, t('Mindestens ein Wert muss angegeben sein'))) {
-            foreach (['heating', 'water', 'lighting', 'ventilation', 'cooling'] as $property)
+            foreach (['heating', 'water', 'lighting', 'ventilation', 'cooling'] as $property) {
                 $this->setError($property . $suffix);
+            }
         }
     }
     // End assertProjectFinalEnergyRefModel
@@ -490,10 +586,11 @@ class ElcaValidator extends HtmlFormValidator
     public function assertTransports()
     {
         $matProcessConfigIds = $this->getValue('matProcessConfigId');
-        $processConfigIds = $this->getValue('processConfigId');
+        $processConfigIds    = $this->getValue('processConfigId');
 
-        if (!is_array($matProcessConfigIds))
+        if (!is_array($matProcessConfigIds)) {
             return;
+        }
 
         foreach ($matProcessConfigIds as $key => $foo) {
 
@@ -502,7 +599,10 @@ class ElcaValidator extends HtmlFormValidator
             foreach (['name' => 'den Namen', 'quantity' => 'die Menge'] as $property => $name) {
                 $value = $this->getValue($property . $suffix);
                 if (empty($value)) {
-                    $this->setError($property . $suffix, t('Bitte geben Sie einen Wert für %name% an', null, ['%name%' => $name]));
+                    $this->setError(
+                        $property . $suffix,
+                        t('Bitte geben Sie einen Wert für %name% an', null, ['%name%' => $name])
+                    );
                 }
             }
 
@@ -510,8 +610,9 @@ class ElcaValidator extends HtmlFormValidator
 
                 list($transportKey,) = explode('-', $relId);
 
-                if ($transportKey != $key)
+                if ($transportKey != $key) {
                     continue;
+                }
 
                 $suffix = '[' . $relId . ']';
 
@@ -522,7 +623,10 @@ class ElcaValidator extends HtmlFormValidator
                     foreach (['distance' => 'die Entfernung', 'efficiency' => 'die Auslastung'] as $property => $name) {
                         $value = $this->getValue($property . $suffix);
                         if (empty($value)) {
-                            $this->setError($property . $suffix, t('Bitte geben Sie einen Wert für %name% an', null, ['%name%' => $name]));
+                            $this->setError(
+                                $property . $suffix,
+                                t('Bitte geben Sie einen Wert für %name% an', null, ['%name%' => $name])
+                            );
                         }
                     }
                 }
@@ -534,7 +638,7 @@ class ElcaValidator extends HtmlFormValidator
 
     public function assertBenchmarkGroups()
     {
-        $names = $this->getValue('name');
+        $names  = $this->getValue('name');
         $scores = $this->getValue('score');
 
         if (!\is_array($names) || !\is_array($scores)) {
@@ -550,7 +654,10 @@ class ElcaValidator extends HtmlFormValidator
             foreach (['name' => 'den Namen', 'indicators' => 'mindestens einen Indikator'] as $property => $name) {
                 $value = $this->getValue($property . $suffix);
                 if (empty($value)) {
-                    $this->setError($property . $suffix, t('Bitte geben Sie einen Wert für %name% an', null, ['%name%' => $name]));
+                    $this->setError(
+                        $property . $suffix,
+                        t('Bitte geben Sie einen Wert für %name% an', null, ['%name%' => $name])
+                    );
                 }
             }
 
@@ -560,10 +667,16 @@ class ElcaValidator extends HtmlFormValidator
 
                 if (!isset($indicators[$indicatorId])) {
                     $indicators[$indicatorId] = true;
-                }
-                else {
+                } else {
                     $indicator = ElcaIndicator::findById($indicatorId);
-                    $this->setError('indicators'. $suffix, t('Der Wirkindikator %name% kann nur einmal für alle Gruppen verwendet werden', null, ['%name%' => $indicator->getName()]));
+                    $this->setError(
+                        'indicators' . $suffix,
+                        t(
+                            'Der Wirkindikator %name% kann nur einmal für alle Gruppen verwendet werden',
+                            null,
+                            ['%name%' => $indicator->getName()]
+                        )
+                    );
                 }
             }
 
@@ -579,7 +692,10 @@ class ElcaValidator extends HtmlFormValidator
                 foreach (['score' => 'den Punktwert'] as $property => $name) {
                     $value = $this->getValue($property . $suffix);
                     if (empty($value)) {
-                        $this->setError($property . $suffix, t('Bitte geben Sie einen Wert für %name% an', null, ['%name%' => $name]));
+                        $this->setError(
+                            $property . $suffix,
+                            t('Bitte geben Sie einen Wert für %name% an', null, ['%name%' => $name])
+                        );
                     }
                 }
 

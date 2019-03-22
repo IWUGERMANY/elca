@@ -1828,20 +1828,10 @@ class ElementsCtrl extends TabsCtrl
                 /**
                  * If needed, add confirm message to fix missing extants
                  */
+                $highlightElts = [];
+
                 if ($needExtantFix) {
-                    $highlightElts = [];
-                    $keyPositions = array_flip($positions);
-
-                    foreach ($needExtantFix as $pos) {
-                        $Layer = ElcaElementComponent::findById($keyPositions[$pos]);
-                        if (!$Layer->isInitialized())
-                            continue;
-
-                        $highlightElts['isExtant['. $Layer->getId() .']'] = true;
-                        if ($Layer->hasLayerSibling()) {
-                            $highlightElts['isExtant['. $Layer->getLayerSiblingId() .']'] = true;
-                        }
-                    }
+                    $highlightElts = array_merge($highlightElts, $this->highlightInvalidExtantComponents($positions, $needExtantFix));
 
                     /**
                      * warn about non-extant in between extant layers
@@ -1854,10 +1844,19 @@ class ElementsCtrl extends TabsCtrl
                         $msg = t('Schicht %needExtantFix% wird von Bestandsbaustoffen umschlossen. ', null, ['%needExtantFix%' => join(', ', $needExtantFix)]);
                     }
 
-                    $Url = Url::factory('/' . $this->context . '/fixExtants/', ['id' => $element->getId()]);
-                    $this->messages->add($msg . t('Soll dies korrigiert werden?'), ElcaMessages::TYPE_CONFIRM, (string)$Url);
-                    $view->assign('highlightedElements', $highlightElts);
+                    $url = Url::factory('/' . $this->context . '/fixExtants/', ['id' => $element->getId()]);
+                    $this->messages->add($msg . t('Soll dies korrigiert werden?'), ElcaMessages::TYPE_CONFIRM, (string)$url);
                 }
+
+                $needLimeTimeFix = $Validator->checkLifeTimeComponents($positions, $this->Request->getArray('lifeTime'));
+
+                if ($needLimeTimeFix) {
+                    $highlightElts = \array_merge($highlightElts, $this->highlightInvalidLifeTimeComponents($needLimeTimeFix));
+                    $this->messages->add(t('Es sind Schichten mit geringeren Nutzungsdauern von höheren eingeschlossen!'), ElcaMessages::TYPE_INFO);
+                }
+
+
+                $view->assign('highlightedElements', $highlightElts);
 
                 $this->elementImageAction($element->getId());
                 $this->imageCache->clear($element->getId());
@@ -2826,6 +2825,45 @@ class ElementsCtrl extends TabsCtrl
         }
 
         return [$isPublic, $isReference];
+    }
+
+    private function highlightInvalidExtantComponents(array $positions, array $needExtantFix): array
+    {
+        $highlightElts = [];
+        $keyPositions  = array_flip($positions);
+
+        foreach ($needExtantFix as $pos) {
+            $layer = ElcaElementComponent::findById($keyPositions[$pos]);
+            if (!$layer->isInitialized()) {
+                continue;
+            }
+
+            $highlightElts['isExtant[' . $layer->getId() . ']'] = true;
+            if ($layer->hasLayerSibling()) {
+                $highlightElts['isExtant[' . $layer->getLayerSiblingId() . ']'] = true;
+            }
+        }
+
+        return $highlightElts;
+    }
+
+    private function highlightInvalidLifeTimeComponents(array $needLifeTimeFix): array
+    {
+        $highlightElts = [];
+
+        foreach ($needLifeTimeFix as $key) {
+            $layer = ElcaElementComponent::findById($key);
+            if (!$layer->isInitialized()) {
+                continue;
+            }
+
+            $highlightElts['lifeTime[' . $key . ']'] = true;
+            if ($layer->hasLayerSibling()) {
+                $highlightElts['lifeTime[' . $layer->getLayerSiblingId() . ']'] = true;
+            }
+        }
+
+        return $highlightElts;
     }
 
 }

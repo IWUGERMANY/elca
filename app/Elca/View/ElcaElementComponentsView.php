@@ -462,6 +462,10 @@ class ElcaElementComponentsView extends HtmlView
             if ($this->isLockedProperty(ElementAssistant::PROPERTY_COMPONENT_LIFE_TIME, $Component))
                 $LifeTimeElt->setReadonly(true, false);
 
+            if ($this->checkElementHighlight($LifeTimeElt)) {
+                $Container->addClass('has-highlighted-elements');
+            }
+
             $this->checkElementChange($LifeTimeElt);
             if ($this->isExtantBuilding && $this->context == ProjectElementsCtrl::CONTEXT) {
 
@@ -480,7 +484,9 @@ class ElcaElementComponentsView extends HtmlView
 
             if ($this->isExtantBuilding && $this->context == ProjectElementsCtrl::CONTEXT) {
                 $Container->add(new ElcaHtmlFormElementLabel('', $IsExtantCheckbox = new HtmlCheckbox('isExtant[' . $key . ']', !is_numeric($key) ? true : null)));
-                $this->checkElementHighlight($IsExtantCheckbox);
+                if ($this->checkElementHighlight($IsExtantCheckbox)) {
+                    $Container->addClass('has-highlighted-elements');
+                }
             }
         }
 
@@ -986,8 +992,12 @@ class ElcaElementComponentsView extends HtmlView
      */
     private function checkElementHighlight(HtmlFormElement $Element)
     {
-        if (isset($this->highlightedElements[$Element->getName()]))
-            $Element->addClass('highlight');
+        if (!isset($this->highlightedElements[$Element->getName()])) {
+            return false;
+        }
+
+        $Element->addClass('highlight highlight-bg');
+        return true;
     }
     // End checkElementHighlight
 

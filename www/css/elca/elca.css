@@ -1115,6 +1115,8 @@ form.adminSvgPatternForm .buttons fieldset { margin-top: 20px; width: 400px; }
 
 .elements .submit.button.refresh-opaque-elements, .project-elements .submit.button.refresh-opaque-elements { background-color: #fd695e; }
 
+div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
+
 /** Element overview ------------------*/
 #content.elements.overview h3.import a { padding-left: 18px; background: transparent url("/img/elca/ic-arrow-closed.png") 7px 2px no-repeat; text-decoration: none; }
 
