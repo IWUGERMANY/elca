@@ -53,7 +53,6 @@ use Elca\Model\Navigation\ElcaTabItem;
 use Elca\Model\Project\ProjectId;
 use Elca\Service\Assistant\ElementAssistantRegistry;
 use Elca\Service\ElcaElementImageCache;
-use Elca\Service\ElcaLocale;
 use Elca\Service\Element\ElementService;
 use Elca\Service\Mailer;
 use Elca\Service\Messages\ElcaMessages;
@@ -993,7 +992,13 @@ class ElementsCtrl extends TabsCtrl
         if (!$this->Access->canEditElement($element))
             return null;
 
-        $copy = $elementComponent->copy($element->getId(), null, true, true);
+        $copy = $elementComponent->copy(
+            $element->getId(),
+            null,
+            true,
+            true,
+            ElcaElementComponent::getMaxLayerPosition($element->getId()) + 1
+        );
 
         if (!$copy->isInitialized())
             return null;

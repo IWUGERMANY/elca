@@ -331,7 +331,7 @@ class ElcaElementComponent extends DbObject
      * @param  int $layerSiblingId
      * @return ElcaElementComponent - the new element component copy
      */
-    public function copy($elementId, $layerSiblingId = null, $copyCacheItems = false, $resetAreaRatio = false)
+    public function copy($elementId, $layerSiblingId = null, $copyCacheItems = false, $resetAreaRatio = false, $newLayerPosition = null)
     {
         if(!$this->isInitialized() || !$elementId)
             return new ElcaElementComponent();
@@ -345,7 +345,7 @@ class ElcaElementComponent extends DbObject
             $this->quantity,
             $this->calcLca,
             $this->isExtant,
-            $this->layerPosition,
+            $newLayerPosition ?? $this->layerPosition,
             $this->layerSize,
             $layerSiblingId,
             $resetAreaRatio
