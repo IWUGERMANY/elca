@@ -196,7 +196,7 @@ class ElcaReportSummaryPerResidentView extends ElcaReportsView
         $form->setRequest(FrontController::getInstance()->getRequest());
 
         $group = $form->add(new HtmlFormGroup(t('')));
-        $label = $group->add(new ElcaHtmlFormElementLabel(t('Anzahl Bewohner P')));
+        $label = $group->add(new ElcaHtmlFormElementLabel(t('Anzahl Nutzer/Bewohner P')));
         $label->add(new ElcaHtmlNumericInput('residents'));
 
         $label->add(new HtmlSubmitButton("refreshResidents", t('Aktualisieren')));
