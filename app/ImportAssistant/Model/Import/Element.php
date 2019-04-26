@@ -386,6 +386,8 @@ class Element
      */
     public function allComponents(): array
     {
+        $this->sortLayers();
+
         $iterator = new \AppendIterator();
         $iterator->append(new \ArrayIterator($this->layerComponents()));
         $iterator->append(new \ArrayIterator($this->singleComponents()));
