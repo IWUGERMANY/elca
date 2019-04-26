@@ -652,7 +652,6 @@ class ProjectDataCtrl extends AppCtrl
     }
     // End saveAction
 
-
     /**
      * Calculates the lca for the complete project
      */

@@ -57,7 +57,7 @@ class ExportsCtrl extends AjaxController
      */
     protected function projectAction()
     {
-        if(!is_numeric($this->Request->id))
+        if (!is_numeric($this->Request->id))
             return;
 
         $Project = ElcaProject::findById($this->Request->id);
