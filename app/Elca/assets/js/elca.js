@@ -320,6 +320,7 @@ $(window).load(function () {
                     'div.ElcaHtmlElementSelectorLink-section.assistant': 'prepareContent',
                     '#templateElement': ['prepareContent', 'prepareElementImages'],
                     '#tabContent.tab-window-assistant': 'prepareWindowAssistant',
+                    '#tabContent.tab-dormer-assistant': 'prepareWindowAssistant',
                     '#tabContent.tab-staircase-assistant': 'prepareStaircaseAssistant',
                     '#tabContent.pillar-assistants': 'preparePillarAssistant',
                     '#subscribeForm': 'prepareSubscribeForm',
