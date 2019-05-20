@@ -266,24 +266,27 @@
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
+
+        <!-- common attributes -->
         <xs:attribute type="xs:boolean" name="isLayer"/>
         <xs:attribute type="xs:string" name="processConfigName"/>
         <xs:attribute type="xs:integer" name="lifeTime"/>
-
         <xs:attribute type="xs:integer" name="lifeTimeDelay" use="optional"/>
         <xs:attribute type="xs:boolean" name="isExtant" use="optional"/>
+
+        <!-- attributes in case isLayer=true -->
         <xs:attribute type="xs:integer" name="layerPosition" use="optional"/>
         <xs:attribute type="xs:float" name="layerSize" use="optional"/>
         <xs:attribute type="xs:float" name="layerAreaRatio" use="optional"/>
         <xs:attribute type="xs:float" name="layerLength" use="optional"/>
         <xs:attribute type="xs:float" name="layerWidth" use="optional"/>
 
+        <!-- attributes in case isLayer=false -->
         <xs:attribute type="xs:integer" name="din276Code" use="optional"/>
         <xs:attribute type="xs:float" name="quantity" use="optional"/>
         <xs:attribute type="xs:string" name="refUnit" use="optional"/>
     </xs:complexType>
     <!-- END component -->
-
 
     <!-- BEGIN floatNullable -->
     <xs:simpleType name="floatNullable">
