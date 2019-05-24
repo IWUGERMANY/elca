@@ -26,6 +26,7 @@ namespace Elca\View;
 
 use Beibob\Blibs\HtmlView;
 use Elca\Controller\ProcessesCtrl;
+use Elca\Controller\Sanity\ProcessConfigsEolCtrl;
 use Elca\Controller\Sanity\ProcessesCtrl as SanityProcessesCtrl;
 use Elca\Db\ElcaProcessCategory;
 use Elca\Db\ElcaProcessCategorySet;
@@ -34,7 +35,6 @@ use Elca\Db\ElcaProcessDbSet;
 use Elca\Elca;
 use Elca\Model\Navigation\ElcaNavigation;
 use Elca\Security\ElcaAccess;
-use Elca\View\Sanity\ProcessesView;
 
 /**
  * Builds the processes navigation view
@@ -78,6 +78,11 @@ class ElcaProcessesNavigationView extends HtmlView
                 t('Probleme'),
                 null,
                 SanityProcessesCtrl::class
+            );
+            $adminItem->add(
+                t('Baustoffe EOL'),
+                null,
+                ProcessConfigsEolCtrl::class
             );
         }
 

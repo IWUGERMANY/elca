@@ -111,4 +111,19 @@
       box-sizing: border-box;
     }
   }
+
+  .export-eol-process-configs {
+    width:800px;
+
+    .processDbId {
+      width:300px;
+    }
+
+  }
+  ul.export-buttons {
+    li {
+      float:left;
+      padding-right:15px;
+    }
+  }
 }

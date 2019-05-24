@@ -104,6 +104,16 @@ class ElcaOsit
      *
      * @param null $backUrl
      */
+    public function setProcessConfigsEOLScenario($backUrl = null)
+    {
+        $this->add(new ElcaOsitItem(t('Baustoffe EOL'), $backUrl, t('Pflege')));
+    }
+
+    /**
+     * Sets the processConfig list scenario
+     *
+     * @param null $backUrl
+     */
     public function setProcessConfigSearchScenario()
     {
         $this->add(new ElcaOsitItem(t('Suche'), '/processes/?back', t('Baustoffe')));

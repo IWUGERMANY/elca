@@ -34,6 +34,7 @@ use Elca\Db\ElcaCacheDataObjectSet;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaIndicatorSet;
 use Elca\Db\ElcaLifeCycle;
+use Elca\Db\ElcaProcessConfigViewSet;
 use Elca\Db\ElcaProcessDb;
 use Elca\Db\ElcaProcessViewSet;
 use Elca\Db\ElcaProject;
@@ -278,7 +279,55 @@ class ExportsCtrl extends AjaxController
         $this->Response->setHeader('Content-Type: '. MimeType::getByFilepath($filePath));
         $this->Response->setHeader('Content-Length: '. File::getFilesize($filePath));
     }
-    // End handbookAction
+
+    protected function processConfigsEolAction()
+    {
+        if (!$this->Request->processDbId) {
+            return;
+        }
+
+        $processDb = ElcaProcessDb::findById($this->Request->processDbId);
+        $lcIdents = $this->Request->getArray('lc');
+        $lcExcluded = $this->Request->getArray('ex');
+        $processDbName     = $processDb->getName();
+
+        $view = new TextView();
+        //$View->setOutputEncoding('ISO-8859-15//TRANSLIT');
+
+        $exporter = new CsvExporter();
+        $exporter->setNullExpression('');
+        $exporter->setDelimiter(';');
+
+        $processData = ElcaProcessConfigViewSet::findProcessConfigsByDbAndLcIdents($processDb->getId(), $lcIdents, $lcExcluded);
+        $data = $processData->getArrayCopy();
+
+        foreach($data as $obj) {
+            $obj->process_db = $processDbName;
+            $obj->life_cycle_idents = trim($obj->life_cycle_idents, '{}');
+            $obj->process_names = trim($obj->process_names, '{}');
+            $obj->epd_types = trim($obj->epd_types, '{}');
+        }
+
+        $columns = ['process_config_id', 'name', 'process_category', 'process_category_name', 'life_cycle_idents', 'process_names', 'epd_types', 'process_db'];
+        $headers = ['ID', 'Baustoffkonfiguration', 'Kategorie', 'Kategoriename', 'Module', 'Zugeordnete EOL Prozesse', 'EPD Typen', 'Baustoff-DB'];
+
+        $exporter->setHeaders($headers);
+        $exporter->setDataObjectlist($data, $columns);
+
+        $view->setContent($exporter->getString());
+
+        /**
+         * This is a hack, to solve the problem with different content encodings
+         * in text views due to text substitution through the template engine
+         */
+        $this->Response->setContent((string)$view);
+
+        $filename = 'Baustoffkonfigurationen_EOL_' . $processDbName . '.csv';
+
+        $this->Response->setHeader('Pragma: ');
+        $this->Response->setHeader("Content-Disposition: attachment; filename=\"".$filename."\"");
+        $this->Response->setHeader('Content-Type: text/csv');
+    }
 
 
     /**

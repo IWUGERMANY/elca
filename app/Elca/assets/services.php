@@ -95,7 +95,7 @@ return [
         DI\get(StaircaseAssistant::class),
         DI\get(PillarAssistant::class),
         DI\get(FoundationAssistant::class),
-        DI\get(DormerAssistant::class),
+//        DI\get(DormerAssistant::class),
     ],
     'elca.element_observers'            => [
         DI\get(WindowAssistant::class),
@@ -103,16 +103,16 @@ return [
         DI\get(PillarAssistant::class),
         DI\get(\Lcc\Model\LccElementObserver::class),
         DI\get(FoundationAssistant::class),
-        DI\get(DormerAssistant::class),
+//        DI\get(DormerAssistant::class),
     ],
     'elca.project_variant_observers'    => [
         DI\get(WindowAssistant::class),
-        DI\get(DormerAssistant::class),
+//        DI\get(DormerAssistant::class),
         DI\get(LccProjectVariantObserver::class),
     ],
     'elca.import_observers'         => [
         DI\get(WindowAssistant::class),
-        DI\get(DormerAssistant::class),
+//        DI\get(DormerAssistant::class),
     ],
     'elca.benchmark_systems' => [
         DI\get(BnbBenchmarkSystemModel::class),
