@@ -695,6 +695,12 @@ class ElcaProcessConfigGeneralView extends HtmlView
                 );
             }
         }
+
+        if (!$this->readOnly && $isImported) {
+            $row->add(new HtmlLink(t('Bearbeiten'), '/processes/editImportedConversion/?id=' . $conversionId))->addClass(
+                'edit-link no-history'
+            );
+        }
     }
 
     private function appendNewConversionRow(HtmlElement $container, array $requiredUnits, bool $isRequired)

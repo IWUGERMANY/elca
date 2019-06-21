@@ -56,7 +56,6 @@ use Elca\Model\Processing\ElcaLcaProcessor;
 use Elca\Service\Messages\ElcaMessages;
 use Elca\Service\ProcessConfig\Conversions;
 use Elca\Validator\ElcaProcessConfigValidator;
-use Elca\Validator\ElcaValidator;
 use Elca\View\ElcaBaseView;
 use Elca\View\ElcaModalProcessingView;
 use Elca\View\ElcaProcessConfigGeneralView;
@@ -852,6 +851,60 @@ class ProcessesCtrl extends TabsCtrl
         }
     }
     // End deleteConversionAction
+
+    /**
+     * Deletes a conversion action
+     */
+    protected function editImportedConversionAction()
+    {
+        if (!$this->Access->hasAdminPrivileges()) {
+            return;
+        }
+
+        if (!is_numeric($this->Request->id)) {
+            return;
+        }
+
+        $conversion = ElcaProcessConversion::findById($this->Request->id);
+
+        if (!$conversion->getIdent()) {
+            return;
+        }
+
+        /**
+         * If confirmed act
+         */
+        if ($this->Request->has('confirmed')) {
+
+            if ($conversion->isInitialized()) {
+                $conversion->setIdent(null);
+                $conversion->update();
+
+                $view = $this->setView(new ElcaProcessConfigGeneralView());
+                $view->assign('processConfigId', $conversion->getProcessConfigId());
+                $view->assign('buildMode', ElcaProcessConfigGeneralView::BUILDMODE_CONVERSIONS);
+            }
+        } else {
+            if ($conversion->isInitialized()) {
+                /**
+                 * Build confirm url by adding the confirmed argument to the current request
+                 */
+                $Url = Url::parse($this->Request->getURI());
+                $Url->addParameter(['confirmed' => null]);
+
+                /**
+                 * Show confirm message
+                 */
+                $this->messages->add(
+                    t(
+                        'Soll die importierte Umrechnung wirklich bearbeitet werden? Dies ist nachträglich nicht mehr rückgängig zu machen!'
+                    ),
+                    ElcaMessages::TYPE_CONFIRM,
+                    (string)$Url
+                );
+            }
+        }
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////
 

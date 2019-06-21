@@ -1332,7 +1332,7 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #conversions .hl-row, #conversions .elt-row { clear: both; position: relative; height: 20px; }
 
-#conversions .hl-row h5, #conversions .elt-row .form-section, #conversions .elt-row a.delete-link, #conversions .elt-row a.cancel-link { position: absolute; }
+#conversions .hl-row h5, #conversions .elt-row .form-section, #conversions .elt-row a.delete-link, #conversions .elt-row a.edit-link, #conversions .elt-row a.cancel-link { position: absolute; }
 
 #conversions .hl-row h5 { color: #888; font-style: italic; font-weight: normal; border: none; }
 
@@ -1360,7 +1360,7 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #conversions .elt-row .elt-ident { right: 15px; width: 480px; }
 
-#conversions .elt-row a.delete-link, #conversions .elt-row a.cancel-link { right: 15px; padding: 5px 0 10px 20px; line-height: 20px; display: block; color: #004f80; text-decoration: underline; }
+#conversions .elt-row a.delete-link, #conversions .elt-row a.edit-link, #conversions .elt-row a.cancel-link { right: 15px; margin: 5px 0 10px 20px; line-height: 20px; display: block; color: #004f80; text-decoration: underline; background-color: #f9f9f9; }
 
 #conversions .elt-row .elt-ident .form-elt { font-size: 12px; }
 

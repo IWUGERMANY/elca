@@ -148,7 +148,8 @@
 #conversions .hl-row h5,
 #conversions .elt-row .form-section,
 #conversions .elt-row a.delete-link,
-  #conversions .elt-row a.cancel-link {
+#conversions .elt-row a.edit-link,
+#conversions .elt-row a.cancel-link {
   position:absolute;
 }
 #conversions .hl-row h5 {
@@ -178,14 +179,17 @@
 #conversions .elt-row .elt-factor     { left:140px; width:70px; text-align: right; }
 #conversions .elt-row .elt-ident      { right:15px; width:480px; }
 #conversions .elt-row a.delete-link,
+#conversions .elt-row a.edit-link,
 #conversions .elt-row a.cancel-link {
   right: 15px;
-  padding:5px 0 10px 20px;
+  margin:5px 0 10px 20px;
   line-height: 20px;
   display: block;
   color:$linkFuncColor;
   text-decoration:underline;
+  background-color: #f9f9f9;
 }
+
 #conversions .elt-row .elt-ident .form-elt {
   font-size: 12px;
 }
