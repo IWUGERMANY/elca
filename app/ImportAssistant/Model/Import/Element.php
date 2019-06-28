@@ -131,7 +131,8 @@ class Element
         $size,
         $length = 1,
         $width = 1,
-        $areaRatio = 1
+        $areaRatio = 1,
+        $din276Code = null
     ) {
         if ($mappingInfo->hasMultipleMaterialMappings()) {
 

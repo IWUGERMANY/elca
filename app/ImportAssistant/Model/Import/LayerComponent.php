@@ -44,11 +44,12 @@ class LayerComponent extends Component
      * LayerComponent constructor.
      *
      * @param MaterialMapping $materialMapping
-     * @param $layerPosition
-     * @param $layerSize
-     * @param $layerAreaRatio
-     * @param $layerLength
-     * @param $layerWidth
+     * @param                 $layerPosition
+     * @param                 $layerSize
+     * @param                 $layerAreaRatio
+     * @param                 $layerLength
+     * @param                 $layerWidth
+     * @param null            $din276Code
      */
     public function __construct(
         MaterialMapping $materialMapping,
@@ -56,9 +57,10 @@ class LayerComponent extends Component
         $layerSize,
         $layerAreaRatio,
         $layerLength,
-        $layerWidth
+        $layerWidth,
+        $din276Code = null
     ) {
-        parent::__construct($materialMapping);
+        parent::__construct($materialMapping, 1, $din276Code);
 
         $this->layerPosition   = $layerPosition;
         $this->layerSize       = (float)$layerSize;

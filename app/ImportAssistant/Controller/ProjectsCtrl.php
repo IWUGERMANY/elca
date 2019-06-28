@@ -114,8 +114,8 @@ class ProjectsCtrl extends AppCtrl
                 $file = File::fromUpload('importFile', $tmpDir);
 
                 $docRootPath = $config->toDir('docRoot');
-                $xsdPath     = $docRootPath.'docs/EnEV/2017/export.xsd';
-                $importer    = new Importer(new MaterialMappingInfoRepository(), $xsdPath, $processDbId);
+                $xsdPath     = $docRootPath.'docs/EnEV/2017/';
+                $importer    = new ImporterV1(new MaterialMappingInfoRepository(), $xsdPath, $processDbId);
 
                 try {
                     if (!$project = $importer->fromFile($file)) {
