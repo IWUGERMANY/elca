@@ -248,10 +248,16 @@ class ElcaReportElementTypeEffectsView extends ElcaReportsView
                     ];
                 }
 
+                $module = Module::fromValue($item->life_cycle_ident);
+
+                if ($module->isA1A2OrA3()) {
+                    return;
+                }
+
                 if ($item->life_cycle_phase !== ElcaLifeCycle::PHASE_TOTAL &&
                     $item->life_cycle_phase !== ElcaLifeCycle::PHASE_MAINT &&
                     $item->life_cycle_phase !== ElcaLifeCycle::PHASE_REC &&
-                    !$lifeCycleUsages->moduleIsAppliedInConstruction(new Module($item->life_cycle_ident))
+                    !$lifeCycleUsages->moduleIsAppliedInConstruction($module)
                 ) {
                     return;
                 }
