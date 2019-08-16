@@ -178,7 +178,7 @@ class ElcaAccess
     // End hasRole
 
     /**
-     * Current user has beta privileges
+     * Current user has privileges for the given role
      *
      * @param  string $roleIdent
      *
@@ -192,7 +192,17 @@ class ElcaAccess
 
         return RoleMember::isGranted(Role::findByIdent(Elca::ELCA_ROLES, $roleIdent)->getNodeId(), $this->groupId);
     }
-    // End canAccessProject
+
+    public function hasRoles(array $roleIdents)
+    {
+        foreach ($roleIdents as $roleIdent) {
+            if ($this->hasRole($roleIdent)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * Current user can access a project

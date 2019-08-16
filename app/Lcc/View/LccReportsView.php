@@ -42,6 +42,7 @@ use Elca\Db\ElcaBenchmarkVersionSet;
 use Elca\Db\ElcaProjectConstruction;
 use Elca\Db\ElcaProjectVariant;
 use Elca\Db\ElcaProjectVariantAttribute;
+use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\Security\ElcaAccess;
 use Elca\View\helpers\ElcaHtmlFormElementLabel;
@@ -361,7 +362,7 @@ class LccReportsView extends ElcaReportsView
     {
         $access = ElcaAccess::getInstance();
 
-        if (false === ($access->hasAdminPrivileges() || $access->hasRole(LccModule::ROLE))) {
+        if (false === ($access->hasAdminPrivileges() || $access->hasRoles([LccModule::ROLE, Elca::ELCA_ROLE_ORGA]))) {
             return;
         }
 

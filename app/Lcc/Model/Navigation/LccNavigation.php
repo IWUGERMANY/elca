@@ -69,7 +69,7 @@ class LccNavigation implements ElcaNavigationInterface
         $Item = $Navigation->add(t('LCC'));
         $Item->add(t('Vereinfachtes Verfahren'), 'lcc', 'Lcc\Controller\GeneralCtrl');
 
-        if ($this->access->hasAdminPrivileges() || $this->access->hasRole(LccModule::ROLE)) {
+        if ($this->access->hasAdminPrivileges() || $this->access->hasRoles([LccModule::ROLE, Elca::ELCA_ROLE_ORGA])) {
             $Item->add(t('Ausführliches Verfahren'), 'lcc', 'Lcc\Controller\DetailedCtrl');
         }
 
@@ -109,7 +109,7 @@ class LccNavigation implements ElcaNavigationInterface
      */
     public function getElementEditorTabs($context, $elementId)
     {
-        if (false === ($this->access->hasAdminPrivileges() || $this->access->hasRole(LccModule::ROLE))) {
+        if (false === ($this->access->hasAdminPrivileges() || $this->access->hasRoles([LccModule::ROLE, Elca::ELCA_ROLE_ORGA]))) {
             return [];
         }
 
