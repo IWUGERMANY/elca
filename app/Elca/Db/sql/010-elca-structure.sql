@@ -340,6 +340,7 @@ CREATE TABLE elca.process_conversions
  , FOREIGN KEY ("process_config_id") REFERENCES elca.process_configs ("id") ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+CREATE UNIQUE INDEX IX_elca_process_conversions_in_out ON elca.process_conversions ("process_config_id", "in_unit", "out_unit");
 -------------------------------------------------------------------------------
 
 CREATE TABLE elca.process_config_sanities

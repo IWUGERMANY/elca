@@ -120,8 +120,8 @@ class MaterialExportCtrl extends AppCtrl
         $data = ElcaCacheDataObjectSet::findProcessConfigMassByProjectVariantId($projectVariant->getId(),
             ['mass' => 'DESC'])->getArrayCopy();
 
-        $headers = [t('Baustoff'), t('Masse') .' (kg)'];
-        $columns = ['name', 'mass'];
+        $headers = [t('Baustoff'), t('Masse') .' (kg)', t('Volumen') . ' (m³)'];
+        $columns = ['name', 'mass', 'volume'];
 
         $filename = \trim($project->getName() .'-Baustoffe-'. date('YmdHis')).".csv";
 

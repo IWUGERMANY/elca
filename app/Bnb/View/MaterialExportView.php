@@ -77,6 +77,7 @@ class MaterialExportView extends HtmlView
         $table = new HtmlTable('material-data');
         $table->addColumn('name', t('Name'))->addClass('name');
         $table->addColumn('mass', t('Masse'));
+        $table->addColumn('volume', t('Volumen'));
         $head = $table->createTableHead();
         $headRow = $head->addTableRow(new HtmlTableHeadRow());
         $headRow->addClass('table-headlines');
@@ -84,12 +85,14 @@ class MaterialExportView extends HtmlView
         $body = $table->createTableBody();
         $row = $body->addTableRow();
         $row->getColumn('mass')->setOutputElement(new HtmlNumericTextWithUnit('mass', 'kg', null, null, 1));
+        $row->getColumn('volume')->setOutputElement($columnOutputElement = new HtmlNumericTextWithUnit('volume', 'm3', null, null, 2));
+        $columnOutputElement->setNullDisplayValue('-');
 
         $body->setDataSet($data);
 
         $foot = $table->createTableFoot();
         $row = $foot->addTableRow();
-        $row->getColumn('name')->setColSpan(2);
+        $row->getColumn('name')->setColSpan(3);
         $div = $row->getColumn('name')->setOutputElement(new HtmlTag('div'));
         $div->add(new HtmlTag('a', t('Download als CSV'), [
             'href' => $this->downloadUrl, 'class' => 'no-xhr'

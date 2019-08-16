@@ -846,19 +846,19 @@ CREATE OR REPLACE VIEW elca_cache.report_construction_total_effects_v AS
 
 DROP VIEW IF EXISTS elca_cache.project_variant_process_config_mass_v;
 CREATE OR REPLACE VIEW elca_cache.project_variant_process_config_mass_v AS
-  SELECT e.project_variant_id
+SELECT e.project_variant_id
+     , c.process_config_id
+     , p.name
+     , sum(cec.mass) AS mass
+     , sum(CASE WHEN pc.factor IS NOT NULL THEN cec.mass / pc.factor ELSE null END) AS volume
+FROM elca_cache.element_components cec
+         JOIN elca.element_components c ON c.id = cec.element_component_id
+         JOIN elca.elements e ON e.id = c.element_id
+         JOIN elca.process_configs p ON p.id = c.process_config_id
+         LEFT JOIN elca.process_conversions pc ON p.id = pc.process_config_id AND (pc.in_unit, pc.out_unit) = ('m3', 'kg')
+GROUP BY e.project_variant_id
        , c.process_config_id
-       , p.name
-       , sum(cec.mass) AS mass
-    FROM elca_cache.element_components cec
-     JOIN elca.element_components c ON c.id = cec.element_component_id
-     JOIN elca.elements e ON e.id = c.element_id
-     JOIN elca.process_configs p ON p.id = c.process_config_id
- GROUP BY e.project_variant_id
-        , c.process_config_id
-        , p.name;
-
-
+       , p.name;
 
 DROP VIEW IF EXISTS elca_cache.report_compare_total_and_life_cycle_effects_v;
 CREATE VIEW elca_cache.report_compare_total_and_life_cycle_effects_v AS

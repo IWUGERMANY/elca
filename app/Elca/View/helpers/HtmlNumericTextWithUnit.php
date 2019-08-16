@@ -12,15 +12,16 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * eLCA is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with eLCA. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace Elca\View\helpers;
 
 use Beibob\Blibs\DbObject;
@@ -34,7 +35,7 @@ use Elca\ElcaNumberFormat;
  * Numeric input text element
  *
  * @package elca
- * @author Tobias Lode <tobias@beibob.de>
+ * @author  Tobias Lode <tobias@beibob.de>
  *
  */
 class HtmlNumericTextWithUnit extends HtmlText
@@ -44,29 +45,43 @@ class HtmlNumericTextWithUnit extends HtmlText
      */
     private $unit;
 
+    private $nullDisplayValue;
+
     /**
      * Creates a text element
      *
-     * @param string    $name
+     * @param string $name
      * @param string $unit
      * @param Converter $DefaultConverter
-     * @param DbObject  $DataObject
-     * @param null      $precision
-     * @param bool      $isPercentage
-     * @param string    $decPoint
-     * @param bool      $inScientific
+     * @param DbObject $DataObject
+     * @param null $precision
+     * @param bool $isPercentage
+     * @param string $decPoint
+     * @param bool $inScientific
      */
-    public function __construct($name, $unit, Converter $DefaultConverter = null, DbObject $DataObject = null, $precision = null, $isPercentage = false, $decPoint = ',', $inScientific = false)
-    {
-        if(is_null($DefaultConverter))
+    public function __construct(
+        $name,
+        $unit,
+        Converter $DefaultConverter = null,
+        DbObject $DataObject = null,
+        $precision = null,
+        $isPercentage = false,
+        $decPoint = ',',
+        $inScientific = false
+    ) {
+        if (is_null($DefaultConverter)) {
             $DefaultConverter = new ElcaNumberFormatConverter($precision, $isPercentage, $decPoint, $inScientific);
+        }
 
         $this->unit = $unit;
 
         parent::__construct($name, $DefaultConverter, $DataObject);
     }
-    // End __construct
 
+    public function setNullDisplayValue(?string $nullDisplayValue): void
+    {
+        $this->nullDisplayValue = $nullDisplayValue;
+    }
 
     /**
      * Builds this element
@@ -77,13 +92,21 @@ class HtmlNumericTextWithUnit extends HtmlText
     public function build(DOMDocument $Document)
     {
         $factory = HtmlDOMFactory::factory($Document);
-        $span = $factory->getSpan();
+        $span    = $factory->getSpan();
 
-        $span->appendChild($factory->getSpan($this->getConvertedTextValue(), ['class' => 'value']));
+        $convertedTextValue = $this->getConvertedTextValue();
+
+        if (empty($convertedTextValue)) {
+            $convertedTextValue = $this->nullDisplayValue;
+        }
+
+        $span->appendChild($factory->getSpan($convertedTextValue, ['class' => 'value']));
 
         if ($this->unit) {
             $span->appendChild($factory->getText(' '));
-            $span->appendChild($factory->getSpan(t(ElcaNumberFormat::formatUnit($this->unit)), ['class' => 'unit']));
+            $span->appendChild(
+                $factory->getSpan(t(ElcaNumberFormat::formatUnit($this->unit)), ['class' => 'unit'])
+            );
         }
 
         $this->buildAndSetAttributes($span);
