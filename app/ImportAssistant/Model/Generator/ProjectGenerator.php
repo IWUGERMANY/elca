@@ -125,7 +125,6 @@ class ProjectGenerator
             }
         );
 
-
         return $elcaProject;
     }
 

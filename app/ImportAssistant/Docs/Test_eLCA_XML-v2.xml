@@ -36,21 +36,50 @@
                     <propertySize/>
                 </construction>
                 <elements>
-                    <element uuid="9E8BD1E4-A170-4F94-9857-DEFBA4D3F0D2" din276Code="330" quantity="63.0" refUnit="m2">
+                    <element uuid="9E8BD1E4-A170-4F94-9857-DEFBA4D3F0D2" din276Code="340" quantity="63.0" refUnit="m2">
                         <elementInfo>
                             <name>Außenwand Nord</name>
                             <description>Außenwand</description>
                         </elementInfo>
                         <layerComponents>
                             <component isLayer="true" processConfigName="Innenputz" layerPosition="1" layerSize="0.0100"
-                                       layerAreaRatio="1" layerLength="1" layerWidth="1"/>
+                                       layerAreaRatio="1" layerLength="1" layerWidth="1" din276Code="346"/>
                             <siblings>
                                 <component isLayer="true" processConfigName="Kalksandstein DIN 106/1+2 1,4"
                                            layerPosition="2" layerSize="0.2400" layerAreaRatio="0.8" layerLength="1"
-                                           layerWidth="1"/>
+                                           layerWidth="1" din276Code="341"/>
                                 <component isLayer="true" processConfigName="Mineralwolle (MW) 032 nach DIN EN 13162"
                                            layerPosition="2" layerSize="0.1200" layerAreaRatio="0.2" layerLength="1"
-                                           layerWidth="1"/>
+                                           layerWidth="1" din276Code="341"/>
+                            </siblings>
+                            <component isLayer="true" processConfigName="Beton armiert 1% Stahl" layerPosition="3"
+                                       layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1" din276Code="342"/>
+                        </layerComponents>
+                        <miscComponents>
+                            <component isLayer="false" processConfigName="Nägel" quantity="10" refUnit="kg"/>
+                        </miscComponents>
+                        <attributes>
+                            <attr ident="elca.uValue">
+                                <caption><![CDATA[U-Wert]]></caption>
+                                <numericValue>0.23</numericValue>
+                            </attr>
+                        </attributes>
+                    </element>
+                    <element uuid="9E8BD1E4-A170-4F94-9857-DEFBA4D3F0D3" din276Code="330" quantity="63.0" refUnit="m2">
+                        <elementInfo>
+                            <name>Außenwand West</name>
+                            <description>Außenwand</description>
+                        </elementInfo>
+                        <layerComponents>
+                            <component isLayer="true" processConfigName="Innenputz" layerPosition="2" layerSize="0.0100"
+                                       layerAreaRatio="1" layerLength="1" layerWidth="1" din276Code="331"/>
+                            <siblings>
+                                <component isLayer="true" processConfigName="Kalksandstein DIN 106/1+2 1,4"
+                                           layerPosition="1" layerSize="0.2400" layerAreaRatio="0.8" layerLength="1"
+                                           layerWidth="1" din276Code="331"/>
+                                <component isLayer="true" processConfigName="Mineralwolle (MW) 032 nach DIN EN 13162"
+                                           layerPosition="1" layerSize="0.1200" layerAreaRatio="0.2" layerLength="1"
+                                           layerWidth="1" din276Code="331"/>
                             </siblings>
                             <component isLayer="true" processConfigName="Beton armiert 1% Stahl" layerPosition="3"
                                        layerSize="0.0100" layerAreaRatio="1" layerLength="1" layerWidth="1"/>
@@ -65,16 +94,16 @@
                             </attr>
                         </attributes>
                     </element>
-                    <element uuid="9E8BD1E4-A170-4F94-9857-DEFBA4D3F0D3" din276Code="420" quantity="63.0" refUnit="m2">
+                    <element uuid="9E8BD1E4-A170-4F94-9857-DEFBA4D3F0D4" din276Code="420" quantity="63.0" refUnit="m2">
                         <elementInfo>
                             <name>Anlage 1</name>
                             <description>Testanlage</description>
                         </elementInfo>
                         <layerComponents />
                         <miscComponents>
-                            <component isLayer="false" processConfigName="Innenputz" quantity="10" refUnit="kg"/>
+                            <component isLayer="false" processConfigName="Innenputz" quantity="10" refUnit="kg" din276Code="422"/>
                             <component isLayer="false" processConfigName="Mehrschichtplatte m. Mineralfaser 040"
-                                       quantity="10" refUnit="m2"/>
+                                       quantity="10" refUnit="m2" din276Code="421"/>
                         </miscComponents>
                         <attributes>
                             <attr ident="elca.uValue">

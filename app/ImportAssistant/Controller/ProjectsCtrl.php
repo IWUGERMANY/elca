@@ -115,7 +115,7 @@ class ProjectsCtrl extends AppCtrl
 
                 $docRootPath = $config->toDir('docRoot');
                 $xsdPath     = $docRootPath.'docs/EnEV/2017/';
-                $importer    = new ImporterV1(new MaterialMappingInfoRepository(), $xsdPath, $processDbId);
+                $importer    = new Importer(new MaterialMappingInfoRepository(), $xsdPath, $processDbId);
 
                 try {
                     if (!$project = $importer->fromFile($file)) {

@@ -1,8 +1,6 @@
 <?php
-namespace ImportAssistant\Model;
+namespace ImportAssistant\Model\SchemaImporter;
 
-use Elca\Db\ElcaProcessConfig;
-use ImportAssistant\Model\Import\Attribute;
 use ImportAssistant\Model\Import\Component;
 use ImportAssistant\Model\Import\Element;
 use ImportAssistant\Model\Import\FinalEnergyDemand;
@@ -12,30 +10,33 @@ use ImportAssistant\Model\Import\Project;
 use ImportAssistant\Model\Import\ProjectVariant;
 use ImportAssistant\Model\Import\RefModel;
 use ImportAssistant\Model\Import\SingleComponent;
-use ImportAssistant\Model\MaterialMapping\MaterialMapping;
-use ImportAssistant\Model\MaterialMapping\MaterialMappingInfo;
+use ImportAssistant\Model\ImportException;
 use Ramsey\Uuid\Uuid;
 
-class SchemaImporterV1
+class SchemaImporterV2 extends AbstractSchemaImporter
 {
-    /**
-     * @param \DOMElement $domElement
-     * @return Project
-     */
-    private function importProjectNode(\DOMElement $domElement)
+    const SCHEMA = 'export-v2.xsd';
+    const SCHEMA_VERSION = 2;
+
+    public function importProjectNode(array $materialMappingInfos, $processDbId): Project
     {
-        $node = $this->getNode('x:projectInfo', $domElement);
+        $this->setMaterialMappingInfos($materialMappingInfos);
+        $this->setProcessDbId($processDbId);
+
+        $projectNode = $this->xPath->query('/x:elca/x:project')->item(0);
+
+        $node = $this->getNode('x:projectInfo', $projectNode);
         $dto  = $this->getObjectProperties($node, ['name', 'description', 'projectNr']);
 
         if (empty($dto->name)) {
             throw ImportException::projectNameIsInvalid();
         }
 
-        $variants   = $this->importVariantNodes($domElement);
-        $attributes = $this->getAttributes($domElement);
+        $variants   = $this->importVariantNodes($projectNode);
+        $attributes = $this->getAttributes($projectNode);
 
         return new Project(
-            $this->processDbId,
+            $processDbId,
             $dto->name,
             $variants,
             $attributes,
@@ -43,6 +44,17 @@ class SchemaImporterV1
             $dto->projectNr ?: null
         );
     }
+
+    public function schema(): string
+    {
+        return self::SCHEMA;
+    }
+
+    public function schemaVersion(): int
+    {
+        return self::SCHEMA_VERSION;
+    }
+
 
     /**
      * @param \DOMElement $domElement
@@ -121,12 +133,8 @@ class SchemaImporterV1
         return $variants;
     }
 
-    /**
-     * @param \DOMElement $elementNode
-     * @return Element
-     */
-    private function importElementNode(\DOMElement $elementNode)
-    {
+
+    protected function importElementNode(\DOMElement $elementNode) {
         $uuid     = $this->getAttribute($elementNode, 'uuid', (string)Uuid::uuid4(), true);
         $dinCode  = $this->getAttribute($elementNode, 'din276Code');
         $quantity = $this->getAttribute($elementNode, 'quantity', 1);
@@ -150,17 +158,22 @@ class SchemaImporterV1
             $dto->description
         );
 
-        $componentNodes = $this->getList('x:components/x:component', $elementNode, true);
+        $componentNodes = $this->getList('x:layerComponents/x:component', $elementNode, true);
         foreach ($componentNodes as $componentNode) {
             $this->importComponent($componentNode, $element);
         }
 
-        $componentNodes = $this->getList('x:components/x:siblings/x:component', $elementNode, true);
+        $componentNodes = $this->getList('x:layerComponents/x:siblings/x:component', $elementNode, true);
         if ($componentNodes && $componentNodes->length % 2 == 0) {
             for ($index = 0; $index < $componentNodes->length; $index += 2) {
 
                 $this->importLayerSiblings($componentNodes->item($index), $componentNodes->item($index + 1), $element);
             }
+        }
+
+        $componentNodes = $this->getList('x:miscComponents/x:component', $elementNode, true);
+        foreach ($componentNodes as $componentNode) {
+            $this->importComponent($componentNode, $element);
         }
 
         $attributes = $this->getAttributes($elementNode);
@@ -191,7 +204,8 @@ class SchemaImporterV1
                 $this->roundOrDefault($dto->layerSize, 4),
                 $this->roundOrDefault($dto->layerLength, 2, 1),
                 $this->roundOrDefault($dto->layerWidth, 2, 1),
-                $this->roundOrDefault($dto->layerAreaRatio, 3, 1)
+                $this->roundOrDefault($dto->layerAreaRatio, 3, 1),
+                $dto->din276Code
             );
         } else {
             $element->addSingleComponent(
@@ -222,7 +236,8 @@ class SchemaImporterV1
             $this->roundOrDefault($dto1->layerWidth, 2),
             $this->roundOrDefault($dto2->layerWidth, 2),
             $this->roundOrDefault($dto1->layerAreaRatio, 3),
-            $this->roundOrDefault($dto2->layerAreaRatio, 3)
+            $this->roundOrDefault($dto2->layerAreaRatio, 3),
+            $dto1->din276Code ?? $dto2->din276Code
         );
     }
 
@@ -249,35 +264,6 @@ class SchemaImporterV1
         );
 
         return $dto;
-    }
-
-    /**
-     * @param $processConfigName
-     * @return MaterialMappingInfo
-     */
-    private function getMaterialMappingInfo($processConfigName): MaterialMappingInfo
-    {
-        $processConfigNameCI = \utf8_strtolower($processConfigName);
-        if (isset($this->materialMappingInfos[$processConfigNameCI])) {
-            return $this->materialMappingInfos[$processConfigNameCI];
-        }
-
-        if ($this->processDbId) {
-            $processConfig = ElcaProcessConfig::findCaseInsensitiveByProcessNameAndProcessDbId($processConfigName, $this->processDbId);
-
-            $units = array_keys($processConfig->getRequiredUnits());
-
-            return new MaterialMappingInfo(
-                $processConfigName,
-                $this->processDbId,
-                [new MaterialMapping($processConfigName, $processConfig->getId(), null, $processConfigName, $units)]
-            );
-        }
-
-        return new MaterialMappingInfo(
-            $processConfigName,
-            $this->processDbId
-        );
     }
 
     /**
@@ -327,35 +313,5 @@ class SchemaImporterV1
             $ident,
             $dto->heating, $dto->water, $dto->lighting, $dto->ventilation, $dto->cooling
         );
-    }
-
-    /**
-     * @param \DOMElement $domElement
-     * @return array
-     */
-    private function getAttributes(\DOMElement $domElement): array
-    {
-        $attributes = [];
-
-        $attributeNodes = $this->getList('x:attributes/x:attr', $domElement, true);
-        foreach ($attributeNodes as $AttrNode) {
-            if (!$ident = $this->getAttribute($AttrNode, 'ident')) {
-                continue;
-            }
-
-            $attrDto      = $this->getObjectProperties($AttrNode, ['caption', 'numericValue', 'textValue']);
-            $attributes[] = new Attribute($ident, $attrDto->caption, $attrDto->numericValue, $attrDto->textValue);
-        }
-
-        return $attributes;
-    }
-
-    private function roundOrDefault($value, $precision, $defaultValue = null)
-    {
-        if (null === $value || '' === $value) {
-            return $defaultValue;
-        }
-
-        return round($value, $precision);
     }
 }
