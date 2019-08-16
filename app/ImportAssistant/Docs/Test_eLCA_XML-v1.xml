@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<elca xmlns="https://www.bauteileditor.de/EnEV/2017" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.bauteileditor.de/EnEV/2017 https://www.bauteileditor.de/docs/EnEV/2017/export.xsd">
+<elca schemaVersion="1" xmlns="https://www.bauteileditor.de/EnEV/2017" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://www.bauteileditor.de/EnEV/2017 https://www.bauteileditor.de/docs/EnEV/2017/export.xsd">
   <project>
     <projectInfo>
       <name>Test eLCA</name>

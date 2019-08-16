@@ -23,15 +23,14 @@
   ~
   -->
 <xs:schema xmlns="https://www.bauteileditor.de/EnEV/2017" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           targetNamespace="https://www.bauteileditor.de/EnEV/2017"
-           elementFormDefault="qualified">
+           targetNamespace="https://www.bauteileditor.de/EnEV/2017" elementFormDefault="qualified">
 
     <xs:element name="elca">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="project" type="projectType" />
+                <xs:element name="project" type="projectType"/>
             </xs:sequence>
-            <xs:attribute name="schemaVersion" type="xs:integer" fixed="1"/>
+            <xs:attribute name="schemaVersion" type="xs:integer" use="required" fixed="2"/>
         </xs:complexType>
     </xs:element>
 
@@ -51,22 +50,7 @@
                 </xs:complexType>
             </xs:element>
 
-            <xs:element name="attributes" minOccurs="0" maxOccurs="1">
-                <xs:complexType mixed="true">
-                    <xs:sequence>
-                        <xs:element name="attr" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element type="xs:string" name="caption"/>
-                                    <xs:element type="floatNullable" name="numericValue" minOccurs="0"/>
-                                    <xs:element type="xs:string" name="textValue" minOccurs="0"/>
-                                </xs:sequence>
-                                <xs:attribute type="xs:string" name="ident"/>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
+            <xs:element name="attributes" type="captionAttributeType" minOccurs="0" maxOccurs="1" />
 
             <xs:element name="projectVariants">
                 <xs:complexType>
@@ -196,7 +180,6 @@
     <!-- BEGIN element -->
     <xs:complexType name="elementType">
         <xs:sequence>
-
             <xs:element name="elementInfo">
                 <xs:complexType>
                     <xs:sequence>
@@ -206,32 +189,24 @@
                 </xs:complexType>
             </xs:element>
 
-            <xs:element name="components">
+            <xs:element name="layerComponents" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:choice maxOccurs="unbounded" minOccurs="0">
-                        <xs:element name="component" type="componentType"/>
+                        <xs:element name="component" type="layerComponentType"/>
                         <xs:element name="siblings" type="siblingsType"/>
                     </xs:choice>
                 </xs:complexType>
             </xs:element>
 
-            <xs:element name="attributes" minOccurs="0" maxOccurs="1">
-                <xs:complexType mixed="true">
-                    <xs:sequence>
-                        <xs:element name="attr" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element type="xs:string" name="caption"/>
-                                    <xs:element type="floatNullable" name="numericValue" minOccurs="0"/>
-                                    <xs:element type="xs:string" name="textValue" minOccurs="0"/>
-                                </xs:sequence>
-                                <xs:attribute type="xs:string" name="ident"/>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
+            <xs:element name="miscComponents" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:choice maxOccurs="unbounded" minOccurs="0">
+                        <xs:element name="component" type="miscComponentType"/>
+                    </xs:choice>
                 </xs:complexType>
             </xs:element>
 
+            <xs:element name="attributes" type="captionAttributeType" minOccurs="0" maxOccurs="1" />
         </xs:sequence>
         <xs:attribute type="xs:string" name="uuid" use="optional"/>
         <xs:attribute type="xs:string" name="din276Code" use="optional"/>
@@ -243,51 +218,77 @@
     <!-- BEGIN siblings -->
     <xs:complexType name="siblingsType">
         <xs:sequence>
-            <xs:element name="component" type="componentType" minOccurs="2" maxOccurs="2"/>
+            <xs:element name="component" type="layerComponentType" minOccurs="2" maxOccurs="2"/>
         </xs:sequence>
     </xs:complexType>
     <!-- END siblings -->
 
     <!-- BEGIN component -->
-    <xs:complexType name="componentType">
+    <xs:complexType name="componentType" abstract="true">
         <xs:sequence>
-            <xs:element name="attributes" minOccurs="0" maxOccurs="1">
-                <xs:complexType mixed="true">
+            <xs:element name="attributes" type="simpleAttributeType" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+
+        <xs:attribute type="xs:boolean" name="isLayer" use="required"/>
+        <xs:attribute type="xs:string" name="processConfigName" use="required"/>
+        <xs:attribute type="xs:integer" name="lifeTime"/>
+        <xs:attribute type="xs:integer" name="lifeTimeDelay"/>
+        <xs:attribute type="xs:boolean" name="isExtant"/>
+        <xs:attribute type="xs:integer" name="din276Code"/>
+    </xs:complexType>
+
+    <xs:complexType name="layerComponentType">
+        <xs:complexContent>
+            <xs:extension base="componentType">
+                <xs:attribute type="xs:integer" name="layerPosition" use="required"/>
+                <xs:attribute type="xs:float" name="layerSize" use="required"/>
+                <xs:attribute type="xs:float" name="layerAreaRatio" default="1"/>
+                <xs:attribute type="xs:float" name="layerLength" default="1"/>
+                <xs:attribute type="xs:float" name="layerWidth" default="1"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="miscComponentType">
+        <xs:complexContent>
+            <xs:extension base="componentType">
+                <xs:attribute type="xs:float" name="quantity" use="required"/>
+                <xs:attribute type="xs:string" name="refUnit" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- END component -->
+
+    <!-- BEGIN attribute type -->
+    <xs:complexType name="captionAttributeType" mixed="true">
+        <xs:sequence>
+            <xs:element name="attr" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="attr" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element type="floatNullable" name="numericValue" minOccurs="0"/>
-                                    <xs:element type="xs:string" name="textValue" minOccurs="0"/>
-                                </xs:sequence>
-                                <xs:attribute type="xs:string" name="ident"/>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element type="xs:string" name="caption"/>
+                        <xs:element type="floatNullable" name="numericValue" minOccurs="0"/>
+                        <xs:element type="xs:string" name="textValue" minOccurs="0"/>
                     </xs:sequence>
+                    <xs:attribute type="xs:string" name="ident"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
-
-        <!-- common attributes -->
-        <xs:attribute type="xs:boolean" name="isLayer"/>
-        <xs:attribute type="xs:string" name="processConfigName"/>
-        <xs:attribute type="xs:integer" name="lifeTime"/>
-        <xs:attribute type="xs:integer" name="lifeTimeDelay" use="optional"/>
-        <xs:attribute type="xs:boolean" name="isExtant" use="optional"/>
-
-        <!-- attributes in case isLayer=true -->
-        <xs:attribute type="xs:integer" name="layerPosition" use="optional"/>
-        <xs:attribute type="xs:float" name="layerSize" use="optional"/>
-        <xs:attribute type="xs:float" name="layerAreaRatio" use="optional"/>
-        <xs:attribute type="xs:float" name="layerLength" use="optional"/>
-        <xs:attribute type="xs:float" name="layerWidth" use="optional"/>
-
-        <!-- attributes in case isLayer=false -->
-        <xs:attribute type="xs:integer" name="din276Code" use="optional"/>
-        <xs:attribute type="xs:float" name="quantity" use="optional"/>
-        <xs:attribute type="xs:string" name="refUnit" use="optional"/>
     </xs:complexType>
-    <!-- END component -->
+
+    <xs:complexType name="simpleAttributeType" mixed="true">
+        <xs:sequence>
+            <xs:element name="attr" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element type="floatNullable" name="numericValue" minOccurs="0"/>
+                        <xs:element type="xs:string" name="textValue" minOccurs="0"/>
+                    </xs:sequence>
+                    <xs:attribute type="xs:string" name="ident"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- END attribute type -->
 
     <!-- BEGIN floatNullable -->
     <xs:simpleType name="floatNullable">

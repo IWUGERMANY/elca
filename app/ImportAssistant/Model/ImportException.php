@@ -53,6 +53,12 @@ class ImportException extends AbstractException
      */
     const DOCUMENT_VALIDATION_FAILED = 'Document validation (:schema:) failed';
 
+    /**
+     * @translate const ImportAssistant\Model\ImportException::UNKNOWN_SCHEMA_VERSION
+     */
+    const UNKNOWN_SCHEMA_VERSION = 'Unknown schema version';
+
+
     public static function projectNameIsInvalid()
     {
         return new self(self::PROJECT_NAME_IS_EMPTY);
@@ -67,6 +73,12 @@ class ImportException extends AbstractException
     {
         return new self(self::DOCUMENT_VALIDATION_FAILED, [':schema:' => $schemaName]);
     }
+
+    public static function unknownSchemaVersion()
+    {
+        return new self(self::UNKNOWN_SCHEMA_VERSION);
+    }
+
 
     public static function pathNotFound(string $xpath, string $context = null)
     {

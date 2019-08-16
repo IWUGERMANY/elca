@@ -131,7 +131,8 @@ class Element
         $size,
         $length = 1,
         $width = 1,
-        $areaRatio = 1
+        $areaRatio = 1,
+        $din276Code = null
     ) {
         if ($mappingInfo->hasMultipleMaterialMappings()) {
 
@@ -150,7 +151,8 @@ class Element
                         $size,
                         $firstMapping->ratio(),
                         $length,
-                        $width
+                        $width,
+                        $din276Code
                     )
                 );
 
@@ -163,7 +165,8 @@ class Element
                         $size,
                         $secondMapping->ratio(),
                         $length,
-                        $width
+                        $width,
+                        $din276Code
                     )
                 );
 
@@ -182,7 +185,8 @@ class Element
                             $size,
                             $areaRatio,
                             $length,
-                            $width
+                            $width,
+                            $din276Code
                         )
                     );
                 }
@@ -200,7 +204,8 @@ class Element
                     $size,
                     $areaRatio,
                     $length,
-                    $width
+                    $width,
+                    $din276Code
                 )
             );
         }
@@ -230,7 +235,8 @@ class Element
         $width1,
         $width2,
         $ratio1,
-        $ratio2
+        $ratio2,
+        $din276Code = null
     ) {
 
         $materialMapping1 = $mappingInfo1->firstMaterialMapping();
@@ -247,7 +253,8 @@ class Element
                 $size1,
                 $ratio1,
                 $length1,
-                $width1
+                $width1,
+                $din276Code
             )
         );
 
@@ -260,7 +267,8 @@ class Element
                 $size2,
                 $ratio2,
                 $length2,
-                $width2
+                $width2,
+                $din276Code
             )
         );
 
@@ -330,6 +338,8 @@ class Element
      */
     public function layerComponents(): array
     {
+        $this->sortLayers();
+
         return $this->layerComponents;
     }
 
@@ -338,6 +348,12 @@ class Element
      */
     public function singleComponents(): array
     {
+        usort(
+            $this->singleComponents,
+            function (Component $a, Component $b) {
+                return $a->dinCode() <=> $b->dinCode();
+            }
+        );
         return $this->singleComponents;
     }
 
@@ -386,8 +402,6 @@ class Element
      */
     public function allComponents(): array
     {
-        $this->sortLayers();
-
         $iterator = new \AppendIterator();
         $iterator->append(new \ArrayIterator($this->layerComponents()));
         $iterator->append(new \ArrayIterator($this->singleComponents()));

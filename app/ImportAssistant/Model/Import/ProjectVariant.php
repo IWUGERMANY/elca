@@ -180,6 +180,13 @@ class ProjectVariant
      */
     public function elements()
     {
+        usort(
+            $this->elements,
+            function (Element $a, Element $b) {
+                return $a->dinCode() <=> $b->dinCode();
+            }
+        );
+
         return $this->elements;
     }
 
