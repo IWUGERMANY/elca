@@ -71,10 +71,71 @@ class ProjectElementService
 
     public function copyElementFrom(
         ElcaElement $element, $ownerId = null, $projectVariantId = null, $accessGroupId = null, $copyName = false,
-        $copyCacheItems = false, $compositeElementId = null, $compositePosition = null
-    ) {
+        $copyCacheItems = false, $compositeElementId = null, $compositePosition = null)
+    {
         return $this->elementService->copyElementFrom($element, $ownerId, $projectVariantId, $accessGroupId, $copyName,
             $copyCacheItems, $compositeElementId, $compositePosition);
+    }
+
+    public function deleteElement(ElcaElement $element, $recursive = false): bool
+    {
+        if (!$element->isInitialized()) {
+            return false;
+        }
+
+        $projectVariantId = $element->getProjectVariantId();
+        $elementTypeNodeIds = [];
+        $compositeElement = null;
+        $oldOpaqueArea = null;
+
+        /**
+         * Store all element type nodeIds to update type tree after deletion
+         */
+        if ($element->isComposite()) {
+            if ($recursive) {
+                foreach ($element->getCompositeElements() as $assignment)
+                    $elementTypeNodeIds[] = $assignment->getElement()->getElementTypeNodeId();
+            }
+        } else {
+            $compositeElement = $element->hasCompositeElement()
+                ? $element->getCompositeElements()->offsetGet(0)->getCompositeElement()
+                : null;
+
+            if ($compositeElement && !$element->isComposite()) {
+                $oldOpaqueArea = $compositeElement->getOpaqueArea();
+            }
+
+            $elementTypeNodeIds[] = $element->getElementTypeNodeId();
+        }
+
+        $this->elementService->deleteElement($element, $recursive);
+
+        /**
+         * Update area of opaque elements
+         */
+        if (null !== $oldOpaqueArea &&
+           !$element->isComposite() &&
+           null !== $compositeElement) {
+            $this->updateAffectedOpaqueElements($compositeElement, $oldOpaqueArea);
+        }
+
+        /**
+         * Update the element type cache hierarchy
+         */
+        if (null !== $compositeElement && $compositeElement->isInitialized()) {
+            $this->lcaProcessor
+                ->computeElement($compositeElement)
+                ->updateCache($compositeElement->getProjectVariant()->getProjectId());
+        }
+
+        /**
+         * Update type tree for all associated elementTypeNodeIds
+         */
+        foreach ($elementTypeNodeIds as $elementTypeNodeId) {
+            $this->lcaProcessor->updateElementTypeTree($projectVariantId, $elementTypeNodeId);
+        }
+
+        return true;
     }
 
     public function addToCompositeElement(ElcaElement $compositeElement, ElcaElement $element, $position = null): bool
@@ -132,6 +193,7 @@ class ProjectElementService
 
         return true;
     }
+
 
     public function removeFromCompositeElement(ElcaElement $compositeElement, $position, ElcaElement $element, $deleteElement = false)
     {
@@ -211,18 +273,18 @@ class ProjectElementService
         return $affectedElements;
     }
 
-    public function updateQuantityOfAffectedElements(ElcaElement $CompositeElement, $oldQuantity)
+    public function updateQuantityOfAffectedElements(ElcaElement $compositeElement, $oldQuantity)
     {
         $affectedElements = new DataObjectSet();
 
-        $newQuantity = $CompositeElement->getQuantity();
-        $refUnit = $CompositeElement->getRefUnit();
+        $newQuantity = $compositeElement->getQuantity();
+        $refUnit = $compositeElement->getRefUnit();
 
         if ($oldQuantity === $newQuantity) {
             return $affectedElements;
         }
 
-        foreach ($CompositeElement->getCompositeElements() as $Assignment) {
+        foreach ($compositeElement->getCompositeElements() as $Assignment) {
             $element = $Assignment->getElement();
 
             if ($element->getRefUnit() != $refUnit ||

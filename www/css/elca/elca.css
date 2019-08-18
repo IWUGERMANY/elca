@@ -1528,28 +1528,32 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #content.project-benchmarks .form-section .form-elt { display: inline-block; width: 40px; }
 
-#content.replace-elements form { width: 750px; }
-#content.replace-elements .form-section.din276 { width: 400px; }
-#content.replace-elements .element-image { float: right; width: 160px; }
-#content.replace-elements .ElcaHtmlTemplateElementSelectorLink-section .form-elt { background-color: #fafafa; padding: 5px 15px; border-bottom: 1px solid #f0f0f0; }
-#content.replace-elements .ElcaHtmlTemplateElementSelectorLink-section .form-elt:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
-#content.replace-elements .ElcaHtmlTemplateElementSelectorLink-section a { color: #004f80; }
-#content.replace-elements .ElcaHtmlTemplateElementSelectorLink-section.error a { color: #ff0000; }
-#content.replace-elements h5 { font-weight: normal; border-bottom: none; }
-#content.replace-elements .column { position: absolute; top: 0; color: #666; }
-#content.replace-elements .matching-elements { position: relative; }
-#content.replace-elements .matching-elements h5 { position: absolute; top: 18px; left: 505px; }
-#content.replace-elements .matching-elements ul.composite-elements { width: 750px; }
-#content.replace-elements .matching-elements ul.composite-elements > li.composite-element { position: relative; color: #666; line-height: 24px; background-color: #f9f9f9; padding: 3px 15px; border-bottom: 1px solid #e5e5e5; margin-bottom: 3px; }
-#content.replace-elements .matching-elements ul.composite-elements > li.composite-element a { color: #004f80; }
-#content.replace-elements .matching-elements ul.composite-elements > li.composite-element .column.quantity { left: 450px; text-align: right; display: inline-block; width: 70px; }
-#content.replace-elements .matching-elements ul.composite-elements > li.composite-element .column.ref-unit { left: 525px; text-align: left; display: inline-block; width: 70px; }
-#content.replace-elements .matching-elements ul.composite-elements > li.composite-element ul.elements > li.element { position: relative; }
-#content.replace-elements .matching-elements ul.composite-elements > li.composite-element ul.elements > li.element .column.quantity { left: 435px; }
-#content.replace-elements .matching-elements ul.composite-elements > li.composite-element ul.elements > li.element .column.ref-unit { left: 510px; }
-#content.replace-elements .matching-elements ul.composite-elements > li.composite-element .element-name { line-height: 24px; margin-left: 45px; }
-#content.replace-elements .matching-elements ul.composite-elements > li.composite-element span.element-name { color: #666; }
-#content.replace-elements .matching-elements ul.composite-elements > li.composite-element .column.check { top: 3px; left: 15px; line-height: 24px; }
+#content.replace-components form, #content.replace-elements form { width: 750px; }
+#content.replace-components .form-section.din276, #content.replace-elements .form-section.din276 { width: 400px; }
+#content.replace-components .element-image, #content.replace-elements .element-image { float: right; width: 160px; }
+#content.replace-components .ElcaHtmlTemplateElementSelectorLink-section .form-elt, #content.replace-elements .ElcaHtmlTemplateElementSelectorLink-section .form-elt { background-color: #fafafa; padding: 5px 15px; border-bottom: 1px solid #f0f0f0; }
+#content.replace-components .ElcaHtmlTemplateElementSelectorLink-section .form-elt:after, #content.replace-elements .ElcaHtmlTemplateElementSelectorLink-section .form-elt:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+#content.replace-components .ElcaHtmlTemplateElementSelectorLink-section a, #content.replace-elements .ElcaHtmlTemplateElementSelectorLink-section a { color: #004f80; }
+#content.replace-components .ElcaHtmlTemplateElementSelectorLink-section.error a, #content.replace-elements .ElcaHtmlTemplateElementSelectorLink-section.error a { color: #ff0000; }
+#content.replace-components h5, #content.replace-elements h5 { font-weight: normal; border-bottom: none; }
+#content.replace-components .column, #content.replace-elements .column { position: absolute; top: 0; color: #666; }
+#content.replace-components .matching-elements, #content.replace-elements .matching-elements { position: relative; }
+#content.replace-components .matching-elements h5, #content.replace-elements .matching-elements h5 { position: absolute; top: 18px; left: 505px; }
+#content.replace-components .matching-elements ul.composite-elements, #content.replace-elements .matching-elements ul.composite-elements { width: 750px; }
+#content.replace-components .matching-elements ul.composite-elements > li.composite-element, #content.replace-elements .matching-elements ul.composite-elements > li.composite-element { color: #666; line-height: 24px; background-color: #f9f9f9; padding: 3px 15px; border-bottom: 1px solid #e5e5e5; margin-bottom: 3px; }
+#content.replace-components ul.composite-elements > li.composite-element, #content.replace-elements ul.composite-elements > li.composite-element { position: relative; }
+#content.replace-components ul.composite-elements > li.composite-element a, #content.replace-elements ul.composite-elements > li.composite-element a { color: #004f80; }
+#content.replace-components ul.composite-elements > li.composite-element .column.quantity, #content.replace-elements ul.composite-elements > li.composite-element .column.quantity { left: 450px; text-align: right; display: inline-block; width: 70px; }
+#content.replace-components ul.composite-elements > li.composite-element .column.ref-unit, #content.replace-elements ul.composite-elements > li.composite-element .column.ref-unit { left: 525px; text-align: left; display: inline-block; width: 70px; }
+#content.replace-components ul.composite-elements > li.composite-element ul.elements > li.element, #content.replace-elements ul.composite-elements > li.composite-element ul.elements > li.element { position: relative; }
+#content.replace-components ul.composite-elements > li.composite-element ul.elements > li.element .column.quantity, #content.replace-elements ul.composite-elements > li.composite-element ul.elements > li.element .column.quantity { left: 435px; }
+#content.replace-components ul.composite-elements > li.composite-element ul.elements > li.element .column.ref-unit, #content.replace-elements ul.composite-elements > li.composite-element ul.elements > li.element .column.ref-unit { left: 510px; }
+#content.replace-components ul.composite-elements > li.composite-element .element-name, #content.replace-elements ul.composite-elements > li.composite-element .element-name { line-height: 24px; margin-left: 45px; }
+#content.replace-components ul.composite-elements > li.composite-element span.element-name, #content.replace-elements ul.composite-elements > li.composite-element span.element-name { color: #666; }
+#content.replace-components ul.composite-elements > li.composite-element .column.check, #content.replace-elements ul.composite-elements > li.composite-element .column.check { top: 3px; left: 15px; line-height: 24px; }
+
+#content.replace-elements ul.composite-elements > li.composite-element > .column.check { top: 5px; }
+#content.replace-elements ul.composite-elements > li.composite-element > a { padding-left: 25px; }
 
 #templateElement fieldset { position: relative; }
 #templateElement h5 { position: absolute; top: 18px; }
@@ -1738,9 +1742,11 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 .project-variants .hl-row h5.hl-created { left: 370px; }
 
-.project-variants .hl-row h5.hl-actions { right: 353px; }
+.project-variants .hl-row h5.hl-replace { right: 353px; }
 
-.project-variants .variant .name, .project-variants .variant .created, .project-variants .variant a.delete-link, .project-variants .variant a.copy-link, .project-variants .variant a.replace-material-link, .project-variants .variant a.replace-elements-link { position: absolute; padding: 0; top: 0; }
+.project-variants .hl-row h5.hl-actions { right: 78px; }
+
+.project-variants .variant .name, .project-variants .variant .created, .project-variants .variant .replace, .project-variants .variant a.delete-link, .project-variants .variant a.copy-link, .project-variants .variant a.replace-material-link, .project-variants .variant a.replace-components-link, .project-variants .variant a.replace-elements-link { position: absolute; padding: 0; top: 0; }
 
 .project-variants .variant .name { left: 5px; width: 350px; overflow: hidden; }
 
@@ -1750,9 +1756,15 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 .project-variants .variant a.copy-link { width: 60px; text-align: left; right: 65px; }
 
-.project-variants .variant a.replace-material-link { width: 130px; text-align: left; right: 270px; }
+.project-variants .variant a.replace-material-link { width: 80px; text-align: left; right: 320px; }
 
-.project-variants .variant a.replace-elements-link { width: 130px; text-align: left; right: 140px; }
+.project-variants .variant a.replace-components-link { width: 80px; text-align: left; right: 250px; }
+
+.project-variants .variant a.replace-elements-link { width: 80px; text-align: left; right: 160px; }
+
+.project-variants .variant .replace { right: 90px; width: 80px; }
+
+.project-variants .variant .replace .HtmlStaticText { font-size: 12px; color: #666; line-height: 33px; }
 
 .project-variants .variant .created .HtmlStaticText { font-size: 12px; color: #666; line-height: 33px; }
 

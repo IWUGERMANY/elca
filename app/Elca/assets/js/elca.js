@@ -329,7 +329,7 @@ $(window).load(function () {
                     '#content.elca-project-life-cycle-usage,#tabContent.tab-lca.elca-admin-benchmark-version': 'prepareLifeCycleUsageCheckboxes',
                     'body.projects': 'prepareContent',
                     '#projectProcessConfigSanity': 'prepareContent',
-                    '#content.replace-elements': ['prepareReplaceElements', 'prepareElementImages']
+                    '#content.replace-components, #content.replace-elements': ['prepareReplaceElementComponents', 'prepareElementImages']
                 },
 
                 prepareSearchAndReplace: function ($context) {
@@ -354,7 +354,7 @@ $(window).load(function () {
                     });
                 },
 
-                prepareReplaceElements: function ($context) {
+                prepareReplaceElementComponents: function ($context) {
                     var $buttons = $context.find('.buttons'),
                         $checkboxes = $context.find('input[type=checkbox]')
                     ;
@@ -2097,7 +2097,7 @@ $(window).load(function () {
                     '#content.project-import': null,
                     '#content.admin-mapping-edit': null,
                     '.import-assistant-mapping-selector': null,
-                    '#content.replace-elements': null
+                    '#content.replace-components, #content.replace-elements': null
                 },
 
                 /**

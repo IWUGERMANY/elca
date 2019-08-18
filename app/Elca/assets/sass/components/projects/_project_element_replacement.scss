@@ -1,3 +1,4 @@
+#content.replace-components,
 #content.replace-elements {
 
   form {
@@ -58,64 +59,81 @@
     }
 
     ul.composite-elements {
-      width:750px;
+      width: 750px;
+
       & > li.composite-element {
+        color: $textColor;
+        line-height: 24px;
+        background-color: $bgLightGrey;
+        padding: 3px 15px;
+        border-bottom: 1px solid $borderLightGrey;
+        margin-bottom: 3px;
+      }
+    }
+  }
+
+  ul.composite-elements {
+
+    & > li.composite-element {
+      position: relative;
+
+      a {
+        color: $linkFuncColor;
+      }
+
+      .column.quantity {
+        left: 450px;
+        text-align: right;
+        display: inline-block;
+        width: 70px;
+      }
+
+      .column.ref-unit {
+        left: 525px;
+        text-align: left;
+        display: inline-block;
+        width: 70px;
+      }
+
+      ul.elements > li.element {
         position: relative;
-        color:$textColor;
-        line-height:24px;
-        background-color:$bgLightGrey;
-        padding:3px 15px;
-        border-bottom:1px solid $borderLightGrey;
-        margin-bottom:3px;
-
-
-
-        a {
-          color:$linkFuncColor;
-        }
 
         .column.quantity {
-          left: 450px;
-          text-align: right;
-          display: inline-block;
-          width: 70px;
+          left: 435px;
         }
+
         .column.ref-unit {
-          left: 525px;
-          text-align: left;
-          display: inline-block;
-          width: 70px;
+          left: 510px;
         }
+      }
 
-        ul.elements > li.element {
-          position: relative;
+      .element-name {
+        line-height: 24px;
+        margin-left: 45px;
+      }
 
-          .column.quantity {
-            left: 435px;
-          }
-          .column.ref-unit {
-            left: 510px;
-          }
-        }
-        .element-name {
-          line-height: 24px;
-          margin-left: 45px;
-        }
-        span.element-name {
-          color:$textColor;
-        }
+      span.element-name {
+        color: $textColor;
+      }
 
-        .column.check {
-          top: 3px;
-          left: 15px;
-          line-height: 24px;
-        }
-
+      .column.check {
+        top: 3px;
+        left: 15px;
+        line-height: 24px;
       }
 
     }
   }
+}
 
+#content.replace-elements {
+  ul.composite-elements > li.composite-element > .column.check {
+    top:5px;
+  }
+
+  ul.composite-elements > li.composite-element > a {
+    padding-left:25px;
+  }
 }
 
 #templateElement {

@@ -107,6 +107,37 @@ class ElementService
         return $copy;
     }
 
+    public function deleteElement(ElcaElement $element, $recursive = false): bool {
+        if (!$element->isInitialized()) {
+            return false;
+        }
+
+        /**
+         * Observer may abort this action
+         */
+        foreach ($this->elementObservers as $observer) {
+            if ($observer->onElementDelete($element) === false)
+                return false;
+        }
+
+        if ($element->isComposite() && $recursive) {
+            foreach ($element->getCompositeElements() as $assignment) {
+                $assignment->getElement()->delete();
+            }
+        }
+
+        $elementId = $element->getId();
+        $projectVariantId = $element->getProjectVariantId();
+        $element->delete();
+
+        foreach ($this->elementObservers as $observer) {
+            $observer->afterDeletion($elementId, $projectVariantId);
+        }
+
+        return true;
+    }
+
+
     /**
      * Assigns an element to a composite element
      *

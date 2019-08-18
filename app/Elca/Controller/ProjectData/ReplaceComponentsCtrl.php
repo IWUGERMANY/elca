@@ -36,19 +36,16 @@ use Elca\ElcaNumberFormat;
 use Elca\Model\Navigation\ElcaOsitItem;
 use Elca\Service\Messages\ElcaMessages;
 use Elca\Service\Project\ReplaceComponentsService;
-use Elca\Service\Project\ReplaceElementsService;
 use Elca\Validator\ElcaValidator;
 use Elca\View\ElcaContentHeadView;
 use Elca\View\ElcaProjectNavigationLeftView;
 use Elca\View\ElcaProjectNavigationView;
-use Elca\View\ElcaTemplateCompositeElementSelectorView;
 use Elca\View\ElcaTemplateElementSelectorView;
 use Elca\View\ProjectData\ReplaceComponentsView;
-use Elca\View\ProjectData\ReplaceElementsView;
 
-class ReplaceElementsCtrl extends AppCtrl
+class ReplaceComponentsCtrl extends AppCtrl
 {
-    public const CONTEXT = 'project-data/replace-elements';
+    public const CONTEXT = 'project-data/replace-components';
 
     /**
      * @var SessionNamespace
@@ -65,11 +62,11 @@ class ReplaceElementsCtrl extends AppCtrl
     {
         parent::init($args);
 
-        $this->namespace = $this->Session->getNamespace('project-data.replace-elements', true);
+        $this->namespace = $this->Session->getNamespace('project-data.replace-components', true);
     }
 
 
-    protected function replaceElementsAction($addNavigationViews = true, ElcaValidator $validator = null)
+    protected function replaceComponentsAction($addNavigationViews = true, ElcaValidator $validator = null)
     {
         if (!$this->isAjax() || !$this->Request->projectVariantId) {
             return;
@@ -95,7 +92,7 @@ class ReplaceElementsCtrl extends AppCtrl
 
         $projectVariant = ElcaProjectVariant::findById($projectVariantId);
 
-        $view = $this->setView(new ReplaceElementsView());
+        $view = $this->setView(new ReplaceComponentsView());
         $view->assign('projectVariantId', $projectVariantId);
         $view->assign('data', $this->buildFormData($projectVariantId));
         $view->assign('context', self::CONTEXT);
@@ -123,20 +120,36 @@ class ReplaceElementsCtrl extends AppCtrl
             $this->namespace->din276 = $dinCodes;
         }
 
-        $this->namespace->replaceElements = $this->Request->getArray('replaceElements');
+        $this->namespace->replaceComponents = $this->Request->getArray('replaceComponents');
+        $this->namespace->layerSizes = $this->Request->getArray('layerSize');
+        $this->namespace->lifeTimes = $this->Request->getArray('lifeTime');
 
         $validator = null;
 
         if ($this->Request->has('replaceSelected')) {
             $validator = new ElcaValidator($this->Request);
-            $validator->assertNotEmpty('elementId', null, t('Bitte wählen Sie ein Bauteil'));
+            $validator->assertNotEmpty('elementId', null, t('Bitte wählen Sie eine Bauteilkomponente'));
+
+            foreach ($this->namespace->layerSizes as $componentId => $layerSize) {
+                $validator->assertNotEmpty('layerSize['.$componentId.']', $layerSize, t('Dieses Feld darf nicht leer sein'));
+            }
+            foreach ($this->namespace->lifeTimes as $componentId => $lifeTime) {
+                $validator->assertNotEmpty('lifeTime['.$componentId.']', $lifeTime, t('Dieses Feld darf nicht leer sein'));
+            }
 
             if ($validator->isValid()) {
                 $tplElementId = (int)$this->Request->elementId;
 
-                $this->container->get(ReplaceElementsService::class)->replaceCompositeElements(
-                    $this->namespace->replaceElements,
-                    $tplElementId
+                $layerSizes = [];
+                foreach ($this->namespace->layerSizes as $componentId => $layerSize) {
+                    $layerSizes[$componentId] = ElcaNumberFormat::fromString($layerSize) / 1000;
+                }
+
+                $this->container->get(ReplaceComponentsService::class)->replaceCompositeComponents(
+                    $this->namespace->replaceComponents,
+                    $tplElementId,
+                    $layerSizes,
+                    $this->namespace->lifeTimes
                 );
 
                 $this->messages->add(t('Die markierten Bauteilkomponenten wurden ersetzt'));
@@ -148,14 +161,14 @@ class ReplaceElementsCtrl extends AppCtrl
             }
         }
         elseif ($this->Request->has('deleteSelected')) {
-            $this->container->get(ReplaceElementsService::class)->deleteCompositeElements(
-                $this->namespace->replaceElements
+            $this->container->get(ReplaceComponentsService::class)->deleteCompositeElements(
+                $this->namespace->replaceComponents
             );
 
             $this->messages->add(t('Die markierten Bauteilkomponenten wurden gelöscht'));
         }
 
-        $this->replaceElementsAction(false, $validator);
+        $this->replaceComponentsAction(false, $validator);
     }
 
     protected function selectElementAction()
@@ -205,10 +218,10 @@ class ReplaceElementsCtrl extends AppCtrl
             $this->namespace->elementId = $this->Request->id;
             $this->namespace->elementTypeNodeId = $this->Request->elementTypeNodeId;
 
-            $view = $this->setView(new ReplaceElementsView());
+            $view = $this->setView(new ReplaceComponentsView());
             $view->assign('projectVariantId', $this->Request->projectVariantId);
             $view->assign('elementTypeNodeId', $this->Request->elementTypeNodeId);
-            $view->assign('buildMode', ReplaceElementsView::BUILDMODE_ELEMENT_SELECTOR);
+            $view->assign('buildMode', ReplaceComponentsView::BUILDMODE_ELEMENT_SELECTOR);
             $view->assign('data', $this->buildFormData($this->Request->projectVariantId));
 
             return true;
@@ -218,7 +231,7 @@ class ReplaceElementsCtrl extends AppCtrl
          */
         else
         {
-            $view = $this->setView(new ElcaTemplateCompositeElementSelectorView());
+            $view = $this->setView(new ElcaTemplateElementSelectorView());
             $view->assign('elementId', $this->Request->e);
             $view->assign('currentElementId', $this->Request->id);
             $view->assign('projectVariantId', $this->Request->projectVariantId);
@@ -241,15 +254,18 @@ class ReplaceElementsCtrl extends AppCtrl
     private function addOsitView(ElcaProjectVariant $projectVariant)
     {
         $this->Osit->add(new ElcaOsitItem(t('Projektvarianten'), '/project-data/variants/', t('Stammdaten')));
-        $this->Osit->add(new ElcaOsitItem($projectVariant->getName(),  null, t('Bauteile ersetzen')));
+        $this->Osit->add(new ElcaOsitItem($projectVariant->getName(),  null, t('Komponenten ersetzen')));
     }
 
     private function buildFormData($projectVariantId)
     {
         $data = new \stdClass();
         $data->din276 = $this->namespace->din276 ?? [];
-        $data->replaceElements = $this->namespace->replaceElements ?? [];
-        $elementTypeNodeId = !empty($data->din276[0]) ? $data->din276[0] : null;
+        $data->replaceComponents = $this->namespace->replaceComponents ?? [];
+        $elementTypeNodeId = !empty($data->din276[0]) && !empty($data->din276[1]) ? $data->din276[1] : null;
+
+        $data->layerSize = $this->namespace->layerSizes;
+        $data->lifeTime = $this->namespace->lifeTimes;
 
         if ($elementTypeNodeId && $elementTypeNodeId === $this->namespace->elementTypeNodeId) {
             $data->elementId = $this->namespace->elementId;
@@ -257,7 +273,17 @@ class ReplaceElementsCtrl extends AppCtrl
         else {
             $data->elementId = null;
             unset($this->namespace->elementTypeNodeId);
-            unset($this->namespace->replaceElements);
+            unset($this->namespace->replaceComponents);
+        }
+
+        if ($data->elementId) {
+            $components = ElcaElementComponentSet::findLayers($data->elementId);
+
+            foreach ($components as $layer) {
+                $layerId                   = $layer->getId();
+                $data->layerSize[$layerId] = $data->layerSize[$layerId] ?? $layer->getLayerSize() * 1000;
+                $data->lifeTime[$layerId]  = $data->lifeTime[$layerId]  ?? $layer->getLifeTime();
+            }
         }
 
         return $data;

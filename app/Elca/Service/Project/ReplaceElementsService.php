@@ -20,15 +20,16 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with eLCA. If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 
 namespace Elca\Service\Project;
 
 use Beibob\Blibs\DbHandle;
-use Elca\Db\ElcaCompositeElement;
 use Elca\Db\ElcaElement;
-use Elca\Db\ElcaElementComponent;
+use Elca\Db\ElcaProjectVariant;
+use Elca\Model\Common\Quantity\Quantity;
+use Elca\Model\Processing\ElcaLcaProcessor;
 use Elca\Service\ElcaElementImageCache;
 
 class ReplaceElementsService
@@ -48,53 +49,57 @@ class ReplaceElementsService
      */
     private $elementImageCache;
 
-    public function __construct(DbHandle $dbHandle, ProjectElementService $projectElementService, ElcaElementImageCache $elementImageCache)
-    {
-        $this->dbHandle = $dbHandle;
+    /**
+     * @var ElcaLcaProcessor
+     */
+    private $lcaProcessor;
+
+    public function __construct(
+        DbHandle $dbHandle,
+        ProjectElementService $projectElementService,
+        ElcaLcaProcessor $lcaProcessor,
+        ElcaElementImageCache $elementImageCache
+    ) {
+        $this->dbHandle              = $dbHandle;
         $this->projectElementService = $projectElementService;
-        $this->elementImageCache = $elementImageCache;
+        $this->elementImageCache     = $elementImageCache;
+        $this->lcaProcessor          = $lcaProcessor;
     }
 
-
     /**
-     * @throws \Exception
      * @param array $replaceElementIds [ elementId => compositeElementId ]
      * @param int   $tplElementId
      * @param array $layerSizes
      * @param array $lifeTimes
+     * @throws \Exception
      */
-    public function replaceCompositeElements(array $replaceElementIds, int $tplElementId, array $layerSizes, array $lifeTimes)
+    public function replaceCompositeElements(array $replaceElementIds, int $tplElementId)
     {
+        $elements = [];
+        $projectVariantId = null;
+
         try {
             $this->dbHandle->begin();
 
+            foreach ($replaceElementIds as $compositeElementId) {
+                $compositeElement = ElcaElement::findById($compositeElementId);
 
-            foreach ($replaceElementIds as $replaceElementId => $compositeElementId) {
-                $assignment = ElcaCompositeElement::findProjectCompositeByIdAndElementId($compositeElementId, $replaceElementId);
+                $quantity         = Quantity::fromValue($compositeElement->getQuantity(), $compositeElement->getRefUnit());
+                $projectVariantId = $compositeElement->getProjectVariantId();
+                $ownerId          = $compositeElement->getOwnerId();
+                $accessGroupId    = $compositeElement->getAccessGroupId();
 
-                $replaceElement = $assignment->getElement();
-                $compositeElement = $assignment->getCompositeElement();
+                $this->projectElementService->deleteElement($compositeElement, true);
 
-                if (!$compositeElement->isInitialized()) {
-                    continue;
-                }
-
-                $newElement = $this->importNewElementFrom(
-                    $replaceElement->getQuantity(),
+                $newElement = $this->importNewCompositeFrom(
+                    $quantity,
                     $tplElementId,
-                    $layerSizes,
-                    $lifeTimes,
-                    $compositeElement->getProjectVariantId(),
-                    $compositeElement->getOwnerId(),
-                    $compositeElement->getAccessGroupId()
+                    $projectVariantId,
+                    $ownerId,
+                    $accessGroupId
                 );
 
-                $this->projectElementService->removeFromCompositeElement($compositeElement, $assignment->getPosition(), $replaceElement, true);
-                $this->projectElementService->addToCompositeElement($compositeElement, $newElement, $assignment->getPosition());
-
-                $compositeElement->reindexCompositeElements();
-
-                $this->elementImageCache->clear($newElement->getId());
+                $elements[] = $newElement;
             }
 
             $this->dbHandle->commit();
@@ -103,41 +108,29 @@ class ReplaceElementsService
             $this->dbHandle->rollback();
             throw $exception;
         }
-    }
 
-    public function deleteCompositeElements(array $deleteElementIds)
-    {
-        try {
-            $this->dbHandle->begin();
-
-            foreach ($deleteElementIds as $replaceElementId => $compositeElementId) {
-                $assignment = ElcaCompositeElement::findProjectCompositeByIdAndElementId(
-                    $compositeElementId,
-                    $replaceElementId
-                );
-
-                $replaceElement   = $assignment->getElement();
-                $compositeElement = $assignment->getCompositeElement();
-
-                if (!$compositeElement->isInitialized()) {
-                    continue;
-                }
-
-                $this->projectElementService->removeFromCompositeElement($compositeElement, $assignment->getPosition(), $replaceElement, true);
-                $compositeElement->reindexCompositeElements();
-            }
-
-            $this->dbHandle->commit();
+        foreach ($elements as $element) {
+            $this->lcaProcessor
+                ->computeElement($element);
         }
-        catch(\Exception $exception) {
-            $this->dbHandle->rollback();
-            throw $exception;
+
+        if ($projectVariantId) {
+            $projectVariant = ElcaProjectVariant::findById($projectVariantId);
+
+            $this->lcaProcessor->updateCache(
+                $projectVariant->getProjectId(),
+                $projectVariant->getId()
+            );
         }
     }
 
-
-    private function importNewElementFrom($oldQuantity, int $tplElementId, array $layerSizes, array $lifeTimes, int $projectVariantId, int $ownerId, int $accessGroupId): ElcaElement
-    {
+    private function importNewCompositeFrom(
+        Quantity $quantity,
+        int $tplElementId,
+        int $projectVariantId,
+        int $ownerId,
+        int $accessGroupId
+    ): ElcaElement {
         $tplElement = ElcaElement::findById($tplElementId);
 
         $newElement = $this->projectElementService->copyElementFrom(
@@ -149,53 +142,19 @@ class ReplaceElementsService
             false
         );
 
+        $oldQuantity = $newElement->getQuantity();
+
         if (null === $newElement) {
             throw new \RuntimeException('Copy from template element failed');
         }
 
-        if ($oldQuantity !== $newElement->getQuantity()) {
-           $newElement->setQuantity($oldQuantity);
-           $newElement->update();
-        }
+        $newElement->setQuantity($quantity->value());
+        $newElement->setRefUnit($quantity->unit()->value());
+        $newElement->update();
 
-        $tplComponents = $tplElement->getComponents();
-
-        foreach ($tplComponents as $tplComponent) {
-            $componentId = $tplComponent->getId();
-            if (isset($layerSizes[$componentId]) || isset($lifeTimes[$componentId])) {
-                $this->findAndUpdateComponent($newElement, $tplComponent, $layerSizes[$componentId], $lifeTimes[$componentId]);
-            }
-        }
+        $this->projectElementService->updateQuantityOfAffectedElements($newElement, $oldQuantity);
 
         return $newElement;
-    }
-
-    private function findAndUpdateComponent(ElcaElement $newElement, ElcaElementComponent $tplComponent, $layerSize = null, $lifeTime = null)
-    {
-        $components = $newElement->getComponents();
-
-        /**
-         * @var ElcaElementComponent $component
-         */
-        foreach ($components as $component) {
-            if ($component->getProcessConfigId() === $tplComponent->getProcessConfigId() &&
-                $component->getProcessConversionId() === $tplComponent->getProcessConversionId() &&
-                $component->getQuantity() === $tplComponent->getQuantity() &&
-                $component->getLifeTime() === $tplComponent->getLifeTime() &&
-                $component->isLayer() === $tplComponent->isLayer() &&
-                $component->getLayerSize() === $tplComponent->getLayerSize() &&
-                $component->getLayerPosition() === $tplComponent->getLayerPosition() &&
-                $component->getLayerAreaRatio() === $tplComponent->getLayerAreaRatio()) {
-
-                if ($layerSize) {
-                    $component->setLayerSize($layerSize);
-                }
-                if ($lifeTime) {
-                    $component->setLifeTime($lifeTime);
-                }
-                $component->update();
-            }
-        }
     }
 
 }

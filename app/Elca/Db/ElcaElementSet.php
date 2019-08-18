@@ -485,8 +485,8 @@ class ElcaElementSet extends DbObjectSet
         $tableName = ElcaElement::TABLE_NAME;
         $initValues = array('elementTypeNodeId' => $elementTypeNodeId);
 
-        if(!is_null($projectVariantId))
-        $initValues['projectVariantId'] = $projectVariantId;
+        if (!is_null($projectVariantId))
+            $initValues['projectVariantId'] = $projectVariantId;
 
         $permissionFilter = '';
         if(!$isAdmin && $accessGroupIds)
@@ -568,7 +568,6 @@ class ElcaElementSet extends DbObjectSet
             'subElementTypeNodeId' => $subElementTypeNodeId
         ]);
     }
-
 
     /**
      * Reassigns the access group id

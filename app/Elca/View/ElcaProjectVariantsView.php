@@ -140,6 +140,7 @@ class ElcaProjectVariantsView extends HtmlView
 
         $Row->add(new HtmlTag('h5', t('Name'), ['class' => 'hl-name']));
         $Row->add(new HtmlTag('h5', t('Erstellt am'), ['class' => 'hl-created']));
+        $Row->add(new HtmlTag('h5', t('Ersetzen'), ['class' => 'hl-replace']));
         $Row->add(new HtmlTag('h5', t('Aktionen'), ['class' => 'hl-actions']));
 
         $Container = $Group->add(new HtmlTag('div'));
@@ -172,16 +173,16 @@ class ElcaProjectVariantsView extends HtmlView
             $Li->addClass('active');
         }
 
-        $Container = $Li->add(new HtmlTag('div'));
-        $Container->addClass('clearfix variant');
+        $container = $Li->add(new HtmlTag('div'));
+        $container->addClass('clearfix variant');
 
         $Request = FrontController::getInstance()->getRequest();
 
         if ((isset($this->Data->name[$key])) && isset($this->Data->created[$key])) {
-            $Container->add(
+            $container->add(
                 new ElcaHtmlFormElementLabel('', new HtmlTextInput('name['.$key.']', $this->Data->name[$key]))
             );
-            $Label = $Container->add(new ElcaHtmlFormElementLabel('', new HtmlStaticText($this->Data->created[$key])));
+            $Label = $container->add(new ElcaHtmlFormElementLabel('', new HtmlStaticText($this->Data->created[$key])));
             $Label->addClass('created');
         }
 
@@ -189,9 +190,9 @@ class ElcaProjectVariantsView extends HtmlView
             /**
              * Search & Replace
              */
-            $Container->add(
+            $container->add(
                 new HtmlLink(
-                    t('Baustoffe ersetzen'),
+                    t('Baustoffe'),
                     Url::factory('/project-data/replaceProcesses/', ['projectVariantId' => $key, 'init' => null])
                 )
             )
@@ -200,9 +201,20 @@ class ElcaProjectVariantsView extends HtmlView
             /**
              * Search & Replace
              */
-            $Container->add(
+            $container->add(
                 new HtmlLink(
-                    t('Komponenten ersetzen'),
+                    t('Komponenten'),
+                    Url::factory('/project-data/replace-components/replaceComponents/', ['projectVariantId' => $key, 'init' => null])
+                )
+            )
+                      ->addClass('function-link replace-components-link page');
+
+            /**
+             * Search & Replace
+             */
+            $container->add(
+                new HtmlLink(
+                    t('Bauteile'),
                     Url::factory('/project-data/replace-elements/replaceElements/', ['projectVariantId' => $key, 'init' => null])
                 )
             )
@@ -211,13 +223,13 @@ class ElcaProjectVariantsView extends HtmlView
             /**
              * Delete and create Variant
              */
-            $Container->add(
+            $container->add(
                 new HtmlLink(t('Kopieren'), Url::factory('/'.$this->context.'/copyVariant/', ['id' => $key]))
             )
                       ->addClass('function-link copy-link');
 
             if ($this->sumVariants > 1 && $this->currentVariantId != $key) {
-                $Container->add(
+                $container->add(
                     new HtmlLink(t('Löschen'), Url::factory('/'.$this->context.'/deleteVariant/', ['id' => $key]))
                 )
                           ->addClass('function-link delete-link');

@@ -2129,86 +2129,60 @@ class ElementsCtrl extends TabsCtrl
      * @param bool   $addViews
      * @return boolean
      */
-    protected function deleteAction($confirmMsg = null, $addViews = true)
+    protected function deleteAction($addViews = true)
     {
-        if(!is_numeric($this->Request->id))
+        if (!is_numeric($this->Request->id)) {
             return false;
+        }
 
         /**
          * Check if user is allowed to edit element
          */
-        $Element = ElcaElement::findById($this->Request->id);
-        if(!$this->Access->canEditElement($Element))
+        $element = ElcaElement::findById($this->Request->id);
+        if (!$this->Access->canEditElement($element)) {
             return false;
-
-        if($this->Request->has('confirmed'))
-        {
-            if($Element->isInitialized())
-            {
-                foreach ($this->container->get('elca.element_observers') as $observer) {
-                    if (!$observer instanceof ElementObserver)
-                        continue;
-
-//                    if ($observer->onDelete($Element, $this->Request->has('recursive')) === false)
-
-                    if ($observer->onElementDelete($Element) === false)
-                        return false;
-                }
-
-                if($Element->isComposite() && $this->Request->has('recursive'))
-                {
-                    foreach($Element->getCompositeElements() as $Assignment)
-                        $Assignment->getElement()->delete();
-                }
-
-                $elementTypeNodeId = $Element->getElementTypeNodeId();
-                $elementId = $Element->getId();
-                $projectVariantId = $Element->getProjectVariantId();
-                $Element->delete();
-
-                foreach ($this->container->get('elca.element_observers') as $observer) {
-                    if (!$observer instanceof ElementObserver) {
-                        continue;
-                    }
-
-                    $observer->afterDeletion($elementId, $projectVariantId);
-                }
-
-                /**
-                 * Forward to list
-                 */
-                if($addViews || !$this->Request->has('composite'))
-                    $this->listAction($elementTypeNodeId);
-
-                $this->messages->add(t('Der Datensatz wurde gelöscht'));
-                return true;
-            }
         }
-        else
-        {
-            $Url = Url::parse($this->Request->getURI());
-            $Url->addParameter(['confirmed' => null]);
 
-            if(!$addViews)
-                $Url->addParameter(['composite' => null]);
+        if ($this->Request->has('confirmed')) {
+            $elementService = $this->container->get(ElementService::class);
 
-            if(!$confirmMsg)
-            {
-                if($Element->isComposite() && $this->Request->has('recursive'))
-                    $confirmMsg = t('Soll die Bauteilvorlage und ihre Komponenten wirklich gelöscht werden?');
-                elseif($Element->isComposite())
-                    $confirmMsg = t('Soll die Bauteilvorlage wirklich gelöscht werden?');
-                else
-                    $confirmMsg = t('Soll die Bauteilkomponentenvorlage wirklich gelöscht werden?');
+            $elementTypeNodeId = $element->getElementTypeNodeId();
+
+            if (!$elementService->deleteElement($element, $this->Request->has('recursive'))) {
+                return false;
             }
 
-            $this->messages->add($confirmMsg, ElcaMessages::TYPE_CONFIRM, (string)$Url);
+            /**
+             * Forward to list
+             */
+            if ($addViews || !$this->Request->has('composite')) {
+                $this->listAction($elementTypeNodeId);
+            }
+
+            $this->messages->add(t('Der Datensatz wurde gelöscht'));
+
+            return true;
         }
+
+        $url = Url::parse($this->Request->getURI());
+        $url->addParameter(['confirmed' => null]);
+
+        if (!$addViews) {
+            $url->addParameter(['composite' => null]);
+        }
+
+        if ($element->isComposite() && $this->Request->has('recursive')) {
+            $confirmMsg = t('Soll die Bauteilvorlage und ihre Komponenten wirklich gelöscht werden?');
+        } elseif ($element->isComposite()) {
+            $confirmMsg = t('Soll die Bauteilvorlage wirklich gelöscht werden?');
+        } else {
+            $confirmMsg = t('Soll die Bauteilkomponentenvorlage wirklich gelöscht werden?');
+        }
+
+        $this->messages->add($confirmMsg, ElcaMessages::TYPE_CONFIRM, (string)$url);
 
         return false;
     }
-    // End deleteAction
-
 
 
     /**
@@ -2281,8 +2255,9 @@ class ElementsCtrl extends TabsCtrl
 
         $compositeElement = ElcaElement::findById((int)$this->Request->compositeElementId);
 
-        if(!$this->deleteAction(null, false))
+        if (!$this->deleteAction(false)) {
             return false;
+        }
 
         $compositeElement->reindexCompositeElements();
 

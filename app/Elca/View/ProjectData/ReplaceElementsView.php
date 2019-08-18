@@ -37,14 +37,12 @@ use Beibob\HtmlTools\HtmlTag;
 use Elca\Controller\ElementImageCtrl;
 use Elca\Controller\ProjectData\ReplaceElementsCtrl;
 use Elca\Db\ElcaElement;
-use Elca\Db\ElcaElementComponentSet;
 use Elca\Db\ElcaElementSet;
 use Elca\Db\ElcaElementType;
 use Elca\Db\ElcaElementTypeSet;
 use Elca\ElcaNumberFormat;
 use Elca\View\helpers\ElcaHtmlCheckbox;
 use Elca\View\helpers\ElcaHtmlFormElementLabel;
-use Elca\View\helpers\ElcaHtmlNumericInput;
 use Elca\View\helpers\ElcaHtmlSubmitButton;
 use Elca\View\helpers\ElcaHtmlTemplateElementSelectorLink;
 
@@ -54,7 +52,9 @@ class ReplaceElementsView extends HtmlView
     const BUILDMODE_DEFAULT = 'default';
 
     private $projectVariantId;
+
     private $data;
+
     private $context;
 
     private $buildMode;
@@ -64,7 +64,7 @@ class ReplaceElementsView extends HtmlView
     /**
      * Inits the view
      *
-     * @param  array $args
+     * @param array $args
      * @return -
      */
     protected function init(array $args = [])
@@ -73,19 +73,13 @@ class ReplaceElementsView extends HtmlView
 
         $this->setTplName('project_data/replace_elements');
 
-        $this->buildMode = $this->get('buildMode', self::BUILDMODE_DEFAULT);
-        $this->projectVariantId = $this->get('projectVariantId');
+        $this->buildMode              = $this->get('buildMode', self::BUILDMODE_DEFAULT);
+        $this->projectVariantId       = $this->get('projectVariantId');
         $this->projectVariantIsActive = $this->get('projectVariantIsActive', false);
-        $this->data = $this->get('data', new \stdClass());
-        $this->context = $this->get('context');
+        $this->data                   = $this->get('data', new \stdClass());
+        $this->context                = $this->get('context');
     }
 
-    /**
-     * Callback triggered before rendering the template
-     *
-     * @param  -
-     * @return -
-     */
     protected function beforeRender()
     {
         $container = $this->getElementById('content');
@@ -102,11 +96,11 @@ class ReplaceElementsView extends HtmlView
             $form->setValidator($this->get('validator'));
         }
 
-        switch($this->buildMode) {
+        switch ($this->buildMode) {
             case self::BUILDMODE_ELEMENT_SELECTOR:
                 $this->removeChild($container);
 
-                $this->appendTemplateElementSelector($form, $this->get('elementTypeNodeId'));
+                $this->appendTemplateElementSelector($form, $this->get('elementTypeNodeId'), $this->get('elementId'));
 
                 // append form to dummy container
                 $dummyContainer = $this->appendChild($this->getDiv());
@@ -118,18 +112,18 @@ class ReplaceElementsView extends HtmlView
                 break;
 
             default:
-                //$form->setRequest(FrontController::getInstance()->getRequest());
                 $form->add(new HtmlHiddenField('projectVariantId', $this->projectVariantId));
 
-                $this->appendDin276Select($form, t('Bauteil Kostengruppe'), ElcaElementType::findByIdent('300')->getNodeId(), 0);
+                $this->appendDin276Select(
+                    $form,
+                    t('Ersetze Bauteil in folgender Kostengruppe'),
+                    ElcaElementType::findByIdent('300')->getNodeId(),
+                    0
+                );
 
                 if (!empty($this->data->din276[0])) {
-                    $this->appendDin276Select($form, t('Ersetze Bauteilkomponenten in folgender Kostengruppe'), $this->data->din276[0], 1);
-                }
-
-                if (!empty($this->data->din276[1])) {
-                    $this->appendTemplateElementSelector($form, $this->data->din276[1]);
-                    $this->appendMatchingElements($form, $this->data->din276[0], $this->data->din276[1]);
+                    $this->appendTemplateElementSelector($form, $this->data->din276[0]);
+                    $this->appendMatchingElements($form, $this->data->din276[0]);
                 }
 
                 $this->appendButtons($form);
@@ -138,32 +132,67 @@ class ReplaceElementsView extends HtmlView
         }
     }
 
+    protected function appendElementImage(HtmlElement $container, ElcaElement $element)
+    {
+        if (!$element->getElementTypeNode()->getPrefHasElementImage()) {
+            return;
+        }
+
+        $elementImageUrl = FrontController::getInstance()->getUrlTo(
+            ElementImageCtrl::class,
+            null,
+            array('elementId' => $element->getId(), 'legend' => '0')
+        );
+
+        $svgDiv = new HtmlTag(
+            'div', null, [
+            'class'           => 'element-image',
+            'data-element-id' => $element->getId(),
+            'data-url'        => $elementImageUrl,
+        ]
+        );
+
+
+        $container->add($svgDiv);
+        $container->addClass('has-element-image clearfix');
+    }
+
     private function appendDin276Select(HtmlElement $container, $caption, $parentNodeId, $level): void
     {
         $rootNode = ElcaElementType::findByNodeId($parentNodeId);
 
-        $select  = $container->add(
+        $select = $container->add(
             new ElcaHtmlFormElementLabel(
                 $caption,
-                new HtmlSelectbox('din276['.($level).']')
+                new HtmlSelectbox('din276[' . ($level) . ']')
             )
         );
         $select->setAttribute('onchange', '$(this.form).submit()');
 
         $select->add(new HtmlSelectOption(t('-- Bitte wählen --'), null));
         foreach (ElcaElementTypeSet::findByParentType($rootNode) as $type) {
-            $select->add(new HtmlSelectOption($type->getDinCode() .' - '. t($type->getName()), $type->getNodeId()));
+            $select->add(new HtmlSelectOption($type->getDinCode() . ' - ' . t($type->getName()), $type->getNodeId()));
         }
     }
 
-    private function appendMatchingElements(HtmlElement $container, $compositeElementTypeNodeId, $elementTypeNodeId)
+    private function appendMatchingElements(HtmlElement $container, $compositeElementTypeNodeId)
     {
-        $composites = ElcaElementSet::findCompositesByElementTypeNodeIdHavingElementsWithSubTypeNodeId(
-            $this->projectVariantId, $compositeElementTypeNodeId, $elementTypeNodeId);
+        $composites = ElcaElementSet::findCompositesByElementTypeNodeId(
+            $compositeElementTypeNodeId,
+            $this->projectVariantId
+        );
 
-        $group = $container->add(new HtmlFormGroup(t(':count: Bauteile gefunden', null, [
-            ':count:' => $composites->count(),
-        ])));
+        $group = $container->add(
+            new HtmlFormGroup(
+                t(
+                    ':count: Bauteile gefunden',
+                    null,
+                    [
+                        ':count:' => $composites->count(),
+                    ]
+                )
+            )
+        );
         $group->addClass('matching-elements');
         $group->add(new HtmLTag('h5', t('Menge'), ['class' => 'hl-quantity']));
 
@@ -177,68 +206,81 @@ class ReplaceElementsView extends HtmlView
 
             $this->appendElementImage($li, $compositeElement);
 
+            $li->add(
+                new ElcaHtmlCheckbox('replaceElements[' . $compositeElement->getId() . ']', $compositeElement->getId())
+            )->addClass('column check');
+
             if ($this->projectVariantIsActive) {
                 $li->add(
                     new HtmlTag(
-                        'a', $compositeElement->getName().' ['.$compositeElement->getId().']', [
-                        'href' => '/project-elements/'. $compositeElement->getId() .'/',
+                        'a', $compositeElement->getName() . ' [' . $compositeElement->getId() . ']', [
+                        'href'  => '/project-elements/' . $compositeElement->getId() . '/',
                         'class' => 'page',
-                    ])
+                    ]
+                    )
                 );
-            }
-            else {
+            } else {
                 $li->add(
                     new HtmlTag(
-                        'span', $compositeElement->getName().' ['.$compositeElement->getId().']'
+                        'span', $compositeElement->getName() . ' [' . $compositeElement->getId() . ']'
                     )
                 );
             }
 
-            $li->add(new HtmlTag('span', ElcaNumberFormat::toString($compositeElement->getQuantity()), [
-                'class' => 'column quantity'
-            ]));
-            $li->add(new HtmlTag('span', ElcaNumberFormat::formatUnit($compositeElement->getRefUnit()), [
-                'class' => 'column ref-unit'
-            ]));
+            $li->add(
+                new HtmlTag(
+                    'span', ElcaNumberFormat::toString($compositeElement->getQuantity()), [
+                    'class' => 'column quantity',
+                ]
+                )
+            );
+            $li->add(
+                new HtmlTag(
+                    'span', ElcaNumberFormat::formatUnit($compositeElement->getRefUnit()), [
+                    'class' => 'column ref-unit',
+                ]
+                )
+            );
 
             $elementsUl = $li->add(new HtmlTag('ul', null, ['class' => 'elements']));
 
             foreach ($compositeElement->getCompositeElements() as $elementAssignment) {
-                $element = $elementAssignment->getElement();
-
-                if ($element->getElementTypeNodeId() !== (int)$elementTypeNodeId) {
-                    continue;
-                }
-
+                $element   = $elementAssignment->getElement();
                 $elementLi = $elementsUl->add(new HtmlTag('li', null, ['class' => 'element']));
-
-                $elementLi->add(new ElcaHtmlCheckbox('replaceElements['. $element->getId().']', $elementAssignment->getCompositeElementId()))->addClass('column check');
 
                 if ($this->projectVariantIsActive) {
                     $elementLi->add(
                         new HtmlTag(
-                            'a', $element->getName().' ['.$element->getId().']', [
-                            'href'  => '/project-elements/'. $element->getId() .'/',
+                            'a', $element->getName() . ' [' . $element->getId() . ']', [
+                            'href'  => '/project-elements/' . $element->getId() . '/',
                             'class' => 'page element-name',
-                        ])
+                        ]
+                        )
                     );
-                }
-                else {
+                } else {
                     $elementLi->add(
                         new HtmlTag(
-                            'span', $element->getName().' ['.$element->getId().']', [
+                            'span', $element->getName() . ' [' . $element->getId() . ']', [
                                 'class' => 'element-name',
                             ]
                         )
                     );
                 }
 
-                $elementLi->add(new HtmlTag('span', ElcaNumberFormat::toString($element->getQuantity()), [
-                    'class' => 'column quantity'
-                ]));
-                $elementLi->add(new HtmlTag('span', ElcaNumberFormat::formatUnit($element->getRefUnit()), [
-                    'class' => 'column ref-unit'
-                ]));
+                $elementLi->add(
+                    new HtmlTag(
+                        'span', ElcaNumberFormat::toString($element->getQuantity()), [
+                        'class' => 'column quantity',
+                    ]
+                    )
+                );
+                $elementLi->add(
+                    new HtmlTag(
+                        'span', ElcaNumberFormat::formatUnit($element->getRefUnit()), [
+                        'class' => 'column ref-unit',
+                    ]
+                    )
+                );
             }
 
         }
@@ -246,13 +288,13 @@ class ReplaceElementsView extends HtmlView
 
     private function appendTemplateElementSelector(HtmlElement $container, $elementTypeNodeId, $elementId = null)
     {
-        $group = $container->add(new HtmlFormGroup(t('Neue Bauteilkomponente konfigurieren')));
+        $group = $container->add(new HtmlFormGroup(t('Neues Bauteil konfigurieren')));
         $group->setId('templateElement');
 
         /**
          * @var ElcaHtmlTemplateElementSelectorLink $selector
          */
-        $label = $group->add(new ElcaHtmlFormElementLabel(t('Bauteilkomponente'), null, true));
+        $label = $group->add(new ElcaHtmlFormElementLabel(t('Bauteil'), null, true));
 
         $selector = $label->add(new ElcaHtmlTemplateElementSelectorLink('elementId', $elementId));
         $selector->addClass('element-selector');
@@ -262,7 +304,7 @@ class ReplaceElementsView extends HtmlView
 
         $this->appendElementImage($label, ElcaElement::findById($this->data->elementId));
 
-        $this->appendTemplateElement($group);
+        $this->appendTemplateElement($label);
     }
 
     private function appendTemplateElement(HtmlElement $container)
@@ -271,25 +313,20 @@ class ReplaceElementsView extends HtmlView
             return;
         }
 
+        $compositeElement = ElcaElement::findById($this->data->elementId);
 
-        $container->add(new HtmLTag('h5', t('Schichtdicke') . ' mm', ['class' => 'hl-layer-size']));
-        $container->add(new HtmLTag('h5', t('Austausch a'), ['class' => 'hl-life-time']));
+        $ul = $container->add(new HtmlTag('ul', null, ['class' => 'composite-elements']));
 
-        $componentUl = $container->add(new HtmlTag('ul', null, ['class' => 'element-components']));
-
-        $lastLayerPosition = null;
-        foreach (ElcaElementComponentSet::findLayers($this->data->elementId) as $layer) {
-            $componentLi = $componentUl->add(new HtmlTag('li', null, ['class' => 'element-component']));
-
-            if (null === $lastLayerPosition || $lastLayerPosition !== $layer->getLayerPosition()) {
-                $componentLi->add(new HtmlTag('span', $layer->getLayerPosition().'.', ['class' => ' layer-position']));
-            }
-
-            $componentLi->add(new HtmlTag('span', $layer->getProcessConfig()->getName(), ['class' => ' column layer-name']));
-            $this->appendNumericInput($componentLi, 'layerSize['.$layer->getId().']', 'layer-size');
-            $this->appendNumericInput($componentLi, 'lifeTime['.$layer->getId().']', 'life-time');
-
-            $lastLayerPosition = $layer->getLayerPosition();
+        foreach ($compositeElement->getCompositeElements() as $elementAssignment) {
+            $element   = $elementAssignment->getElement();
+            $elementLi = $ul->add(new HtmlTag('li', null, ['class' => 'composite-element']));
+            $elementLi->add(
+                new HtmlTag(
+                    'span', $element->getName() . ' [' . $element->getId() . ']', [
+                        'class' => 'element-name',
+                    ]
+                )
+            );
         }
     }
 
@@ -298,42 +335,8 @@ class ReplaceElementsView extends HtmlView
         $group = $element->add(new HtmlFormGroup(''));
         $group->addClass('buttons');
 
-//        $button = $group->add(new ElcaHtmlSubmitButton('deleteSelected', t('Markierte Bauteilkomponenten löschen'), false));
-//        $button->addClass('link');
-//        $button->setId('deleteButton');
-
-        $button = $group->add(new ElcaHtmlSubmitButton('replaceSelected', t('Markierte Bauteilkomponenten ersetzen'), true));
+        $button = $group->add(new ElcaHtmlSubmitButton('replaceSelected', t('Markierte Bauteile ersetzen'), true));
         $button->setId('replaceButton');
-    }
-
-    private function appendNumericInput(HtmlElement $componentLi, $property, $cssClass)
-    {
-        $input = $componentLi->add(new ElcaHtmlNumericInput($property));
-        $input->addClass('column '. $cssClass);
-
-        if ($this->get('validator') && $this->get('validator')->hasError($property)) {
-            $input->addClass('error');
-        }
-    }
-
-    protected function appendElementImage(HtmlElement $container, ElcaElement $element)
-    {
-        if (!$element->getElementTypeNode()->getPrefHasElementImage()) {
-            return;
-        }
-
-        $elementImageUrl = FrontController::getInstance()->getUrlTo(
-            ElementImageCtrl::class, null, array('elementId' => $element->getId(), 'legend' => '0'));
-
-        $svgDiv = new HtmlTag('div', null, [
-            'class' => 'element-image',
-            'data-element-id' => $element->getId(),
-            'data-url' => $elementImageUrl
-        ]);
-
-
-        $container->add($svgDiv);
-        $container->addClass('has-element-image clearfix');
     }
     // End addElementImage
 }

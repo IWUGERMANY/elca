@@ -62,7 +62,6 @@ class ElcaHtmlTemplateElementSelectorLink extends HtmlFormElement
         $this->projectVariantId = $projectVariantId;
     }
 
-
     /**
      * Sets the processCategoryNodeId
      */
@@ -70,7 +69,6 @@ class ElcaHtmlTemplateElementSelectorLink extends HtmlFormElement
     {
         $this->elementTypeNodeId = $nodeId;
     }
-
 
     /**
      * Builds this element

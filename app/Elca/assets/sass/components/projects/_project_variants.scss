@@ -43,15 +43,21 @@
   left: 370px;
 }
 
-.project-variants .hl-row h5.hl-actions {
+.project-variants .hl-row h5.hl-replace {
   right: 353px;
+}
+
+.project-variants .hl-row h5.hl-actions {
+  right: 78px;
 }
 
 .project-variants .variant .name,
 .project-variants .variant .created,
+.project-variants .variant .replace,
 .project-variants .variant a.delete-link,
 .project-variants .variant a.copy-link,
 .project-variants .variant a.replace-material-link,
+.project-variants .variant a.replace-components-link,
 .project-variants .variant a.replace-elements-link {
   position: absolute;
   padding: 0;
@@ -82,15 +88,33 @@
 }
 
 .project-variants .variant a.replace-material-link {
-  width: 130px;
+  width: 80px;
   text-align: left;
-  right: 270px;
+  right: 320px;
 }
+.project-variants .variant a.replace-components-link {
+  width: 80px;
+  text-align: left;
+  right: 250px;
+}
+
 .project-variants .variant a.replace-elements-link {
-  width: 130px;
+  width: 80px;
   text-align: left;
-  right: 140px;
+  right: 160px;
 }
+
+.project-variants .variant .replace {
+  right: 90px;
+  width: 80px;
+}
+
+.project-variants .variant .replace .HtmlStaticText {
+  font-size: 12px;
+  color: #666;
+  line-height: 33px;
+}
+
 
 .project-variants .variant .created .HtmlStaticText {
   font-size: 12px;

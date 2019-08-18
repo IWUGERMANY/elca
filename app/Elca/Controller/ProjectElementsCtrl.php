@@ -601,80 +601,58 @@ class ProjectElementsCtrl extends ElementsCtrl
      * @param bool   $addViews
      * @return boolean
      */
-    protected function deleteAction($confirmMsg = null, $addViews = true)
+    protected function deleteAction($addViews = true)
     {
-        if(!$this->Request->id)
+        if (!$this->Request->id) {
             return false;
+        }
 
-        /**
-         * Save variables for after deletion
-         */
-        $Element = ElcaElement::findById((int)$this->Request->id);
-        $projectVariantId = $Element->getProjectVariantId();
-        $elementTypeNodeIds = [];
-        $compositeElement = null;
-        $oldOpaqueArea = null;
+        $element = ElcaElement::findById((int)$this->Request->id);
 
-        /**
-         * Store all element type nodeIds to update type tree after deletion
-         */
-        if($Element->isComposite())
-        {
-            if($this->Request->has('recursive'))
-            {
-                foreach($Element->getCompositeElements() as $Assignment)
-                    $elementTypeNodeIds[] = $Assignment->getElement()->getElementTypeNodeId();
+        if (!$this->Access->canEditElement($element)) {
+            return false;
+        }
+
+        if ($this->Request->has('confirmed')) {
+            $elementTypeNodeId = $element->getElementTypeNodeId();
+
+            $elementService = $this->container->get(ProjectElementService::class);
+
+            if (!$elementService->deleteElement($element, $this->Request->has('recursive'))) {
+                return false;
             }
+
+            /**
+             * Forward to list
+             */
+            if ($addViews || !$this->Request->has('composite')) {
+                $this->listAction($elementTypeNodeId);
+            }
+
+            $this->messages->add(t('Der Datensatz wurde gelöscht'));
+
+            return true;
         }
-        else
-        {
-            $compositeElement = $Element->hasCompositeElement()? $Element->getCompositeElements()->offsetGet(0)->getCompositeElement() : null;
 
-            if($compositeElement && !$Element->isComposite())
-                $oldOpaqueArea = $compositeElement->getOpaqueArea();
-
-            $elementTypeNodeIds[] = $Element->getElementTypeNodeId();
-        }
-
-        if($Element->isComposite() && $this->Request->has('recursive'))
+        if ($element->isComposite() && $this->Request->has('recursive')) {
             $confirmMsg = 'Soll das Bauteil und seine Komponenten wirklich gelöscht werden?';
-        elseif($Element->isComposite())
+        } elseif ($element->isComposite()) {
             $confirmMsg = 'Soll das Bauteil wirklich gelöscht werden?';
-        else
+        } else {
             $confirmMsg = 'Soll die Bauteilkomponente wirklich gelöscht werden?';
+        }
 
-        if(!parent::deleteAction($confirmMsg, $addViews))
-            return false;
+        $url = Url::parse($this->Request->getURI());
+        $url->addParameter(['confirmed' => null]);
 
-        /**
-         * Update area of opaque elements
-         */
-        if(!is_null($oldOpaqueArea) &&
-           !$Element->isComposite() &&
-           $compositeElement)
-            $this->updateAffectedOpaqueElements($compositeElement, $oldOpaqueArea);
+        if (!$addViews) {
+            $url->addParameter(['composite' => null]);
+        }
 
-        /**
-         * Update the element type cache hierarchy
-         */
-        $LcaProcessor = $this->container->get(ElcaLcaProcessor::class);
+        $this->messages->add($confirmMsg, ElcaMessages::TYPE_CONFIRM, (string)$url);
 
-        if($compositeElement && $compositeElement->isInitialized())
-            $LcaProcessor
-                ->computeElement($compositeElement)
-                ->updateCache($compositeElement->getProjectVariant()->getProjectId());
-
-        /**
-         * Update type tree for all associated elementTypeNodeIds
-         */
-        foreach($elementTypeNodeIds as $elementTypeNodeId)
-            $LcaProcessor->updateElementTypeTree($projectVariantId, $elementTypeNodeId);
-
-        return true;
+        return false;
     }
-    // End deleteAction
-
-
 
     /**
      * Save elements within composite context
@@ -1069,8 +1047,9 @@ class ProjectElementsCtrl extends ElementsCtrl
      */
     protected function deleteElementAction()
     {
-        if(!$this->Request->id || !$this->Request->compositeElementId)
+        if (!$this->Request->id || !$this->Request->compositeElementId) {
             return false;
+        }
 
         $Element = ElcaElement::findById((int)$this->Request->id);
         $CompositeElement = ElcaElement::findById((int)$this->Request->compositeElementId);

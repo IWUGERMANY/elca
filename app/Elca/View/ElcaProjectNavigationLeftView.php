@@ -72,7 +72,7 @@ class ElcaProjectNavigationLeftView extends HtmlView
 
         $item = $data->add(t('Varianten'), 'elca', ProjectDataCtrl::class, 'variants');
         $activeAction = FrontController::getInstance()->getAction();
-        if ($activeAction === 'replaceProcesses' || $activeAction === 'replaceElements') {
+        if ($activeAction === 'replaceProcesses' || $activeAction === 'replaceComponents' || $activeAction === 'replaceElements') {
             $item->setActive();
         }
 
