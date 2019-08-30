@@ -26,6 +26,7 @@ namespace Elca\View;
 
 use Beibob\Blibs\HtmlView;
 use Beibob\Blibs\UserSet;
+use Beibob\Blibs\User;
 use Elca\Security\ElcaAccess;
 
 /**
@@ -61,7 +62,16 @@ class ElcaUsersView extends HtmlView
 
         $NoUsersElt = $this->getElementById('no-users');
         $NoUsersElt->parentNode->removeChild($NoUsersElt);
-
+		
+		// user statistics
+		$userStatistics = [
+			'confirmed' => 0,
+			'requested' => 0,
+			'locked' => 0,
+			'legacy' => 0,
+			'count' => 0,
+		];
+		
         $Access = ElcaAccess::getInstance();
         $hasAdminPrivileges = $Access->hasAdminPrivileges();
         $currentUserId = $Access->getUserId();
@@ -78,7 +88,33 @@ class ElcaUsersView extends HtmlView
             $Include->setAttribute('canEdit', $Access->canEditUser($User));
             $Include->setAttribute('hasAdminPrivileges', $hasAdminPrivileges);
             $Include->setAttribute('currentUserId', $currentUserId);
+			
+			// fill the statistics
+			$userStatistics['count']++;
+			// count the users by status
+            switch ($User->getStatus()) {
+                case User::STATUS_REQUESTED:
+					$userStatistics['requested']++;
+                    break;
+                case User::STATUS_CONFIRMED:
+					$userStatistics['confirmed']++;
+                    break;
+                case User::STATUS_LEGACY:
+					$userStatistics['legacy']++;
+                    break;
+            }
+			// count the locked user accounts
+			if ($User->isLocked()) {
+				$userStatistics['locked']++;
+			}
         }
+
+		$this->assign('userConfirmed', $userStatistics['confirmed']);
+		$this->assign('userRequested', $userStatistics['requested']);
+		$this->assign('userLegacy', $userStatistics['legacy']);
+		$this->assign('userLocked', $userStatistics['locked']);
+		$this->assign('userCount', $userStatistics['count']);
+		
     }
     // End render
 
