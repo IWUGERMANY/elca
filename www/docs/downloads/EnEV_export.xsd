@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of the eLCA project
+  ~
+  ~ eLCA
+  ~ A web based life cycle assessment application
+  ~
+  ~ Copyright (c) 2016 Tobias Lode <tobias@beibob.de>
+  ~               BEIBOB Medienfreunde GbR - http://beibob.de/
+  ~
+  ~ eLCA is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ eLCA is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with eLCA. If not, see <http://www.gnu.org/licenses/>.
+  ~
+  -->
+<xs:schema xmlns="https://www.bauteileditor.de/EnEV/2017" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="https://www.bauteileditor.de/EnEV/2017" elementFormDefault="qualified">
+
+    <xs:element name="elca">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="project" type="projectType" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- BEGIN project -->
+    <xs:complexType name="projectType">
+        <xs:sequence>
+
+            <xs:element name="projectInfo">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element type="xs:string" name="name"/>
+                        <xs:element type="xs:string" name="description"/>
+                        <xs:element type="xs:string" name="projectNr"/>
+                        <xs:element type="xs:string" name="isListed" minOccurs="0" maxOccurs="1"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="attributes" minOccurs="0" maxOccurs="1">
+                <xs:complexType mixed="true">
+                    <xs:sequence>
+                        <xs:element name="attr" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element type="xs:string" name="caption"/>
+                                    <xs:element type="floatNullable" name="numericValue" minOccurs="0"/>
+                                    <xs:element type="xs:string" name="textValue" minOccurs="0"/>
+                                </xs:sequence>
+                                <xs:attribute type="xs:string" name="ident"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="projectVariants">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="variant" type="variantType" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+        </xs:sequence>
+    </xs:complexType>
+    <!-- END project -->
+
+
+    <!-- BEGIN variant -->
+    <xs:complexType name="variantType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="name"/>
+            <xs:element name="location">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element type="xs:string" name="street"/>
+                        <xs:element type="xs:string" name="postcode"/>
+                        <xs:element type="xs:string" name="city"/>
+                        <xs:element type="xs:string" name="country"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="construction">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element type="floatNullable" name="grossFloorSpace"/>
+                        <xs:element type="floatNullable" name="netFloorSpace"/>
+                        <xs:element type="floatNullable" name="floorSpace"/>
+                        <xs:element type="floatNullable" name="propertySize"/>
+                        <xs:element name="constrCatalog" minOccurs="0">
+                            <xs:complexType>
+                                <xs:attribute type="xs:string" name="ident"/>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="constrDesign" minOccurs="0">
+                            <xs:complexType>
+                                <xs:attribute type="xs:string" name="ident"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attribute type="xs:boolean" name="isExtantBuilding" use="optional"/>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="elements">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded" minOccurs="0">
+                        <xs:element name="element" type="elementType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="finalEnergy" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="finalEnergyDemands" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="finalEnergyDemand" minOccurs="0" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                            <xs:all minOccurs="0">
+                                                <xs:element type="xs:float" name="heating" minOccurs="0"/>
+                                                <xs:element type="xs:float" name="water" minOccurs="0"/>
+                                                <xs:element type="xs:float" name="ventilation" minOccurs="0"/>
+                                                <xs:element type="xs:float" name="cooling" minOccurs="0"/>
+                                                <xs:element type="xs:float" name="lighting" minOccurs="0"/>
+                                            </xs:all>
+                                            <xs:attribute type="xs:string" name="processConfigName"/>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+
+
+
+                        <xs:element name="refFinalEnergyDemands" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="finalEnergyDemand" minOccurs="0" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                            <xs:all minOccurs="0">
+                                                <xs:element type="xs:float" name="heating" minOccurs="0"/>
+                                                <xs:element type="xs:float" name="water" minOccurs="0"/>
+                                                <xs:element type="xs:float" name="ventilation" minOccurs="0"/>
+                                                <xs:element type="xs:float" name="cooling" minOccurs="0"/>
+                                                <xs:element type="xs:float" name="lighting" minOccurs="0"/>
+                                            </xs:all>
+                                            <xs:attribute type="xs:string" name="processConfigName"/>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+
+                        <xs:element name="finalEnergySupplies" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="finalEnergySupply" minOccurs="0" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                            <xs:attribute type="xs:string" name="processConfigName"/>
+                                            <xs:attribute type="xs:float" name="quantity"/>
+                                            <xs:attribute type="xs:float" name="enevRatio"/>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+
+                    </xs:sequence>
+                    <xs:attribute type="xs:float" name="ngfEnEv"/>
+                    <xs:attribute type="xs:integer" name="enEvVersion"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="phaseIdent" use="optional"/>
+        <xs:attribute type="xs:string" name="isCurrent" use="optional"/>
+    </xs:complexType>
+    <!-- END variant -->
+
+
+    <!-- BEGIN element -->
+    <xs:complexType name="elementType">
+        <xs:sequence>
+
+            <xs:element name="elementInfo">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element type="xs:string" name="name"/>
+                        <xs:element type="xs:string" name="description"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="components">
+                <xs:complexType>
+                    <xs:choice maxOccurs="unbounded" minOccurs="0">
+                        <xs:element name="component" type="componentType"/>
+                        <xs:element name="siblings" type="siblingsType"/>
+                    </xs:choice>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="attributes" minOccurs="0" maxOccurs="1">
+                <xs:complexType mixed="true">
+                    <xs:sequence>
+                        <xs:element name="attr" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element type="xs:string" name="caption"/>
+                                    <xs:element type="floatNullable" name="numericValue" minOccurs="0"/>
+                                    <xs:element type="xs:string" name="textValue" minOccurs="0"/>
+                                </xs:sequence>
+                                <xs:attribute type="xs:string" name="ident"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="uuid" use="optional"/>
+        <xs:attribute type="xs:string" name="din276Code" use="optional"/>
+        <xs:attribute type="xs:float" name="quantity" use="optional"/>
+        <xs:attribute type="xs:string" name="refUnit" use="optional"/>
+    </xs:complexType>
+    <!-- END element -->
+
+    <!-- BEGIN siblings -->
+    <xs:complexType name="siblingsType">
+        <xs:sequence>
+            <xs:element name="component" type="componentType" minOccurs="2" maxOccurs="2"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- END siblings -->
+
+    <!-- BEGIN component -->
+    <xs:complexType name="componentType">
+        <xs:sequence>
+            <xs:element name="attributes" minOccurs="0" maxOccurs="1">
+                <xs:complexType mixed="true">
+                    <xs:sequence>
+                        <xs:element name="attr" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element type="floatNullable" name="numericValue" minOccurs="0"/>
+                                    <xs:element type="xs:string" name="textValue" minOccurs="0"/>
+                                </xs:sequence>
+                                <xs:attribute type="xs:string" name="ident"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute type="xs:boolean" name="isLayer"/>
+        <xs:attribute type="xs:string" name="processConfigName"/>
+        <xs:attribute type="xs:integer" name="lifeTime"/>
+
+        <xs:attribute type="xs:integer" name="lifeTimeDelay" use="optional"/>
+        <xs:attribute type="xs:boolean" name="isExtant" use="optional"/>
+        <xs:attribute type="xs:integer" name="layerPosition" use="optional"/>
+        <xs:attribute type="xs:float" name="layerSize" use="optional"/>
+        <xs:attribute type="xs:float" name="layerAreaRatio" use="optional"/>
+        <xs:attribute type="xs:float" name="layerLength" use="optional"/>
+        <xs:attribute type="xs:float" name="layerWidth" use="optional"/>
+
+        <xs:attribute type="xs:integer" name="din276Code" use="optional"/>
+        <xs:attribute type="xs:float" name="quantity" use="optional"/>
+        <xs:attribute type="xs:string" name="refUnit" use="optional"/>
+    </xs:complexType>
+    <!-- END component -->
+
+
+    <!-- BEGIN floatNullable -->
+    <xs:simpleType name="floatNullable">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:length value="0"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:float">
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+    <!-- END floatNullable -->
+
+</xs:schema>

@@ -629,6 +629,12 @@ h1.projectHeader { float: left; margin-right: 3em; }
 
 #content ul.pageable li.next-page a.loading { background: transparent url(/img/elca/loader/indicator_medium.gif) left center no-repeat; }
 
+#content.websiteinfo .downloads { padding-left: 16px; padding-top: 10px; }
+
+#content.websiteinfo .downloads li { display: inline; position: relative; display: block; padding: 5px 0; /*only for demo*/ }
+
+#content.websiteinfo .downloads li .iconsheet:before { content: ""; height: 100%; width: 15px; left: -15px; top: 5px; position: absolute; background: url(/img/elca/ic-download-sheet.png) no-repeat; }
+
 .toggle { display: none; }
 .toggle, .toggle:after, .toggle:before, .toggle *, .toggle *:after, .toggle *:before, .toggle + .toggle-btn { box-sizing: border-box; }
 .toggle::selection, .toggle:after::selection, .toggle:before::selection, .toggle *::selection, .toggle *:after::selection, .toggle *:before::selection, .toggle + .toggle-btn::selection { background: none; }

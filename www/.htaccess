@@ -50,6 +50,8 @@ DirectoryIndex index.php
   RewriteRule ^(.*)$ http://%{HTTP_HOST}/$1/ [R=301,L]
 
   ### Rewrite directory requests to default index.php
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_URI} !^/robots.txt$
   RewriteCond %{REQUEST_URI} !\.(html|php|gif|jpe?g|png|swf|css|htc|js|pdf|doc|xml|ico|flv|svg|csv|xsd)$
   RewriteRule (.*) /index.php [L]
