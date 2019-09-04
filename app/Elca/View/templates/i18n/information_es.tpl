@@ -13,11 +13,16 @@
 	<br/>
 	<h3>Schema</h3>
 	<ul class="downloads">
-		<li><a href="/docs/EnEV/2017/EnEV_export.xsd"  type="application/zip" target="_blank" title="EnEV Schema 2017 XSD " class="iconsheet no-xhr">EnEV Schema 2017 [XSD, DE]</a></li>
-		<li><a href="/docs/downloads/EnEV_XSD-export.zip" type="application/zip" title="EnEV Schema 2017 ZIP" class="iconsheet no-xhr">EnEV Schema 2017 [ZIP]</a></li>
-		<li><a href="/docs/downloads/eLCA-Ergaenzung_Schema_zu_KG_400.pdf" target="_blank" title="Ergänzung zum Schema (KG 400)" class="iconsheet no-xhr">Ergänzung zum Schema (KG 400) [PDF, DE]</a></li>
+		<li><a href="/docs/EnEV/2017/export.xsd"  type="application/zip" target="_blank" title="EnEV Schema Version 1, XSD " class="iconsheet no-xhr">EnEV Schema Version 1 [XSD, DE]</a></li>
+		<li><a href="/docs/EnEV/2017/export.zip" type="application/zip" title="EnEV Schema Version 1 ZIP" class="iconsheet no-xhr">EnEV Schema Version 1 [ZIP]</a></li>
 	</ul>
-	
+	<ul class="downloads">
+		<li><a href="/docs/EnEV/2017/export-v2.xsd"  type="application/zip" target="_blank" title="EnEV Schema Version 2, XSD " class="iconsheet no-xhr">EnEV Schema Version 2 [XSD, DE]</a></li>
+		<li><a href="/docs/EnEV/2017/export-v2.zip" type="application/zip" title="EnEV Schema Version 2 ZIP" class="iconsheet no-xhr">EnEV Schema Version 2 [ZIP]</a></li>
+	</ul>
+	<ul class="downloads">
+		<li><a href="/docs/downloads/eLCA-Ergaenzung_Schema_zu_KG_400.pdf" target="_blank" title="Ergänzung zum Schema (KG 400)" class="iconsheet no-xhr">Ergänzung zum Schema (KG 400) [PDF, DE]</a></li>
+	</ul>	
 	<br/>
 	<h3>Assistenten</h3>
 	<ul class="downloads">
