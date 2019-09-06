@@ -1,3 +1,24 @@
-#content.privacy {
 
+ 
+#content.websiteinfo .downloads {
+	padding-left: 16px;
+	padding-top: 10px;
+} 
+
+#content.websiteinfo .downloads  li {
+  display: inline;
+  position: relative;
+  display: block;
+  padding: 5px 0;
+  /*only for demo*/
+}
+
+#content.websiteinfo .downloads li .iconsheet:before {
+  content: "";
+  height: 100%;
+  width: 15px;
+  left: -15px;
+  top:5px;
+  position: absolute;
+  background: url(/img/elca/ic-download-sheet.png) no-repeat;
 }
