@@ -120,7 +120,7 @@ input.numeric-input { text-align: right; }
 .form-section.inline .label-holder { float: left; padding-right: 25px; padding-bottom: 0; line-height: 24px; min-width: 50%; }
 .form-section.inline .form-elt { display: inline-block; }
 
-body { margin: 0; font-family: Arial,sans-serif; font-size: 16px; color: #666; }
+body { margin: 0; font-family: Arial,sans-serif; font-size: 16px; color: #666; background-color: #fff; }
 
 h1, h2, h3, h4, h5, h6 { margin: 0; }
 
