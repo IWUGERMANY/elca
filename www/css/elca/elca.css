@@ -1433,6 +1433,20 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #tabContent.tab-lca .process-assignment table td { text-align: left; }
 
+#processConfig .column.properties .form-section.wasteCode, #processConfig .column.properties .form-section.wasteCodeSuffix, #processConfig .column.properties .form-section.lambdaValue .form-elt, #processConfig .column.properties .form-section.elementGroupA, #processConfig .column.properties .form-section.elementGroupB { box-sizing: border-box; width: 50%; }
+
+#processConfig .column.properties .form-section.elementGroupA, #processConfig .column.properties .form-section.wasteCode, #processConfig .column.properties .form-section.wasteCodeSuffix { float: left; }
+
+#processConfig .column.properties .form-section.elementGroupB { float: right; }
+
+#processConfig .column.properties .form-section.wasteCode { padding-right: 15px; }
+
+#processConfig .column.properties .form-section.wasteCodeSuffix { padding-left: 15px; }
+
+#processConfig .column.properties .form-section.lambdaValue { clear: both; }
+
+#processConfig .column.properties .form-section.lambdaValue .form-elt { padding-right: 26px; }
+
 /** Process Datenbanken ------------------*/
 #content.process-databases div.button.export { margin: 0 20px 15px 0; float: left; }
 
