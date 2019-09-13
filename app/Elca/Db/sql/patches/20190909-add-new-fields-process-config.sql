@@ -1,6 +1,7 @@
 BEGIN;
 SELECT public.register_patch('20190909-add-new-fields-process-config.sql', 'eLCA');
 
+SET search_path = elca;
 ALTER TABLE "process_configs" ADD "waste_code" integer NULL;
 ALTER TABLE "process_configs" ADD "waste_code_suffix" integer NULL;
 ALTER TABLE "process_configs" ADD "lambda_value" numeric NULL;
