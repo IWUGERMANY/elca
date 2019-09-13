@@ -262,21 +262,24 @@ class ElcaProcessConfigGeneralView extends HtmlView
          */
         $lftGroup = $form->add(new HtmlFormGroup(''));
         $lftGroup->addClass('clearfix properties column');
-
+		
         $lftGroup->add(new ElcaHtmlFormElementLabel(t('Name'), new HtmlTextInput('name'), true));
-        $processConfigName = ElcaProcessConfigName::findByProcessConfigIdAndLang(
-            $this->processConfig->getId(),
-            Environment::getInstance()->getContainer()->get(ElcaLocale::class)->getLocale()
-        );
-        $lftGroup->add(
-            new ElcaHtmlFormElementLabel(
-                t('Übersetzung'), new HtmlStaticText(
-                    $processConfigName->isInitialized()
-                    ? $processConfigName->getName() .' ['. $processConfigName->getLang() .']'
-                    : 'keine Übersetzung'
-            )
-            )
-        );
+		
+		if($this->processConfig->isInitialized()) {
+			$processConfigName = ElcaProcessConfigName::findByProcessConfigIdAndLang(
+				$this->processConfig->getId(),
+				Environment::getInstance()->getContainer()->get(ElcaLocale::class)->getLocale()
+			);
+			$lftGroup->add(
+				new ElcaHtmlFormElementLabel(
+					t('Übersetzung'), new HtmlStaticText($processConfigName->getName() .' ['. $processConfigName->getLang() .']')
+				)
+			);
+		} else {
+			$lftGroup->add(
+				new ElcaHtmlFormElementLabel(t('Übersetzung'), new HtmlStaticText('keine Übersetzung'))
+			);			
+		}
         $lftGroup->add(new ElcaHtmlFormElementLabel(t('Notizen'), new HtmlTextarea('description')));
         $lftGroup->add(new ElcaHtmlFormElementLabel(t('Sichtbar für Anwender'), new HtmlCheckbox('isReference')));
 
@@ -345,6 +348,61 @@ class ElcaProcessConfigGeneralView extends HtmlView
                 t('Vorgabewert für Nutzungsbaustoffe')
             )
         );
+		
+		$numberFormatConverter = new ElcaNumberFormatConverter(0);
+		
+		$wasteCodeElement = new ElcaHtmlNumericInput('wasteCode', null, $this->readOnly, $numberFormatConverter);
+		$wasteCodeElement->setAttribute('size', 6);
+		$wasteCodeElement->setAttribute('maxlength', 6);
+		
+		$lftGroup->add(
+			new ElcaHtmlFormElementLabel(
+				t('AVV'),
+				$wasteCodeElement,
+				false,
+				null,
+				t('Abfallschlüssel gemäß Abfallverzeichnis-Verordnung')
+			)
+		);
+		
+		// admin user only
+		if(!$this->readOnly) {
+			
+			$wasteCodeSuffixElement = new ElcaHtmlNumericInput('wasteCodeSuffix', null, $this->readOnly, $numberFormatConverter);
+			$wasteCodeSuffixElement->setAttribute('size', 3);
+			$wasteCodeSuffixElement->setAttribute('maxlength', 3);
+
+			$lftGroup->add(
+				new ElcaHtmlFormElementLabel(
+					t('AVV Suffix'),
+					$wasteCodeSuffixElement,
+					false,
+					null,
+					t('Suffix für Abfallschlüssel gemäß Abfallverzeichnis-Verordnung')
+				)
+			);		
+		}
+		
+		$numberFormatConverter = new ElcaNumberFormatConverter(3);
+		
+		$lambdaElement = new ElcaHtmlNumericInput('lambdaValue', null, $this->readOnly, $numberFormatConverter);
+	
+		$lftGroup->add(
+			new ElcaHtmlFormElementLabel(
+				t('Lamda Wert (λ)'),
+				$lambdaElement,
+				false,
+				'W/mK'				
+			)
+		);
+		
+		if(!$this->readOnly) {
+	
+			$lftGroup->add(new ElcaHtmlFormElementLabel(t('Stoffgruppe A'), new HtmlCheckbox('elementGroupA')));
+			$lftGroup->add(new ElcaHtmlFormElementLabel(t('Stoffgruppe B'), new HtmlCheckbox('elementGroupB')));	
+
+		}
+		
         //$LftGroup->add(new ElcaHtmlFormElementLabel(t('Wärmeleitfähigkeit'), new ElcaHtmlNumericInput('thermalConductivity'), false, 'W / mk'));
         //$LftGroup->add(new ElcaHtmlFormElementLabel(t('Wärmedurchgangswiderstand'), new ElcaHtmlNumericInput('thermalResistance'), false, 'Km² / W'));
 
