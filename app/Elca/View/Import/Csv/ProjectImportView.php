@@ -230,7 +230,7 @@ class ProjectImportView extends HtmlView
             )
         );
 
-        $group->add(new ElcaHtmlFormElementLabel(t('Datei (.csv, komma-separiert, UTF-8)'), new HtmlUploadInput('importFile')));
+        $group->add(new ElcaHtmlFormElementLabel(t('Datei (.csv, semikolon-separiert, UTF-8)'), new HtmlUploadInput('importFile')));
 
         $group->add(new HtmlTag('p', t('Die erste Zeile der Importdatei wird ignoriert!')));
 

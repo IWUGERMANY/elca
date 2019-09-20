@@ -135,9 +135,9 @@ class ProjectCsvCtrl extends AppCtrl
             if ($validator->assertNotEmpty('postcode', null, t('Bitte geben Sie mindestens 2 Stellen der PLZ ein'))) {
                 if ($validator->assertMinLength(
                     'postcode',
-                    2,
+                    1,
                     null,
-                    t('Bitte geben Sie mindestens 2 Stellen der PLZ ein')
+                    t('Bitte geben Sie mindestens 1 Stellen der PLZ ein')
                 )) {
                     $validator->assertNumber('postcode', null, t('Die PLZ ist ungültig'));
                 }

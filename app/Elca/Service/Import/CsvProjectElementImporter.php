@@ -9,7 +9,7 @@ use Elca\Model\Import\Csv\ImportElement;
 
 class CsvProjectElementImporter
 {
-    const DELIMITER = ',';
+    const DELIMITER = ';';
     const COLUMN_COUNT = 5;
 
     /**
