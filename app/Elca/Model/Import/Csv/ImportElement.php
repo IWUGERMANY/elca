@@ -6,6 +6,7 @@ namespace Elca\Model\Import\Csv;
 
 use Elca\ElcaNumberFormat;
 use Elca\Model\Common\Quantity\Quantity;
+use Elca\Service\Import\UnitNameMapper;
 use Ramsey\Uuid\Uuid;
 
 final class ImportElement
@@ -107,9 +108,9 @@ final class ImportElement
             return null;
         }
 
-        return Quantity::fromValue(
+        return new Quantity(
             ElcaNumberFormat::fromString($quantityString, 2),
-            $unit
+            UnitNameMapper::unitByName($unit)
         );
     }
 
