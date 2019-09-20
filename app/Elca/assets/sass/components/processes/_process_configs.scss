@@ -321,22 +321,32 @@
 	width: 50%;
 }
 #processConfig .column.properties .form-section.elementGroupA,
+#processConfig .column.properties .form-section.elementGroupB,
 #processConfig .column.properties .form-section.wasteCode,
 #processConfig .column.properties .form-section.wasteCodeSuffix {
-	float:left;	
+	float:left;
 }
+#processConfig .column.properties .form-section.elementGroupA {
+  clear:both;
+}
+#processConfig .column.properties .form-section.elementGroupA,
 #processConfig .column.properties .form-section.elementGroupB {
-	float:right;
+  width:140px;
 }
 #processConfig .column.properties .form-section.wasteCode {
+    width:125px;
 	padding-right: 15px;
 }
 #processConfig .column.properties .form-section.wasteCodeSuffix {
+    width:105px;
 	padding-left: 15px;
 }
 #processConfig .column.properties .form-section.lambdaValue {	
-	clear: both;	
+	clear: both;
+    float:left;
+    width:125px;
 }
 #processConfig .column.properties .form-section.lambdaValue .form-elt {
 	padding-right: 26px;
+    width:125px;
 }

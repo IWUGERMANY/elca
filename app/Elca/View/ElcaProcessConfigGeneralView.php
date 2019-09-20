@@ -389,7 +389,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
 	
 		$lftGroup->add(
 			new ElcaHtmlFormElementLabel(
-				t('Lamda Wert (λ)'),
+				t('Lamda (λ)'),
 				$lambdaElement,
 				false,
 				'W/mK'				

@@ -1435,17 +1435,19 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #processConfig .column.properties .form-section.wasteCode, #processConfig .column.properties .form-section.wasteCodeSuffix, #processConfig .column.properties .form-section.lambdaValue .form-elt, #processConfig .column.properties .form-section.elementGroupA, #processConfig .column.properties .form-section.elementGroupB { box-sizing: border-box; width: 50%; }
 
-#processConfig .column.properties .form-section.elementGroupA, #processConfig .column.properties .form-section.wasteCode, #processConfig .column.properties .form-section.wasteCodeSuffix { float: left; }
+#processConfig .column.properties .form-section.elementGroupA, #processConfig .column.properties .form-section.elementGroupB, #processConfig .column.properties .form-section.wasteCode, #processConfig .column.properties .form-section.wasteCodeSuffix { float: left; }
 
-#processConfig .column.properties .form-section.elementGroupB { float: right; }
+#processConfig .column.properties .form-section.elementGroupA { clear: both; }
 
-#processConfig .column.properties .form-section.wasteCode { padding-right: 15px; }
+#processConfig .column.properties .form-section.elementGroupA, #processConfig .column.properties .form-section.elementGroupB { width: 140px; }
 
-#processConfig .column.properties .form-section.wasteCodeSuffix { padding-left: 15px; }
+#processConfig .column.properties .form-section.wasteCode { width: 125px; padding-right: 15px; }
 
-#processConfig .column.properties .form-section.lambdaValue { clear: both; }
+#processConfig .column.properties .form-section.wasteCodeSuffix { width: 105px; padding-left: 15px; }
 
-#processConfig .column.properties .form-section.lambdaValue .form-elt { padding-right: 26px; }
+#processConfig .column.properties .form-section.lambdaValue { clear: both; float: left; width: 125px; }
+
+#processConfig .column.properties .form-section.lambdaValue .form-elt { padding-right: 26px; width: 125px; }
 
 /** Process Datenbanken ------------------*/
 #content.process-databases div.button.export { margin: 0 20px 15px 0; float: left; }
