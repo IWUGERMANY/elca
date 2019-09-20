@@ -41,10 +41,16 @@
     top:0;
     right:0;
     margin:5px;
-    font-style: italic;
+    color:$textColor;
     li {
       float:left;
       padding-left:20px;
+
+      .select-text {
+        .selection-label {
+          padding-right:3px;
+        }
+      }
     }
   }
 }

@@ -934,7 +934,15 @@ class ElcaElementView extends HtmlView
         }
 
         $container = $content->appendChild($this->getUl(['class' => 'id-info']));
-        $container->appendChild($this->getLi([], 'ID=' . $this->element->getId()));
-        $container->appendChild($this->getLi([], 'UUID=' . $this->element->getUuid()));
+        $container->appendChild($this->getLi())->appendChild($this->selectionTextElement('ID', $this->element->getId()));
+        $container->appendChild($this->getLi())->appendChild($this->selectionTextElement('UUID', $this->element->getUuid()));
+    }
+
+    private function selectionTextElement($label, $text) : \DOMElement {
+        $container = $this->getSpan(null, ['class' => 'select-text']);
+        $container->appendChild($this->getSpan($label.':', ['class' => 'selection-label']));
+        $container->appendChild($this->getSpan($text, ['class' => 'selection-value']));
+
+        return $container;
     }
 }

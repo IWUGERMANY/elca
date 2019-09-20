@@ -328,8 +328,9 @@ body.loading #loading { display: block; }
 #tabContent { border: 1px solid #ccc; padding: 20px; }
 
 #tabContent { position: relative; }
-#tabContent ul.id-info { position: absolute; top: 0; right: 0; margin: 5px; font-style: italic; }
+#tabContent ul.id-info { position: absolute; top: 0; right: 0; margin: 5px; color: #666; }
 #tabContent ul.id-info li { float: left; padding-left: 20px; }
+#tabContent ul.id-info li .select-text .selection-label { padding-right: 3px; }
 
 .chart { position: relative; font: 10px sans-serif; }
 

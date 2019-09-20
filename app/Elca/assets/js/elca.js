@@ -695,6 +695,22 @@ $(window).load(function () {
                         }
                     });
 
+                    $('.select-text', $context).on('click', function() {
+                        var range, selection,
+                            valueNode = $('.selection-value', this).get(0);
+
+                        if (window.getSelection && document.createRange) {
+                            selection = window.getSelection();
+                            range = document.createRange();
+                            range.selectNodeContents(valueNode);
+                            selection.removeAllRanges();
+                            selection.addRange(range);
+                        } else if (document.selection && document.body.createTextRange) {
+                            range = document.body.createTextRange();
+                            range.moveToElementText(valueNode);
+                            range.select();
+                        }
+                    });
 
                     /**
                      * Scroll to top
