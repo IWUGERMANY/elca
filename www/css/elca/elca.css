@@ -1869,6 +1869,10 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #elca-projects .button { float: right; margin-left: 15px; }
 
+#elca-projects .button.import.csv a { background-color: #008000; }
+
+#elca-projects .button.import.enev a { background-color: #FFA500; }
+
 #elca-projects { margin-top: 30px; }
 #elca-projects p { padding-left: 8px; }
 #elca-projects .sheets-filter { margin-top: 40px; margin-left: 8px; }

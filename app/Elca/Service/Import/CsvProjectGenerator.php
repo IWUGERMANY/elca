@@ -136,6 +136,7 @@ class CsvProjectGenerator
 
             $oldQuantity = $newElement->getQuantity();
 
+            $newElement->setName($importElement->name());
             $newElement->setQuantity($importElement->quantity()->value());
             $newElement->setRefUnit($importElement->quantity()->unit()->value());
             $newElement->update();
