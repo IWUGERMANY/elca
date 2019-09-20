@@ -25,10 +25,10 @@ class CsvProjectElementImporter
 
         $importedElements = [];
         while ($csv = $file->getCsv(self::DELIMITER)) {
-            $name               = trim($csv[0]);
-            $din276CodeString   = trim($csv[1]);
-            $quantityString     = trim($csv[2]);
-            $unitString         = trim($csv[3]);
+            $name               = trim($csv[0] ?? '');
+            $din276CodeString   = trim($csv[1] ?? '');
+            $quantityString     = trim($csv[2] ?? '');
+            $unitString         = trim($csv[3] ?? '');
 
             if (empty($name)) {
                 continue;
