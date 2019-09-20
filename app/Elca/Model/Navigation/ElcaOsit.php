@@ -127,10 +127,7 @@ class ElcaOsit
         $this->setProcessConfigListScenario($categoryId, $isSearch);
 
         if($processConfigId) {
-			
-			$processConfig = ElcaProcessConfig::findById($processConfigId);
-			
-            $this->add(new ElcaOsitItem($processConfig->getName(). ' [' . $processConfig->getUuid() . ':' . $processConfig->getId() . ']', null, t('Baustoff')));
+            $this->add(new ElcaOsitItem(ElcaProcessConfig::findById($processConfigId)->getName(), null, t('Baustoff')));
         }
         else {
             $this->add(new ElcaOsitItem(t('Neuen Baustoff anlegen')));
@@ -208,7 +205,7 @@ class ElcaOsit
             }
 
             $Element = ElcaElement::findById($elementId);
-            $this->add(new ElcaOsitItem($Element->getName() .' [' . $Element->getUuid() . ':' . $Element->getId() . ']', null, $Element->isComposite()? t('Bauteilvorlage') : t('Bauteilkomponentenvorlage'), 'library'));
+            $this->add(new ElcaOsitItem($Element->getName() .' ['.$elementId.']', null, $Element->isComposite()? t('Bauteilvorlage') : t('Bauteilkomponentenvorlage'), 'library'));
         }
         else
             $this->add(new ElcaOsitItem(t('Neue Bauteilvorlage anlegen'), null, null, 'library'));

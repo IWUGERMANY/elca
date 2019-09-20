@@ -3,6 +3,7 @@
 #content ul.elca-tabs {
   position:relative;
   top:1px;
+  z-index: 1;
 }
 #content ul.elca-tabs li.elca-tab {
   float:left;
@@ -31,4 +32,19 @@
 #tabContent {
   border: 1px solid #ccc;
   padding:20px;
+}
+
+#tabContent {
+  position:relative;
+  ul.id-info {
+    position:absolute;
+    top:0;
+    right:0;
+    margin:5px;
+    font-style: italic;
+    li {
+      float:left;
+      padding-left:20px;
+    }
+  }
 }

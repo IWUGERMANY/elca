@@ -315,7 +315,7 @@ body.loading #loading { display: block; }
 .elca-sheet-content .infos li { float: left; padding-right: 20px; }
 
 /** tabs ---------------*/
-#content ul.elca-tabs { position: relative; top: 1px; }
+#content ul.elca-tabs { position: relative; top: 1px; z-index: 1; }
 
 #content ul.elca-tabs li.elca-tab { float: left; border: 1px solid #ccc; padding: 0; margin-right: 5px; border-bottom: none; }
 
@@ -326,6 +326,10 @@ body.loading #loading { display: block; }
 #content ul.elca-tabs li.elca-tab.active a:hover { text-decoration: none; }
 
 #tabContent { border: 1px solid #ccc; padding: 20px; }
+
+#tabContent { position: relative; }
+#tabContent ul.id-info { position: absolute; top: 0; right: 0; margin: 5px; font-style: italic; }
+#tabContent ul.id-info li { float: left; padding-left: 20px; }
 
 .chart { position: relative; font: 10px sans-serif; }
 

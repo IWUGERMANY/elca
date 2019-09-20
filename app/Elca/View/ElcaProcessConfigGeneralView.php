@@ -47,6 +47,7 @@ use Beibob\HtmlTools\HtmlText;
 use Beibob\HtmlTools\HtmlTextArea;
 use Beibob\HtmlTools\HtmlTextInput;
 use DOMElement;
+use DOMNode;
 use Elca\Db\ElcaLifeCycle;
 use Elca\Db\ElcaProcessCategory;
 use Elca\Db\ElcaProcessConfig;
@@ -190,58 +191,59 @@ class ElcaProcessConfigGeneralView extends HtmlView
      */
     protected function beforeRender()
     {
-        $Form = new HtmlForm('processConfigForm', '/processes/saveConfig/');
-        $Form->setAttribute('id', 'processConfig');
-
+        $form = new HtmlForm('processConfigForm', '/processes/saveConfig/');
+        $form->setAttribute('id', 'processConfig');
 
         if ($this->readOnly) {
-            $Form->setReadonly();
+            $form->setReadonly();
         }
 
         if ($this->has('Validator')) {
-            $Form->setValidator($this->get('Validator'));
-            $Form->setRequest(FrontController::getInstance()->getRequest());
+            $form->setValidator($this->get('Validator'));
+            $form->setRequest(FrontController::getInstance()->getRequest());
         }
 
         if ($this->processConfig instanceOf ElcaProcessConfig && $this->processConfig->isInitialized()) {
-            $Form->addClass('highlight-changes');
-            $Form->setDataObject($this->processConfig);
-            $Form->add(new HtmlHiddenField('processConfigId', $this->processConfig->getId()));
+            $form->addClass('highlight-changes');
+            $form->setDataObject($this->processConfig);
+            $form->add(new HtmlHiddenField('processConfigId', $this->processConfig->getId()));
         } else {
-            $Form->add(new HtmlHiddenField('processCategoryNodeId', $this->processCategoryNodeId));
+            $form->add(new HtmlHiddenField('processCategoryNodeId', $this->processCategoryNodeId));
         }
 
         switch ($this->buildMode) {
             case self::BUILDMODE_CONVERSIONS:
-                $this->appendConversions($Form, $this->get('addConversion'));
+                $this->appendConversions($form, $this->get('addConversion'));
 
                 // append form to dummy container
                 $DummyContainer = $this->appendChild($this->getDiv());
-                $Form->appendTo($DummyContainer);
+                $form->appendTo($DummyContainer);
 
                 // extract conversion element and replace it with the dummy container
-                $Content = $this->getElementById('conversions');
-                $this->replaceChild($Content, $DummyContainer);
+                $content = $this->getElementById('conversions');
+                $this->replaceChild($content, $DummyContainer);
                 break;
 
             case self::BUILDMODE_INSERT:
-                $this->appendDefault($Form);
-                $this->appendButtons($Form);
+                $this->appendDefault($form);
+                $this->appendButtons($form);
 
-                $Content = $this->appendChild($this->getDiv(['id' => 'tabContent', 'class' => 'tab-general']));
-                $Form->appendTo($Content);
+                $content = $this->appendChild($this->getDiv(['id' => 'tabContent', 'class' => 'tab-general']));
+                $form->appendTo($content);
                 break;
 
             default:
             case self::BUILDMODE_DEFAULT:
-                $this->appendDefault($Form);
-                $this->appendConversions($Form);
-                $this->appendButtons($Form);
+                $this->appendDefault($form);
+                $this->appendConversions($form);
+                $this->appendButtons($form);
 
-                $Content = $this->appendChild($this->getDiv(['id' => 'tabContent', 'class' => 'tab-general']));
-                $Form->appendTo($Content);
+                $content = $this->appendChild($this->getDiv(['id' => 'tabContent', 'class' => 'tab-general']));
+                $this->appendIdInfo($content);
 
-                $this->appendVariants($Content);
+                $form->appendTo($content);
+
+                $this->appendVariants($content);
                 break;
         }
     }
@@ -262,7 +264,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
          */
         $lftGroup = $form->add(new HtmlFormGroup(''));
         $lftGroup->addClass('clearfix properties column');
-		
+
         $lftGroup->add(new ElcaHtmlFormElementLabel(t('Name'), new HtmlTextInput('name'), true));
 		
 		if($this->processConfig->isInitialized()) {
@@ -293,7 +295,6 @@ class ElcaProcessConfigGeneralView extends HtmlView
                 new HtmlCheckbox('is4108Compat', $is4108Compat, '', $this->readOnly)
             )
         );
-
 
         $rgtGroup = $form->add(new HtmlFormGroup(t(t('Nutzungsdauern'))));
         $rgtGroup->addClass('clearfix life-times column right');
@@ -886,6 +887,17 @@ class ElcaProcessConfigGeneralView extends HtmlView
         }
 
         return implode('; ', $parts);
+    }
+
+    private function appendIdInfo(DOMNode $content)
+    {
+        if (!$this->processConfig->getId()) {
+            return;
+        }
+
+        $container = $content->appendChild($this->getUl(['class' => 'id-info']));
+        $container->appendChild($this->getLi([], 'ID=' . $this->processConfig->getId()));
+        $container->appendChild($this->getLi([], 'UUID=' . $this->processConfig->getUuid()));
     }
 }
 

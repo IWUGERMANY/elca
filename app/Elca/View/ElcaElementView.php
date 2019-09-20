@@ -189,42 +189,43 @@ class ElcaElementView extends HtmlView
 
             default:
             case self::BUILDMODE_DEFAULT:
-                $Form = new HtmlForm('elementForm', '/'.$this->context.'/save/');
-                $Form->setAttribute('id', 'elementForm');
-                $Form->addClass('clearfix');
-                $Form->setRequest(FrontController::getInstance()->getRequest());
+                $form = new HtmlForm('elementForm', '/'.$this->context.'/save/');
+                $form->setAttribute('id', 'elementForm');
+                $form->addClass('clearfix');
+                $form->setRequest(FrontController::getInstance()->getRequest());
 
                 if ($this->readOnly) {
-                    $Form->setReadonly();
+                    $form->setReadonly();
                 }
 
                 if ($this->has('Validator')) {
-                    $Form->setValidator($this->get('Validator'));
+                    $form->setValidator($this->get('Validator'));
                 }
 
-                $Form->add(new HtmlHiddenField('projectVariantId', Elca::getInstance()->getProjectVariantId()));
+                $form->add(new HtmlHiddenField('projectVariantId', Elca::getInstance()->getProjectVariantId()));
 
                 if ($compositeElementId = $this->get('compositeElementId')) {
-                    $Form->add(new HtmlHiddenField('rel', $compositeElementId));
+                    $form->add(new HtmlHiddenField('rel', $compositeElementId));
                 }
 
                 if ($this->element instanceOf ElcaElement && $this->element->isInitialized()) {
-                    $Form->addClass('highlight-changes');
-                    $Form->setDataObject($this->element);
-                    $Form->add(new HtmlHiddenField('elementId', $this->element->getId()));
+                    $form->addClass('highlight-changes');
+                    $form->setDataObject($this->element);
+                    $form->add(new HtmlHiddenField('elementId', $this->element->getId()));
                 } else {
-                    $Form->add(new HtmlHiddenField('elementTypeNodeId', $this->elementTypeNodeId));
+                    $form->add(new HtmlHiddenField('elementTypeNodeId', $this->elementTypeNodeId));
                 }
 
-                $Content = $this->appendChild(
+                $content = $this->appendChild(
                     $this->getDiv(['id' => 'tabContent', 'class' => 'tab-general '.$this->context])
                 );
 
-                $this->appendProcessDbCompatMessage($Content);
+            $this->appendIdInfo($content);
+            $this->appendProcessDbCompatMessage($content);
 
-                $this->appendDefault($Form);
-                $Form->appendTo($Content);
-                $this->appendSections($Content);
+                $this->appendDefault($form);
+                $form->appendTo($content);
+                $this->appendSections($content);
                 break;
         }
     }
@@ -235,14 +236,14 @@ class ElcaElementView extends HtmlView
     /**
      * Appends the default elements
      *
-     * @param  HtmlForm $Form
+     * @param  HtmlForm $form
      */
-    protected function appendDefault(HtmlForm $Form)
+    protected function appendDefault(HtmlForm $form)
     {
         /**
          * Name, description and isPublic
          */
-        $leftGroup = $Form->add(new HtmlFormGroup(''));
+        $leftGroup = $form->add(new HtmlFormGroup(''));
         $leftGroup->addClass('clearfix column properties');
 
         $leftGroup->add(new ElcaHtmlFormElementLabel(t('Name'), $inputElt = new HtmlTextInput('name'), true));
@@ -306,8 +307,8 @@ class ElcaElementView extends HtmlView
         /**
          * Construction catalogs and designs
          */
-        $RgtGroup = $Form->add(new HtmlFormGroup(''));
-        $RgtGroup->addClass('clearfix column attributes');
+        $idGroup = $form->add(new HtmlFormGroup(''));
+        $idGroup->addClass('clearfix column attributes');
 
         /**
          * Context sensitive elements
@@ -316,7 +317,7 @@ class ElcaElementView extends HtmlView
             $catalogs = $this->element->getConstrCatalogs()->getArrayBy('id', 'id');
             $designs  = $this->element->getConstrDesigns()->getArrayBy('id', 'id');
 
-            $Select = $RgtGroup->add(
+            $Select = $idGroup->add(
                 $Label = new ElcaHtmlFormElementLabel(
                     t('Katalogzuordnung'),
                     new ElcaHtmlMultiSelectbox('constrCatalogId'),
@@ -332,7 +333,7 @@ class ElcaElementView extends HtmlView
                 }
             }
 
-            $Select = $RgtGroup->add(
+            $Select = $idGroup->add(
                 new ElcaHtmlFormElementLabel(
                     t('Bauweise'),
                     new ElcaHtmlMultiSelectbox('constrDesignId'),
@@ -349,23 +350,23 @@ class ElcaElementView extends HtmlView
                 }
             }
 
-            $AttrContainer = $Form;
+            $AttrContainer = $form;
         } else {
-            $AttrContainer = $RgtGroup;
+            $AttrContainer = $idGroup;
         }
 
         /**
          * Element image
          */
         if ($EltImgContainer = $this->getElementImage()) {
-            $Form->add($EltImgContainer);
+            $form->add($EltImgContainer);
         }
 
         /**
          * Attributes
          */
-        $AttrGroup = $AttrContainer->add(new HtmlFormGroup(t('Attribute')));
-        $AttrGroup->addClass('clearfix clear column');
+        $attrGroup = $AttrContainer->add(new HtmlFormGroup(t('Attribute')));
+        $attrGroup->addClass('clearfix clear column');
 
         foreach (Elca::$elementAttributes as $ident => $caption) {
             $Attr = ElcaElementAttribute::findByElementIdAndIdent($this->element->getId(), $ident);
@@ -377,7 +378,7 @@ class ElcaElementView extends HtmlView
                 case Elca::ELEMENT_ATTR_OZ:
                     break;
                 default:
-                    $AttrGroup->add(
+                    $attrGroup->add(
                         new ElcaHtmlFormElementLabel(
                             t($caption),
                             new ElcaHtmlNumericInput('attr['.$ident.']', $Attr->getNumericValue())
@@ -389,13 +390,13 @@ class ElcaElementView extends HtmlView
         // only for KG300
         if (intval($this->element->getElementTypeNode()->getDinCode() / 100) == 3) {
 
-            $AttrGroup = $AttrContainer->add(new HtmlFormGroup(t('BNB 4.1.4')));
-            $AttrGroup->addClass('clearfix column');
+            $attrGroup = $AttrContainer->add(new HtmlFormGroup(t('BNB 4.1.4')));
+            $attrGroup->addClass('clearfix column');
 
             $readOnly = !$this->element->isComposite() && $this->element->hasCompositeElement();
             foreach (Elca::$elementBnbAttributes as $ident => $caption) {
                 $Attr = ElcaElementAttribute::findByElementIdAndIdent($this->element->getId(), $ident);
-                $AttrGroup->add(
+                $attrGroup->add(
                     new ElcaHtmlFormElementLabel(
                         t($caption),
                         new ElcaHtmlNumericInput('attr['.$ident.']', $Attr->getNumericValue(), $readOnly)
@@ -406,10 +407,10 @@ class ElcaElementView extends HtmlView
         /**
          * Buttons
          */
-        $ButtonGroup = $Form->add(new HtmlFormGroup(''));
+        $ButtonGroup = $form->add(new HtmlFormGroup(''));
         $ButtonGroup->addClass('clearfix column buttons');
 
-        if (!$Form->isReadonly()) {
+        if (!$form->isReadonly()) {
             $ButtonGroup->add(new ElcaHtmlSubmitButton('saveElement', t('Speichern'), true));
 
             if (!$this->element instanceOf ElcaElement || !$this->element->isInitialized()) {
@@ -474,7 +475,7 @@ class ElcaElementView extends HtmlView
              * Show all remaining
              */
             if (count($compositeElements)) {
-                $Composite = $Form->add(new ElcaHtmlFormElementLabel(t('Verknüpft mit Bauteil '), new HtmlTag('div')));
+                $Composite = $form->add(new ElcaHtmlFormElementLabel(t('Verknüpft mit Bauteil '), new HtmlTag('div')));
                 $Composite->addClass('composite-element clear');
 
                 foreach ($compositeElements as $index => $compositeElementId) {
@@ -925,5 +926,15 @@ class ElcaElementView extends HtmlView
 
         }
     }
+
+    private function appendIdInfo(DOMNode $content)
+    {
+        if (!$this->element->getId()) {
+            return;
+        }
+
+        $container = $content->appendChild($this->getUl(['class' => 'id-info']));
+        $container->appendChild($this->getLi([], 'ID=' . $this->element->getId()));
+        $container->appendChild($this->getLi([], 'UUID=' . $this->element->getUuid()));
+    }
 }
-// End ElcaElementView
