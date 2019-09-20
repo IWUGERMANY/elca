@@ -25,6 +25,7 @@
 
 namespace Elca\Model\Common\Quantity;
 
+use Beibob\Blibs\FloatCalc;
 use Elca\Model\Common\Unit;
 
 class Quantity
@@ -108,4 +109,11 @@ class Quantity
     {
         return sprintf('%s %s', $this->value(), (string)$this->unit());
     }
+
+    public function equals(self $object)
+    {
+        return FloatCalc::cmp($this->value, $object->value()) &&
+               $this->unit->equals($object->unit);
+    }
+
 }

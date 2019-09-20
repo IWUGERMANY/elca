@@ -85,6 +85,7 @@ class ElementImageCtrl extends AppCtrl
     protected function defaultAction()
     {
         $elementId = $this->elementId;
+        $containerId = $this->Request->get('c', $elementId);
 
         if ($this->Request->has('elementId'))
             $elementId = $this->Request->elementId;
@@ -99,8 +100,6 @@ class ElementImageCtrl extends AppCtrl
 
 
         $legend = (bool) $this->Request->has('legend') ? $this->Request->legend : $this->legend;
-
-
 
         $viewBuildMode = $this->Request->has('pdf') || $this->pdfMode ? DefaultElementImageView::BUILDMODE_PDF : DefaultElementImageView::BUILDMODE_SCREEN;
 
@@ -139,7 +138,7 @@ class ElementImageCtrl extends AppCtrl
         }
 
         // Build a wrapper div
-        $Div = $elementImageView->appendChild($elementImageView->createElement('div', null, ['id' => 'element-image-' . $ElcaElement->getId()]));
+        $Div = $elementImageView->appendChild($elementImageView->createElement('div', null, ['id' => 'element-image-' . $containerId]));
         $SvgElt = $elementImageView->getElementsByTagName('svg');
         $Div->appendChild($elementImageView->removeChild($SvgElt->item(0)));
 

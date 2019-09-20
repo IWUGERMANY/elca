@@ -68,14 +68,21 @@ class ElcaNumberFormat
             $decPoint = self::$formatCharacters[$ElcaLocale->getLocale()]['decPoint'];
         }
 
-        if($numberString === '')
+        if ($numberString === '')
             return null;
 
-        $value = doubleval(strtr($numberString, array($decPoint => '.')));
-        if($isPercentage)
+        $value = strtr($numberString, [$decPoint => '.']);
+
+        if (!\is_numeric($value)) {
+            return null;
+        }
+
+        $value = (float)$value;
+
+        if ($isPercentage)
             $value = $value / 100;
 
-        if(!is_null($precision))
+        if (null !== $precision)
             return round($value, $precision);
 
         return $value;

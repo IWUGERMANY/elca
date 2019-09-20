@@ -1,0 +1,171 @@
+#content.project-csv-import {
+  .import-group {
+    position:relative;
+  }
+
+  .import-group .download-link {
+    position:absolute;
+    top:25px;
+    right:5px;
+    color:$linkFuncColor;
+  }
+
+  form.csvImportForm {
+    width:525px;
+
+    .form-section {
+      float:left;
+      width:525px;
+    }
+
+    .form-section.name {
+      clear:both;
+      width:525px;
+    }
+    .form-section.constrMeasure {
+      width: 250px;
+      padding-right:25px;
+    }
+    .form-section.postcode {
+      width: 250px;
+    }
+
+    .form-section.netFloorSpace {
+      clear:both;
+      width: 250px;
+      padding-right:25px;
+    }
+    .form-section.grossFloorSpace {
+      width: 250px;
+    }
+  }
+
+  &.preview {
+
+    form.projectImportPreviewForm {
+      width: 950px;
+    }
+
+    .hl-row {
+      position: relative;
+      height: 22px;
+      margin-top: 20px;
+      margin-left: 0;
+
+      h5 {
+        position: absolute;
+        top: 0;
+        border-bottom: none;
+        font-weight: normal;
+        font-style: italic;
+        color: $labelColor;
+
+        &.hl-din-code {
+          left: 10px;
+        }
+
+        &.hl-name {
+          left: 160px;
+        }
+
+        &.hl-quantity {
+          left: 427px;
+        }
+
+        &.hl-tpl-element {
+          right: 300px;
+        }
+      }
+    }
+
+    .elements {
+      width: auto;
+      list-style-type: decimal;
+    }
+
+    li.element {
+      clear: both;
+
+      background-color: $bgLightGrey;
+      border-bottom: 1px solid $borderLightGrey;
+
+      margin-bottom: 8px;
+      padding: 3px 0;
+      line-height: 24px;
+      min-height:100px;
+      position: relative;
+
+      .column {
+        display: block;
+        position: absolute;
+        top: 0;
+
+        &.din-code {
+          left: 10px;
+          width: 130px;
+        }
+
+        &.name {
+          left: 160px;
+          width: 250px;
+          overflow: hidden;
+          height: 24px;
+          line-height:24px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          padding:5px 0 10px;
+        }
+
+        &.quantity {
+          left: 420px;
+          text-align: right;
+          width: 70px;
+        }
+        &.unit {
+          left: 495px;
+          text-align: center;
+          width: 50px;
+        }
+
+        &.tpl-element-image {
+          top: 2px;
+          right:280px;
+          width:100px;
+          height:100px;
+          border:1px solid $borderGrey;
+        }
+
+        &.tpl-element {
+          top: 8px;
+          right: 10px;
+          width: 250px;
+          padding-top: 1px;
+        }
+      }
+
+      .element-selector {
+        position:absolute;
+        padding-top:2px;
+        top: auto;
+        right: auto;
+        width: 270px;
+        line-height: 16px;
+        color: $linkFuncColor;
+      }
+
+      .HtmlStaticText {
+        font-size: 12px;
+        line-height: 16px;
+        color: #666;
+      }
+
+      &.warning {
+        background-color: $bgLightYellow;
+
+        a.element-selector {
+          color: #ff0000;
+        }
+      }
+    }
+  }
+}

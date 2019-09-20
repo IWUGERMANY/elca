@@ -329,7 +329,8 @@ $(window).load(function () {
                     '#content.elca-project-life-cycle-usage,#tabContent.tab-lca.elca-admin-benchmark-version': 'prepareLifeCycleUsageCheckboxes',
                     'body.projects': 'prepareContent',
                     '#projectProcessConfigSanity': 'prepareContent',
-                    '#content.replace-components, #content.replace-elements': ['prepareReplaceElementComponents', 'prepareElementImages']
+                    '#content.replace-components, #content.replace-elements': ['prepareReplaceElementComponents', 'prepareElementImages'],
+                    '#content.project-csv-import.preview': 'prepareElementImages'
                 },
 
                 prepareSearchAndReplace: function ($context) {
@@ -792,8 +793,14 @@ $(window).load(function () {
                             return;
                         }
 
+                        var containerId = $imgContainer.data('container-id');
+
+                        if (!containerId) {
+                            containerId = $imgContainer.data('element-id');
+                        }
+
                         if ($imgContainer.is(':empty')) {
-                            $imgContainer.append('<div id="element-image-' + $imgContainer.data('elementId') + '"></div>');
+                            $imgContainer.append('<div id="element-image-' + containerId + '"></div>');
                         }
 
                         if (overlayOnClick) {
@@ -815,7 +822,8 @@ $(window).load(function () {
                             jBlibs.App.query($imgContainer.data('url'), {
                                 elementId: $imgContainer.data('element-id'),
                                 w: $imgContainer.innerWidth(),
-                                h: $imgContainer.innerHeight()
+                                h: $imgContainer.innerHeight(),
+                                c: containerId
                             });
 
                             if (len >= 1) {
@@ -2097,7 +2105,8 @@ $(window).load(function () {
                     '#content.project-import': null,
                     '#content.admin-mapping-edit': null,
                     '.import-assistant-mapping-selector': null,
-                    '#content.replace-components, #content.replace-elements': null
+                    '#content.replace-components, #content.replace-elements': null,
+                    '#content.project-csv-import.preview': null
                 },
 
                 /**
