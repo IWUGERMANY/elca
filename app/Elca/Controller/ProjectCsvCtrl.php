@@ -30,8 +30,10 @@ use Beibob\Blibs\File;
 use Beibob\Blibs\Session;
 use Beibob\Blibs\Validator;
 use Elca\Db\ElcaBenchmarkVersion;
+use Elca\Db\ElcaConstrClass;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaElementSearchSet;
+use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Common\Quantity\Quantity;
 use Elca\Model\Common\Unit;
@@ -132,12 +134,12 @@ class ProjectCsvCtrl extends AppCtrl
             $validator->assertNotEmpty('name', null, t('Bitte wählen Sie einen Projektnamen'));
             $validator->assertNotEmpty('constrMeasure', null, t('Bitte wählen Sie eine Baumaßnahme'));
 
-            if ($validator->assertNotEmpty('postcode', null, t('Bitte geben Sie mindestens 2 Stellen der PLZ ein'))) {
+            if ($validator->assertNotEmpty('postcode', null, t('Bitte geben Sie mindestens die 1. Stelle der PLZ ein'))) {
                 if ($validator->assertMinLength(
                     'postcode',
                     1,
                     null,
-                    t('Bitte geben Sie mindestens 1 Stellen der PLZ ein')
+                    t('Bitte geben Sie mindestens die 1. Stelle der PLZ ein')
                 )) {
                     $validator->assertNumber('postcode', null, t('Die PLZ ist ungültig'));
                 }
@@ -257,7 +259,7 @@ class ProjectCsvCtrl extends AppCtrl
         }
 
         $view = $this->setView(new ProjectImportPreviewView());
-        $view->assign('data', $this->buildFormData($project));
+        $view->assign('data', $this->buildPreviewFormData($project));
         $view->assign('project', $project);
         $view->assign('validator', $validator);
 
@@ -298,7 +300,7 @@ class ProjectCsvCtrl extends AppCtrl
                 $selectedElement->getRefUnit()));
 
             $view = $this->setView(new ProjectImportPreviewView());
-            $view->assign('data', $this->buildFormData($project));
+            $view->assign('data', $this->buildPreviewFormData($project));
             $view->assign('project', $project);
 
             return true;
@@ -339,11 +341,12 @@ class ProjectCsvCtrl extends AppCtrl
         $view = $this->setView(new ProjectImportView());
         $view->assign('benchmarkSystemsService', $this->benchmarkSystemService);
         $view->assign('validator', $validator);
+        $view->assign('data', $this->buildProjectFormData());
 
         return $view;
     }
 
-    private function buildFormData(Project $project = null)
+    private function buildPreviewFormData(Project $project = null)
     {
         $data = new \stdClass();
 
@@ -383,9 +386,6 @@ class ProjectCsvCtrl extends AppCtrl
         return $data;
     }
 
-    /**
-     *
-     */
     private function getProject()
     {
         return $this->sessionNamespace->project;
@@ -397,5 +397,14 @@ class ProjectCsvCtrl extends AppCtrl
         $benchmarkVersion = ElcaBenchmarkVersion::findById($benchmarkVersionId);
 
         return $benchmarkVersion->getProcessDbId();
+    }
+
+    private function buildProjectFormData(): \stdClass
+    {
+        $data = new \stdClass();
+        $data->constrMeasure = Elca::CONSTR_MEASURE_PUBLIC;
+        $data->constrClassId = ElcaConstrClass::findByRefNum(9890)->getId();
+
+        return $data;
     }
 }

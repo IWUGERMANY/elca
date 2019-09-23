@@ -64,6 +64,11 @@ class ProjectImportView extends HtmlView
     private $validator;
 
     /**
+     * @var \stdClass
+     */
+    private $formData;
+
+    /**
      * Inits the view
      *
      * @param array $args
@@ -74,6 +79,7 @@ class ProjectImportView extends HtmlView
 
         $this->benchmarkSystemsService = $this->get('benchmarkSystemsService');
         $this->validator               = $this->get('validator');
+        $this->formData                = $this->get('data');
 
         $this->readOnly = $this->get('readOnly');
     }
@@ -93,6 +99,7 @@ class ProjectImportView extends HtmlView
         $form->setAttribute('autocomplete', 'off');
         $form->setReadonly($this->readOnly);
 
+        $form->setDataObject($this->formData);
         $form->setRequest(FrontController::getInstance()->getRequest());
 
         if ($this->has('validator')) {
