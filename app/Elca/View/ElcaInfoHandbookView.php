@@ -50,25 +50,11 @@ class ElcaInfoHandbookView extends HtmlView
     // End beforeRender
 
 
-    /**
-     * Builds the content navigation to the left
-     *
-     * @param  -
-     *
-     * @return -
-     */
     protected function beforeRender()
     {
         $Container = $this->getElementById('downloadhandbook');
 
         $User = UserStore::getInstance()->getUser();
-        if ($User->getFirstname() && $User->getLastName())
-            $name = trim($User->getFirstname() . ' ' . $User->getLastname());
-        elseif ($User->getFirstname() && !$User->getLastname())
-            $name = trim($User->getFirstname());
-        else
-            $name = $User->getAuthName();
-
         if ($User->isInitialized()) {
 
             // Handbook
