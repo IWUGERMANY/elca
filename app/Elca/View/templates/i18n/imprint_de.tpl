@@ -14,14 +14,24 @@
   Telefax: +49 (0) 30 / 18401-2769
   </p>
 
+  <h2>Technische Betreuung / Weiterentwicklung</h2>
+  <p>Online Now! GmbH<br/>
+Agentur für digitale Kommunikation<br/>
+Reichsstraße 100<br/>
+14052 Berlin<br/>
+    <a class="no-xhr" href="mailto:info@online-now.de">info@online-now.de</a><br/>
+    <a class="no-xhr" target="_blank" href="https://www.online-now.de">https://www.online-now.de</a>
+  </p>
 
-  <h2>Entwicklung</h2>
+
+  <h2>Entwicklung (2012-2018)</h2>
   <p>BEIBOB Medienfreunde<br/>
     Tobias Lode und Fabian Möller GbR<br/>
     Stefan-George-Weg 44A<br/>
     64285 Darmstadt<br/>
     <a class="no-xhr" href="mailto:sayhello@beibob.de">sayhello@beibob.de</a><br/>
-    <a class="no-xhr" target="_blank" href="http://www.beibob.de">http://www.beibob.de</a></p>
+    <a class="no-xhr" target="_blank" href="http://www.beibob.de">http://www.beibob.de</a>
+  </p>
 
   <h2>Verantwortung für den Inhalt</h2>
   <p>Bundesinstitut für Bau-, Stadt-und Raumforschung<br/>
