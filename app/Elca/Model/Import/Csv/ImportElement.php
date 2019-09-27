@@ -69,7 +69,7 @@ final class ImportElement
         return $this->dinCode;
     }
 
-    public function changeDinCode(int $dinCode)
+    public function changeDinCode(?int $dinCode)
     {
         $this->dinCode = $dinCode;
     }
@@ -91,9 +91,9 @@ final class ImportElement
         return null !== $this->tplElementUuid ? (string)$this->tplElementUuid : null;
     }
 
-    public function changeTplElementUuid(string $uuid)
+    public function changeTplElementUuid(?string $uuid)
     {
-        $this->tplElementUuid = Uuid::fromString($uuid);
+        $this->tplElementUuid = null !== $uuid ? Uuid::fromString($uuid) : null;
     }
 
     public function isValid()

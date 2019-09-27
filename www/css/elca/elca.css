@@ -1564,20 +1564,21 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #content.project-csv-import form.csvImportForm .form-section.postcode { width: 250px; }
 #content.project-csv-import form.csvImportForm .form-section.netFloorSpace { clear: both; width: 250px; padding-right: 25px; }
 #content.project-csv-import form.csvImportForm .form-section.grossFloorSpace { width: 250px; }
-#content.project-csv-import.preview form.projectImportPreviewForm { width: 950px; }
+#content.project-csv-import.preview form.projectImportPreviewForm { width: 1000px; }
 #content.project-csv-import.preview .hl-row { position: relative; height: 22px; margin-top: 20px; margin-left: 0; }
 #content.project-csv-import.preview .hl-row h5 { position: absolute; top: 0; border-bottom: none; font-weight: normal; font-style: italic; color: #888; }
 #content.project-csv-import.preview .hl-row h5.hl-din-code { left: 10px; }
-#content.project-csv-import.preview .hl-row h5.hl-name { left: 160px; }
-#content.project-csv-import.preview .hl-row h5.hl-quantity { left: 427px; }
+#content.project-csv-import.preview .hl-row h5.hl-name { left: 220px; }
+#content.project-csv-import.preview .hl-row h5.hl-quantity { left: 477px; }
 #content.project-csv-import.preview .hl-row h5.hl-tpl-element { right: 300px; }
 #content.project-csv-import.preview .elements { width: auto; list-style-type: decimal; }
 #content.project-csv-import.preview li.element { clear: both; background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; margin-bottom: 8px; padding: 3px 0; line-height: 24px; min-height: 100px; position: relative; }
 #content.project-csv-import.preview li.element .column { display: block; position: absolute; top: 0; }
-#content.project-csv-import.preview li.element .column.din-code { left: 10px; width: 130px; }
-#content.project-csv-import.preview li.element .column.name { left: 160px; width: 250px; overflow: hidden; height: 24px; line-height: 24px; text-overflow: ellipsis; white-space: nowrap; padding: 5px 0 10px; }
-#content.project-csv-import.preview li.element .column.quantity { left: 420px; text-align: right; width: 70px; }
-#content.project-csv-import.preview li.element .column.unit { left: 495px; text-align: center; width: 50px; }
+#content.project-csv-import.preview li.element .column.din-code { left: 10px; width: 200px; }
+#content.project-csv-import.preview li.element .column.din-code3 { top: 30px; left: 10px; width: 200px; }
+#content.project-csv-import.preview li.element .column.name { left: 220px; width: 250px; overflow: hidden; height: 24px; line-height: 24px; text-overflow: ellipsis; white-space: nowrap; padding: 5px 0 10px; }
+#content.project-csv-import.preview li.element .column.quantity { left: 470px; text-align: right; width: 70px; }
+#content.project-csv-import.preview li.element .column.unit { left: 545px; text-align: center; width: 50px; }
 #content.project-csv-import.preview li.element .column.tpl-element-image { top: 2px; right: 280px; width: 100px; height: 100px; border: 1px solid #ddd; }
 #content.project-csv-import.preview li.element .column.tpl-element { top: 8px; right: 10px; width: 250px; padding-top: 1px; }
 #content.project-csv-import.preview li.element .element-selector { position: absolute; padding-top: 2px; top: auto; right: auto; width: 270px; line-height: 16px; color: #004f80; }

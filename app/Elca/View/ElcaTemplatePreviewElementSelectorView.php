@@ -35,6 +35,7 @@ use Beibob\HtmlTools\HtmlRadiobox;
 use Beibob\HtmlTools\HtmlRadioGroup;
 use Beibob\HtmlTools\HtmlSelectbox;
 use Beibob\HtmlTools\HtmlSelectOption;
+use Beibob\HtmlTools\HtmlStaticText;
 use Beibob\HtmlTools\HtmlTextInput;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaElementSet;
@@ -54,7 +55,7 @@ use Elca\View\helpers\ElcaHtmlSubmitButton;
  * @author  Tobias Lode <tobias@beibob.de>
  *
  */
-class ElcaTemplateElementSelectorView extends HtmlView
+class ElcaTemplatePreviewElementSelectorView extends HtmlView
 {
     private $projectVariantId;
 
@@ -121,6 +122,7 @@ class ElcaTemplateElementSelectorView extends HtmlView
         $form->setRequest($this->request);
 
         $form->add(new HtmlHiddenField('projectVariantId', $this->projectVariantId));
+        $form->add(new HtmlHiddenField('elementTypeNodeId', $elementTypeNodeId));
         $form->add(new HtmlHiddenField('url', $this->url));
         $form->add(new HtmlHiddenField('relId', $this->get('relId')));
 
@@ -143,33 +145,18 @@ class ElcaTemplateElementSelectorView extends HtmlView
         /**
          * Autocomplete search field
          */
-        $this->appendAutoCompleteSearch($form, $filterByProcessDbIds, $elementTypeNodeId);
-
-        /**
-         * Element types
-         */
-        $elementTypeNodeId = $this->appendElementTypeSelect(
-            $form,
-            $elementTypeNodeId,
-            $dataObject->scope,
-            $filterByProcessDbIds
-        );
+        //$this->appendAutoCompleteSearch($form, $filterByProcessDbIds, $elementTypeNodeId);
 
         /**
          * Elements
          */
-        if ($elementTypeNodeId) {
-            $this->appendElementSelect(
-                $form,
-                $elementTypeNodeId,
-                $activeElement,
-                $dataObject->scope,
-                $filterByProcessDbIds
-            );
-        } else // this for the js to insert an id on autocomplete search
-        {
-            $form->add(new HtmlHiddenField('id', ''));
-        }
+        $this->appendElementSelect(
+            $form,
+            $elementTypeNodeId,
+            $activeElement,
+            $dataObject->scope,
+            $filterByProcessDbIds
+        );
 
         /**
          * Buttons
@@ -179,61 +166,6 @@ class ElcaTemplateElementSelectorView extends HtmlView
         $group->add(new ElcaHtmlSubmitButton('selectElement', t('Übernehmen')));
 
         $form->appendTo($container);
-    }
-
-    protected function appendElementTypeSelect(
-        $form, $elementTypeNodeId, $scope, $filterByProcessDbIds
-    ) {
-        $selectElementType = $form->add(
-            new ElcaHtmlFormElementLabel(t('Bauteilgruppe'), new HtmlSelectbox('elementTypeNodeId'), true)
-        );
-
-        /**
-         * List all available element types.
-         */
-        $elementTypeNode = ElcaElementType::findByNodeId($elementTypeNodeId);
-
-        if ($elementTypeNode->isCompositeLevel()) {
-            $selectElementType->add(new HtmlSelectOption('-- '.t('Bitte wählen').' --', ''));
-            $selectElementType->setAttribute('onchange', '$(this.form).submit();');
-
-            list($isPublicFilter, $isReferenceFilter) = $this->filterScope($scope ?? null);
-
-            $elementTypeSet = ElcaElementTypeSet::findWithElementsByParentType(
-                $elementTypeNode,
-                $this->projectVariantId,
-                $this->access->hasAdminPrivileges(),
-                $this->access->getUserGroupIds(),
-                false,
-                $this->get('elementId'),
-                true,
-                null,
-                $isPublicFilter,
-                $isReferenceFilter,
-                null,
-                $filterByProcessDbIds,
-                ['t.din_code' => 'ASC']
-            );
-        } else {
-            $elementTypeSet = new ElcaElementTypeSet();
-            $elementTypeSet->add($elementTypeNode);
-        }
-
-
-        foreach ($elementTypeSet as $Type) {
-            $selectElementType->add(
-                new HtmlSelectOption($Type->getDinCode().' '.t($Type->getName()), $Type->getNodeId())
-            );
-        }
-
-        /**
-         * unset elementTypeNodeId if id is not in ElementTypeSet
-         */
-        if ($elementTypeNodeId && !$elementTypeSet->search('nodeId', $elementTypeNodeId)) {
-            $elementTypeNodeId = null;
-        }
-
-        return $elementTypeNodeId;
     }
 
     protected function appendScopeFilter($dataObject, $form): void
@@ -252,40 +184,50 @@ class ElcaTemplateElementSelectorView extends HtmlView
         $radio->setAttribute('onchange', '$(this).closest("form").submit();');
     }
 
-    protected function appendAutoCompleteSearch($form, $filterByProcessDbIds, $elementTypeNodeId): void
-    {
-        $search = $form->add(new ElcaHtmlFormElementLabel(t('Suche'), new HtmlTextInput('search')));
-        $search->setAttribute('id', 'elca-element-search');
-        $search->setAttribute('data-url', $this->url);
-        $search->setAttribute('data-element-type-node-id', $elementTypeNodeId);
-        $search->setAttribute('data-compatdbs', \json_encode($filterByProcessDbIds));
-    }
-
     protected function appendElementSelect(
         $form, $elementTypeNodeId, $activeElement, $scope, $filterByProcessDbIds) {
-        $selectElementType = $form->add(
-            new ElcaHtmlFormElementLabel(t('Bauteilkomponente'), new HtmlSelectbox('id'), true)
+
+        $elementTypeNode = ElcaElementType::findByNodeId($elementTypeNodeId);
+        $elementTypeName = $elementTypeNode->getDinCode() .' '. $elementTypeNode->getName();
+
+        $selectElement = $form->add(
+            new ElcaHtmlFormElementLabel(t('Bauteil in').' '.$elementTypeName, new HtmlSelectbox('id'), true)
         );
-        $selectElementType->add(new HtmlSelectOption('-- '.t('Bitte wählen').' --', ''));
-        $selectElementType->setAttribute('onchange', '$(this.form).submit();');
+        $selectElement->add(new HtmlSelectOption('-- '.t('Bitte wählen').' --', ''));
+        $selectElement->setAttribute('onchange', '$(this.form).submit();');
 
         list($isPublicFilter, $isReferenceFilter) = $this->filterScope($scope ?? null);
 
-        $elementSet = ElcaElementSet::findUnassignedByElementTypeNodeId(
-            $elementTypeNodeId,
-            null,
-            $this->access->hasAdminPrivileges(),
-            $this->access->getUserGroupIds(),
-            $activeElement->getId(),
-            true,
-            $isPublicFilter,
-            $isReferenceFilter,
-            null,
-            $filterByProcessDbIds
-        );
+        if ($elementTypeNode->isCompositeLevel()) {
+
+            $elementSet = ElcaElementSet::findCompositesByElementTypeNodeId(
+                $elementTypeNodeId,
+                null,
+                $this->access->hasAdminPrivileges(),
+                $this->access->getUserGroupIds(),
+                null,
+                $isPublicFilter,
+                $isReferenceFilter,
+                $filterByProcessDbIds
+            );
+        }
+        else {
+            $elementSet = ElcaElementSet::findUnassignedByElementTypeNodeId(
+                $elementTypeNodeId,
+                null,
+                $this->access->hasAdminPrivileges(),
+                $this->access->getUserGroupIds(),
+                null,
+                true,
+                $isPublicFilter,
+                $isReferenceFilter,
+                null,
+                $filterByProcessDbIds
+            );
+        }
 
         foreach ($elementSet as $Element) {
-            $opt = $selectElementType->add(
+            $opt = $selectElement->add(
                 new HtmlSelectOption($Element->getName().' ['.$Element->getId().']', $Element->getId())
             );
         }

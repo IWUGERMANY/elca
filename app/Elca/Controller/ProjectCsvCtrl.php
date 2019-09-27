@@ -32,7 +32,7 @@ use Beibob\Blibs\Validator;
 use Elca\Db\ElcaBenchmarkVersion;
 use Elca\Db\ElcaConstrClass;
 use Elca\Db\ElcaElement;
-use Elca\Db\ElcaElementSearchSet;
+use Elca\Db\ElcaElementType;
 use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Common\Quantity\Quantity;
@@ -47,7 +47,7 @@ use Elca\Service\Messages\ElcaMessages;
 use Elca\Service\Project\LifeCycleUsageService;
 use Elca\View\ElcaBaseView;
 use Elca\View\ElcaModalProcessingView;
-use Elca\View\ElcaTemplateCompositeElementSelectorView;
+use Elca\View\ElcaTemplatePreviewElementSelectorView;
 use Elca\View\Import\Csv\ProjectImportPreviewView;
 use Elca\View\Import\Csv\ProjectImportView;
 
@@ -294,6 +294,7 @@ class ProjectCsvCtrl extends AppCtrl
                 return false;
             }
 
+            $importElement->changeDinCode($selectedElement->getElementTypeNode()->getDinCode());
             $importElement->changeTplElementUuid($selectedElement->getUuid());
             $importElement->changeQuantity(Quantity::fromValue(
                 $importElement->quantity()->value(),
@@ -308,17 +309,14 @@ class ProjectCsvCtrl extends AppCtrl
         /**
          * If request not contains the select argument, rebuild the view
          */
-        else
-        {
-            $view = $this->setView(new ElcaTemplateCompositeElementSelectorView());
-            $view->assign('elementId', $this->Request->e);
-            $view->assign('currentElementId', $this->Request->id);
-            $view->assign('elementTypeNodeId', $this->Request->elementTypeNodeId ?? $this->Request->t);
-            $view->assign('searchScope', $this->Request->has('scope')? $this->Request->get('scope') : 'public');
-            $view->assign('url', $this->getActionLink('selectElement'));
-            $view->assign('db', $this->getProcessDbIdFromSession($project));
-            $view->assign('relId', $this->Request->relId);
-        }
+        $view = $this->setView(new ElcaTemplatePreviewElementSelectorView());
+        $view->assign('elementId', $this->Request->e);
+        $view->assign('currentElementId', $this->Request->id);
+        $view->assign('elementTypeNodeId', $this->Request->elementTypeNodeId ?? $this->Request->t);
+        $view->assign('searchScope', $this->Request->has('scope') ? $this->Request->get('scope') : 'public');
+        $view->assign('url', $this->getActionLink('selectElement'));
+        $view->assign('db', $this->getProcessDbIdFromSession($project));
+        $view->assign('relId', $this->Request->relId);
 
         return false;
     }
@@ -354,18 +352,36 @@ class ProjectCsvCtrl extends AppCtrl
             return $data;
         }
 
-        $dinCodes   = $this->Request->getArray('dinCode');
-        $quantities = $this->Request->getArray('quantity');
-        $units      = $this->Request->getArray('unit');
+        $dinCode2 = $this->Request->getArray('dinCode2');
+        $dinCode3 = $this->Request->getArray('dinCode3');
+        $quantities  = $this->Request->getArray('quantity');
+        $units       = $this->Request->getArray('unit');
 
         foreach ($project->importElements() as $element) {
             $id              = $element->uuid();
             $data->name[$id] = $element->name();
 
-            if (isset($dinCodes[$id]) && $dinCodes[$id] !== $element->dinCode()) {
-                $element->changeDinCode($dinCodes[$id]);
+            if ($this->Request->isPost() && !empty($dinCode2)) {
+                if (isset($dinCode3[$id]) && !empty($dinCode3[$id])) {
+                    $dinCode = $dinCode3[$id];
+                } else {
+                    $dinCode = $dinCode2[$id];
+                }
+
+                $data->dinCode2[$id] = $dinCode2[$id];
+                $data->dinCode3[$id] = $dinCode3[$id];
             }
-            $data->dinCode[$id] = $element->dinCode() ?? self::INITIAL_DIN_CODE;
+            else {
+                $dinCode = $element->dinCode();
+                $elementType = ElcaElementType::findByIdent($dinCode);
+                $data->dinCode2[$id] = $elementType->isCompositeLevel() ? $elementType->getDinCode() : $elementType->getParent()->getDinCode();
+                $data->dinCode3[$id] = !$elementType->isCompositeLevel() ? $elementType->getDinCode() : null;
+            }
+
+            if (!empty($dinCode) && $dinCode !== $element->dinCode()) {
+                $element->changeDinCode((int)$dinCode);
+            }
+
 
             if (isset($quantities[$id]) && $quantities[$id] && isset($units[$id]) && $units[$id]) {
                 $quantity = Quantity::fromValue(
@@ -380,7 +396,14 @@ class ProjectCsvCtrl extends AppCtrl
             $data->quantity[$id] = null !== $element->quantity() ? $element->quantity()->value() : 1;
             $data->unit[$id]     = null !== $element->quantity() ? $element->quantity()->unit()->value() : Unit::SQUARE_METER;
 
-            $data->tplElementId[$id] = ElcaElement::findByUuid($element->tplElementUuid())->getId();
+            $selectedElement = ElcaElement::findByUuid($element->tplElementUuid());
+
+            if ($selectedElement->getElementTypeNode()->getDinCode() === $element->dinCode()) {
+                $data->tplElementId[$id] = $selectedElement->getId();
+            }
+            else {
+                $element->changeTplElementUuid(null);
+            }
         }
 
         return $data;

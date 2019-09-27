@@ -36,21 +36,14 @@ use Beibob\HtmlTools\HtmlStaticText;
 use Beibob\HtmlTools\HtmlTag;
 use Elca\Controller\ElementImageCtrl;
 use Elca\Controller\ProjectCsvCtrl;
-use Elca\Controller\ProjectData\ReplaceComponentsCtrl;
 use Elca\Db\ElcaBenchmarkVersion;
-use Elca\Db\ElcaElement;
 use Elca\Db\ElcaElementType;
 use Elca\Db\ElcaElementTypeSet;
 use Elca\Elca;
-use Elca\ElcaNumberFormat;
 use Elca\Model\Import\Csv\ImportElement;
 use Elca\Model\Import\Csv\Project;
-use Elca\View\ElcaProcessConfigSelectorView;
-use Elca\View\ElcaTemplateElementSelectorView;
-use Elca\View\ElementImageView;
 use Elca\View\helpers\ElcaHtmlFormElementLabel;
 use Elca\View\helpers\ElcaHtmlNumericInput;
-use Elca\View\helpers\ElcaHtmlProcessConfigSelectorLink;
 use Elca\View\helpers\ElcaHtmlSubmitButton;
 use Elca\View\helpers\ElcaHtmlTemplateElementSelectorLink;
 use Ramsey\Uuid\Uuid;
@@ -94,7 +87,9 @@ class ProjectImportPreviewView extends HtmlView
      */
     protected function beforeRender()
     {
-        $container = $this->appendChild($this->getDiv(['id' => 'content', 'class' => 'project project-csv-import preview']));
+        $container = $this->appendChild(
+            $this->getDiv(['id' => 'content', 'class' => 'project project-csv-import preview'])
+        );
 
         $form = new HtmlForm('projectImportPreviewForm', '/project-csv/preview/');
         $form->addClass('clearfix');
@@ -162,17 +157,36 @@ class ProjectImportPreviewView extends HtmlView
 
     private function appendImportElement(HtmlElement $li, ImportElement $element)
     {
-        $key = $element->uuid();
-        $elementType = ElcaElementType::findByIdent($element->dinCode());
-        $levelTwoDinCodes = $this->findLevelTwoDinCodes($elementType);
+        $key              = $element->uuid();
+        $levelTwoDinCodes = $this->findLevelTwoDinCodes();
 
         $li->add(
-            new ElcaHtmlFormElementLabel('',
-                $dinCodeSelect = new HtmlSelectbox('dinCode[' . $key . ']'))
+            new ElcaHtmlFormElementLabel(
+                '',
+                $dinCodeSelect = new HtmlSelectbox('dinCode2[' . $key . ']')
+            )
         )->addClass('column din-code');
         $dinCodeSelect->setAttribute('onchange', '$(this.form).submit();');
+        $dinCodeSelect->add(new HtmlSelectOption(t('-- Bitte wählen --'), null));
+
         foreach ($levelTwoDinCodes as $dinCode => $caption) {
             $dinCodeSelect->add(new HtmlSelectOption($caption, $dinCode));
+        }
+
+        if (isset($this->data->dinCode2[$key]) && !empty($this->data->dinCode2[$key])) {
+            $elementTypeLevel2 = ElcaElementType::findByIdent($this->data->dinCode2[$key]);
+            $levelThreeDinCodes = $this->findLevelThreeDinCodes($elementTypeLevel2);
+            $li->add(
+                new ElcaHtmlFormElementLabel(
+                    '',
+                    $dinCode3Select = new HtmlSelectbox('dinCode3[' . $key . ']')
+                )
+            )->addClass('column din-code3');
+            $dinCode3Select->setAttribute('onchange', '$(this.form).submit();');
+            $dinCode3Select->add(new HtmlSelectOption(t('-- Komponente wählen --'), null));
+            foreach ($levelThreeDinCodes as $dinCode => $caption) {
+                $dinCode3Select->add(new HtmlSelectOption($caption, $dinCode));
+            }
         }
 
         $li->add(
@@ -196,26 +210,29 @@ class ProjectImportPreviewView extends HtmlView
             $unitSelect->add(new HtmlSelectOption(t(Elca::$units[$unit]), $unit));
         }
 
-        $tplElementDiv = $li->add(new HtmlTag('div'));
+        $elementType = ElcaElementType::findByIdent($element->dinCode());
 
-        $tplElementImgDiv = $li->add(new HtmlTag('div'));
-        $tplElementImgDiv->addClass('column tpl-element-image');
+        if ($elementType->isInitialized()) {
+            $tplElementDiv = $li->add(new HtmlTag('div'));
 
-        if (null !== $element->tplElementUuid()&& $elementType->getPrefHasElementImage()) {
-            $this->addElementImage($tplElementImgDiv, $this->data->tplElementId[$key]);
+            $tplElementImgDiv = $li->add(new HtmlTag('div'));
+            $tplElementImgDiv->addClass('column tpl-element-image');
+
+            if (null !== $element->tplElementUuid() && $elementType->getPrefHasElementImage()) {
+                $this->addElementImage($tplElementImgDiv, $this->data->tplElementId[$key]);
+            }
+
+            $tplElementDiv->add(
+                $selector = new ElcaHtmlTemplateElementSelectorLink(
+                    'tplElementId[' . $key . ']'
+                )
+            )->addClass('column tpl-element');
+
+            $selector->addClass('element-selector');
+            $selector->setUrl(FrontController::getInstance()->getUrlTo(ProjectCsvCtrl::class, 'selectElement'));
+            $selector->setElementTypeNodeId($elementType->getNodeId());
+            $selector->setRelId($key);
         }
-
-        $tplElementDiv->add(
-            $selector = new ElcaHtmlTemplateElementSelectorLink(
-                'tplElementId[' . $key . ']'
-            )
-        )->addClass('column tpl-element');
-
-        $selector->addClass('element-selector');
-        $selector->setUrl(FrontController::getInstance()->getUrlTo(ProjectCsvCtrl::class, 'selectElement'));
-        $selector->setElementTypeNodeId($elementType->getNodeId() ?? $this->data->dinCode[$key]);
-        $selector->setRelId($key);
-
 
         if (!$element->isValid()) {
             $li->addClass('warning');
@@ -244,45 +261,44 @@ class ProjectImportPreviewView extends HtmlView
         $container->add(
             new HtmlTag(
                 'div', null, [
-                'class'           => 'element-image',
-                'data-element-id' => $tplElementId,
-                'data-url'        => $elementImageUrl,
-                'data-container-id' => Uuid::uuid4(),
-            ]
+                    'class'             => 'element-image',
+                    'data-element-id'   => $tplElementId,
+                    'data-url'          => $elementImageUrl,
+                    'data-container-id' => Uuid::uuid4(),
+                ]
             )
         );
 
         $container->addClass('has-element-image');
     }
 
-    private function findLevelTwoDinCodes(ElcaElementType $elementType): array
+    private function findLevelTwoDinCodes(): array
     {
-        $dinCodeCaption = function (ElcaElementType $elementType) {
-            return $elementType->getDinCode() . ' - ' . $elementType->getName();
-        };
+        $levelOneTypes = [
+            ElcaElementType::findByIdent(300),
+            ElcaElementType::findByIdent(400),
+        ];
 
-        if ($elementType->isInitialized()) {
-            $levelTwoDinCodes = array_map(
-                $dinCodeCaption,
-                ElcaElementTypeSet::findByParentType(
-                    $elementType->getParent()
-                )->getArrayCopy('dinCode')
+        $levelTwoDinCodes = [];
+        foreach ($levelOneTypes as $levelOneType) {
+            $levelTwoDinCodes += array_map(
+                [$this, 'dinCodeCaption'],
+                ElcaElementTypeSet::findByParentType($levelOneType)->getArrayCopy('dinCode')
             );
-        } else {
-            $levelOneTypes = [
-                ElcaElementType::findByIdent(300),
-                ElcaElementType::findByIdent(400),
-            ];
-
-            $levelTwoDinCodes = [];
-            foreach ($levelOneTypes as $levelOneType) {
-                $levelTwoDinCodes += array_map(
-                    $dinCodeCaption,
-                    ElcaElementTypeSet::findByParentType($levelOneType)->getArrayCopy('dinCode')
-                );
-            }
         }
 
         return $levelTwoDinCodes;
+    }
+
+    private function findLevelThreeDinCodes(ElcaElementType $elementType)
+    {
+        return array_map(
+            [$this, 'dinCodeCaption'],
+            ElcaElementTypeSet::findByParentType($elementType)->getArrayCopy('dinCode')
+        );
+    }
+
+    private function dinCodeCaption(ElcaElementType $elementType) {
+        return $elementType->getDinCode() . ' - ' . $elementType->getName();
     }
 }

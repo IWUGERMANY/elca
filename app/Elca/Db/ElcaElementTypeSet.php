@@ -139,8 +139,31 @@ class ElcaElementTypeSet extends DbObjectSet
 
         return self::_findBySql(get_class(), $sql, $initValues, $force);
     }
-    // End findByParentType
 
+    /**
+     * Finds all direct child types of the given parent type
+     *
+     * @param  -
+     * @return ElcaElementTypeSet
+     */
+    public static function findAllBelowParentType(ElcaElementType $ElementType, $force = false)
+    {
+        if(!$ElementType->isInitialized())
+            return new ElcaElementTypeSet();
+
+        $initValues = ['nodeId' => $ElementType->getNodeId()];
+
+        $sql = sprintf('SELECT t.*
+                          FROM %s n
+                          JOIN %s t ON n.root_id = t.root_id AND t.lft BETWEEN n.lft AND n.rgt
+                         WHERE n.id = :nodeId
+                         ORDER BY t.lft'
+            , NestedNode::getTablename()
+            , self::VIEW_ELCA_ELEMENT_TYPES
+        );
+
+        return self::_findBySql(get_class(), $sql, $initValues, $force);
+    }
 
 
     /**

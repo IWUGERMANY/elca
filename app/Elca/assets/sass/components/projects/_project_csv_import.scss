@@ -43,7 +43,7 @@
   &.preview {
 
     form.projectImportPreviewForm {
-      width: 950px;
+      width: 1000px;
     }
 
     .hl-row {
@@ -65,11 +65,11 @@
         }
 
         &.hl-name {
-          left: 160px;
+          left: 220px;
         }
 
         &.hl-quantity {
-          left: 427px;
+          left: 477px;
         }
 
         &.hl-tpl-element {
@@ -102,11 +102,16 @@
 
         &.din-code {
           left: 10px;
-          width: 130px;
+          width: 200px;
+        }
+        &.din-code3 {
+          top: 30px;
+          left: 10px;
+          width: 200px;
         }
 
         &.name {
-          left: 160px;
+          left: 220px;
           width: 250px;
           overflow: hidden;
           height: 24px;
@@ -117,12 +122,12 @@
         }
 
         &.quantity {
-          left: 420px;
+          left: 470px;
           text-align: right;
           width: 70px;
         }
         &.unit {
-          left: 495px;
+          left: 545px;
           text-align: center;
           width: 50px;
         }
