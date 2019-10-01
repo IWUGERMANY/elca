@@ -368,8 +368,8 @@ class ProjectCsvCtrl extends AppCtrl
                     $dinCode = $dinCode2[$id];
                 }
 
-                $data->dinCode2[$id] = $dinCode2[$id];
-                $data->dinCode3[$id] = $dinCode3[$id];
+                $data->dinCode2[$id] = $dinCode2[$id] ?? null;
+                $data->dinCode3[$id] = $dinCode3[$id] ?? null;
             }
             else {
                 $dinCode = $element->dinCode();
@@ -381,7 +381,6 @@ class ProjectCsvCtrl extends AppCtrl
             if (!empty($dinCode) && $dinCode !== $element->dinCode()) {
                 $element->changeDinCode((int)$dinCode);
             }
-
 
             if (isset($quantities[$id]) && $quantities[$id] && isset($units[$id]) && $units[$id]) {
                 $quantity = Quantity::fromValue(
