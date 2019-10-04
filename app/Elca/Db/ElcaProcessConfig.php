@@ -843,14 +843,13 @@ class ElcaProcessConfig extends DbObject
      *
      * @param  number  $density - density
      * @return
+     * @deprecated
      */
     public function setDensity(float $density = null)
     {
-        $this->density = $density;
+        throw new \InvalidArgumentException("Setting the density in this context is not supported anymore");
     }
     // End setDensity
-
-
 
     /**
      * Sets the property thermalConductivity
@@ -1148,12 +1147,12 @@ class ElcaProcessConfig extends DbObject
      * Returns the property density
      *
      * @return float|null
+     * @deprecated
      */
     public function getDensity() : ?float
     {
         return $this->density;
     }
-
 
     /**
      * Returns the property thermalConductivity
@@ -1332,24 +1331,6 @@ class ElcaProcessConfig extends DbObject
         }
 
         return $this->conversionMatrix;
-    }
-
-    /**
-     * @param bool $force
-     * @return Converter
-     */
-    public function getConverter($force = false)
-    {
-        $conversions = [];
-
-        /**
-         * @var ElcaProcessConversion $processConversion
-         */
-        foreach ($this->getProcessConversions(null, $force) as $processConversion) {
-            $conversions[] = $processConversion->toConversion();
-        }
-
-        return new Converter(new ProcessConfigId($this->id), $conversions);
     }
 
     /**

@@ -97,6 +97,7 @@ abstract class AbstractConversion implements Conversion
 
     public function equals(Conversion $conversion): bool
     {
-        return $this == $conversion;
+        return $this->fromUnit->equals($conversion->fromUnit()) &&
+               $this->toUnit->equals($conversion->toUnit());
     }
 }

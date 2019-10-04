@@ -28,10 +28,11 @@ namespace Elca\Model\ProcessConfig\LifeCycle;
 use Elca\Model\Process\ProcessDbId;
 use Elca\Model\Process\Stage;
 use Elca\Model\ProcessConfig\ProcessConfigId;
+use Elca\Model\ProcessConfig\ProcessLifeCycleId;
 
 interface ProcessLifeCycleRepository
 {
-    public function findById(ProcessConfigId $processConfigId, ProcessDbId $processDbId): ProcessLifeCycle;
+    public function findById(ProcessLifeCycleId $processLifeCycleId): ProcessLifeCycle;
 
     public function findByIdAndStage(ProcessConfigId $processConfigId, ProcessDbId $processDbId, Stage $stage): ProcessLifeCycle;
 

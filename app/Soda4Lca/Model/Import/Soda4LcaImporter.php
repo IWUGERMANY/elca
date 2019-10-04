@@ -1588,7 +1588,7 @@ class Soda4LcaImporter
             }
 
             if ($conversion->isValid() && $convDO->ident === ElcaProcessConversion::IDENT_GROSS_DENSITY) {
-                $processConfig->setDensity($convDO->factor);
+                //$processConfig->setDensity($convDO->factor);
                 $processConfig->update();
                 $this->Log->debug('Updated density in ProcessConfig `'.$processConfig->getName().'\'', __METHOD__);
 

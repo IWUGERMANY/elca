@@ -25,16 +25,7 @@
 namespace Elca\Db;
 
 use Beibob\Blibs\DataObjectSet;
-/**
- * This file is part of the eLCA project
- *
- * eLCA
- *
- * Copyright (c) 2010-2011 Tobias Lode <tobias@beibob.de>
- *               BEIBOB Medienfreunde GbR - http://beibob.de/
- * Licensed under Creative Commons license CC BY-NC 3.0
- * http://creativecommons.org/licenses/by-nc/3.0/de/
- */
+
 /**
  * Builds report views
  *

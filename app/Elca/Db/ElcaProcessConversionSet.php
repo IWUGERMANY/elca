@@ -37,19 +37,8 @@ use Beibob\Blibs\DbObjectSet;
  */
 class ElcaProcessConversionSet extends DbObjectSet
 {
+    const VIEW_PROCESS_CONVERSION_VERSIONS = 'elca.process_conversion_versions_v';
 
-    //////////////////////////////////////////////////////////////////////////////////////
-    // public
-    //////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Find all conversions for the given process config id
-     *
-     * @param  int     $processConfigId
-     * @param  array   $orderBy - array map of columns on to directions array('id' => 'DESC')
-     * @param  boolean $force   - Bypass caching
-     * @return ElcaProcessConversionSet|ElcaProcessConversion[]
-     */
     public static function findByProcessConfigId($processConfigId, array $orderBy = null, $force = false)
     {
         if (!$processConfigId) {
@@ -68,7 +57,38 @@ class ElcaProcessConversionSet extends DbObjectSet
             $force
         );
     }
-    // End findByProcessConfigId
+
+
+    public static function findByProcessConfigIdAndProcessDbId($processConfigId, $processDbId, array $orderBy = null, $force = false)
+    {
+        if (!$processConfigId || !$processDbId) {
+            return new ElcaProcessConversionSet();
+        }
+
+        $initValues = [
+            'process_config_id' => $processConfigId,
+            'process_db_id' => $processDbId
+        ];
+
+        $sql = sprintf('SELECT DISTINCT c.*
+                                 FROM %s c 
+                                 JOIN %s cv ON c.id = cv.conversion_id
+                                WHERE (c.process_config_id, cv.process_db_id) = (:processConfigId, :processDbId)',
+        ElcaProcessConversion::TABLE_NAME,
+        ElcaProcessConversionVersion::TABLE_NAME
+        );
+
+        if ($orderBy) {
+            $sql .= ' '. self::buildOrderView($orderBy);
+        }
+
+        return self::_findBySql(
+            get_class(),
+            $sql,
+            $initValues,
+            $force
+        );
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////
 

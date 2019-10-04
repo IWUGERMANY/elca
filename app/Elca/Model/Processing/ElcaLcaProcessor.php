@@ -55,6 +55,7 @@ use Elca\Model\Process\ProcessDbId;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycleRepository;
 use Elca\Model\ProcessConfig\ProcessConfigId;
 use Elca\Model\ProcessConfig\ProcessConfigRepository;
+use Elca\Model\ProcessConfig\ProcessLifeCycleId;
 use Elca\Model\ProcessConfig\UsefulLife;
 use Elca\Model\Processing\Element\ElementComponentQuantity;
 use Elca\Model\Project\ProjectId;
@@ -312,8 +313,9 @@ class ElcaLcaProcessor
             $lifeCycleUsages = $this->lifeCycleUsageService->findLifeCycleUsagesForProject(new ProjectId($project->getId()));
 
             $processLifeCycle = $this->processLifeCycleRepository->findById(
-                new ProcessConfigId($component->getProcessConfigId()),
-                new ProcessDbId($processDbId)
+                new ProcessLifeCycleId(new ProcessDbId($processDbId),
+                    new ProcessConfigId($component->getProcessConfigId())
+                )
             );
 
             /**
@@ -487,10 +489,8 @@ class ElcaLcaProcessor
         foreach ($finalEnergyDemandSet as $finalEnergyDemand) {
             $processConfigId  = new ProcessConfigId($finalEnergyDemand->getProcessConfigId());
 
-            $processLifeCycle = $this->processLifeCycleRepository->findById(
-                $processConfigId,
-                new ProcessDbId($processDbId)
-            );
+            $processLifeCycle = $this->processLifeCycleRepository->findById(new ProcessLifeCycleId(
+                new ProcessDbId($processDbId), $processConfigId));
 
             $qE = 0;
             foreach (['heating', 'water', 'lighting', 'ventilation', 'cooling'] as $property) {
@@ -569,10 +569,8 @@ class ElcaLcaProcessor
          */
         foreach ($finalEnergySupplies as $finalEnergySupply) {
             $processConfigId  = new ProcessConfigId($finalEnergySupply->getProcessConfigId());
-            $processLifeCycle = $this->processLifeCycleRepository->findById(
-                $processConfigId,
-                new ProcessDbId($processDbId)
-            );
+            $processLifeCycle = $this->processLifeCycleRepository->findById(new ProcessLifeCycleId(
+                new ProcessDbId($processDbId), $processConfigId));
 
             $qE = $finalEnergySupply->getQuantity() * (1 - $finalEnergySupply->getEnEvRatio());
 
@@ -656,10 +654,8 @@ class ElcaLcaProcessor
                 continue;
             }
 
-            $processLifeCycle = $this->processLifeCycleRepository->findById(
-                new ProcessConfigId($benchmarkRefProcessConfig->getProcessConfigId()),
-                new ProcessDbId($processDbId)
-            );
+            $processLifeCycle = $this->processLifeCycleRepository->findById(new ProcessLifeCycleId(
+                new ProcessDbId($processDbId), new ProcessConfigId($benchmarkRefProcessConfig->getProcessConfigId())));
 
             $processConfig = $benchmarkRefProcessConfig->getProcessConfig();
 
@@ -723,9 +719,8 @@ class ElcaLcaProcessor
 
             /** @var ElcaProjectTransportMean $transportMean */
             foreach ($means as $transportMean) {
-                $processLifeCycle = $this->processLifeCycleRepository->findById(
-                    new ProcessConfigId($transportMean->getProcessConfigId()),
-                    new ProcessDbId($processDb->getId())
+                $processLifeCycle = $this->processLifeCycleRepository->findById(new ProcessLifeCycleId(
+                    new ProcessDbId($processDb->getId()), new ProcessConfigId($transportMean->getProcessConfigId()))
                 );
 
                 $processLcaCalculator = new ProcessLcaCalculator(

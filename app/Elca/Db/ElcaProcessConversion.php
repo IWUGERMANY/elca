@@ -26,6 +26,7 @@ namespace Elca\Db;
 
 use Beibob\Blibs\DbObject;
 use Elca\Model\Common\Unit;
+use Elca\Model\Process\ProcessDbId;
 use Elca\Model\ProcessConfig\Conversion\Conversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use PDO;
@@ -78,6 +79,16 @@ class ElcaProcessConversion extends DbObject
      */
     private $outUnit;
 
+
+    /**
+     * extension properties
+     */
+
+    /**
+     * processDbId
+     */
+    private $processDbId;
+
     /**
      * conversion factor
      */
@@ -110,15 +121,15 @@ class ElcaProcessConversion extends DbObject
                                         'processConfigId' => PDO::PARAM_INT,
                                         'inUnit'          => PDO::PARAM_STR,
                                         'outUnit'         => PDO::PARAM_STR,
-                                        'factor'          => PDO::PARAM_STR,
-                                        'ident'           => PDO::PARAM_STR,
-                                        'created'         => PDO::PARAM_STR,
-                                        'modified'        => PDO::PARAM_STR);
+                                        );
 
     /**
      * Extended column types
      */
-    private static $extColumnTypes = array();
+    private static $extColumnTypes = array('factor'          => PDO::PARAM_STR,
+                                           'ident'           => PDO::PARAM_STR,
+                                           'created'         => PDO::PARAM_STR,
+                                           'modified'        => PDO::PARAM_STR);
 
     //////////////////////////////////////////////////////////////////////////////////////
     // public
@@ -130,25 +141,21 @@ class ElcaProcessConversion extends DbObject
      * @param  integer $processConfigId - processConfigId
      * @param  string $inUnit - input unit of measure
      * @param  string $outUnit - output unit of measure
-     * @param  float $factor - conversion factor
-     * @param  string $ident - internal ident
      * @return ElcaProcessConversion
      */
-    public static function create($processConfigId, $inUnit, $outUnit, $factor, $ident = null)
+    public static function create($processConfigId, $inUnit, $outUnit)
     {
-        $ElcaProcessConversion = new ElcaProcessConversion();
-        $ElcaProcessConversion->setProcessConfigId($processConfigId);
-        $ElcaProcessConversion->setInUnit($inUnit);
-        $ElcaProcessConversion->setOutUnit($outUnit);
-        $ElcaProcessConversion->setFactor($factor);
-        $ElcaProcessConversion->setIdent($ident);
+        $processConversion = new ElcaProcessConversion();
+        $processConversion->setProcessConfigId($processConfigId);
+        $processConversion->setInUnit($inUnit);
+        $processConversion->setOutUnit($outUnit);
 
-        if($ElcaProcessConversion->getValidator()->isValid())
-            $ElcaProcessConversion->insert();
+        if ($processConversion->getValidator()->isValid()) {
+            $processConversion->insert();
+        }
 
-        return $ElcaProcessConversion;
+        return $processConversion;
     }
-    // End create
 
     //////////////////////////////////////////////////////////////////////////////////////
 
@@ -168,8 +175,6 @@ class ElcaProcessConversion extends DbObject
                              , process_config_id
                              , in_unit
                              , out_unit
-                             , factor
-                             , ident
                              , created
                              , modified
                           FROM %s
@@ -190,6 +195,8 @@ class ElcaProcessConversion extends DbObject
      * @param  string   $ident          - internal ident
      * @param  boolean  $force          - Bypass caching
      * @return ElcaProcessConversion
+     * @deprecated
+     * @todo
      */
     public static function findByProcessConfigIdAndIdent($processConfigId, $ident = null, $force = false)
     {
@@ -211,8 +218,6 @@ class ElcaProcessConversion extends DbObject
                              , process_config_id
                              , in_unit
                              , out_unit
-                             , factor
-                             , ident
                              , created
                              , modified
                           FROM %s
@@ -234,6 +239,8 @@ class ElcaProcessConversion extends DbObject
      * @param  string   $ident          - internal ident
      * @param  boolean  $force          - Bypass caching
      * @return ElcaProcessConversion
+     * @deprecated
+     * @todo
      */
     public static function findProductionByProcessConfigIdAndRefUnit($processConfigId, $refUnit, $force = false)
     {
@@ -250,8 +257,6 @@ class ElcaProcessConversion extends DbObject
                              , process_config_id
                              , in_unit
                              , out_unit
-                             , factor
-                             , ident
                              , created
                              , modified
                           FROM %s
@@ -291,8 +296,6 @@ class ElcaProcessConversion extends DbObject
                               , process_config_id
                               , in_unit
                               , out_unit
-                              , factor
-                              , ident
                               , created
                               , modified
                            FROM %s
@@ -302,7 +305,7 @@ class ElcaProcessConversion extends DbObject
                        , $condition
                        );
 
-        return self::findBySql(get_class(), $sql, array('processConfigId' => $processConfigId, 'in' => $in, 'out' => $out), $force);
+        return self::findBySql(get_class(), $sql, ['processConfigId' => $processConfigId, 'in' => $in, 'out' => $out], $force);
     }
     // End findByProcessConfigIdAndIdent
 
@@ -315,9 +318,7 @@ class ElcaProcessConversion extends DbObject
         return self::create(
             $newProcessConfigId,
             $this->inUnit,
-            $this->outUnit,
-            $this->factor,
-            $this->ident
+            $this->outUnit
         );
     }
 
@@ -380,42 +381,6 @@ class ElcaProcessConversion extends DbObject
 
     //////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Sets the property factor
-     *
-     * @param  number  $factor - conversion factor
-     * @return
-     */
-    public function setFactor($factor)
-    {
-        if(!$this->getValidator()->assertNotEmpty('factor', $factor))
-            return;
-
-        if(!$this->getValidator()->assertNumber('factor', $factor))
-            return;
-
-        $this->factor = $factor;
-    }
-    // End setFactor
-
-    //////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Sets the property ident
-     *
-     * @param  string   $ident - internal ident
-     * @return
-     */
-    public function setIdent($ident = null)
-    {
-        if(!$this->getValidator()->assertMaxLength('ident', 20, $ident))
-            return;
-
-        $this->ident = $ident;
-    }
-    // End setIdent
-
-    //////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Returns the property id
@@ -484,29 +449,6 @@ class ElcaProcessConversion extends DbObject
     //////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Returns the property factor
-     *
-     * @return float|null
-     */
-    public function getFactor() :?float
-    {
-        return $this->factor;
-    }
-
-    /**
-     * Returns the property ident
-     *
-     * @return string
-     */
-    public function getIdent()
-    {
-        return $this->ident;
-    }
-    // End getIdent
-
-    //////////////////////////////////////////////////////////////////////////////////////
-
-    /**
      * Returns the property created
      *
      * @return string
@@ -530,7 +472,11 @@ class ElcaProcessConversion extends DbObject
     }
     // End getModified
 
-    //////////////////////////////////////////////////////////////////////////////////////
+
+    public function getVersionFor(ProcessDbId $processDbId) : ElcaProcessConversionVersion
+    {
+        return ElcaProcessConversionVersion::findByPK($this->id, $processDbId->value());
+    }
 
     /**
      * Returns true if this conversion is associated with element components
@@ -586,8 +532,6 @@ class ElcaProcessConversion extends DbObject
                            SET process_config_id = :processConfigId
                              , in_unit         = :inUnit
                              , out_unit        = :outUnit
-                             , factor          = :factor
-                             , ident           = :ident
                              , created         = :created
                              , modified        = :modified
                          WHERE id = :id"
@@ -595,14 +539,14 @@ class ElcaProcessConversion extends DbObject
                        );
 
         return $this->updateBySql($sql,
-                                  array('id'             => $this->id,
-                                        'processConfigId' => $this->processConfigId,
-                                        'inUnit'         => $this->inUnit,
-                                        'outUnit'        => $this->outUnit,
-                                        'factor'         => $this->factor,
-                                        'ident'          => $this->ident,
-                                        'created'        => $this->created,
-                                        'modified'       => $this->modified)
+                                  [
+                                      'id'              => $this->id,
+                                      'processConfigId' => $this->processConfigId,
+                                      'inUnit'          => $this->inUnit,
+                                      'outUnit'         => $this->outUnit,
+                                      'created'         => $this->created,
+                                      'modified'        => $this->modified
+                                  ]
                                   );
     }
     // End update
@@ -686,6 +630,8 @@ class ElcaProcessConversion extends DbObject
 
     /**
      * @return Conversion
+     * @deprecated
+     * @todo
      */
     public function toConversion()
     {
@@ -711,8 +657,8 @@ class ElcaProcessConversion extends DbObject
         $this->created         = self::getCurrentTime();
         $this->modified        = null;
 
-        $sql = sprintf("INSERT INTO %s (id, process_config_id, in_unit, out_unit, factor, ident, created, modified)
-                               VALUES  (:id, :processConfigId, :inUnit, :outUnit, :factor, :ident, :created, :modified)"
+        $sql = sprintf("INSERT INTO %s (id, process_config_id, in_unit, out_unit,created, modified)
+                               VALUES  (:id, :processConfigId, :inUnit, :outUnit, :created, :modified)"
                        , self::TABLE_NAME
                        );
 
@@ -721,8 +667,6 @@ class ElcaProcessConversion extends DbObject
                                         'processConfigId' => $this->processConfigId,
                                         'inUnit'         => $this->inUnit,
                                         'outUnit'        => $this->outUnit,
-                                        'factor'         => $this->factor,
-                                        'ident'          => $this->ident,
                                         'created'        => $this->created,
                                         'modified'       => $this->modified)
                                   );
@@ -746,8 +690,6 @@ class ElcaProcessConversion extends DbObject
         $this->processConfigId = (int)$dataObject->process_config_id;
         $this->inUnit          = $dataObject->in_unit;
         $this->outUnit         = $dataObject->out_unit;
-        $this->factor          = null !== $dataObject->factor ? (float)$dataObject->factor : null;
-        $this->ident           = $dataObject->ident;
         $this->created         = $dataObject->created;
         $this->modified        = $dataObject->modified;
 
