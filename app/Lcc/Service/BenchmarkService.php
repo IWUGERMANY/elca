@@ -41,7 +41,7 @@ class BenchmarkService
     /**
      * Grouping captions
      *
-     * @translate array Lcc\Model\Processing\LccBenchmark::$groupingCaptions
+     * @translate array Lcc\Service\BenchmarkService::$groupingCaptions
      */
     public static $groupingCaptions = ['costs' => 'Herstellkosten KG ',
                                        LccCost::GROUPING_WATER => 'Barwert Nutzungskosten Wasser/ Abwasser',
@@ -55,7 +55,7 @@ class BenchmarkService
     ];
 
     /**
-     * @translate array Lcc\Model\Processing\LccBenchmark::$groupingShortNames
+     * @translate array Lcc\Service\BenchmarkService::$groupingShortNames
      */
     public static $groupingShortNames = ['costs' => 'KG ',
                                          LccCost::GROUPING_WATER => 'Wasser/ Abwasser',
