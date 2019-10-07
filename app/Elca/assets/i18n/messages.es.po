@@ -6705,7 +6705,7 @@ msgstr "materiales;"
 
 #: 
 msgid "users_manual"
-msgstr "manual de usuario"
+msgstr "users_manual"
 
 #: 
 msgid "Anwender"

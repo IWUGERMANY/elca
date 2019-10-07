@@ -47,14 +47,17 @@ class ElcaInfoHandbookView extends HtmlView
         parent::init($args);
         $this->setTplName('elca_info_handbook');
     }
-    // End beforeRender
-
+  
 
     protected function beforeRender()
     {
         $Container = $this->getElementById('downloadhandbook');
+		
+		// ON! Kurzversion - Handbuch öffentlich (HandbookCtrl)
+		$Container->appendChild($this->getLi([], $this->getA(['href' => '/handbook/', 'class' => 'iconsheet no-xhr', 'target' => '_blank'], ucfirst(t('Handbuch')))));
 
-        $User = UserStore::getInstance()->getUser();
+        /* Version über exports / login
+		$User = UserStore::getInstance()->getUser();
         if ($User->isInitialized()) {
 
             // Handbook
@@ -64,8 +67,9 @@ class ElcaInfoHandbookView extends HtmlView
 
             // Anmelden
             $Container->appendChild($this->getLi([], $this->getA(['href' => '/login/', 'class' => 'no-xhr'], ucfirst(t('Anmelden')))));
-        }
+		}
+		*/
     }
-    // End beforeRender
+	// End beforeRender
 }
 // End ElcaInfoHandbookView
