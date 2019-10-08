@@ -55,7 +55,7 @@ use Elca\View\helpers\ElcaHtmlSubmitButton;
  * @author  Tobias Lode <tobias@beibob.de>
  *
  */
-class ElcaTemplateCompositeElementSelectorView extends HtmlView
+class ElcaTemplatePreviewElementSelectorView extends HtmlView
 {
     private $projectVariantId;
 
@@ -184,15 +184,6 @@ class ElcaTemplateCompositeElementSelectorView extends HtmlView
         $radio->setAttribute('onchange', '$(this).closest("form").submit();');
     }
 
-    protected function appendAutoCompleteSearch($form, $filterByProcessDbIds, $elementTypeNodeId): void
-    {
-        $search = $form->add(new ElcaHtmlFormElementLabel(t('Suche'), new HtmlTextInput('search')));
-        $search->setAttribute('id', 'elca-element-search');
-        $search->setAttribute('data-url', $this->url);
-        $search->setAttribute('data-element-type-node-id', $elementTypeNodeId);
-        $search->setAttribute('data-compatdbs', \json_encode($filterByProcessDbIds));
-    }
-
     protected function appendElementSelect(
         $form, $elementTypeNodeId, $activeElement, $scope, $filterByProcessDbIds) {
 
@@ -207,16 +198,33 @@ class ElcaTemplateCompositeElementSelectorView extends HtmlView
 
         list($isPublicFilter, $isReferenceFilter) = $this->filterScope($scope ?? null);
 
-        $elementSet = ElcaElementSet::findCompositesByElementTypeNodeId(
-            $elementTypeNodeId,
-            null,
-            $this->access->hasAdminPrivileges(),
-            $this->access->getUserGroupIds(),
-            null,
-            $isPublicFilter,
-            $isReferenceFilter,
-            $filterByProcessDbIds
-        );
+        if ($elementTypeNode->isCompositeLevel()) {
+
+            $elementSet = ElcaElementSet::findCompositesByElementTypeNodeId(
+                $elementTypeNodeId,
+                null,
+                $this->access->hasAdminPrivileges(),
+                $this->access->getUserGroupIds(),
+                null,
+                $isPublicFilter,
+                $isReferenceFilter,
+                $filterByProcessDbIds
+            );
+        }
+        else {
+            $elementSet = ElcaElementSet::findUnassignedByElementTypeNodeId(
+                $elementTypeNodeId,
+                null,
+                $this->access->hasAdminPrivileges(),
+                $this->access->getUserGroupIds(),
+                null,
+                true,
+                $isPublicFilter,
+                $isReferenceFilter,
+                null,
+                $filterByProcessDbIds
+            );
+        }
 
         foreach ($elementSet as $Element) {
             $opt = $selectElement->add(

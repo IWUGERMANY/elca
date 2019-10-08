@@ -274,6 +274,9 @@ class ProcessesCtrl extends TabsCtrl
             $validator->assertNumber('maxLifeTime', null, t('Es sind nur numerische Werte erlaubt'));
             $validator->assertNumber('density', null, t('Es sind nur numerische Werte erlaubt'));
             $validator->assertNumber('fHsHi', null, t('Es sind nur numerische Werte erlaubt'));
+			$validator->assertNumber('wasteCode', null, t('Es sind nur numerische Werte erlaubt'));
+			$validator->assertNumber('wasteCodeSuffix', null, t('Es sind nur numerische Werte erlaubt'));
+			$validator->assertNumber('lambdaValue', null, t('Es sind nur numerische Werte erlaubt'));
             $validator->assertNumber('defaultSize', null, t('Es sind nur numerische Werte erlaubt'));
             $validator->assertNumber('thermalConductivity', null, t('Es sind nur numerische Werte erlaubt'));
             $validator->assertNumber('thermalResistance', null, t('Es sind nur numerische Werte erlaubt'));
@@ -295,35 +298,38 @@ class ProcessesCtrl extends TabsCtrl
             /**
              * Validate conversions
              */
-            $processConfigId       = new ProcessConfigId($processConfig->getId());
-            $conversionService     = $this->container->get(Conversions::class);
-            $requiredConversions   = $conversionService->findAllRequiredConversions($processConfigId);
-            $additionalConversions = $conversionService->findAllAdditionalConversions($processConfigId);
-            $recommendedConversions = $conversionService->findRecommendedConversions($processConfigId);
+			if ($processConfig->isInitialized()) {
+				
+				$processConfigId       = new ProcessConfigId($processConfig->getId());
+				$conversionService     = $this->container->get(Conversions::class);
+				$requiredConversions   = $conversionService->findAllRequiredConversions($processConfigId);
+				$additionalConversions = $conversionService->findAllAdditionalConversions($processConfigId);
+				$recommendedConversions = $conversionService->findRecommendedConversions($processConfigId);
 
-            foreach ($requiredConversions as $conversion) {
-                if ($conversion->isTrivial()) {
-                    continue;
-                }
+				foreach ($requiredConversions as $conversion) {
+					if ($conversion->isTrivial()) {
+						continue;
+					}
 
-                $validator->assertConversion($conversion, 'factor_', 'inUnit_', 'outUnit_');
-            }
+					$validator->assertConversion($conversion, 'factor_', 'inUnit_', 'outUnit_');
+				}
 
-            foreach ($additionalConversions as $conversion) {
-                if ($conversion->isTrivial()) {
-                    continue;
-                }
+				foreach ($additionalConversions as $conversion) {
+					if ($conversion->isTrivial()) {
+						continue;
+					}
 
-                $validator->assertConversion($conversion, 'factor_', 'inUnit_', 'outUnit_');
-            }
+					$validator->assertConversion($conversion, 'factor_', 'inUnit_', 'outUnit_');
+				}
 
-            foreach ($recommendedConversions as $conversion) {
-                if ($conversion->isTrivial()) {
-                    continue;
-                }
+				foreach ($recommendedConversions as $conversion) {
+					if ($conversion->isTrivial()) {
+						continue;
+					}
 
-                $validator->assertConversion($conversion, 'factor_', 'inUnit_', 'outUnit_');
-            }
+					$validator->assertConversion($conversion, 'factor_', 'inUnit_', 'outUnit_');
+				}
+			}
 
             if ($validator->isValid()) {
                 $minLifeTime     = ElcaNumberFormat::fromString($this->Request->minLifeTime, 0);
@@ -338,7 +344,12 @@ class ProcessesCtrl extends TabsCtrl
                 $thermalConductivity = ElcaNumberFormat::fromString($this->Request->thermalConductivity, 2);
                 $thermalResistance   = ElcaNumberFormat::fromString($this->Request->thermalResistance, 2);
                 $fHsHi               = ElcaNumberFormat::fromString($this->Request->fHsHi, 2);
-                $defaultSize         = $this->Request->defaultSize ? ElcaNumberFormat::fromString($this->Request->defaultSize, 2) / 1000 : null;
+                $wasteCode           = !empty($this->Request->wasteCode) ? (int)$this->Request->wasteCode : null;
+				$wasteCodeSuffix     = !empty($this->Request->wasteCodeSuffix) ? (int)$this->Request->wasteCodeSuffix : null;
+				$lambdaValue		 = !empty($this->Request->lambdaValue) ? ElcaNumberFormat::fromString($this->Request->lambdaValue, 3) : null;
+				$elementGroupA     	 = !empty($this->Request->elementGroupA) ? (bool)$this->Request->elementGroupA : null;
+				$elementGroupB     	 = !empty($this->Request->elementGroupB) ? (bool)$this->Request->elementGroupB : null;
+				$defaultSize         = $this->Request->defaultSize ? ElcaNumberFormat::fromString($this->Request->defaultSize, 2) / 1000 : null;
                 $svgPatternId        = $this->Request->svgPatternId ? $this->Request->svgPatternId : null;
 
                 if ($processConfig->isInitialized()) {
@@ -368,6 +379,14 @@ class ProcessesCtrl extends TabsCtrl
                         $processConfig->setMinLifeTimeInfo($minLifeTimeInfo);
                         $processConfig->setAvgLifeTimeInfo($avgLifeTimeInfo);
                         $processConfig->setMaxLifeTimeInfo($maxLifeTimeInfo);
+						
+						// AVV
+						$processConfig->setWasteCode($wasteCode);
+						$processConfig->setWasteCodeSuffix($wasteCodeSuffix);
+						$processConfig->setLambdaValue($lambdaValue);
+						
+						$processConfig->setElementGroupA($elementGroupA);
+						$processConfig->setElementGroupB($elementGroupB);
 
                         $processConfig->setThermalConductivity($thermalConductivity);
                         $processConfig->setThermalResistance($thermalResistance);
@@ -641,7 +660,12 @@ class ProcessesCtrl extends TabsCtrl
                         null,
                         $svgPatternId,
                         false,
-                        $defaultSize
+                        $defaultSize,
+						$wasteCode,
+						$wasteCodeSuffix,
+						$lambdaValue,
+						$elementGroupA,
+						$elementGroupB
                     );
                     /**
                      * Init a redirect to render the default view

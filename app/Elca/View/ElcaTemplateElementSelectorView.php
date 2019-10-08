@@ -122,6 +122,7 @@ class ElcaTemplateElementSelectorView extends HtmlView
 
         $form->add(new HtmlHiddenField('projectVariantId', $this->projectVariantId));
         $form->add(new HtmlHiddenField('url', $this->url));
+        $form->add(new HtmlHiddenField('relId', $this->get('relId')));
 
         if ($activeElement->isInitialized()) {
             $dataObject = $activeElement->getDataObject();

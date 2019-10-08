@@ -58,6 +58,20 @@ class ElcaBenchmarkVersionSet extends DbObjectSet
      * @param bool  $force
      * @return ElcaBenchmarkVersionSet
      */
+    public static function findActiveByBenchmarkSystemId($benchmarkSystemId, array $orderBy = null, $limit = null, $offset = null, $force = false)
+    {
+        return self::find(['benchmark_system_id' => $benchmarkSystemId, 'is_active' => true], $orderBy, $limit, $offset, $force);
+    }
+
+
+    /**
+     * @param int   $benchmarkSystemId
+     * @param array $orderBy
+     * @param int  $limit
+     * @param int  $offset
+     * @param bool  $force
+     * @return ElcaBenchmarkVersionSet
+     */
     public static function findByBenchmarkSystemIdWithConstrClassIds($benchmarkSystemId, array $orderBy = null, $limit = null, $offset = null, $force = false)
     {
         return self::_find(get_class(), self::VIEW_BENCHMARK_VERSIONS_WITH_CONSTR_CLASS_IDS, ['benchmark_system_id' => $benchmarkSystemId], $orderBy, $limit, $offset, $force);
@@ -116,6 +130,9 @@ ORDER BY id'
         return self::_find(get_class(), ElcaBenchmarkVersion::getTablename(), $initValues, $orderBy, $limit, $offset, $force);
     }
 
+    /**
+     * @return ElcaBenchmarkVersionSet|ElcaBenchmarkVersion[]
+     */
     public static function findWithConstrClassIds(array $initValues = null, array $orderBy = null, $limit = null, $offset = null, $force = false)
     {
         return self::_find(get_class(), self::VIEW_BENCHMARK_VERSIONS_WITH_CONSTR_CLASS_IDS, $initValues, $orderBy, $limit, $offset, $force);

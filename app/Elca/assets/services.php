@@ -23,7 +23,9 @@
  *
  */
 
+use Beibob\Blibs\DbHandle;
 use Bnb\Model\Benchmark\BnbBenchmarkSystemModel;
+use Elca\Security\ElcaAccess;
 use function DI\get;
 use Elca\Model\Import\Xml\Importer;
 use Elca\Model\Processing\ElcaLcaProcessor;
@@ -49,6 +51,11 @@ use Lcc\Model\Processing\LccProcessingObserver;
 use Lcc\Service\LccBenchmarkSystemObserver;
 
 return [
+    ElcaAccess::class => DI\factory(
+        function () {
+            return ElcaAccess::getInstance();
+        }
+    ),
     ElcaLcaProcessor::class => DI\object()
         ->constructor(DI\get('elca.lca_processing_observers')),
 

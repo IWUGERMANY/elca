@@ -81,9 +81,9 @@ class LccReportsView extends ElcaReportsView
     /**
      * Grouping captions
      *
-     * @translate array Lcc\View\LccBenchmark::$groupingCaptions
+     * @translate array Lcc\View\LccReportsView::$groupingCaptions
      */
-    private static $groupingCaptions = [
+    public static $groupingCaptions = [
         LccCost::GROUPING_PROD     => 'Herstellkosten KG ',
         LccCost::GROUPING_WATER    => 'Barwert Nutzungskosten Wasser/ Abwasser',
         LccCost::GROUPING_ENERGY   => 'Barwert Nutzungskosten Energie',
@@ -96,9 +96,9 @@ class LccReportsView extends ElcaReportsView
     ];
 
     /**
-     * @translate array Lcc\View\LccBenchmark::$groupingShortNames
+     * @translate array Lcc\View\LccReportsView::$groupingShortNames
      */
-    private static $groupingShortNames = [
+    public static $groupingShortNames = [
         LccCost::GROUPING_PROD     => 'KG ',
         LccCost::GROUPING_WATER    => 'Wasser/ Abwasser',
         LccCost::GROUPING_ENERGY   => 'Energie',

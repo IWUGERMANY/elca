@@ -315,7 +315,7 @@ body.loading #loading { display: block; }
 .elca-sheet-content .infos li { float: left; padding-right: 20px; }
 
 /** tabs ---------------*/
-#content ul.elca-tabs { position: relative; top: 1px; }
+#content ul.elca-tabs { position: relative; top: 1px; z-index: 1; }
 
 #content ul.elca-tabs li.elca-tab { float: left; border: 1px solid #ccc; padding: 0; margin-right: 5px; border-bottom: none; }
 
@@ -326,6 +326,11 @@ body.loading #loading { display: block; }
 #content ul.elca-tabs li.elca-tab.active a:hover { text-decoration: none; }
 
 #tabContent { border: 1px solid #ccc; padding: 20px; }
+
+#tabContent { position: relative; }
+#tabContent ul.id-info { position: absolute; top: 0; right: 0; margin: 5px; color: #666; }
+#tabContent ul.id-info li { float: left; padding-left: 20px; }
+#tabContent ul.id-info li .select-text .selection-label { padding-right: 3px; }
 
 .chart { position: relative; font: 10px sans-serif; }
 
@@ -628,6 +633,16 @@ h1.projectHeader { float: left; margin-right: 3em; }
 #content ul.pageable li.next-page a { display: inline-block; padding-left: 40px; line-height: 32px; }
 
 #content ul.pageable li.next-page a.loading { background: transparent url(/img/elca/loader/indicator_medium.gif) left center no-repeat; }
+
+#content.websiteinfo .flex { display: flex; }
+
+#content.websiteinfo .wrap { flex-wrap: wrap; }
+
+#content.websiteinfo .infocolumns { width: 840px; }
+
+#content.websiteinfo .infocolumn { padding: 30px 10px 0 10px; width: 400px; }
+
+#content.websiteinfo h2 { text-decoration: underline; font-weight: bold; padding: 0 0 10px 0; }
 
 #content.websiteinfo .downloads { padding-left: 16px; padding-top: 10px; }
 
@@ -1433,6 +1448,22 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #tabContent.tab-lca .process-assignment table td { text-align: left; }
 
+#processConfig .column.properties .form-section.wasteCode, #processConfig .column.properties .form-section.wasteCodeSuffix, #processConfig .column.properties .form-section.lambdaValue .form-elt, #processConfig .column.properties .form-section.elementGroupA, #processConfig .column.properties .form-section.elementGroupB { box-sizing: border-box; width: 50%; }
+
+#processConfig .column.properties .form-section.elementGroupA, #processConfig .column.properties .form-section.elementGroupB, #processConfig .column.properties .form-section.wasteCode, #processConfig .column.properties .form-section.wasteCodeSuffix { float: left; }
+
+#processConfig .column.properties .form-section.elementGroupA { clear: both; }
+
+#processConfig .column.properties .form-section.elementGroupA, #processConfig .column.properties .form-section.elementGroupB { width: 140px; }
+
+#processConfig .column.properties .form-section.wasteCode { width: 125px; padding-right: 15px; }
+
+#processConfig .column.properties .form-section.wasteCodeSuffix { width: 105px; padding-left: 15px; }
+
+#processConfig .column.properties .form-section.lambdaValue { clear: both; float: left; width: 125px; }
+
+#processConfig .column.properties .form-section.lambdaValue .form-elt { padding-right: 26px; width: 125px; }
+
 /** Process Datenbanken ------------------*/
 #content.process-databases div.button.export { margin: 0 20px 15px 0; float: left; }
 
@@ -1533,6 +1564,37 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #content.project-benchmarks .form-section .label-holder label { padding: 0 15px; color: #666; }
 
 #content.project-benchmarks .form-section .form-elt { display: inline-block; width: 40px; }
+
+#content.project-csv-import .import-group { position: relative; }
+#content.project-csv-import .import-group .download-link { position: absolute; top: 25px; right: 5px; color: #004f80; }
+#content.project-csv-import form.csvImportForm { width: 525px; }
+#content.project-csv-import form.csvImportForm .form-section { float: left; width: 525px; }
+#content.project-csv-import form.csvImportForm .form-section.name { clear: both; width: 525px; }
+#content.project-csv-import form.csvImportForm .form-section.constrMeasure { width: 250px; padding-right: 25px; }
+#content.project-csv-import form.csvImportForm .form-section.postcode { width: 250px; }
+#content.project-csv-import form.csvImportForm .form-section.netFloorSpace { clear: both; width: 250px; padding-right: 25px; }
+#content.project-csv-import form.csvImportForm .form-section.grossFloorSpace { width: 250px; }
+#content.project-csv-import.preview form.projectImportPreviewForm { width: 1000px; }
+#content.project-csv-import.preview .hl-row { position: relative; height: 22px; margin-top: 20px; margin-left: 0; }
+#content.project-csv-import.preview .hl-row h5 { position: absolute; top: 0; border-bottom: none; font-weight: normal; font-style: italic; color: #888; }
+#content.project-csv-import.preview .hl-row h5.hl-din-code { left: 10px; }
+#content.project-csv-import.preview .hl-row h5.hl-name { left: 220px; }
+#content.project-csv-import.preview .hl-row h5.hl-quantity { left: 477px; }
+#content.project-csv-import.preview .hl-row h5.hl-tpl-element { right: 300px; }
+#content.project-csv-import.preview .elements { width: auto; list-style-type: decimal; }
+#content.project-csv-import.preview li.element { clear: both; background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; margin-bottom: 8px; padding: 3px 0; line-height: 24px; min-height: 100px; position: relative; }
+#content.project-csv-import.preview li.element .column { display: block; position: absolute; top: 0; }
+#content.project-csv-import.preview li.element .column.din-code { left: 10px; width: 200px; }
+#content.project-csv-import.preview li.element .column.din-code3 { top: 30px; left: 10px; width: 200px; }
+#content.project-csv-import.preview li.element .column.name { left: 220px; width: 250px; overflow: hidden; height: 24px; line-height: 24px; text-overflow: ellipsis; white-space: nowrap; padding: 5px 0 10px; }
+#content.project-csv-import.preview li.element .column.quantity { left: 470px; text-align: right; width: 70px; }
+#content.project-csv-import.preview li.element .column.unit { left: 545px; text-align: center; width: 50px; }
+#content.project-csv-import.preview li.element .column.tpl-element-image { top: 2px; right: 280px; width: 100px; height: 100px; border: 1px solid #ddd; }
+#content.project-csv-import.preview li.element .column.tpl-element { top: 8px; right: 10px; width: 250px; padding-top: 1px; }
+#content.project-csv-import.preview li.element .element-selector { position: absolute; padding-top: 2px; top: auto; right: auto; width: 270px; line-height: 16px; color: #004f80; }
+#content.project-csv-import.preview li.element .HtmlStaticText { font-size: 12px; line-height: 16px; color: #666; }
+#content.project-csv-import.preview li.element.warning { background-color: #FDFFD9; }
+#content.project-csv-import.preview li.element.warning a.element-selector { color: #ff0000; }
 
 #content.replace-components form, #content.replace-elements form { width: 750px; }
 #content.replace-components .form-section.din276, #content.replace-elements .form-section.din276 { width: 400px; }
@@ -1817,6 +1879,10 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #elca-projects { position: relative; width: 800px; }
 
 #elca-projects .button { float: right; margin-left: 15px; }
+
+#elca-projects .button.import.csv a { background-color: #008000; }
+
+#elca-projects .button.import.enev a { background-color: #FFA500; }
 
 #elca-projects { margin-top: 30px; }
 #elca-projects p { padding-left: 8px; }

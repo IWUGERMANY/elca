@@ -165,6 +165,11 @@ CREATE TABLE elca.process_configs
  , "is_reference"           boolean         NOT NULL DEFAULT true   -- is reference
  , "f_hs_hi"                numeric                                 -- factor hs/hi
  , "default_size"           numeric                                 -- default size
+ , "waste_code"				integer									-- avv waste code
+ , "waste_code_suffix"		integer									-- avv waste code suffix
+ , "lambda_value"			numeric									-- lambda value
+ , "element_group_a"        boolean            						-- element group a
+ , "element_group_b"        boolean         			   			-- is reference
  , "min_life_time"          int                                     -- min life time in years
  , "avg_life_time"          int                                     -- avg life time in years
  , "max_life_time"          int                                     -- max life time in years

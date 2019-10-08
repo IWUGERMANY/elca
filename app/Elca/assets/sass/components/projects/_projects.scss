@@ -11,10 +11,11 @@
   margin-left: 15px;
 }
 
-#elca-projects .add {
+#elca-projects .button.import.csv a {
+  background-color:#008000;
 }
-
-#elca-projects .import {
+#elca-projects .button.import.enev a {
+  background-color:#FFA500;
 }
 
 #elca-projects {
