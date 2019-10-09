@@ -203,7 +203,10 @@ class Mailer
 
         $Mailer->IsSMTP();
         $Mailer->Host = $this->Config->mxServer;
-
+		
+        if(isset($this->Config->secure))
+            $Mailer->SMTPSecure = $this->Config->secure;
+		
         if(isset($this->Config->port))
             $Mailer->Port = $this->Config->port;
 
