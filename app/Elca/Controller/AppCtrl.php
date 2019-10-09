@@ -30,6 +30,7 @@ use Beibob\Blibs\Interfaces\Viewable;
 use Beibob\Blibs\JsonView;
 use Beibob\Blibs\Log;
 use Beibob\Blibs\Url;
+use Beibob\Blibs\Environment;
 use Beibob\Blibs\UserStore;
 use Elca\Db\ElcaProject;
 use Elca\Elca;
@@ -347,12 +348,15 @@ abstract class AppCtrl extends AjaxController
      */
     protected function checkProjectAccess(
         ElcaProject $project = null,
+		$removeProject = null,
         $msg = 'Sie haben keine Berechtigung für diese Aktion'
     ) {
-        $project = !is_null($project) ? $project : $this->Elca->getProject();
-
+    	$project = !is_null($project) ? $project : $this->Elca->getProject();
+		$removeProject = !is_null($removeProject) ? $removeProject : false;
+	
         $projectAccess = $this->container->get(ProjectAccess::class);
 
+		
         if ($this->Access->canAccessProject(
             $project,
             $projectAccess->retrieveEncryptedPasswordFromSessionForProject($project)
@@ -360,13 +364,21 @@ abstract class AppCtrl extends AjaxController
         ) {
             return true;
         }
-
+		
         $this->Elca->unsetProjectId();
-
+       
         if ($project->hasPassword()) {
-            return $this->passwordPromptRedirect($project->getId());
+			
+			// deleting of shared project without pwd allowed
+			if($removeProject && $this->Access->hasProjectAccessTokenAndCanDelSharedProject($project)) 
+			{
+				return true;
+			}	
+			// password required
+			return $this->passwordPromptRedirect($project->getId());
         }
 
+		
         // reset view
         if ($this->isAjax()) {
             parent::setView(new JsonView());
