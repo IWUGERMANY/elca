@@ -38,15 +38,17 @@ class CsvProjectElementImporter
             $unitString         = trim($csv[3] ?? '');
 
             $tplElementUuidOrId = !empty($csv[4]) ? trim($csv[4]) : null;
-            $tplElementUuidString = $this->findTplElementUuid($tplElementUuidOrId);
+            $tplElement = $this->findTplElement($tplElementUuidOrId);
 
-            $importedElements[]   = ImportElement::fromCsv(
+            $importElement = ImportElement::fromCsv(
                 $name,
                 $din276CodeString,
                 $quantityString,
                 $unitString,
-                $tplElementUuidString
+                null !== $tplElement ? $tplElement->getUuid() : null
             );
+
+            $importedElements[] = $importElement->harmonizeWithTemplateElement($tplElement);
         }
 
         return $importedElements;
@@ -62,20 +64,20 @@ class CsvProjectElementImporter
         }
     }
 
-    private function findTplElementUuid($tplElementUuidOrId) : ?string
+    private function findTplElement($tplElementUuidOrId) : ?ElcaElement
     {
         if (null === $tplElementUuidOrId) {
-            return $tplElementUuidOrId;
+            return null;
         }
 
         if (Uuid::isValid($tplElementUuidOrId)) {
-            return $tplElementUuidOrId;
+            return ElcaElement::findByUuid($tplElementUuidOrId);
         }
 
         if (!\is_numeric($tplElementUuidOrId)) {
             return null;
         }
 
-        return ElcaElement::findById($tplElementUuidOrId)->getUuid();
+        return ElcaElement::findById($tplElementUuidOrId);
     }
 }

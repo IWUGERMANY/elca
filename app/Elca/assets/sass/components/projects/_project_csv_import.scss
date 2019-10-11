@@ -46,6 +46,23 @@
       width: 1000px;
     }
 
+    .fieldset.project-info {
+      width:520px;
+      float:left;
+    }
+
+    .fieldset.project-info-right {
+      margin-left:25px;
+      width:420px;
+      float:left;
+
+      .notice {
+        font-size: 14px;
+        line-height:20px;
+        color: #000000;
+      }
+    }
+
     .hl-row {
       position: relative;
       height: 22px;
@@ -108,8 +125,8 @@
           top: 30px;
           left: 10px;
           width: 200px;
-        }
 
+        }
         &.name {
           left: 220px;
           width: 250px;
@@ -146,6 +163,19 @@
           width: 250px;
           padding-top: 1px;
         }
+      }
+
+      .modified-din-code,
+      .modified-unit {
+        position:absolute;
+        top:60px;
+        left:10px;
+      }
+      .modified-unit {
+        top: 35px;
+        left:470px;
+        width:150px;
+        line-height:1.3;
       }
 
       .element-selector {
