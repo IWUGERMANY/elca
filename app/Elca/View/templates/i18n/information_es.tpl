@@ -10,13 +10,13 @@
 	</p>
 	
 	<div class="inforow">
-		<h2>Handbuch</h2>
+		<h2>Manual</h2>
 		<include name="\Elca\View\ElcaInfoHandbookView"/>
 	</div>
 	
 	<div class="infocolumns flex wrap">
 		<div class="infocolumn">
-			<h2>Downloads</h2> 
+			<h2>Descargas</h2> 
 			<br/>
 			
 			<h3>CSV2eLCA</h3>
@@ -48,20 +48,33 @@
 				</li>
 			</ul>
 		</div>
+		
+		<div class="infocolumn">
+			<h2>Publicaciones</h2>
+			<ul class="downloads">
+				<li><a href="/docs/publications/Magazin_Zukunft_Bau_2014.pdf" target="_blank" title="" class="iconsheet no-xhr">Magazin Forschungsinitiative Bau [PDF, DE]</a><br/>
+					<span>eLCA – das Gebäude-Ökobilanzierungstool für jeden Planer</span>
+				</li>
+				<li><a href="/docs/publications/RESEARCH_NEWS_No-12015.pdf" target="_blank" title="" class="iconsheet no-xhr">RESEARCH NEWS, No 1/2015 [PDF, EN]</a><br/>
+					<span>Life cycle assessment of buildings - Assessing the global ecological quality of a building with eLCA</span>
+				</li>
+				<li><a href="/docs/publications/Informationen-aus-der-Forschung-des-BBSR_4-2016.pdf" target="_blank" title="" class="iconsheet no-xhr">Informationen aus der Forschung des BBSR, Nr. 4/2016 [PDF, DE]</a><br/>
+					<span>Ökobilanzierung von Gebäuden: Bewertung des Lebenszyklus mit eLCA</span>
+				</li>
+				<li><a href="/docs/publications/BBB_25-09-2017.pdf" target="_blank" title="" class="iconsheet no-xhr">Informationen aus der Forschung des BBSR, Nr. 5/2017 [PDF, DE]</a><br/>
+					<span>Digitaler Workflow erweitert: Ökobilanz mit eLCA auf Basis einer EnEV-Berechnung</span>
+				</li>
+				<li><a href="/docs/publications/BBB_07-08-2018_Bauforschungsserie.pdf" target="_blank" title="" class="iconsheet no-xhr">BundesBauBlatt 7-8 2018 [PDF, DE]</a><br/>
+					<span>Ergänzung des digitalen Workflow in der Gebäudeplanung</span>
+				</li>				
+			</ul>	
+		</div>		
 
 		<div class="infocolumn">
-			<h2>Präsentationen</h2>
+			<h2>Presentaciones</h2>
 			<ul class="downloads">
 				<li><a href="/docs/praesentationen/BauTec2018_EnEV2eLCA-final.pdf" target="_blank" title="BauTec 2018 Berlin - BMUB Messetalk" class="iconsheet no-xhr">BauTec 2018 Berlin - BMUB Messetalk [PDF, DE]</a></li>
 			</ul>	
-		</div>
-		
-		<div class="infocolumn">
-			<h2>Publikationen</h2>
-			<ul class="downloads">
-				<li></li>
-			</ul>	
 		</div>		
-		
 	</div>	
 </div>

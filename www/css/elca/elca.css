@@ -638,8 +638,6 @@ h1.projectHeader { float: left; margin-right: 3em; }
 
 #content.websiteinfo .flex { display: flex; }
 
-#content.websiteinfo .wrap { flex-wrap: wrap; }
-
 #content.websiteinfo .infocolumn { padding: 0 10px 0 10px; width: 400px; }
 
 #content.websiteinfo h2 { text-decoration: underline; font-weight: bold; padding: 0 0 10px 0; }
