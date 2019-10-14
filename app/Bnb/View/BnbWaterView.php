@@ -209,7 +209,7 @@ class BnbWaterView extends HtmlView
         $group->add(new HtmlTag('h4', t('Ermittlung der zu berücksichtigen Niederschlagsmenge')));
         for ($i = 1; $i <= 4; $i++) {
             $this->appendInput($group, 'dach'.$i.'Flaeche', t('Fläche Dach').' '.$i, false, 'm2');
-            $this->appendInput($group, 'dach'.$i.'Ertragsbeiwert', t('Ertragsbeiwert Dach').' '.$i, false, 'm2');
+            $this->appendInput($group, 'dach'.$i.'Ertragsbeiwert', t('Ertragsbeiwert Dach').' '.$i, false);
         }
 
         // append totals for this group

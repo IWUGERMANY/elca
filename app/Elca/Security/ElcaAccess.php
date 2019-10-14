@@ -516,6 +516,45 @@ class ElcaAccess
 
         return false;
     }
+	
+	
+    /**
+	 * Deleting of shared projects without password is activ
+     * @return bool
+     */
+    private function getDeleteSharedProjectNoPwd()
+    {
+        $environment = Environment::getInstance();
+        $config = $environment->getConfig();
+
+        if (isset($config->elca) &&
+            isset($config->elca->deleteSharedProjectNoPwd) &&
+            $config->elca->deleteSharedProjectNoPwd
+        ) {
+            return true;
+        }
+
+        return false;
+    }	
+	
+    /**
+     * @param ProjectId $projectId
+     * @return bool
+     */
+    public function hasProjectAccessTokenAndCanDelSharedProject(ElcaProject $project)
+    {
+        $token = $this->projectAccessTokenRepository->findConfirmedTokenForProjectIdAndUserId(
+            new ProjectId($project->getId()),
+            new UserId($this->userId)
+        );
+
+        if (null !== $token &&  $this->getDeleteSharedProjectNoPwd() ) {
+            return true;
+        }
+
+        return false;
+    }	
+	
 
     /**
      * @return array

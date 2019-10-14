@@ -92,7 +92,7 @@ class ProjectImportPreviewView extends HtmlView
         );
 
         $form = new HtmlForm('projectImportPreviewForm', '/project-csv/preview/');
-        $form->addClass('clearfix');
+        $form->addClass('clearfix highlight-changes');
 
         $form->setDataObject($this->data);
 
@@ -120,6 +120,16 @@ class ProjectImportPreviewView extends HtmlView
                 new HtmlStaticText($benchmarkVersion->getProcessDb()->getName())
             )
         );
+
+
+        if (null !== $this->project && $this->project->wasModifiedDuringImport()) {
+            $group = $form->add(new HtmlFormGroup('Hinweis'));
+            $group->addClass('project-info-right');
+
+            $p = $group->add(new HtmlTag('p', t('Die Daten wurden beim Einlesen modifiziert.'), ['class' => 'notice']));
+            $p->add(new HtmlTag('br'));
+            $p->add(new HtmlStaticText(t('Bitte überprüfen Sie die angepassten Felder!')));
+        }
 
         $this->appendButtons($form);
 
@@ -174,7 +184,7 @@ class ProjectImportPreviewView extends HtmlView
         }
 
         if (isset($this->data->dinCode2[$key]) && !empty($this->data->dinCode2[$key])) {
-            $elementTypeLevel2 = ElcaElementType::findByIdent($this->data->dinCode2[$key]);
+            $elementTypeLevel2  = ElcaElementType::findByIdent($this->data->dinCode2[$key]);
             $levelThreeDinCodes = $this->findLevelThreeDinCodes($elementTypeLevel2);
             $li->add(
                 new ElcaHtmlFormElementLabel(
@@ -187,6 +197,17 @@ class ProjectImportPreviewView extends HtmlView
             foreach ($levelThreeDinCodes as $dinCode => $caption) {
                 $dinCode3Select->add(new HtmlSelectOption($caption, $dinCode));
             }
+        }
+
+        if ($element->isModified() && $element->hasModificationReason(ImportElement::DINCODE_MISMATCH)) {
+            $dinCodeSelect->addClass('changed');
+
+            if (isset($this->data->dinCode3[$key]) && !empty($this->data->dinCode3[$key])) {
+                $dinCode3Select->addClass('changed');
+            }
+
+            $li->add(new HtmlTag('span', t('Die Kostengruppe wurde angepasst.'),
+                ['class' => 'modified-din-code']));
         }
 
         $li->add(
@@ -208,6 +229,12 @@ class ProjectImportPreviewView extends HtmlView
         )->addClass('column unit');
         foreach ([Elca::UNIT_M2, Elca::UNIT_STK, Elca::UNIT_M] as $unit) {
             $unitSelect->add(new HtmlSelectOption(t(Elca::$units[$unit]), $unit));
+        }
+
+        if ($element->isModified() && $element->hasModificationReason(ImportElement::UNIT_MISMATCH)) {
+            $unitSelect->addClass('changed');
+            $li->add(new HtmlTag('span', t('Die Einheit wurde angepasst. Stimmt die Menge?'),
+                ['class' => 'modified-unit']));
         }
 
         $elementType = ElcaElementType::findByIdent($element->dinCode());
@@ -298,7 +325,8 @@ class ProjectImportPreviewView extends HtmlView
         );
     }
 
-    private function dinCodeCaption(ElcaElementType $elementType) {
+    private function dinCodeCaption(ElcaElementType $elementType)
+    {
         return $elementType->getDinCode() . ' - ' . $elementType->getName();
     }
 }

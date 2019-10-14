@@ -79,6 +79,11 @@ class ProjectsCtrl extends AppCtrl
      */
     private $namespace;
 
+	/**
+	 * 	checkAccess - with remove of shared project
+	 */ 
+	const REMOVEPROJECT = true;
+
     //////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -418,18 +423,20 @@ class ProjectsCtrl extends AppCtrl
      */
     protected function removeProjectAccessAction()
     {
+		
         if (!$projectId = $this->Request->getString('id')) {
             return;
         }
 
         $project = ElcaProject::findById($projectId);
 
-        if (!$this->checkProjectAccess($project)) {
+        if (!$this->checkProjectAccess($project,self::REMOVEPROJECT)) {
             return;
         }
 
+		
         if ($this->Request->has('confirmed')) {
-
+			
             $this->get(ProjectAccessTokenService::class)
                  ->removeAccessTokenForProjectAndUser(
                      new ProjectId($projectId),

@@ -294,11 +294,8 @@ class ProjectCsvCtrl extends AppCtrl
                 return false;
             }
 
-            $importElement->changeDinCode($selectedElement->getElementTypeNode()->getDinCode());
             $importElement->changeTplElementUuid($selectedElement->getUuid());
-            $importElement->changeQuantity(Quantity::fromValue(
-                $importElement->quantity()->value(),
-                $selectedElement->getRefUnit()));
+            $project->replaceElement($importElement, $importElement->harmonizeWithTemplateElement($selectedElement));
 
             $view = $this->setView(new ProjectImportPreviewView());
             $view->assign('data', $this->buildPreviewFormData($project));
@@ -403,6 +400,9 @@ class ProjectCsvCtrl extends AppCtrl
             else {
                 $element->changeTplElementUuid(null);
             }
+
+            $data->isModified[$id] = $element->isModified();
+            $data->modificationReason[$id] = $element->modificationReason();
         }
 
         return $data;

@@ -123,4 +123,26 @@ class Project
         return null;
     }
 
+    public function replaceElement(ImportElement $oldImportElement, ImportElement $newElement)
+    {
+        $oldUuid = $oldImportElement->uuid();
+
+        foreach ($this->importElements as $index => $importElement) {
+            if ($importElement->uuid() === $oldUuid) {
+                $this->importElements[$index] = $newElement;
+                break;
+            }
+        }
+    }
+
+    public function wasModifiedDuringImport(): bool
+    {
+        foreach ($this->importElements as $importElement) {
+            if ($importElement->isModified()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

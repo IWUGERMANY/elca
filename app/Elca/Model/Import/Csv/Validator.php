@@ -4,19 +4,22 @@
 namespace Elca\Model\Import\Csv;
 
 
+use Beibob\Blibs\File;
 use Elca\Validator\ElcaValidator;
 
 class Validator extends ElcaValidator
 {
     public function assertImportFile($property)
     {
-        $this->assertTrue(
+        if (!$this->assertTrue($property, File::uploadFileExists($property), t('Bitte geben Sie eine Importdatei an!'))) {
+            return false;
+        }
+
+        if (!$this->assertTrue(
             $property,
                 preg_match('/\.csv$/iu', (string)$_FILES[$property]['name']),
                 t('Bitte nur CSV Dateien importieren!')
-        );
-
-        if (!$this->isValid()) {
+        )) {
             return false;
         }
 
