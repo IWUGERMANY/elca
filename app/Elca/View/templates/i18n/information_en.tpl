@@ -9,21 +9,24 @@
 	Sämtliche Informationen und Tools werden kostenfrei in deutscher und englischer Sprache zur Verfügung gestellt.
 	</p>
 	
+	<div class="inforow">
+		<h2>Handbuch</h2>
+		<include name="\Elca\View\ElcaInfoHandbookView"/>
+	</div>
+	
 	<div class="infocolumns flex wrap">
 		<div class="infocolumn">
-			<h2>Handbuch</h2>
-			<include name="\Elca\View\ElcaInfoHandbookView"/>
-		</div>
-		
-		<div class="infocolumn">
-			
-			<h2>Publikationen</h2>
-
-		</div>
-
-		<div class="infocolumn">
-			
 			<h2>Downloads</h2> 
+			<br/>
+			
+			<h3>CSV2eLCA</h3>
+			<ul class="downloads">
+				<li><a href="/docs/downloads/CSV2eLCA/How-to-do_CSV-Import_2019-10-01.pdf" target="_blank" title="Anleitung: CSV2eLCA Import" class="iconsheet no-xhr">Anleitung: CSV2eLCA Assistent [PDF, DE]</a><br/>
+					<span>Import vorhandener Daten aus einer Tabellenkalkulation /<br/>einer Auswertung aus einem CAD Programm</span>
+				</li>
+			</ul>			
+			<br/>
+			
 			<h3>EnEV2eLCA</h3>
 			<ul class="downloads">
 				<li><a href="/docs/EnEV/2017/export.xsd"  type="application/zip" target="_blank" title="EnEV Schema Version 1, XSD " class="iconsheet no-xhr">EnEV Schema Version 1 [XSD, DE]</a></li>
@@ -44,18 +47,21 @@
 					<span>Assistent für den Import von Projekten aus externen Anwendungen</span>
 				</li>
 			</ul>
-			
-			<br/>
-			<h3>CSV2eLCA</h3>				
-			
 		</div>
-		
+
 		<div class="infocolumn">
-			
 			<h2>Präsentationen</h2>
 			<ul class="downloads">
 				<li><a href="/docs/praesentationen/BauTec2018_EnEV2eLCA-final.pdf" target="_blank" title="BauTec 2018 Berlin - BMUB Messetalk" class="iconsheet no-xhr">BauTec 2018 Berlin - BMUB Messetalk [PDF, DE]</a></li>
 			</ul>	
 		</div>
+		
+		<div class="infocolumn">
+			<h2>Publikationen</h2>
+			<ul class="downloads">
+				<li></li>
+			</ul>	
+		</div>		
+		
 	</div>	
 </div>
