@@ -131,6 +131,38 @@ class ElcaProcessConfig extends DbObject
      * @var float
      */
     private $defaultSize;
+	
+	/**
+	 * Abfallschluessel gemaess Abfallverzeichnis-Verordnung (AVV)
+	 *
+	 * @var int
+	 */
+	private $wasteCode;
+
+	/**
+	 * Suffix Abfallschluessel (nur BBSR)
+	 *
+	 * @var int
+	 */
+	private $wasteCodeSuffix;
+	
+	/**
+	 *
+	 * @var float
+	 */	
+	private $lambdaValue;
+	
+	/**
+	 *
+	 * @var boolean
+	 */	
+	private $elementGroupA;	
+
+	/**
+	 *
+	 * @var boolean
+	 */	
+	private $elementGroupB;	
 
     /**
      * uuid
@@ -188,6 +220,11 @@ class ElcaProcessConfig extends DbObject
                                         'isReference'           => PDO::PARAM_BOOL,
                                         'fHsHi'                 => PDO::PARAM_STR,
                                         'defaultSize'           => PDO::PARAM_STR,
+										'wasteCode'           	=> PDO::PARAM_INT,
+										'wasteCodeSuffix'       => PDO::PARAM_INT,
+										'lambdaValue'			=> PDO::PARAM_STR,
+										'elementGroupA'			=> PDO::PARAM_BOOL,
+										'elementGroupB'			=> PDO::PARAM_BOOL,
                                         'uuid'                  => PDO::PARAM_STR,
                                         'svgPatternId'          => PDO::PARAM_INT,
                                         'isStale'               => PDO::PARAM_BOOL,
@@ -224,9 +261,38 @@ class ElcaProcessConfig extends DbObject
      * @param  string  $uuid
      * @param null     $svgPatternId
      * @param bool     $isStale
+     * @param string  $defaultSize
+     * @param integer  $wasteCode
+     * @param integer  $wasteCodeSuffix
+     * @param string  $lambdaValue	 
      * @return ElcaProcessConfig
      */
-    public static function create($name, $processCategoryNodeId, $description = null, $density = null, $thermalConductivity = null, $thermalResistance = null, $isReference = true, $fHsHi = null, $minLifeTime = null, $avgLifeTime = null, $maxLifeTime = null, $lifeTimeInfo = null, $avgLifeTimeInfo = null, $minLifeTimeInfo = null, $maxLifeTimeInfo = null, $uuid = null, $svgPatternId = null, $isStale = false, $defaultSize = null)
+    public static function create(
+		$name, 
+		$processCategoryNodeId, 
+		$description = null, 
+		$density = null, 
+		$thermalConductivity = null, 
+		$thermalResistance = null, 
+		$isReference = true, 
+		$fHsHi = null, 
+		$minLifeTime = null, 
+		$avgLifeTime = null, 
+		$maxLifeTime = null, 
+		$lifeTimeInfo = null, 
+		$avgLifeTimeInfo = null, 
+		$minLifeTimeInfo = null, 
+		$maxLifeTimeInfo = null, 
+		$uuid = null, 
+		$svgPatternId = null, 
+		$isStale = false, 
+		$defaultSize = null,
+		$wasteCode = null,
+		$wasteCodeSuffix = null,
+		$lambdaValue = null,
+		$elementGroupA = null,
+		$elementGroupB = null
+	)
     {
         $processConfig = new ElcaProcessConfig();
         $processConfig->setName($name);
@@ -247,6 +313,11 @@ class ElcaProcessConfig extends DbObject
         $processConfig->setSvgPatternId($svgPatternId);
         $processConfig->setIsStale($isStale);
         $processConfig->setDefaultSize($defaultSize);
+        $processConfig->setWasteCode($wasteCode);
+        $processConfig->setWasteCodeSuffix($wasteCodeSuffix);
+        $processConfig->setLambdaValue($lambdaValue);
+        $processConfig->setElementGroupA($elementGroupA);
+        $processConfig->setElementGroupB($elementGroupB);				
 
         if($uuid)
             $processConfig->setUuid($uuid);
@@ -289,6 +360,11 @@ class ElcaProcessConfig extends DbObject
                              , is_reference
                              , f_hs_hi
                              , default_size
+							 , waste_code
+							 , waste_code_suffix
+							 , lambda_value
+							 , element_group_a
+							 , element_group_b
                              , uuid
                              , svg_pattern_id
                              , is_stale
@@ -334,6 +410,11 @@ class ElcaProcessConfig extends DbObject
                              , is_reference
                              , f_hs_hi
                              , default_size
+							 , waste_code
+							 , waste_code_suffix
+							 , lambda_value
+							 , element_group_a
+							 , element_group_b
                              , uuid
                              , svg_pattern_id
                              , is_stale
@@ -393,7 +474,12 @@ class ElcaProcessConfig extends DbObject
                              , pc.thermal_resistance
                              , pc.is_reference
                              , pc.f_hs_hi
-                             , pc.default_size                             
+                             , pc.default_size
+							 , pc.waste_code
+							 , pc.waste_code_suffix
+							 , pc.lambda_value
+							 , pc.element_group_a
+							 , pc.element_group_b
                              , pc.uuid
                              , pc.svg_pattern_id
                              , is_stale
@@ -443,6 +529,11 @@ class ElcaProcessConfig extends DbObject
                              , pc.is_reference
                              , pc.f_hs_hi
                              , pc.default_size
+							 , pc.waste_code
+							 , pc.waste_code_suffix
+							 , pc.lambda_value
+							 , pc.element_group_a
+							 , pc.element_group_b
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
@@ -490,6 +581,11 @@ class ElcaProcessConfig extends DbObject
                              , pc.is_reference
                              , pc.f_hs_hi
                              , pc.default_size
+							 , pc.waste_code
+							 , pc.waste_code_suffix
+							 , pc.lambda_value
+							 , pc.element_group_a
+							 , pc.element_group_b			 
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
@@ -539,6 +635,11 @@ class ElcaProcessConfig extends DbObject
                              , pc.is_reference
                              , pc.f_hs_hi
                              , pc.default_size
+							 , pc.waste_code
+							 , pc.waste_code_suffix
+							 , pc.lambda_value
+							 , pc.element_group_a
+							 , pc.element_group_b							 
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
@@ -578,6 +679,11 @@ class ElcaProcessConfig extends DbObject
                              , pc.is_reference
                              , pc.f_hs_hi
                              , pc.default_size
+							 , pc.waste_code
+							 , pc.waste_code_suffix
+							 , pc.lambda_value
+							 , pc.element_group_a
+							 , pc.element_group_b							 
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
@@ -617,6 +723,11 @@ class ElcaProcessConfig extends DbObject
                              , pc.is_reference
                              , pc.f_hs_hi
                              , pc.default_size
+							 , pc.waste_code
+							 , pc.waste_code_suffix
+							 , pc.lambda_value
+							 , pc.element_group_a
+							 , pc.element_group_b							 
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
@@ -661,7 +772,12 @@ class ElcaProcessConfig extends DbObject
                 null,
                 $this->svgPatternId,
                 $this->isStale,
-                $this->defaultSize
+                $this->defaultSize,
+				$this->wasteCode,
+				$this->wasteCodeSuffix,
+				$this->lambdaValue,
+				$this->elementGroupA,
+				$this->elementGroupB
             );
 
             foreach (ElcaProcessLifeCycleAssignmentSet::find(['process_config_id' => $this->getId()]) as $assignment) {
@@ -912,6 +1028,45 @@ class ElcaProcessConfig extends DbObject
     {
         $this->defaultSize = $defaultSize;
     }
+	
+    /**
+     * @param int $wasteCode
+     */
+    public function setWasteCode(int $wasteCode = null)
+    {
+        $this->wasteCode = $wasteCode;
+    }	
+    /**
+     * @param int $wasteCode
+     */
+    public function setWasteCodeSuffix(int $wasteCodeSuffix = null)
+    {
+        $this->wasteCodeSuffix = $wasteCodeSuffix;
+    }
+
+    /**
+     * @param float $lambdaValue
+     */
+    public function setLambdaValue(float $lambdaValue = null)
+    {
+        $this->lambdaValue = $lambdaValue;
+    }
+
+    /**
+     * @param bool $elementGroupA
+     */
+    public function setElementGroupA(bool $elementGroupA = null)
+    {
+        $this->elementGroupA = $elementGroupA;
+    }
+
+    /**
+     * @param bool $elementGroupB
+     */
+    public function setElementGroupB(bool $elementGroupB = null)
+    {
+        $this->elementGroupB = $elementGroupB;
+    }	
 
     /**
      * Sets the property uuid
@@ -1211,6 +1366,55 @@ class ElcaProcessConfig extends DbObject
     {
         return $this->defaultSize;
     }
+	
+    /**
+	 * Returns the property wasteCode
+	 *
+     * @return int|null
+     */
+    public function getWasteCode() : ?int
+    {
+        return $this->wasteCode;
+    }	
+    /**
+     * Returns the property wasteCodeSuffix
+	 * 
+	 * @param int|null
+     */
+    public function getWasteCodeSuffix() : ?int
+    {
+        return $this->wasteCodeSuffix;
+    }
+
+    /**
+     * Returns the property lambdaValue
+     *
+     * @return float|null
+     */
+    public function getLambdaValue() : ?float
+    {
+        return $this->lambdaValue;
+    }
+
+    /**
+     * Returns the property elementGroupA
+     *
+     * @return bool|null
+     */
+    public function getElementGroupA() : ?bool
+    {
+        return $this->elementGroupA;
+    }
+
+    /**
+     * Returns the property elementGroupB
+     *
+     * @return bool|null
+     */
+    public function getElementGroupB() : ?bool
+    {
+        return $this->elementGroupB;
+    }	
 
     /**
      * Returns the property uuid
@@ -1585,6 +1789,11 @@ class ElcaProcessConfig extends DbObject
                              , is_reference          = :isReference
                              , f_hs_hi               = :fHsHi
                              , default_size          = :defaultSize
+							 , waste_code			 = :wasteCode
+							 , waste_code_suffix	 = :wasteCodeSuffix
+							 , lambda_value			 = :lambdaValue
+							 , element_group_a		 = :elementGroupA
+							 , element_group_b		 = :elementGroupB
                              , uuid                  = :uuid
                              , svg_pattern_id        = :svgPatternId
                              , is_stale              = :isStale
@@ -1612,6 +1821,11 @@ class ElcaProcessConfig extends DbObject
                                         'isReference'          => $this->isReference,
                                         'fHsHi'                => $this->fHsHi,
                                         'defaultSize'          => $this->defaultSize,
+										'wasteCode'            => $this->wasteCode,
+										'wasteCodeSuffix'      => $this->wasteCodeSuffix,
+										'lambdaValue'		   => $this->lambdaValue,
+										'elementGroupA'		   => $this->elementGroupA,
+										'elementGroupB'		   => $this->elementGroupB,										
                                         'uuid'                 => $this->uuid,
                                         'svgPatternId'         => $this->svgPatternId,
                                         'isStale'              => $this->isStale,
@@ -1717,8 +1931,63 @@ class ElcaProcessConfig extends DbObject
         if(!$this->uuid)
             $this->uuid = $this->queryExpression('uuid_generate_v4()');
 
-        $sql = sprintf("INSERT INTO %s (id, name, process_category_node_id, description, min_life_time, avg_life_time, max_life_time, life_time_info, min_life_time_info, avg_life_time_info, max_life_time_info, density, thermal_conductivity, thermal_resistance, is_reference, f_hs_hi, default_size, uuid, svg_pattern_id, is_stale, created, modified)
-                               VALUES  (:id, :name, :processCategoryNodeId, :description, :minLifeTime, :avgLifeTime, :maxLifeTime, :lifeTimeInfo, :minLifeTimeInfo, :avgLifeTimeInfo, :maxLifeTimeInfo, :density, :thermalConductivity, :thermalResistance, :isReference, :fHsHi, :defaultSize, :uuid, :svgPatternId, :isStale, :created, :modified)"
+        $sql = sprintf("INSERT INTO %s (
+			id, 
+			name, 
+			process_category_node_id, 
+			description, 
+			min_life_time, 
+			avg_life_time, 
+			max_life_time, 
+			life_time_info,
+			min_life_time_info, 
+			avg_life_time_info, 
+			max_life_time_info, 
+			density, 
+			thermal_conductivity, 
+			thermal_resistance, 
+			is_reference, 
+			f_hs_hi, 
+			default_size,
+			waste_code,
+			waste_code_suffix,
+			lambda_value,
+			element_group_a,
+			element_group_b,		
+			uuid, 
+			svg_pattern_id, 
+			is_stale, 
+			created, 
+			modified
+		) VALUES  (
+			:id, 
+			:name, 
+			:processCategoryNodeId, 
+			:description, 
+			:minLifeTime, 
+			:avgLifeTime, 
+			:maxLifeTime, 
+			:lifeTimeInfo, 
+			:minLifeTimeInfo, 
+			:avgLifeTimeInfo, 
+			:maxLifeTimeInfo, 
+			:density, 
+			:thermalConductivity, 
+			:thermalResistance, 
+			:isReference, 
+			:fHsHi, 
+			:defaultSize,
+			:wasteCode,
+			:wasteCodeSuffix,
+			:lambdaValue,
+			:elementGroupA,
+			:elementGroupB,		
+			:uuid, 
+			:svgPatternId, 
+			:isStale, 
+			:created, 
+			:modified
+		)"
                        , self::TABLE_NAME
                        );
 
@@ -1740,6 +2009,11 @@ class ElcaProcessConfig extends DbObject
                                         'isReference'          => $this->isReference,
                                         'fHsHi'                => $this->fHshi,
                                         'defaultSize'          => $this->defaultSize,
+										'wasteCode'			   => $this->wasteCode,
+										'wasteCodeSuffix'      => $this->wasteCodeSuffix,
+										'lambdaValue'		   => $this->lambdaValue,
+										'elementGroupA'		   => $this->elementGroupA,
+										'elementGroupB'		   => $this->elementGroupB,
                                         'uuid'                 => $this->uuid,
                                         'svgPatternId'         => $this->svgPatternId,
                                         'isStale'              => $this->isStale,
@@ -1779,6 +2053,11 @@ class ElcaProcessConfig extends DbObject
         $this->isReference           = (bool)$dataObject->is_reference;
         $this->fHsHi                 = null !== $dataObject->f_hs_hi ? (float)$dataObject->f_hs_hi : null;
         $this->defaultSize           = null !== $dataObject->default_size ? (float)$dataObject->default_size : null;
+        $this->wasteCode             = null !== $dataObject->waste_code ? (int)$dataObject->waste_code : null;
+		$this->wasteCodeSuffix       = null !== $dataObject->waste_code_suffix ? (int)$dataObject->waste_code_suffix : null;
+		$this->lambdaValue       	 = null !== $dataObject->lambda_value ? (float)$dataObject->lambda_value : null;
+		$this->elementGroupA       	 = null !== $dataObject->element_group_a ? (bool)$dataObject->element_group_a : null;
+		$this->elementGroupB       	 = null !== $dataObject->element_group_b ? (bool)$dataObject->element_group_b : null;
         $this->uuid                  = $dataObject->uuid;
         $this->svgPatternId          = $dataObject->svg_pattern_id;
         $this->isStale               = (bool)$dataObject->is_stale;
@@ -1818,7 +2097,12 @@ class ElcaProcessConfig extends DbObject
             null,
             self::UNKNOWN_UUID,
             null,
-            false
+            false,
+			null,
+			null,
+			null,
+			null,
+			null
         );
 
         foreach (Elca::$units as $unit => $caption) {

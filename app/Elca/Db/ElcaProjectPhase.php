@@ -180,6 +180,7 @@ class ElcaProjectPhase extends DbObject
     /**
      * Gets the min id that represents the first phase. Needed for creation of projects
      *
+     * @return self
      */
     public static function findMinIdByConstrMeasure($constrMeasure, $minStep = 0, $force = false)
     {

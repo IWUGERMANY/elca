@@ -45,6 +45,7 @@ class ElcaHtmlTemplateElementSelectorLink extends HtmlFormElement
     private $projectVariantId;
     private $elementTypeNodeId;
     private $url;
+    private $relId;
 
     /**
      * @param mixed $url
@@ -70,6 +71,11 @@ class ElcaHtmlTemplateElementSelectorLink extends HtmlFormElement
         $this->elementTypeNodeId = $nodeId;
     }
 
+    public function setRelId($relId): void
+    {
+        $this->relId = $relId;
+    }
+
     /**
      * Builds this element
      *
@@ -92,6 +98,9 @@ class ElcaHtmlTemplateElementSelectorLink extends HtmlFormElement
 
         if ($this->elementTypeNodeId)
             $args['t'] = $this->elementTypeNodeId;
+
+        if ($this->relId)
+            $args['relId'] = $this->relId;
 
         $href = Url::factory($this->url, $args);
 
