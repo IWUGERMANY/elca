@@ -53,6 +53,7 @@ use Elca\View\helpers\ElcaHtmlSubmitButton;
 class ProjectImportView extends HtmlView
 {
     const BUILDMODE_DEFAULT = 'default';
+    const URL_PATH_DOCS_DOWNLOADS_EXAMPLE_CSV_FILE = '/docs/downloads/CSV2eLCA/CSV2eLCA_Vorlage_BBSR-10-2019.csv';
 
     private $readOnly;
 
@@ -230,7 +231,7 @@ class ProjectImportView extends HtmlView
                 'a',
                 t('Download CSV-Vorlage'),
                 [
-                    'href' => '/docs/downloads/Beispiel-CSV-Importdatei.csv',
+                    'href' => self::URL_PATH_DOCS_DOWNLOADS_EXAMPLE_CSV_FILE,
                     'target' => 'blank',
                     'class' => 'no-xhr download-link',
                 ]
