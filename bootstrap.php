@@ -22,27 +22,20 @@
  * along with eLCA. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+require_once(__DIR__ . '/vendor/autoload.php');
 
-namespace Elca\Model\ProcessConfig\Conversion;
+use Beibob\Blibs\Bootstrap;
+use Elca\Elca;
 
-use Elca\Model\Common\Quantity\Quantity;
-use Elca\Model\Common\Unit;
+//////////////////////////////////////////////////////////////////////////////////////
 
-interface Conversion
-{
-    public function fromUnit(): Unit;
+/**
+ * Bootstrap the environment
+ */
+$bootstrap = new Bootstrap(__DIR__);
 
-    public function toUnit(): Unit;
-
-    public function convert(float $value): float;
-
-    public function convertQuantity(Quantity $quantity): Quantity;
-
-    public function invert(): Conversion;
-
-    public function type(): ConversionType;
-
-    public function isKnown(): bool;
-
-    public function isIdentity(): bool;
-}
+/**
+ * Init elca modules
+ */
+$elca = $bootstrap->getEnvironment()->getContainer()->get(Elca::class);
+$elca->initModules();

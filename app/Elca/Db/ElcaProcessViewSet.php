@@ -25,6 +25,7 @@
 namespace Elca\Db;
 
 use Beibob\Blibs\DataObjectSet;
+
 /**
  * Set of ElcaProcesses
  *
@@ -194,6 +195,7 @@ class ElcaProcessViewSet extends DataObjectSet
                           JOIN %s d ON d.id = p.process_db_id
                          WHERE p.process_config_id = :processConfigId
                            AND p.life_cycle_phase = :lifeCyclePhase
+                           AND d.is_active 
                       ORDER BY d.version, p.life_cycle_ident'
                        , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
                        , ElcaProcessDb::TABLE_NAME

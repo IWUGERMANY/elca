@@ -53,7 +53,6 @@ use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessConfigAttribute;
 use Elca\Db\ElcaProcessConfigName;
 use Elca\Db\ElcaProcessConfigVariantSet;
-use Elca\Db\ElcaProcessConversion;
 use Elca\Db\ElcaProcessSet;
 use Elca\Elca;
 use Elca\ElcaNumberFormat;
@@ -104,8 +103,8 @@ class ElcaProcessConfigGeneralView extends HtmlView
      * @translate array Elca\View\ElcaProcessConfigGeneralView::$conversionIdents
      */
     public static $conversionIdents = [
-        ElcaProcessConversion::IDENT_INITIAL    => 'Umrechnung nach Baustoffdatenbank',
-        ElcaProcessConversion::IDENT_PRODUCTION => 'Bezugsgröße aus Baustoffdatenbank',
+        ConversionType::INITIAL    => 'Umrechnung nach Baustoffdatenbank',
+        ConversionType::PRODUCTION => 'Bezugsgröße aus Baustoffdatenbank',
         ConversionType::GROSS_DENSITY           => 'Rohdichte',
         ConversionType::BULK_DENSITY            => 'Schüttdichte',
         ConversionType::AVG_MPUA                => 'Flächengewicht',
@@ -622,7 +621,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
             return;
         }
 
-        if ($conversion->isTrivial()) {
+        if ($conversion->isIdentity()) {
             return;
         }
 
@@ -728,7 +727,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
             }
         }
 
-        if (!$this->readOnly && $isImported) {
+        if (!$this->readOnly && $isImported && !$isGrossDensity) {
             $url = Url::parse('/processes/editImportedConversion');
             $url->addParameter(['id' => $conversionId, 'db' => $this->processDbId->value()]);
 

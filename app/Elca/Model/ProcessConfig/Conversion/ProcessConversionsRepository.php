@@ -15,6 +15,12 @@ interface ProcessConversionsRepository
     public function findByConversion(ProcessConfigId $processConfigId, ProcessDbId $processDbId, Unit $fromUnit,
         Unit $toUnit): ?ProcessConversion;
 
+    /**
+     * @return ProcessConversion[]
+     */
+    public function findIntersectConversionsForMultipleProcessDbs(ProcessConfigId $processConfigId,
+        ProcessDbId ...$processDbIds): array;
+
     public function add(ProcessConversion $processConversion): void;
 
     public function save(ProcessConversion $processConversion): void;

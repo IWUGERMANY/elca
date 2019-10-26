@@ -26,8 +26,6 @@ namespace Elca\Db;
 
 use Beibob\Blibs\DbObject;
 use Elca\Elca;
-use Elca\Model\ProcessConfig\Converter;
-use Elca\Model\ProcessConfig\ProcessConfigId;
 use PDO;
 
 /**
@@ -1287,26 +1285,13 @@ class ElcaProcessConfig extends DbObject
      * @param array    $orderBy
      * @param  boolean $force
      * @return ElcaProcessConversionSet
+     * @deprecated
      */
     public function getProcessConversions(array $orderBy = null, $force = false)
     {
         return ElcaProcessConversionSet::findByProcessConfigId($this->id, $orderBy, $force);
     }
     // End getProcessConversionSet
-
-    /**
-     * Returns the associated ElcaProcessConversions for this process config
-     *
-     * @param array    $orderBy
-     * @param  boolean $force
-     * @return ElcaProcessConversionSet
-     */
-    public function getProcessConversion($refUnit, $force = false)
-    {
-        return ElcaProcessConversion::findProductionByProcessConfigIdAndRefUnit($this->getId(), $refUnit, $force);
-    }
-    // End getProcessConversion
-
 
     /**
      * Returns a conversion matrix

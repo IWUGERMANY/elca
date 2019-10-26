@@ -42,20 +42,23 @@ use Elca\Db\ElcaElementType;
 use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessConfigSearchSet;
 use Elca\Db\ElcaProcessConfigVariant;
-use Elca\Db\ElcaProcessConversion;
 use Elca\Db\ElcaProcessConversionSet;
 use Elca\Db\ElcaProcessDbSet;
 use Elca\Elca;
 use Elca\ElcaNumberFormat;
+use Elca\Model\Common\Unit;
 use Elca\Model\Element\ElementObserver;
 use Elca\Model\Import\Xml\Importer;
 use Elca\Model\Navigation\ElcaTabItem;
+use Elca\Model\Process\ProcessDbId;
+use Elca\Model\ProcessConfig\ProcessConfigId;
 use Elca\Model\Project\ProjectId;
 use Elca\Service\Assistant\ElementAssistantRegistry;
 use Elca\Service\ElcaElementImageCache;
 use Elca\Service\Element\ElementService;
 use Elca\Service\Mailer;
 use Elca\Service\Messages\ElcaMessages;
+use Elca\Service\ProcessConfig\Conversions;
 use Elca\Service\Project\LifeCycleUsageService;
 use Elca\Validator\ElcaValidator;
 use Elca\View\DefaultElementImageView;
@@ -131,6 +134,11 @@ class ElementsCtrl extends TabsCtrl
     protected $lifeCycleUsageService;
 
     /**
+     * @var Conversions
+     */
+    private $conversions;
+
+    /**
      * Will be called on initialization.
      *
      * @param  array $args
@@ -154,6 +162,7 @@ class ElementsCtrl extends TabsCtrl
         $this->assistantRegistry = $this->container->get(ElementAssistantRegistry::class);
         $this->imageCache = $this->container->get(ElcaElementImageCache::class);
         $this->lifeCycleUsageService = $this->container->get(LifeCycleUsageService::class);
+        $this->conversions = $this->container->get(Conversions::class);
     }
     // End init
 
@@ -1255,8 +1264,8 @@ class ElementsCtrl extends TabsCtrl
          */
         elseif(isset($this->Request->select))
         {
-            $Element = ElcaElement::findById($this->Request->elementId);
-            if(!$this->Access->canEditElement($Element))
+            $element = ElcaElement::findById($this->Request->elementId);
+            if(!$this->Access->canEditElement($element))
                 return false;
 
             /**
@@ -1267,7 +1276,7 @@ class ElementsCtrl extends TabsCtrl
             $view->assign('buildMode', $this->Request->b);
             $view->assign('elementId', $this->Request->elementId);
             if ($assistant = $this->assistantRegistry
-                ->getAssistantForElement($Element))
+                ->getAssistantForElement($element))
                 $view->assign('assistant', $assistant);
 
             if ($projectId = $this->Elca->getProjectId()) {
@@ -1282,19 +1291,26 @@ class ElementsCtrl extends TabsCtrl
             $componentId = $this->Request->relId;
 
             // in id is the newProcessConfigId, in p the old
-            $ProcessConfig = ElcaProcessConfig::findById($this->Request->id);
+            $processConfig = ElcaProcessConfig::findById($this->Request->id);
+            $processDbId = $this->Request->db ? new ProcessDbId($this->Request->db) : null;
 
             $quantity = $conversionId = null;
             if($variantUuid = $this->Request->get('processConfigVariantUuid'))
             {
-                $Variant = ElcaProcessConfigVariant::findByPk($ProcessConfig->getId(), $variantUuid);
+                $compatDbs = ElcaProcessDbSet::findElementCompatibles($element);
 
-                if($Variant->isInitialized())
+                $variant = ElcaProcessConfigVariant::findByPk($processConfig->getId(), $variantUuid);
+
+                if($variant->isInitialized())
                 {
-                    $quantity = ElcaNumberFormat::toString($Variant->getRefValue());
+                    $quantity = ElcaNumberFormat::toString($variant->getRefValue());
 
-                    $Conversion = ElcaProcessConversion::findProductionByProcessConfigIdAndRefUnit($ProcessConfig->getId(), $Variant->getRefUnit());
-                    $conversionId = $Conversion->getId();
+                    $processConversion =$this->conversions->findConversionForRefUnit(
+                        new ProcessConfigId($processConfig->getId()),
+                        $processDbId,
+                        Unit::fromString($variant->getRefUnit()));
+
+                    $conversionId = null !== $processConversion ? $processConversion->conversionId() : null;
                 }
             }
 
@@ -1337,10 +1353,10 @@ class ElementsCtrl extends TabsCtrl
                  */
                 $key = $this->Request->b === ElcaElementComponentsView::BUILDMODE_COMPONENTS? 'new_components' : 'new_layers';
                 $this->Request->toggleStates = [$key => false];
-                $this->Request->processConfigId = [$key => $ProcessConfig->getId()];
+                $this->Request->processConfigId = [$key => $processConfig->getId()];
                 $this->Request->calcLca = [$key => true];
                 $this->Request->isExtant = [$key => false];
-                $this->Request->lifeTime = [$key => $ProcessConfig->getDefaultLifeTime()];
+                $this->Request->lifeTime = [$key => $processConfig->getDefaultLifeTime()];
                 $this->Request->lifeTimeDelay = [$key => 0];
                 $this->Request->lifeTimeInfo = [$key => ''];
                 $this->Request->length = [$key => 1];
@@ -1350,9 +1366,9 @@ class ElementsCtrl extends TabsCtrl
                 $changedElts = [];
 
                 if ($this->Request->b === ElcaElementComponentsView::BUILDMODE_LAYERS &&
-                    $ProcessConfig->getDefaultSize()
+                    $processConfig->getDefaultSize()
                 ) {
-                    $this->Request->size = [$key => $ProcessConfig->getDefaultSize() * 1000];
+                    $this->Request->size = [$key => $processConfig->getDefaultSize() * 1000];
                     $changedElts['size['.$key.']'] = true;
                 }
 
@@ -1382,8 +1398,8 @@ class ElementsCtrl extends TabsCtrl
                 $DO->size[$key] = $component->getLayerSize()? $component->getLayerSize() * 1000 : null; // in mm
                 $DO->calcLca[$key] = $component->getCalcLca();
                 $DO->isExtant[$key] = $component->isExtant();
-                $DO->processConfigId[$key] = $ProcessConfig->getId();
-                $DO->lifeTime[$key] = $ProcessConfig->getDefaultLifeTime();
+                $DO->processConfigId[$key] = $processConfig->getId();
+                $DO->lifeTime[$key] = $processConfig->getDefaultLifeTime();
                 $DO->lifeTimeDelay[$key] = 0;
                 $DO->lifeTimeInfo[$key] = '';
                 $DO->length[$key] = $component->getLayerLength();
@@ -1394,7 +1410,7 @@ class ElementsCtrl extends TabsCtrl
                 if($this->Request->id != $this->Request->p)
                     $changedElts['processConfigId['.$componentId.']'] = true;
 
-                if($component->getLifeTime() != $ProcessConfig->getDefaultLifeTime())
+                if($component->getLifeTime() != $processConfig->getDefaultLifeTime())
                     $changedElts['lifeTime['.$componentId.']'] = true;
 
                 if($component->getLifeTimeDelay() !== 0)
@@ -1407,9 +1423,9 @@ class ElementsCtrl extends TabsCtrl
                 }
 
                 if ($this->Request->b === ElcaElementComponentsView::BUILDMODE_LAYERS &&
-                    $ProcessConfig->getDefaultSize()
+                    $processConfig->getDefaultSize()
                 ) {
-                    $this->Request->size = [$key => $ProcessConfig->getDefaultSize() * 1000];
+                    $this->Request->size = [$key => $processConfig->getDefaultSize() * 1000];
                     $changedElts['size['.$key.']'] = true;
                 }
 

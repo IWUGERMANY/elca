@@ -31,6 +31,8 @@ use Elca\Model\Process\Module;
 use Elca\Model\Process\ProcessDbId;
 use Elca\Model\Process\ProcessId;
 use Elca\Model\Process\ProcessName;
+use Elca\Model\ProcessConfig\Conversion\ConversionType;
+use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\ProcessConfig\Conversion\ProcessConversionsRepository;
 use Elca\Model\ProcessConfig\Conversion\RequiredConversion;
@@ -149,7 +151,7 @@ class ConversionsTest extends TestCase
         $conversion      = new LinearConversion(Unit::piece(), Unit::kg(), 10);
 
         $processConversionId = new ProcessLifeCycleId($processDbId, $processConfigId);
-        $processConversion   = new ProcessConversion($processConversionId, $conversion);
+        $processConversion   = new ProcessConversion($processDbId, $processConfigId, $conversion);
 
         $this->processConversionsRepository
             ->method('findByConversion')
@@ -159,6 +161,80 @@ class ConversionsTest extends TestCase
 
         $this->conversions->registerConversion($processDbId, $processConfigId, $conversion);
     }
+
+    public function test_findProductionConversions()
+    {
+        $conversions = [
+            new ImportedLinearConversion(Unit::kg(), Unit::kg(), 1, ConversionType::production()),
+            new LinearConversion(Unit::m3(), Unit::kg(), 3),
+        ];
+
+        $processConfigId = new ProcessConfigId(1);
+        $processDbId = new ProcessDbId(1);
+        $this->processLifeCycleRepository
+            ->method('findById')
+            ->willReturn(
+                $this->given_a_process_life_cycle(
+                    $processConfigId,
+                    new ProcessDbId(1),
+                    [
+                        Module::A13 => Unit::kg(),
+                        Module::C4  => Unit::kg(),
+                    ],
+                    $conversions
+                )
+            );
+
+        $productionConversions = $this->conversions->findProductionConversions(
+            new ProcessLifeCycleId($processDbId, $processConfigId));
+
+        $this->assertEquals(
+            [
+                new ImportedLinearConversion(Unit::kg(), Unit::kg(), 1, ConversionType::production()),
+                new LinearConversion(Unit::m3(), Unit::kg(), 3),
+            ],
+            $productionConversions->toArray()
+        );
+
+    }
+
+    public function test_findProductionConversions_even_when_inversed()
+    {
+        $conversions = [
+            new ImportedLinearConversion(Unit::m3(), Unit::m3(), 1, ConversionType::production()),
+            new LinearConversion(Unit::m3(), Unit::kg(), 3),
+            new LinearConversion(Unit::kg(), Unit::piece(), 1),
+        ];
+
+        $processConfigId = new ProcessConfigId(1);
+        $processDbId = new ProcessDbId(1);
+        $this->processLifeCycleRepository
+            ->method('findById')
+            ->willReturn(
+                $this->given_a_process_life_cycle(
+                    $processConfigId,
+                    new ProcessDbId(1),
+                    [
+                        Module::A13 => Unit::m3(),
+                        Module::C4  => Unit::m3(),
+                    ],
+                    $conversions
+                )
+            );
+
+        $productionConversions = $this->conversions->findProductionConversions(
+            new ProcessLifeCycleId($processDbId, $processConfigId));
+
+        $this->assertEquals(
+            [
+                new ImportedLinearConversion(Unit::m3(), Unit::m3(), 1, ConversionType::production()),
+                new LinearConversion(Unit::m3(), Unit::kg(), 3),
+            ],
+            $productionConversions->toArray()
+        );
+
+    }
+
 
     protected function setUp()
     {
@@ -176,7 +252,7 @@ class ConversionsTest extends TestCase
     ) {
         $processes = [];
         foreach ($processesConf as $module => $unit) {
-            $processes[] = $this->given_a_process(new Module($module), new Quantity(1, $unit));
+            $processes[] = $this->given_process(new Module($module), new Quantity(1, $unit));
         }
 
         return new ProcessLifeCycle(
@@ -187,7 +263,7 @@ class ConversionsTest extends TestCase
         );
     }
 
-    private function given_a_process(Module $module, Quantity $quantitativeReference, ProcessId $processId = null)
+    private function given_process(Module $module, Quantity $quantitativeReference, ProcessId $processId = null)
     {
         static $processIdCounter = 0;
 

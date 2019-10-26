@@ -57,7 +57,7 @@ abstract class AbstractConversion implements Conversion
         return $this->toUnit;
     }
 
-    public function isTrivial(): bool
+    public function isIdentity(): bool
     {
         return $this->fromUnit()->equals($this->toUnit());
     }

@@ -26,6 +26,7 @@
 namespace Elca\Db;
 
 use Beibob\Blibs\DbObjectSet;
+use Elca\Model\Process\Stage;
 
 /**
  * Handles a set of ElcaProcessConversionVersions
@@ -37,7 +38,6 @@ use Beibob\Blibs\DbObjectSet;
  */
 class ElcaProcessConversionVersionSet extends DbObjectSet
 {
-
     public static function findByProcessDbId(int $processDbId, array $orderBy = null, $limit = null, $offset = null,
         $force = false)
     {
@@ -92,6 +92,65 @@ class ElcaProcessConversionVersionSet extends DbObjectSet
         );
     }
 
+    public static function findIntersectConversionsForMultipleProcessDbs(int $processConfigId, array $processDbIds, bool $force = false)
+    {
+        $initValues = [
+            'processConfigId' => $processConfigId,
+            'lcOp' => Stage::USE,
+
+        ];
+
+        $processDbIdsInClause = [];
+        foreach ($processDbIds as $processDbId) {
+            $processDbIdsInClause[] = $name = ':processDbId' . $processDbId;
+            $initValues[$name] = $processDbId;
+        }
+
+        $sql = sprintf('WITH ref_units AS (
+    SELECT c.process_db_id, array_agg(DISTINCT ref_unit) AS units
+    FROM %1$s c
+             JOIN %2$s a
+    ON a.process_db_id = c.process_db_id and a.process_config_id = c.process_config_id
+    WHERE c.process_config_id = :processConfigId AND a.life_cycle_phase <> :lcOp
+      AND c.process_db_id IN (%3$s)
+    GROUP BY c.process_db_id
+),
+conversions AS (
+        SELECT c.process_db_id,
+            array_agg(DISTINCT c.id) AS conversion_ids
+        FROM %1$s c
+                 JOIN ref_units u
+        ON c.process_db_id = u.process_db_id AND (c.in_unit = ANY (u.units) OR c.out_unit = ANY (u.units))
+        WHERE process_config_id = :processConfigId
+        GROUP BY c.process_db_id
+),
+compat_conversions AS (
+     SELECT public.array_intersect_agg(conversion_ids ORDER BY array_length(conversion_ids, 1) DESC) :: int[] AS ids
+     FROM conversions
+)
+SELECT c.id AS conversion_id
+     , process_db_id
+     , process_config_id
+     , factor
+     , ident
+     , in_unit
+     , out_unit
+     , created
+     , modified
+  FROM %1$s c JOIN compat_conversions compat ON c.id = ANY (compat.ids)
+ WHERE process_db_id IN (%3$s)',
+            ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS,
+            ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS,
+            implode(',', $processDbIdsInClause)
+        );
+
+        return self::_findBySql(
+            get_class(),
+            $sql,
+            $initValues,
+            $force
+        );
+    }
 
     /**
      * Lazy find

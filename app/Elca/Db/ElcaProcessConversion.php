@@ -28,6 +28,7 @@ use Beibob\Blibs\DbObject;
 use Elca\Model\Common\Unit;
 use Elca\Model\Process\ProcessDbId;
 use Elca\Model\ProcessConfig\Conversion\Conversion;
+use Elca\Model\ProcessConfig\Conversion\ConversionType;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use PDO;
 
@@ -247,7 +248,7 @@ class ElcaProcessConversion extends DbObject
         if(!$processConfigId || !$refUnit)
             return new ElcaProcessConversion();
 
-        $initValues = array('ident' => self::IDENT_PRODUCTION,
+        $initValues = array('ident' => ConversionType::PRODUCTION,
                             'processConfigId' => $processConfigId,
                             'inUnit' => $refUnit,
                             'outUnit' => $refUnit
@@ -496,11 +497,10 @@ class ElcaProcessConversion extends DbObject
      *
      * @return boolean
      */
-    public function isTrivial()
+    public function isIdentity()
     {
         return ($this->inUnit === $this->outUnit);
     }
-    // End isTrivial
 
     //////////////////////////////////////////////////////////////////////////////////////
 

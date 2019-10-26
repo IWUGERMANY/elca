@@ -27,8 +27,9 @@ namespace Elca\Service\ProcessConfig;
 
 use Elca\Db\ElcaElementComponentSet;
 use Elca\Db\ElcaProcessConfig;
-use Elca\Db\ElcaProcessConversion;
+use Elca\Model\Common\Quantity\Quantity;
 use Elca\Model\Common\Unit;
+use Elca\Model\Exception\InvalidArgumentException;
 use Elca\Model\Process\ProcessDbId;
 use Elca\Model\ProcessConfig\Conversion\Conversion;
 use Elca\Model\ProcessConfig\Conversion\ConversionSet;
@@ -40,6 +41,11 @@ use Elca\Model\ProcessConfig\ProcessConfigId;
 use Elca\Model\ProcessConfig\ProcessConversion;
 use Elca\Model\ProcessConfig\ProcessLifeCycleId;
 
+/**
+ * Class Conversions
+ *
+ * @package Elca\Service\ProcessConfig
+ */
 class Conversions
 {
     /**
@@ -74,7 +80,6 @@ class Conversions
     public function registerConversion(ProcessDbId $processDbId, ProcessConfigId $processConfigId,
         LinearConversion $conversion): void
     {
-
         $foundProcessConversion = $this->processConversionsRepository->findByConversion(
             $processConfigId, $processDbId, $conversion->fromUnit(), $conversion->toUnit()
         );
@@ -153,7 +158,8 @@ class Conversions
         return $hasChanged;
     }
 
-    public function computeDensityFromMpua(ProcessDbId $processDbId, ProcessConfigId $processConfigId, ?float $defaultSize): ?float
+    public function computeDensityFromMpua(ProcessDbId $processDbId, ProcessConfigId $processConfigId,
+        ?float $defaultSize): ?float
     {
         if (null === $defaultSize) {
             return null;
@@ -215,6 +221,50 @@ class Conversions
         return new ConversionSet(\array_unique($conversions, SORT_REGULAR));
     }
 
+    public function findProductionConversions(ProcessLifeCycleId $processLifeCycleId): ConversionSet
+    {
+        $processLifeCycle = $this->processLifeCycleRepository->findById($processLifeCycleId);
+        $requiredUnits = $processLifeCycle->requiredUnits();
+
+        $conversions      = [];
+        foreach ($processLifeCycle->conversions() as $conversion) {
+            foreach ($requiredUnits as $unit) {
+                if ($unit->equals($conversion->toUnit()) || $unit->equals($conversion->fromUnit())) {
+                    $conversions[] = $conversion;
+                }
+            }
+        }
+
+        return ConversionSet::fromArray($conversions);
+    }
+
+    public function findProductionConversionsForMultipleDbs(ProcessConfigId $processConfigId,
+        ProcessDbId ...$processDbIds): ConversionSet
+    {
+        $processConversions = $this->processConversionsRepository->findIntersectConversionsForMultipleProcessDbs(
+            $processConfigId, ...$processDbIds);
+
+        $conversionSet = new ConversionSet();
+        foreach ($processConversions as $processConversion) {
+            $conversionSet->add($processConversion->conversion());
+        }
+
+        return $conversionSet;
+    }
+
+    public function findQuantitativeReference(ProcessLifeCycleId $processLifeCycleId): Quantity
+    {
+        $processLifeCycle = $this->processLifeCycleRepository->findById($processLifeCycleId);
+
+        if (!$quantity = $processLifeCycle->quantitativeReference()) {
+            throw new InvalidArgumentException("Quantitative reference not found for :processLifeCycleId:", [
+                ':processLifeCycleId:' => $processLifeCycleId
+            ]);
+        }
+
+        return $quantity;
+    }
+
     public function findRequiredUnits(ProcessLifeCycleId $processLifeCycleId): array
     {
         $processLifeCycle = $this->processLifeCycleRepository->findById($processLifeCycleId);
@@ -243,7 +293,27 @@ class Conversions
             Unit::kg());
     }
 
-    protected function findAvgMpuaConversionFor(ProcessDbId $processDbId, ProcessConfigId $processConfigId): ?ProcessConversion
+    public function findByConversion(ProcessConfigId $processConfigId, ProcessDbId $processDbId, Unit $fromUnit,
+        Unit $toUnit): ?ProcessConversion
+    {
+        return $this->processConversionsRepository->findByConversion($processConfigId, $processDbId, $fromUnit,
+            $toUnit);
+    }
+
+    public function findConversionForRefUnit(ProcessConfigId $processConfigId, ProcessDbId $processDbId,
+        Unit $refUnit): ?ProcessConversion
+    {
+        return $this->processConversionsRepository->findByConversion($processConfigId, $processDbId, $refUnit,
+            $refUnit);
+    }
+
+    public function findConversion(ConversionId $conversionId, ProcessDbId $processDbId): ?ProcessConversion
+    {
+        return $this->processConversionsRepository->findById($conversionId, $processDbId);
+    }
+
+    protected function findAvgMpuaConversionFor(ProcessDbId $processDbId,
+        ProcessConfigId $processConfigId): ?ProcessConversion
     {
         return $this->processConversionsRepository->findByConversion($processConfigId, $processDbId, Unit::m2(),
             Unit::kg());

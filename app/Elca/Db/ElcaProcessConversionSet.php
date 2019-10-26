@@ -37,7 +37,7 @@ use Beibob\Blibs\DbObjectSet;
  */
 class ElcaProcessConversionSet extends DbObjectSet
 {
-    const VIEW_PROCESS_CONVERSION_VERSIONS = 'elca.process_conversion_versions_v';
+    const VIEW_PROCESS_CONVERSIONS = 'elca.process_conversions_v';
 
     public static function findByProcessConfigId($processConfigId, array $orderBy = null, $force = false)
     {
@@ -59,7 +59,8 @@ class ElcaProcessConversionSet extends DbObjectSet
     }
 
 
-    public static function findByProcessConfigIdAndProcessDbId($processConfigId, $processDbId, array $orderBy = null, $force = false)
+    public static function findByProcessConfigIdAndProcessDbId($processConfigId, $processDbId, array $orderBy = null,
+        $force = false)
     {
         if (!$processConfigId || !$processDbId) {
             return new ElcaProcessConversionSet();
@@ -67,19 +68,19 @@ class ElcaProcessConversionSet extends DbObjectSet
 
         $initValues = [
             'process_config_id' => $processConfigId,
-            'process_db_id' => $processDbId
+            'process_db_id'     => $processDbId,
         ];
 
         $sql = sprintf('SELECT DISTINCT c.*
                                  FROM %s c 
                                  JOIN %s cv ON c.id = cv.conversion_id
                                 WHERE (c.process_config_id, cv.process_db_id) = (:processConfigId, :processDbId)',
-        ElcaProcessConversion::TABLE_NAME,
-        ElcaProcessConversionVersion::TABLE_NAME
+            ElcaProcessConversion::TABLE_NAME,
+            ElcaProcessConversionVersion::TABLE_NAME
         );
 
         if ($orderBy) {
-            $sql .= ' '. self::buildOrderView($orderBy);
+            $sql .= ' ' . self::buildOrderView($orderBy);
         }
 
         return self::_findBySql(
@@ -95,9 +96,9 @@ class ElcaProcessConversionSet extends DbObjectSet
     /**
      * Find all conversions for the given process config id and inUnit
      *
-     * @param  int     $processConfigId
-     * @param  array   $orderBy - array map of columns on to directions array('id' => 'DESC')
-     * @param  boolean $force   - Bypass caching
+     * @param int     $processConfigId
+     * @param array   $orderBy - array map of columns on to directions array('id' => 'DESC')
+     * @param boolean $force   - Bypass caching
      * @return ElcaProcessConversionSet
      */
     public static function findByProcessConfigIdAndInUnit(
@@ -106,7 +107,8 @@ class ElcaProcessConversionSet extends DbObjectSet
         array $orderBy = null,
         $limit = null,
         $force = false
-    ) {
+    )
+    {
         if (!$processConfigId) {
             return new ElcaProcessConversionSet();
         }
@@ -132,9 +134,9 @@ class ElcaProcessConversionSet extends DbObjectSet
     /**
      * Find all conversions for the given process config id and inUnit
      *
-     * @param  int     $processConfigId
-     * @param  array   $orderBy - array map of columns on to directions array('id' => 'DESC')
-     * @param  boolean $force   - Bypass caching
+     * @param int     $processConfigId
+     * @param array   $orderBy - array map of columns on to directions array('id' => 'DESC')
+     * @param boolean $force   - Bypass caching
      * @return ElcaProcessConversionSet
      */
     public static function findByProcessConfigIdAndUnit(
@@ -143,7 +145,8 @@ class ElcaProcessConversionSet extends DbObjectSet
         $orderBy = null,
         $limit = null,
         $force = false
-    ) {
+    )
+    {
         if (!$processConfigId) {
             return new ElcaProcessConversionSet();
         }
@@ -159,7 +162,7 @@ class ElcaProcessConversionSet extends DbObjectSet
         );
 
         if ($orderSql = self::buildOrderView($orderBy, $limit)) {
-            $sql .= ' '. $orderSql;
+            $sql .= ' ' . $orderSql;
         }
 
         return self::_findBySql(
@@ -175,11 +178,11 @@ class ElcaProcessConversionSet extends DbObjectSet
     /**
      * Lazy find
      *
-     * @param  array   $initValues - key value array
-     * @param  array   $orderBy    - array map of columns on to directions array('id' => 'DESC')
-     * @param  integer $limit      - limit on resultset
-     * @param  integer $offset     - offset on resultset
-     * @param  boolean $force      - Bypass caching
+     * @param array   $initValues - key value array
+     * @param array   $orderBy    - array map of columns on to directions array('id' => 'DESC')
+     * @param integer $limit      - limit on resultset
+     * @param integer $offset     - offset on resultset
+     * @param boolean $force      - Bypass caching
      * @return ElcaProcessConversionSet
      */
     public static function find(
@@ -188,7 +191,8 @@ class ElcaProcessConversionSet extends DbObjectSet
         $limit = null,
         $offset = null,
         $force = false
-    ) {
+    )
+    {
         return self::_find(
             get_class(),
             ElcaProcessConversion::getTablename(),
@@ -206,8 +210,8 @@ class ElcaProcessConversionSet extends DbObjectSet
     /**
      * Lazy count
      *
-     * @param  array   $initValues - key value array
-     * @param  boolean $force      - Bypass caching
+     * @param array   $initValues - key value array
+     * @param boolean $force      - Bypass caching
      * @return int
      */
     public static function dbCount(array $initValues = null, $force = false)

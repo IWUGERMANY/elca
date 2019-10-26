@@ -25,7 +25,6 @@
 
 namespace Elca\Model\ProcessConfig;
 
-use Elca\Db\ElcaProcessConfig;
 use Elca\Model\Common\Unit;
 use Elca\Model\ProcessConfig\Conversion\Conversion;
 use Elca\Model\ProcessConfig\Conversion\ConversionException;
@@ -78,6 +77,11 @@ class Converter
         }
 
         return $conversion->convert($quantity);
+    }
+
+    public function conversionsToConvertInto(Unit $toUnit)
+    {
+        return $this->conversions->filterByUnit($toUnit);
     }
 
     public function has(Unit $fromUnit, Unit $toUnit): bool

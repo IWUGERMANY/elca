@@ -26,7 +26,6 @@
 namespace Elca\Model\ProcessConfig\Conversion;
 
 use Elca\Model\Common\Unit;
-use phpDocumentor\Reflection\Types\Void_;
 
 class ConversionSet implements \IteratorAggregate
 {
@@ -34,6 +33,11 @@ class ConversionSet implements \IteratorAggregate
      * @var Conversion[][]
      */
     private $conversions;
+
+    public static function fromArray(array $conversions): ConversionSet
+    {
+        return new self($conversions);
+    }
 
     /**
      * Converter constructor.
@@ -65,6 +69,13 @@ class ConversionSet implements \IteratorAggregate
         $this->conversions[(string)$conversion->fromUnit()][(string)$conversion->toUnit()] = $conversion;
     }
 
+    public function addSet(ConversionSet $conversionSet)
+    {
+        foreach ($conversionSet as $conversion) {
+            $this->add($conversion);
+        }
+    }
+
     public function has(Unit $fromUnit, Unit $toUnit): bool
     {
         return $this->hasExact($fromUnit, $toUnit) || $this->hasExact($toUnit, $fromUnit);
@@ -89,6 +100,9 @@ class ConversionSet implements \IteratorAggregate
         return null;
     }
 
+    /**
+     * @return Conversion[]
+     */
     public function toArray(): array
     {
         $list = [[]];
@@ -111,10 +125,10 @@ class ConversionSet implements \IteratorAggregate
     {
         $units = [];
         foreach ($this->toArray() as $conversion) {
-            $fromUnit             = $conversion->fromUnit();
+            $fromUnit                 = $conversion->fromUnit();
             $units[(string)$fromUnit] = $fromUnit;
-            $toUnit             = $conversion->toUnit();
-            $units[(string)$toUnit] = $toUnit;
+            $toUnit                   = $conversion->toUnit();
+            $units[(string)$toUnit]   = $toUnit;
         }
 
         return $units;
@@ -123,5 +137,28 @@ class ConversionSet implements \IteratorAggregate
     public function isEmpty(): bool
     {
         return empty($this->conversions);
+    }
+
+    /**
+     * @param Unit $unit
+     *
+     * @return Conversion[]
+     */
+    public function filterByUnit(Unit $unit): array
+    {
+        return \array_filter($this->toArray(), function (Conversion $conversion) use ($unit) {
+            return $conversion->fromUnit()->equals($unit) || $conversion->toUnit()->equals($unit);
+        });
+    }
+
+    public function union(ConversionSet $availableConversions): ConversionSet
+    {
+        $unionSet = clone $this;
+
+        foreach ($availableConversions as $conversion) {
+            $unionSet->add($conversion);
+        }
+
+        return $unionSet;
     }
 }

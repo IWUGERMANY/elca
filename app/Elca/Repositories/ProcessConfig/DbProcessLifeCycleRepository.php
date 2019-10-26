@@ -26,8 +26,6 @@
 namespace Elca\Repositories\ProcessConfig;
 
 use Elca\Db\ElcaProcess;
-use Elca\Db\ElcaProcessConversion;
-use Elca\Db\ElcaProcessConversionSet;
 use Elca\Db\ElcaProcessConversionVersion;
 use Elca\Db\ElcaProcessConversionVersionSet;
 use Elca\Db\ElcaProcessIndicator;
@@ -43,6 +41,7 @@ use Elca\Model\Process\ProcessId;
 use Elca\Model\Process\ProcessName;
 use Elca\Model\Process\Scenario;
 use Elca\Model\Process\Stage;
+use Elca\Model\ProcessConfig\Conversion\ConversionType;
 use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\ProcessConfig\LifeCycle\Process;
@@ -126,17 +125,19 @@ class DbProcessLifeCycleRepository implements ProcessLifeCycleRepository
         );
 
         foreach ($processConversionVersions as $dbProcessConversionVersion) {
-            $conversionClass = $dbProcessConversionVersion->getIdent()
-                ? ImportedLinearConversion::class
-                : LinearConversion::class;
+            $fromUnit = new Unit($dbProcessConversionVersion->getInUnit());
+            $toUnit   = new Unit($dbProcessConversionVersion->getOutUnit());
 
-            $conversions[] = $conversion = new $conversionClass(
-                new Unit($dbProcessConversionVersion->getInUnit()),
-                new Unit($dbProcessConversionVersion->getOutUnit()),
-                $dbProcessConversionVersion->getFactor()
-            );
+            $factor = $dbProcessConversionVersion->getFactor();
+            $ident = $dbProcessConversionVersion->getIdent();
+
+            $conversion = $ident
+                ? new ImportedLinearConversion($fromUnit, $toUnit, $factor, new ConversionType($ident))
+                : new LinearConversion($fromUnit, $toUnit, $factor);
 
             $conversion->setSurrogateId($dbProcessConversionVersion->getConversionId());
+
+            $conversions[] = $conversion;
         }
 
         return FactoryHelper::createInstanceWithoutConstructor(

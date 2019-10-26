@@ -41,7 +41,6 @@ use Elca\Db\ElcaProcessConfigName;
 use Elca\Db\ElcaProcessConfigSet;
 use Elca\Db\ElcaProcessConfigVariant;
 use Elca\Db\ElcaProcessConfigVariantSet;
-use Elca\Db\ElcaProcessConversion;
 use Elca\Db\ElcaProcessIndicator;
 use Elca\Db\ElcaProcessLifeCycleAssignment;
 use Elca\Db\ElcaProcessLifeCycleAssignmentSet;
@@ -52,7 +51,12 @@ use Elca\Db\ElcaProcessSet;
 use Elca\Model\Common\CategoryClassId;
 use Elca\Model\Common\Unit;
 use Elca\Model\Process\Module;
+use Elca\Model\Process\ProcessDbId;
 use Elca\Model\ProcessConfig\Conversion\ConversionType;
+use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
+use Elca\Model\ProcessConfig\Conversion\LinearConversion;
+use Elca\Model\ProcessConfig\ProcessConfigId;
+use Elca\Service\ProcessConfig\Conversions;
 use Exception;
 use Soda4Lca\Db\Soda4LcaImport;
 use Soda4Lca\Db\Soda4LcaProcess;
@@ -123,6 +127,11 @@ class Soda4LcaImporter
      */
     private $createdProcessConfigs = [];
 
+    /**
+     * @var Conversions
+     */
+    private $conversions;
+
 
     /**
      * Constructor
@@ -132,7 +141,7 @@ class Soda4LcaImporter
      * @throws Soda4LcaException
      * @return Soda4LcaImporter -
      */
-    public function __construct(Soda4LcaImport $Import)
+    public function __construct(Soda4LcaImport $Import, Conversions $conversions)
     {
         if (!$Import->isInitialized()) {
             throw new Soda4LcaException('Import not initialized');
@@ -140,6 +149,7 @@ class Soda4LcaImporter
 
         $this->Import    = $Import;
         $this->ProcessDb = $Import->getProcessDb();
+        $this->conversions = $conversions;
         $this->Log       = Log::getInstance();
         $this->Parser    = Soda4LcaParser::getInstance();
         $this->Dbh       = DbHandle::getInstance();
@@ -1330,14 +1340,12 @@ class Soda4LcaImporter
         $this->Log->notice('Created '.$ProcessConfig->getName().' ['.$ProcessConfig->getId().']', __METHOD__);
 
         /**
-         * Add trivial conversion
+         * Add identity conversion
          */
-        ElcaProcessConversion::create(
-            $ProcessConfig->getId(),
-            $ProcessDO->refUnit,
-            $ProcessDO->refUnit,
-            1,
-            ElcaProcessConversion::IDENT_PRODUCTION
+        $this->conversions->registerConversion(
+            new ProcessDbId($this->Import->getProcessDbId()),
+            new ProcessConfigId($ProcessConfig->getId()),
+            ImportedLinearConversion::forReferenceUnit(Unit::fromString($ProcessDO->refUnit))
         );
 
         return $ProcessConfig;
@@ -1431,29 +1439,29 @@ class Soda4LcaImporter
 
         $hasGrossDensity = false;
         foreach ($processDO->MatProperties->conversions as $ident => $convDO) {
-            $conversion = ElcaProcessConversion::findByProcessConfigIdAndIdent($processConfig->getId(), $convDO->ident);
 
-            /**
-             * Retry with manual inserted conversions (ident isnull)
-             */
-            if (!$conversion->isInitialized()) {
-                $conversion = ElcaProcessConversion::findByProcessConfigIdAndInOut(
-                    $processConfig->getId(),
-                    $convDO->inUnit,
-                    $convDO->outUnit,
-                    true
-                );
-            }
+            $processConfigId   = new ProcessConfigId($processConfig->getId());
+            $processDbId       = new ProcessDbId($this->Import->getProcessDbId());
 
-            if ($conversion->isInitialized()) {
-                if ($conversion->getIdent() === null) {
+            $fromUnit = Unit::fromString($convDO->inUnit);
+            $toUnit = Unit::fromString($convDO->outUnit);
+
+            $processConversion = $this->conversions->findByConversion(
+                $processConfigId,
+                $processDbId,
+                $fromUnit,
+                $toUnit
+            );
+
+            if (null !== $processConversion) {
+                if (!$processConversion->isImported()) {
                     $this->Log->notice(
                         sprintf(
                             'Found manually added ProcessConversion for %s: [in=%s,out=%s,f=%s] which will be overwritten by %s [in=%s,out=%s,f=%s]',
                             $processConfig->getName(),
-                            $conversion->getInUnit(),
-                            $conversion->getOutUnit(),
-                            $conversion->getFactor(),
+                            $processConversion->fromUnit(),
+                            $processConversion->toUnit(),
+                            $processConversion->factor(),
                             $convDO->ident,
                             $convDO->inUnit,
                             $convDO->outUnit,
@@ -1470,21 +1478,21 @@ class Soda4LcaImporter
                             '%newIn%'     => $convDO->inUnit,
                             '%newOut%'    => $convDO->outUnit,
                             '%newFactor%' => $convDO->factor,
-                            '%ident%'     => $conversion->getIdent(),
-                            '%in%'        => $conversion->getInUnit(),
-                            '%out%'       => $conversion->getOutUnit(),
-                            '%factor%'    => $conversion->getFactor(),
+                            '%ident%'     => $processConversion->type(),
+                            '%in%'        => $processConversion->fromUnit(),
+                            '%out%'       => $processConversion->toUnit(),
+                            '%factor%'    => $processConversion->factor(),
                         ]
                     );
-                } elseif ($conversion->getIdent() === ConversionType::INITIAL) {
+                } elseif (ConversionType::initial()->equals($processConversion->type())) {
                     $this->Log->notice(
                         sprintf(
                             'Found previously added ProcessConversion for %s: %s [in=%s,out=%s,f=%s] which will be overwritten by %s [in=%s,out=%s,f=%s]',
                             $processConfig->getName(),
-                            $conversion->getIdent(),
-                            $conversion->getInUnit(),
-                            $conversion->getOutUnit(),
-                            $conversion->getFactor(),
+                            $processConversion->type(),
+                            $processConversion->fromUnit(),
+                            $processConversion->toUnit(),
+                            $processConversion->factor(),
                             $convDO->ident,
                             $convDO->inUnit,
                             $convDO->outUnit,
@@ -1501,13 +1509,13 @@ class Soda4LcaImporter
                             '%newIn%'     => $convDO->inUnit,
                             '%newOut%'    => $convDO->outUnit,
                             '%newFactor%' => $convDO->factor,
-                            '%ident%'     => $conversion->getIdent(),
-                            '%in%'        => $conversion->getInUnit(),
-                            '%out%'       => $conversion->getOutUnit(),
-                            '%factor%'    => $conversion->getFactor(),
+                            '%ident%'     => $processConversion->type(),
+                            '%in%'        => $processConversion->fromUnit(),
+                            '%out%'       => $processConversion->toUnit(),
+                            '%factor%'    => $processConversion->factor(),
                         ]
                     );
-                } elseif (false === FloatCalc::cmp($convDO->factor, $conversion->getFactor())) {
+                } elseif (false === FloatCalc::cmp($convDO->factor, $processConversion->factor())) {
                     $this->Log->error(
                         sprintf(
                             'Skipped updating a ProcessConversion for %s: %s [in=%s,out=%s,f=%f] which conflicts with existing %s [in=%s,out=%s,f=%f]',
@@ -1516,10 +1524,10 @@ class Soda4LcaImporter
                             $convDO->inUnit,
                             $convDO->outUnit,
                             $convDO->factor,
-                            $conversion->getIdent(),
-                            $conversion->getInUnit(),
-                            $conversion->getOutUnit(),
-                            $conversion->getFactor()
+                            $processConversion->type(),
+                            $processConversion->fromUnit(),
+                            $processConversion->toUnit(),
+                            $processConversion->factor()
                         ),
                         __METHOD__
                     );
@@ -1532,66 +1540,37 @@ class Soda4LcaImporter
                             '%newIn%'     => $convDO->inUnit,
                             '%newOut%'    => $convDO->outUnit,
                             '%newFactor%' => $convDO->factor,
-                            '%ident%'     => $conversion->getIdent(),
-                            '%in%'        => $conversion->getInUnit(),
-                            '%out%'       => $conversion->getOutUnit(),
-                            '%factor%'    => $conversion->getFactor(),
+                            '%ident%'     => $processConversion->type(),
+                            '%in%'        => $processConversion->fromUnit(),
+                            '%out%'       => $processConversion->toUnit(),
+                            '%factor%'    => $processConversion->factor(),
                         ]
                     );
                     continue;
                 }
-
-                $conversion->setInUnit($convDO->inUnit);
-                $conversion->setOutUnit($convDO->outUnit);
-                $conversion->setFactor($convDO->factor);
-                $conversion->setIdent($convDO->ident);
-
-                if ($conversion->isValid()) {
-                    $conversion->update();
-                    $this->Log->debug(
-                        'Updated ProcessConversion `'.$convDO->ident.'\' for `'.$processConfig->getName(
-                        ).'\': [in='.$convDO->inUnit.',out='.$convDO->outUnit.',f='.$convDO->factor.']',
-                        __METHOD__
-                    );
-                } else {
-                    $this->Log->error(
-                        'Failed to update ProcessConversion `'.$convDO->ident.'\' for `'.$processConfig->getName(
-                        ).'\': [in='.$convDO->inUnit.',out='.$convDO->outUnit.',f='.$convDO->factor.']:',
-                        __METHOD__
-                    );
-                    $this->Log->error($conversion->getValidator()->getErrors(), __METHOD__);
-                }
             }
-            else {
-                $conversion = ElcaProcessConversion::create(
-                    $processConfig->getId(),
-                    $convDO->inUnit,
-                    $convDO->outUnit,
-                    $convDO->factor,
-                    $convDO->ident
+
+            $importedLinearConversion = new ImportedLinearConversion($fromUnit, $toUnit, $convDO->factor,
+                new ConversionType($convDO->ident));
+
+            try {
+
+                $this->conversions->registerConversion($processDbId, $processConfigId, $importedLinearConversion);
+
+                $this->Log->debug(
+                    'Registered ProcessConversion `' . $convDO->ident . '\' for `' . $processConfig->getName() . '\': [in=' . $convDO->inUnit . ',out=' . $convDO->outUnit . ',f=' . $convDO->factor . ']',
+                    __METHOD__
                 );
-
-                if ($conversion->isValid()) {
-                    $this->Log->debug(
-                        'Inserted ProcessConversion `'.$convDO->ident.'\' for `'.$processConfig->getName(
-                        ).'\': [in='.$convDO->inUnit.',out='.$convDO->outUnit.',f='.$convDO->factor.']',
-                        __METHOD__
-                    );
-                } else {
-                    $this->Log->error(
-                        'Failed to insert new ProcessConversion `'.$convDO->ident.'\' for `'.$processConfig->getName(
-                        ).'\': [in='.$convDO->inUnit.',out='.$convDO->outUnit.',f='.$convDO->factor.']:',
-                        __METHOD__
-                    );
-                    $this->Log->error($conversion->getValidator()->getErrors(), __METHOD__);
-                }
+            }
+            catch (\Exception $exception) {
+                $this->Log->error(
+                    'Failed to register ProcessConversion `' . $convDO->ident . '\' for `' . $processConfig->getName() . '\': [in=' . $convDO->inUnit . ',out=' . $convDO->outUnit . ',f=' . $convDO->factor . ']:',
+                    __METHOD__
+                );
+                $this->Log->error($exception->getMessage(), __METHOD__);
             }
 
-            if ($conversion->isValid() && $convDO->ident === ElcaProcessConversion::IDENT_GROSS_DENSITY) {
-                //$processConfig->setDensity($convDO->factor);
-                $processConfig->update();
-                $this->Log->debug('Updated density in ProcessConfig `'.$processConfig->getName().'\'', __METHOD__);
-
+            if ($importedLinearConversion->type()->isGrossDensity()) {
                 $hasGrossDensity = true;
             }
         }
@@ -1600,17 +1579,18 @@ class Soda4LcaImporter
          * Check if a gross density conversion was included in the given material properties. If not,
          * remove the ident of the manually added density conversion, if it exists.
          *
-         * The ident field is being used to determine whether a conversion has been created manually or via
+         * The ident field is being used to determine whether a conversion has been created manually or was imported via
          * the soda interface
          */
         if (false === $hasGrossDensity) {
-            $conversion = ElcaProcessConversion::findByProcessConfigIdAndInOut($processConfig->getId(), Unit::CUBIC_METER, Unit::KILOGRAMM);
+            $densityConversion = $this->conversions->findDensityConversionFor($processDbId, $processConfigId);
 
-            if ($conversion->isInitialized() && $conversion->getIdent()) {
-                $conversion->setIdent(null);
-                $conversion->update();
+            if (null !== $densityConversion && $densityConversion->isImported()) {
+                $this->conversions->registerConversion($processDbId, $processConfigId,
+                    new LinearConversion($densityConversion->fromUnit(), $densityConversion->toUnit(),
+                        $densityConversion->factor()));
 
-                $this->Log->debug('Unset the ident of density process conversion `'.$conversion->getId().'\'. This conversion has been manually added.', __METHOD__);
+                $this->Log->debug('Unset the ident of density process conversion `'.$densityConversion->conversionId().'\'. This conversion has been manually added.', __METHOD__);
             }
         }
 

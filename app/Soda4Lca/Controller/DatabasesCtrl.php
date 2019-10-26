@@ -34,8 +34,9 @@ use Elca\Db\ElcaProcessConfigSanity;
 use Elca\Db\ElcaProcessConfigSet;
 use Elca\Db\ElcaProcessDb;
 use Elca\Db\ElcaProjectSet;
-use Elca\Service\Messages\ElcaMessages;
 use Elca\Model\Navigation\ElcaOsitItem;
+use Elca\Service\Messages\ElcaMessages;
+use Elca\Service\ProcessConfig\Conversions;
 use Elca\Validator\ElcaValidator;
 use Elca\View\ElcaAdminNavigationLeftView;
 use Elca\View\ElcaModalProcessingView;
@@ -309,7 +310,7 @@ class DatabasesCtrl extends AppCtrl
         {
             try
             {
-                $Importer = new Soda4LcaImporter($Import);
+                $Importer = new Soda4LcaImporter($Import, $this->get(Conversions::class));
                 $totalSize = null;
 
                 switch($Import->getStatus())
@@ -442,7 +443,7 @@ class DatabasesCtrl extends AppCtrl
 
         try
         {
-            $Importer = new Soda4LcaImporter($Import);
+            $Importer = new Soda4LcaImporter($Import, $this->get(Conversions::class));
             $Importer->updateProcessEpdSubType();
         }
         catch(Exception $Exception)
@@ -469,7 +470,7 @@ class DatabasesCtrl extends AppCtrl
 
         try
         {
-            $Importer = new Soda4LcaImporter($Import);
+            $Importer = new Soda4LcaImporter($Import, $this->get(Conversions::class));
             $Importer->updateProcessGeographicalRepresentativeness();
         }
         catch(Exception $Exception)

@@ -42,18 +42,6 @@ class ElcaProcessConversionVersion extends DbObject
      */
     const TABLE_NAME = 'elca.process_conversion_versions';
 
-    /**
-     * Idents
-     */
-    const IDENT_INITIAL = 'INIT';
-    const IDENT_PRODUCTION = 'PROD';
-    const IDENT_GROSS_DENSITY = 'GROSS_DENSITY';
-    const IDENT_AVG_MPUA = 'AVG_MPUA';
-    const IDENT_BULK_DENSITY = 'BULK_DENSITY';
-    const IDENT_LAYER_THICKNESS = 'LAYER_THICKNESS';
-    const IDENT_PRODUCTIVENESS = 'PRODUCTIVENESS';
-    const IDENT_LINEAR_DENSITY = 'LINEAR_DENSITY';
-
     //////////////////////////////////////////////////////////////////////////////////////
 
     /**

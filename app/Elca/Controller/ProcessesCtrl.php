@@ -53,8 +53,8 @@ use Elca\ElcaNumberFormat;
 use Elca\Model\Common\Unit;
 use Elca\Model\Navigation\ElcaOsitItem;
 use Elca\Model\Process\ProcessDbId;
+use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
-use Elca\Model\ProcessConfig\Conversion\RequiredConversion;
 use Elca\Model\ProcessConfig\ConversionId;
 use Elca\Model\ProcessConfig\ProcessConfigId;
 use Elca\Model\ProcessConfig\ProcessLifeCycleId;
@@ -101,7 +101,10 @@ class ProcessesCtrl extends TabsCtrl
      */
     private $namespace;
 
-    //////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * @var Conversions
+     */
+    private $conversions;
 
     /**
      * Will be called on initialization.
@@ -121,6 +124,7 @@ class ProcessesCtrl extends TabsCtrl
          * Session namespace
          */
         $this->namespace = $this->Session->getNamespace('elca.processes', true);
+        $this->conversions = $this->container->get(Conversions::class);
 
         /**
          * In case the default action forwards to the tab controller (which this one also is)
@@ -316,7 +320,7 @@ class ProcessesCtrl extends TabsCtrl
             $additionalConversions = $conversionService->findAdditionalConversions($processLifeCycleId);
 
             foreach ($requiredConversions as $conversion) {
-                if ($conversion->isTrivial()) {
+                if ($conversion->isIdentity()) {
                     continue;
                 }
 
@@ -324,7 +328,7 @@ class ProcessesCtrl extends TabsCtrl
             }
 
             foreach ($additionalConversions as $conversion) {
-                if ($conversion->isTrivial()) {
+                if ($conversion->isIdentity()) {
                     continue;
                 }
 
@@ -475,11 +479,7 @@ class ProcessesCtrl extends TabsCtrl
 
                         /**
                          * Update existing conversions
-                         *
-                         * @var ElcaProcessConversion $conversion
                          */
-                        $conversionService = $this->container->get(Conversions::class);
-
                         foreach ($processConfig->getProcessConversions() as $conversion) {
                             $conversionVersion = $conversion->getVersionFor($processDbId);
 
@@ -1249,34 +1249,34 @@ class ProcessesCtrl extends TabsCtrl
                                 $processIds[$key],
                                 $ratio
                             );
-                            $Process = ElcaProcess::findById($processIds[$key]);
+                            $process = ElcaProcess::findById($processIds[$key]);
                             $this->messages->add(
                                 t(
                                     'Prozess `%name%\' für `%lifeCycle%\' wurde gespeichert',
                                     null,
                                     [
-                                        '%name%'      => $Process->getName(),
-                                        '%lifeCycle%' => $Process->getLifeCycle()->getName(),
+                                        '%name%'      => $process->getName(),
+                                        '%lifeCycle%' => $process->getLifeCycle()->getName(),
                                     ]
                                 )
                             );
 
                             /**
-                             * Add trivial conversion for prod processes
+                             * Add identity conversion for prod processes
                              */
-                            if ($Process->getLifeCyclePhase() == ElcaLifeCycle::PHASE_PROD) {
-                                $Conversion = ElcaProcessConversion::findProductionByProcessConfigIdAndRefUnit(
-                                    $this->Request->processConfigId,
-                                    $procRefUnit = $Process->getRefUnit()
-                                );
+                            if ($process->getLifeCyclePhase() === ElcaLifeCycle::PHASE_PROD) {
 
-                                if (!$Conversion->isInitialized()) {
-                                    ElcaProcessConversion::create(
-                                        $this->Request->processConfigId,
-                                        $procRefUnit,
-                                        $procRefUnit,
-                                        1, // trivial factor
-                                        ElcaProcessConversion::IDENT_PRODUCTION
+                                $procRefUnit = Unit::fromString($process->getRefUnit());
+                                $processConfigId  = new ProcessConfigId($this->Request->processConfigId);
+                                $processDbId      = new ProcessDbId($this->Request->processDbId);
+
+                                $processConversion = $this->conversions->findByConversion($processConfigId,
+                                    $processDbId, $procRefUnit, $procRefUnit);
+
+                                if (null === $processConversion) {
+                                    $this->conversions->registerConversion(
+                                        $processDbId, $processConfigId,
+                                        ImportedLinearConversion::forReferenceUnit($procRefUnit)
                                     );
                                 }
                             }
@@ -1332,11 +1332,11 @@ class ProcessesCtrl extends TabsCtrl
 
             if (is_numeric($plcaId)) {
                 $ProcessLifeCycleAssignment = ElcaProcessLifeCycleAssignment::findById($plcaId);
-                $Process                    = $ProcessLifeCycleAssignment->getProcess();
-                $processDbId                = $Process->getProcessDbId();
+                $process                    = $ProcessLifeCycleAssignment->getProcess();
+                $processDbId                = $process->getProcessDbId();
                 $processConfigId            = $ProcessLifeCycleAssignment->getProcessConfigId();
-                $processLcIdent             = $Process->getLifeCycleIdent();
-                $newProcessId               = $newLifeCycleIdent == $processLcIdent ? $Process->getId() : null;
+                $processLcIdent             = $process->getLifeCycleIdent();
+                $newProcessId               = $newLifeCycleIdent == $processLcIdent ? $process->getId() : null;
 
                 if (!$newProcessId) {
                     $changedElts['processId['.$plcaId.']'] = true;
@@ -1465,28 +1465,28 @@ class ProcessesCtrl extends TabsCtrl
          * If deletion has confirmed, do the action
          */
         if ($this->Request->has('confirmed')) {
-            $Assignment = ElcaProcessLifeCycleAssignment::findById($this->Request->plcaId);
+            $assignment = ElcaProcessLifeCycleAssignment::findById($this->Request->plcaId);
 
-            if ($Assignment->isInitialized()) {
-                $processConfigId = $Assignment->getProcessConfigId();
-                $processDbId     = $Assignment->getProcess()->getProcessDbId();
-                $processRefUnit  = $Assignment->getProcess()->getRefUnit();
-                $phase           = $Assignment->getProcess()->getLifeCycle()->getPhase();
+            if ($assignment->isInitialized()) {
+                $processConfigId = $assignment->getProcessConfigId();
+                $processDbId     = $assignment->getProcess()->getProcessDbId();
+                $processRefUnit  = $assignment->getProcess()->getRefUnit();
+                $phase           = $assignment->getProcess()->getLifeCycle()->getPhase();
 
-                $Assignment->delete();
+                $assignment->delete();
 
                 /**
-                 * Remove trivial production conversion for this process
+                 * Remove identity production conversion for this process
                  */
-                $Conversion = ElcaProcessConversion::findProductionByProcessConfigIdAndRefUnit(
+                $conversion = ElcaProcessConversion::findProductionByProcessConfigIdAndRefUnit(
                     $processConfigId,
                     $processRefUnit
                 );
 
-                if ($Conversion->isInitialized()) {
+                if ($conversion->isInitialized()) {
 
                     try {
-                        $Conversion->delete();
+                        $conversion->delete();
                     } catch (Exception $e) {
                     }
                 }

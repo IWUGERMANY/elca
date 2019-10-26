@@ -11,7 +11,7 @@ use Elca\Db\ElcaProcessConversionVersionSet;
 use Elca\Model\Common\Unit;
 use Elca\Model\Exception\InvalidArgumentException;
 use Elca\Model\Process\ProcessDbId;
-use Elca\Model\ProcessConfig\Conversion\Conversion;
+use Elca\Model\ProcessConfig\Conversion\ConversionType;
 use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\ProcessConfig\Conversion\ProcessConversionsRepository;
@@ -74,6 +74,30 @@ class DbProcessConversionsRepository implements ProcessConversionsRepository
 
         return $this->build($processConversion, $processConversionVersion);
     }
+
+    /**
+     * @return ProcessConversion[]
+     */
+    public function findIntersectConversionsForMultipleProcessDbs(ProcessConfigId $processConfigId, ProcessDbId ...$processDbIds): array
+    {
+        $result = [];
+
+        $elcaProcessConversionVersions = ElcaProcessConversionVersionSet::findIntersectConversionsForMultipleProcessDbs($processConfigId->value(),
+            array_map(
+                function(ProcessDbId $processDbId) {
+                    return $processDbId->value();
+                },
+                $processDbIds
+            )
+        );
+
+        foreach ($elcaProcessConversionVersions as $conversionVersion) {
+            $result[] = $this->buildFromExtendedElcaProcessConversionVersion($conversionVersion);
+        }
+
+        return $result;
+    }
+
 
     public function add(ProcessConversion $processConversion): void
     {
@@ -173,14 +197,16 @@ class DbProcessConversionsRepository implements ProcessConversionsRepository
         ElcaProcessConversionVersion $processConversionVersion
     )
     {
-        $conversionType = $processConversionVersion->getIdent() ? ImportedLinearConversion::class
-            : LinearConversion::class;
+        $fromUnit = Unit::fromString($processConversion->getInUnit());
+        $toUnit   = Unit::fromString($processConversion->getOutUnit());
+        $factor   = $processConversionVersion->getFactor();
+        $ident    = $processConversionVersion->getIdent();
 
-        $conversion = new $conversionType(
-            Unit::fromString($processConversion->getInUnit()),
-            Unit::fromString($processConversion->getOutUnit()),
-            $processConversionVersion->getFactor()
-        );
+        $conversion = $ident
+            ? new ImportedLinearConversion($fromUnit, $toUnit, $factor, new ConversionType($ident))
+            : new LinearConversion($fromUnit, $toUnit, $factor);
+
+        $conversion->setSurrogateId($processConversion->getId());
 
         return FactoryHelper::createInstanceWithoutConstructor(
             ProcessConversion::class,
@@ -188,6 +214,31 @@ class DbProcessConversionsRepository implements ProcessConversionsRepository
                 'conversionId'    => new ConversionId($processConversion->getId()),
                 'processDbId'     => new ProcessDbId($processConversionVersion->getProcessDbId()),
                 'processConfigId' => new ProcessConfigId($processConversion->getProcessConfigId()),
+                'conversion'      => $conversion,
+            ]
+        );
+    }
+
+    private function buildFromExtendedElcaProcessConversionVersion(
+        ElcaProcessConversionVersion $processConversionVersion)
+    {
+        $fromUnit = Unit::fromString($processConversionVersion->getInUnit());
+        $toUnit   = Unit::fromString($processConversionVersion->getOutUnit());
+        $factor   = $processConversionVersion->getFactor();
+        $ident    = $processConversionVersion->getIdent();
+
+        $conversion = $ident
+            ? new ImportedLinearConversion($fromUnit, $toUnit, $factor, new ConversionType($ident))
+            : new LinearConversion($fromUnit, $toUnit, $factor);
+
+        $conversion->setSurrogateId($processConversionVersion->getConversionId());
+
+        return FactoryHelper::createInstanceWithoutConstructor(
+            ProcessConversion::class,
+            [
+                'conversionId'    => new ConversionId($processConversionVersion->getConversionId()),
+                'processDbId'     => new ProcessDbId($processConversionVersion->getProcessDbId()),
+                'processConfigId' => new ProcessConfigId($processConversionVersion->getProcessConfigId()),
                 'conversion'      => $conversion,
             ]
         );
