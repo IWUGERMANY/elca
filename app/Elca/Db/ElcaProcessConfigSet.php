@@ -486,7 +486,12 @@ class ElcaProcessConfigSet extends DbObjectSet
                                       , pc.thermal_resistance
                                       , pc.is_reference
                                       , pc.f_hs_hi
-                                      , pc.default_size
+                             , pc.waste_code
+							 , pc.waste_code_suffix
+							 , pc.lambda_value
+							 , pc.element_group_a
+							 , pc.element_group_b
+                                , pc.default_size
                                       , pc.uuid
                                       , pc.svg_pattern_id
                                       , pc.is_stale
@@ -571,6 +576,11 @@ class ElcaProcessConfigSet extends DbObjectSet
                              , pc.thermal_resistance
                              , pc.is_reference
                              , pc.f_hs_hi
+                             , pc.waste_code
+							 , pc.waste_code_suffix
+							 , pc.lambda_value
+							 , pc.element_group_a
+							 , pc.element_group_b
                              , pc.default_size
                              , pc.uuid
                              , pc.svg_pattern_id

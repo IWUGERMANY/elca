@@ -193,6 +193,11 @@ CREATE OR REPLACE VIEW elca.process_config_process_dbs_view AS
         , pc.is_reference
         , pc.f_hs_hi
         , pc.default_size
+        , pc.waste_code
+        , pc.waste_code_suffix
+        , pc.lambda_value
+        , pc.element_group_a
+        , pc.element_group_b
         , pc.uuid
         , pc.svg_pattern_id
         , pc.is_stale
@@ -222,6 +227,11 @@ CREATE OR REPLACE VIEW elca.process_config_process_dbs_view AS
         , pc.is_reference
         , pc.f_hs_hi
         , pc.default_size
+            , pc.waste_code
+            , pc.waste_code_suffix
+            , pc.lambda_value
+            , pc.element_group_a
+            , pc.element_group_b
         , pc.uuid
         , pc.svg_pattern_id
         , pc.is_stale
@@ -248,7 +258,11 @@ CREATE OR REPLACE VIEW elca.all_process_config_process_dbs_view AS
          , pc.is_reference
          , pc.f_hs_hi
          , pc.default_size
-         , pc.uuid
+            , pc.waste_code
+            , pc.waste_code_suffix
+            , pc.lambda_value
+            , pc.element_group_a
+            , pc.element_group_b         , pc.uuid
          , pc.svg_pattern_id
          , pc.is_stale
          , pc.created
@@ -276,7 +290,12 @@ CREATE OR REPLACE VIEW elca.all_process_config_process_dbs_view AS
            , pc.is_reference
            , pc.f_hs_hi
            , pc.default_size
-           , pc.uuid
+            , pc.waste_code
+            , pc.waste_code_suffix
+            , pc.lambda_value
+            , pc.element_group_a
+            , pc.element_group_b
+             , pc.uuid
            , pc.svg_pattern_id
            , pc.is_stale
            , pc.created
@@ -408,7 +427,11 @@ CREATE OR REPLACE VIEW elca.process_configs_extended_search_v AS
         , pc.is_reference
         , pc.f_hs_hi
         , pc.default_size
-        , pc.uuid
+            , pc.waste_code
+            , pc.waste_code_suffix
+            , pc.lambda_value
+            , pc.element_group_a
+            , pc.element_group_b        , pc.uuid
         , pc.svg_pattern_id
         , pc.is_stale
         , pc.created
@@ -433,7 +456,12 @@ CREATE OR REPLACE VIEW elca.process_configs_extended_search_v AS
         , pc.is_reference
         , pc.f_hs_hi
         , pc.default_size
-        , pc.uuid
+            , pc.waste_code
+            , pc.waste_code_suffix
+            , pc.lambda_value
+            , pc.element_group_a
+            , pc.element_group_b
+             , pc.uuid
         , pc.is_stale
         , pc.created
         , pc.modified;
