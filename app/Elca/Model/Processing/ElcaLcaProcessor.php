@@ -327,28 +327,32 @@ class ElcaLcaProcessor
                 )
             );
 
-            /**
-             * Compute the quantity of the component
-             */
-            $quantity = $this->computeElementComponentQuantity($component, $processDbId);
+            try {
+                /**
+                 * Compute the quantity of the component
+                 */
+                $quantity = $this->computeElementComponentQuantity($component, $processDbId);
 
-            $componentLcaCalculator = new ElementComponentLcaCalculator(
-                $lifeCycleUsages,
-                $projectLifeTime,
-                $this->indicatorRepository->findForProcessingByProcessDbId($processDbId),
-                $this->logger
-            );
-
-            $componentResults = $componentLcaCalculator
-                ->compute(
-                    $processLifeCycle,
-                    $quantity,
-                    new UsefulLife(
-                        (int)$component->getLifeTime(),
-                        (int)$component->getLifeTimeDelay()
-                    ),
-                    $component->isExtant()
+                $componentLcaCalculator = new ElementComponentLcaCalculator(
+                    $lifeCycleUsages,
+                    $projectLifeTime,
+                    $this->indicatorRepository->findForProcessingByProcessDbId($processDbId),
+                    $this->logger
                 );
+
+                $componentResults = $componentLcaCalculator
+                    ->compute(
+                        $processLifeCycle,
+                        $quantity,
+                        new UsefulLife(
+                            (int)$component->getLifeTime(),
+                            (int)$component->getLifeTimeDelay()
+                        ),
+                        $component->isExtant()
+                    );
+            } catch (\Exception $exception) {
+                $this->logger->notice('Error during LCA calculation of component `'.$component->getProcessConfig()->getName().'\': ' . $exception->getMessage());
+            }
         }
 
         /**
@@ -388,7 +392,7 @@ class ElcaLcaProcessor
 
         if (null === $processConversion) {
             throw new InvalidArgumentException('Could not find a conversion for conversionId=:conversionId: and processDbId=:processDbId:', [
-                ':conversionId:' => $processConversion->conversionId(),
+                ':conversionId:' => $elcaElementComponent->getProcessConversionId(),
                 ':processDbId:' => $processDbId
             ]);
         }

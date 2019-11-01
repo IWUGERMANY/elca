@@ -822,17 +822,9 @@ class Importer
         } else {
             $inUnit  = $this->getAttribute($componentNode, 'conversionInUnit');
             $outUnit = $this->getAttribute($componentNode, 'conversionOutUnit');
-            $factor  = $this->getAttribute($componentNode, 'conversionFactor');
 
             $conversion = ElcaProcessConversion::findByProcessConfigIdAndInOut($processConfig->getId(),
                 $inUnit, $outUnit);
-
-            if (!$conversion->isInitialized()) {
-                throw new Exception(
-                    'Conversion for `' . $processConfig->getUuid() . '\' (in=' . $inUnit . ',out=' . $outUnit . ',factor=' . $factor . ') does not exist at ' . $componentNode->getNodePath(),
-                    self::ERR_INVALID_DOCUMENT
-                );
-            }
 
             $processConversionId = $conversion->getId();
         }

@@ -54,6 +54,7 @@ use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessConfigAttribute;
 use Elca\Db\ElcaProcessConfigName;
 use Elca\Db\ElcaProcessConfigVariantSet;
+use Elca\Db\ElcaProcessDbSet;
 use Elca\Db\ElcaProcessSet;
 use Elca\Elca;
 use Elca\ElcaNumberFormat;
@@ -618,10 +619,10 @@ class ElcaProcessConfigGeneralView extends HtmlView
 
         $select = $rightGroup->add(new ElcaHtmlFormElementLabel(t('ÖKOBAUDAT Version'), new HtmlSelectbox('processDbId')));
         $select->setAttribute('onchange', '$(this.form).submit();');
-        foreach ($this->processDbRepository->findAll(['id' => 'DESC']) as $processDb) {
-            $opt = $select->add(new HtmlSelectOption($processDb->name(), $processDb->id()));
+        foreach (ElcaProcessDbSet::findForProcessConfigId($this->processConfig->getId()) as $processDb) {
+            $opt = $select->add(new HtmlSelectOption($processDb->getName(), $processDb->getId()));
 
-            if ($processDb->id()->equals($this->processDbId)) {
+            if ($processDb->getId() === $this->processDbId->value()) {
                 $opt->setAttribute('selected', 'selected');
             }
         }

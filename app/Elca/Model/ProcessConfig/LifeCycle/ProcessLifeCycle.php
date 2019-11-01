@@ -220,6 +220,16 @@ class ProcessLifeCycle
         return $processByStage ? $processByStage->quantitativeReference() : null;
     }
 
+    public function hasProcesses()
+    {
+        return count($this->processes) > 0;
+    }
+
+    public function hasConversions()
+    {
+        return count($this->conversions) > 0;
+    }
+
     private function extractUnits(\Closure $filter = null): array
     {
         $units = [];

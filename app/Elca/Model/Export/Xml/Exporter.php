@@ -510,9 +510,18 @@ class Exporter
                         'quantity'          => $component->getQuantity(),
                         'conversionInUnit'  => $conversion->getInUnit(),
                         'conversionOutUnit' => $conversion->getOutUnit(),
-                        'conversionFactor'  => $versionedConversionFactor,
                     ]
                 );
+
+                if ($versionedConversionFactor) {
+                    $this->addAttributes(
+                        $componentNode,
+                        [
+                            'conversionFactor'  => $versionedConversionFactor,
+                        ]
+                    );
+
+                }
             }
 
             $containerNode->appendChild($componentNode);

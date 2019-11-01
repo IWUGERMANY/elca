@@ -1512,12 +1512,10 @@ class ElcaProcessConfig extends DbObject
         foreach($conversions as $conversion)
         {
             $conversionVersion = ElcaProcessConversionVersion::findByPK($conversion->getId(), $processDbId);
+            $factor = $conversionVersion->getFactor();
 
-            if(!$factor = $conversionVersion->getFactor())
-                continue;
-
-            $this->conversionMatrix[$conversion->getInUnit()][$conversion->getOutUnit()] = $factor;
-            $this->conversionMatrix[$conversion->getOutUnit()][$conversion->getInUnit()] = 1 / $factor;
+            $this->conversionMatrix[$conversion->getInUnit()][$conversion->getOutUnit()] = $factor ?? null;
+            $this->conversionMatrix[$conversion->getOutUnit()][$conversion->getInUnit()] = null !== $factor ? 1 / $factor : null;
         }
 
         return $this->conversionMatrix;
