@@ -27,14 +27,17 @@ namespace Elca\Model\Processing;
 
 use Elca\Db\ElcaElementComponent;
 use Elca\Model\Common\Quantity\Quantity;
+use Elca\Model\Exception\InvalidArgumentException;
 use Elca\Model\Indicator\IndicatorRepository;
 use Elca\Model\Process\Module;
 use Elca\Model\Process\ProcessDbId;
 use Elca\Model\Process\Stage;
+use Elca\Model\ProcessConfig\ConversionId;
 use Elca\Model\ProcessConfig\LifeCycle\Process;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycleRepository;
 use Elca\Model\ProcessConfig\ProcessConfigId;
 use Elca\Model\Processing\Element\ElementComponentQuantity;
+use Elca\Service\ProcessConfig\Conversions;
 
 
 class ExtantSavingsCalculator
@@ -59,12 +62,20 @@ class ExtantSavingsCalculator
      */
     private $indicatorRepository;
 
+    /**
+     * @var Conversions
+     */
+    private $conversions;
+
     public function __construct(
         ProcessLifeCycleRepository $processLifeCycleRepository,
-        IndicatorRepository $indicatorRepository
-    ) {
+        IndicatorRepository $indicatorRepository,
+        Conversions $conversions
+    )
+    {
         $this->processLifeCycleRepository = $processLifeCycleRepository;
         $this->indicatorRepository        = $indicatorRepository;
+        $this->conversions                = $conversions;
     }
 
     public function computeElementComponentSavings(ElcaElementComponent $component, ProcessDbId $processDbId)
@@ -85,7 +96,7 @@ class ExtantSavingsCalculator
         /**
          * Compute the quantity of the component
          */
-        $quantity = $this->computeElementComponentQuantity($component);
+        $quantity = $this->computeElementComponentQuantity($component, $processDbId);
 
         /**
          * Init result set
@@ -116,9 +127,21 @@ class ExtantSavingsCalculator
      * @param ElcaElementComponent $elcaElementComponent
      * @return Quantity
      */
-    public function computeElementComponentQuantity(ElcaElementComponent $elcaElementComponent): Quantity
+    public function computeElementComponentQuantity(ElcaElementComponent $elcaElementComponent,
+        ProcessDbId $processDbId): Quantity
     {
-        $elementComponent = ElementComponentQuantity::fromElcaElementComponent($elcaElementComponent);
+        $processConversion = $this->conversions->findConversion(new ConversionId($elcaElementComponent->getProcessConversionId()),
+            $processDbId);
+
+        if (null === $processConversion) {
+            throw new InvalidArgumentException('Could not find a conversion for conversionId=:conversionId: and processDbId=:processDbId:', [
+                ':conversionId:' => $processConversion->conversionId(),
+                ':processDbId:' => $processDbId
+            ]);
+        }
+
+        $elementComponent = ElementComponentQuantity::fromElcaElementComponent($elcaElementComponent,
+            $processConversion);
 
         /**
          * Convert quantity into outUnits

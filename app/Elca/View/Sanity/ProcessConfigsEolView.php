@@ -27,11 +27,8 @@ namespace Elca\View\Sanity;
 
 use Beibob\Blibs\FrontController;
 use Beibob\Blibs\HtmlView;
-use Beibob\HtmlTools\HtmlDataLink;
 use Beibob\HtmlTools\HtmlForm;
 use Beibob\HtmlTools\HtmlFormGroup;
-use Beibob\HtmlTools\HtmlHiddenField;
-use Beibob\HtmlTools\HtmlLink;
 use Beibob\HtmlTools\HtmlSelectbox;
 use Beibob\HtmlTools\HtmlSelectOption;
 use Beibob\HtmlTools\HtmlTag;
@@ -52,6 +49,8 @@ class ProcessConfigsEolView extends HtmlView
      * @var \stdClass
      */
     private $data;
+
+    private $readOnly = false;
 
     protected function init(array $args = [])
     {

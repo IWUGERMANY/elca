@@ -28,8 +28,6 @@ namespace Elca\Validator;
 use Elca\ElcaNumberFormat;
 use Elca\Model\ProcessConfig\Conversion\Conversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
-use Elca\Model\ProcessConfig\Conversion\RecommendedConversion;
-use Elca\Model\ProcessConfig\Conversion\RequiredConversion;
 
 class ElcaProcessConfigValidator extends ElcaValidator
 {
@@ -43,20 +41,18 @@ class ElcaProcessConfigValidator extends ElcaValidator
         $inUnitPrefixProperty = $inUnitPrefix . $id;
         $outUnitPrefixProperty = $outUnitPrefix . $id;
 
-        if (!$conversion instanceof RecommendedConversion) {
-            $this->assertNotEmpty(
-                $factorProperty,
+        $this->assertNotEmpty(
+            $factorProperty,
+            null,
+            t(
+                'Bitte geben Sie einen Faktor für die Umrechnung von %inUnit% nach %outUnit% ein',
                 null,
-                t(
-                    'Bitte geben Sie einen Faktor für die Umrechnung von %inUnit% nach %outUnit% ein',
-                    null,
-                    [
-                        '%inUnit%'  => ElcaNumberFormat::formatUnit((string)$conversion->fromUnit()),
-                        '%outUnit%' => ElcaNumberFormat::formatUnit((string)$conversion->toUnit()),
-                    ]
-                )
-            );
-        }
+                [
+                    '%inUnit%'  => ElcaNumberFormat::formatUnit((string)$conversion->fromUnit()),
+                    '%outUnit%' => ElcaNumberFormat::formatUnit((string)$conversion->toUnit()),
+                ]
+            )
+        );
 
         $this->assertNumber($factorProperty, null, t('Es sind nur numerische Werte erlaubt'));
 

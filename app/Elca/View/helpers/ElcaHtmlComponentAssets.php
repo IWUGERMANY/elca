@@ -24,18 +24,20 @@
  */
 namespace Elca\View\helpers;
 
-use Beibob\Blibs\Environment;
+use Beibob\Blibs\DbObject;
 use Beibob\Blibs\HtmlDOMFactory;
 use Beibob\HtmlTools\HtmlDataElement;
 use Beibob\HtmlTools\HtmlTable;
 use Beibob\HtmlTools\HtmlTableHeadRow;
 use Beibob\HtmlTools\HtmlText;
+use Beibob\HtmlTools\Interfaces\Converter;
 use DOMDocument;
 use Elca\Db\ElcaProcessConversion;
+use Elca\Db\ElcaProcessConversionVersion;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Common\Quantity\Quantity;
 use Elca\Model\Common\Unit;
-use Elca\Model\Processing\ElcaLcaProcessor;
+use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\Processing\Element\ElementComponentQuantity;
 
 /**
@@ -44,6 +46,18 @@ use Elca\Model\Processing\Element\ElementComponentQuantity;
  */
 class ElcaHtmlComponentAssets extends HtmlDataElement
 {
+    /**
+     * @var null
+     */
+    private $processDbId;
+
+    public function __construct($name, Converter $defaultConverter = null, DbObject $DataObject = null, $processDbId = null)
+    {
+        parent::__construct($name, $defaultConverter, $DataObject);
+        $this->processDbId = $processDbId;
+    }
+
+
     /**
      * Builds this element
      *
@@ -101,15 +115,19 @@ class ElcaHtmlComponentAssets extends HtmlDataElement
                         ) . ' ' . ElcaNumberFormat::formatUnit($dataObject->cache_component_ref_unit);
                 }
                 else {
-                    $processConversion = ElcaProcessConversion::findById(
+                    $elcaProcessConversion = ElcaProcessConversion::findById(
                         $dataObject->process_conversion_id
-                    )->toConversion();
+                    );
+                    $processConversionVersion = ElcaProcessConversionVersion::findByPK($elcaProcessConversion->getId(), $this->processDbId);
+
+                    $conversion = new LinearConversion(Unit::fromString($elcaProcessConversion->getInUnit()),
+                        Unit::fromString($elcaProcessConversion->getOutUnit()), (float)$processConversionVersion->getFactor());
 
                     $componentQuantity   = new ElementComponentQuantity(
                         new Quantity($dataObject->component_quantity * $dataObject->element_quantity,
-                            $processConversion->fromUnit()
+                            $conversion->fromUnit()
                         ),
-                        $processConversion,
+                        $conversion,
                         $dataObject->component_is_layer,
                         $dataObject->component_layer_width,
                         $dataObject->component_layer_length,

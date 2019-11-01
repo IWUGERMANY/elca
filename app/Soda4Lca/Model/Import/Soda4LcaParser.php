@@ -26,9 +26,7 @@
 namespace Soda4Lca\Model\Import;
 
 use Beibob\Blibs\Log;
-use DOMNode;
 use DOMXPath;
-use Elca\Db\ElcaProcessConversion;
 use Elca\Model\Common\Unit;
 use Elca\Model\ProcessConfig\Conversion\ConversionType;
 
@@ -79,14 +77,14 @@ class Soda4LcaParser
      * MatML Property names
      */
     private static $matMLPropertyNames = [
-        self::MATML_PROP_NAME_AVG_MPUA    => ElcaProcessConversion::IDENT_AVG_MPUA,
-        self:: MATML_PROP_NAME_GRAMMAGE   => ElcaProcessConversion::IDENT_AVG_MPUA,
-        self::MATML_PROP_NAME_RAW_DENSITY      => ElcaProcessConversion::IDENT_GROSS_DENSITY,
-        self:: MATML_PROP_NAME_GROSS_DENSITY   => ElcaProcessConversion::IDENT_GROSS_DENSITY,
-        self:: MATML_PROP_NAME_BULK_DENSITY    => ElcaProcessConversion::IDENT_BULK_DENSITY,
-        self:: MATML_PROP_NAME_LAYER_THICKNESS => ElcaProcessConversion::IDENT_LAYER_THICKNESS,
-        self:: MATML_PROP_NAME_PRODUCTIVENESS  => ElcaProcessConversion::IDENT_PRODUCTIVENESS,
-        self:: MATML_PROP_NAME_LINEAR_DENSITY  => ElcaProcessConversion::IDENT_LINEAR_DENSITY
+        self::MATML_PROP_NAME_AVG_MPUA        => ConversionType::AVG_MPUA,
+        self::MATML_PROP_NAME_GRAMMAGE        => ConversionType::AVG_MPUA,
+        self::MATML_PROP_NAME_RAW_DENSITY     => ConversionType::GROSS_DENSITY,
+        self::MATML_PROP_NAME_GROSS_DENSITY   => ConversionType::GROSS_DENSITY,
+        self::MATML_PROP_NAME_BULK_DENSITY    => ConversionType::BULK_DENSITY,
+        self::MATML_PROP_NAME_LAYER_THICKNESS => ConversionType::LAYER_THICKNESS,
+        self::MATML_PROP_NAME_PRODUCTIVENESS  => ConversionType::PRODUCTIVENESS,
+        self::MATML_PROP_NAME_LINEAR_DENSITY  => ConversionType::LINEAR_DENSITY,
     ];
 
     /**
@@ -479,6 +477,8 @@ class Soda4LcaParser
                     break;
 
                 case self::MATML_PROP_NAME_CONVERSION_TO_MASS:
+                    $this->Log->notice('Found material property `'. $name.'\'. Import is currently not enabled', __METHOD__);
+                    break;
                     if (!$refUnit) {
                         $this->Log->warning('Can not apply material property `'. $name .'\': missing the reference quantity.', __METHOD__);
                         break;

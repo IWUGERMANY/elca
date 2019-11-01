@@ -824,13 +824,14 @@ class Importer
             $outUnit = $this->getAttribute($componentNode, 'conversionOutUnit');
             $factor  = $this->getAttribute($componentNode, 'conversionFactor');
 
-            $conversion = ElcaProcessConversion::findByProcessConfigIdAndInOut(
-                $processConfig->getId(),
-                $inUnit,
-                $outUnit
-            );
+            $conversion = ElcaProcessConversion::findByProcessConfigIdAndInOut($processConfig->getId(),
+                $inUnit, $outUnit);
+
             if (!$conversion->isInitialized()) {
-                $conversion = ElcaProcessConversion::create($processConfig->getId(), $inUnit, $outUnit, $factor);
+                throw new Exception(
+                    'Conversion for `' . $processConfig->getUuid() . '\' (in=' . $inUnit . ',out=' . $outUnit . ',factor=' . $factor . ') does not exist at ' . $componentNode->getNodePath(),
+                    self::ERR_INVALID_DOCUMENT
+                );
             }
 
             $processConversionId = $conversion->getId();

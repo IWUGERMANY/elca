@@ -24,6 +24,7 @@
  */
 namespace Elca\View;
 
+use Beibob\Blibs\Environment;
 use Beibob\Blibs\FrontController;
 use Beibob\Blibs\HtmlView;
 use Beibob\Blibs\Url;
@@ -47,13 +48,19 @@ use Elca\Db\ElcaElement;
 use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaElementComponentAttribute;
 use Elca\Db\ElcaProcessConfig;
+use Elca\Db\ElcaProcessDb;
+use Elca\Db\ElcaProcessDbSet;
 use Elca\Db\ElcaProcessViewSet;
 use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Process\Module;
+use Elca\Model\Process\ProcessDbId;
+use Elca\Model\ProcessConfig\Conversion\ConversionSet;
+use Elca\Model\ProcessConfig\ProcessConfigId;
+use Elca\Model\ProcessConfig\ProcessLifeCycleId;
 use Elca\Model\Processing\LifeCycleUsage\LifeCycleUsages;
 use Elca\Service\Assistant\ElementAssistant;
-use Elca\Service\Project\LifeCycleUsageService;
+use Elca\Service\ProcessConfig\Conversions;
 use Elca\View\helpers\ElcaHtmlFormElementLabel;
 use Elca\View\helpers\ElcaHtmlLifeTimeInput;
 use Elca\View\helpers\ElcaHtmlNumericInput;
@@ -142,6 +149,11 @@ class ElcaElementComponentsView extends HtmlView
     private $lifeCycleUsages;
 
     /**
+     * @var Conversions
+     */
+    private $conversions;
+
+    /**
      * Init
      *
      * @param  array $args
@@ -196,6 +208,8 @@ class ElcaElementComponentsView extends HtmlView
             $ProjectConstruction = $this->Element->getProjectVariant()->getProjectConstruction();
             $this->isExtantBuilding = $ProjectConstruction->isExtantBuilding();
         }
+
+        $this->conversions = Environment::getInstance()->getContainer()->get(Conversions::class);
     }
     // End init
 
@@ -637,9 +651,9 @@ class ElcaElementComponentsView extends HtmlView
 
         $Request = FrontController::getInstance()->getRequest();
         if ((isset($this->Data->processConfigId[$key]) && $this->Data->processConfigId[$key]) || (isset($Request->processConfigId[$key]) && $Request->processConfigId[$key])) {
-            $ProcessConfig = ElcaProcessConfig::findById(isset($Request->processConfigId[$key]) ? $Request->processConfigId[$key] : $this->Data->processConfigId[$key]);
-            if ($ProcessConfig->isInitialized())
-                $Selector->setProcessCategoryNodeId($ProcessConfig->getProcessCategoryNodeId());
+            $processConfig = ElcaProcessConfig::findById(isset($Request->processConfigId[$key]) ? $Request->processConfigId[$key] : $this->Data->processConfigId[$key]);
+            if ($processConfig->isInitialized())
+                $Selector->setProcessCategoryNodeId($processConfig->getProcessCategoryNodeId());
 
             if ($this->context == ProjectElementsCtrl::CONTEXT && $Component !== null) {
                 $CacheComponent = ElcaCacheElementComponent::findByElementComponentId($Component->getId());
@@ -653,7 +667,7 @@ class ElcaElementComponentsView extends HtmlView
                     $this->Data->toggleState[$key] = true;
                 }
             }
-            if ($ProcessConfig->isStale()) {
+            if ($processConfig->isStale()) {
                 $Li->addClass('no-results');
                 $this->Data->toggleState[$key] = true;
             }
@@ -667,17 +681,19 @@ class ElcaElementComponentsView extends HtmlView
                 $QuantityInput->setReadonly(true, false);
 
             $this->checkElementChange($QuantityInput);
-            $Container->add(new ElcaHtmlFormElementLabel('', $Select = new HtmlSelectbox('conversionId[' . $key . ']')));
+            $Container->add(new ElcaHtmlFormElementLabel('', $select = new HtmlSelectbox('conversionId[' . $key . ']')));
             if ($this->isLockedProperty(ElementAssistant::PROPERTY_COMPONENT_CONVERSION_ID, $Component))
-                $Select->setReadonly(true, false);
+                $select->setReadonly(true, false);
 
-            $this->checkElementChange($Select);
-            list($RequiredConversions, $AvailableConversions) = $ProcessConfig->getRequiredConversions();
-            $units = array_unique($RequiredConversions->getArrayBy('inUnit', 'id') + $AvailableConversions->getArrayBy('inUnit', 'id'));
-            if (count($units) > 1)
-                $Select->add(new HtmlSelectOption('-', ''));
-            foreach ($units as $conversionId => $unit)
-                $Select->add(new HtmlSelectOption(isset(Elca::$units[$unit]) ? t(Elca::$units[$unit]) : $unit, $conversionId));
+            $this->checkElementChange($select);
+
+            $foundUnits = $this->findSelectableConversionUnits(new ProcessConfigId($processConfig->getId()));
+
+            if (count($foundUnits) > 1)
+                $select->add(new HtmlSelectOption('-', ''));
+
+            foreach ($foundUnits as $conversionId => $unit)
+                $select->add(new HtmlSelectOption(isset(Elca::$units[$unit]) ? t(Elca::$units[$unit]) : $unit, $conversionId));
         }
         $Container->add(new ElcaHtmlFormElementLabel('', ($LifeTimeElt = new ElcaHtmlLifeTimeInput('lifeTime[' . $key . ']'))));
         $LifeTimeElt->setPrecision(0);
@@ -1059,6 +1075,49 @@ class ElcaElementComponentsView extends HtmlView
         }
 
         return ElcaElementComponentAttribute::existsByElementComponentIdAndIdent($component->getId(), $this->assistant->getIdent());
+    }
+
+    private function findSelectableConversionUnits(ProcessConfigId $processConfigId): array
+    {
+        if ($this->context === ProjectElementsCtrl::CONTEXT) {
+            return $this->findSelectableConversionUnitsFor($processConfigId,
+                new ProcessDbId(Elca::getInstance()->getProject()->getProcessDbId()));
+        }
+
+        $processDbIds = ElcaProcessDbSet::findElementCompatibles($this->Element, ['version' => 'ASC'])
+                                        ->map(function(ElcaProcessDb $processDb) {
+                                            return new ProcessDbId($processDb->getId());
+                                        });
+
+        $conversions = $this->conversions->findProductionConversionsForMultipleDbs($processConfigId, ...$processDbIds);
+
+        return \array_unique($this->extractUnitsFrom($conversions));
+    }
+
+    private function findSelectableConversionUnitsFor(ProcessConfigId $processConfigId, ProcessDbId $processDbId): array
+    {
+        $processLifeCycleId = new ProcessLifeCycleId($processDbId, $processConfigId);
+        $conversions = $this->conversions->findProductionConversions($processLifeCycleId);
+
+        return \array_unique($this->extractUnitsFrom($conversions));
+    }
+
+    private function extractUnitsFrom(ConversionSet $conversionSet)
+    {
+        $foundConversions = [];
+        foreach ($conversionSet as $conversion) {
+            if (!$conversion->hasSurrogateId()) {
+                continue;
+            }
+
+            $unitString = $conversion->fromUnit()->value();
+
+            if (!isset($foundConversions[$unitString]) || $conversion->isIdentity()) {
+                $foundConversions[$unitString] = $conversion->surrogateId();
+            }
+        }
+
+        return \array_flip($foundConversions);
     }
 }
 // End ElcaElementComponentsView

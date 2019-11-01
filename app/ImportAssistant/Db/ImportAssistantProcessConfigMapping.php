@@ -137,6 +137,7 @@ class ImportAssistantProcessConfigMapping extends DbObject
                              , units
                              , epd_types
                              , process_db_ids
+                             , created
                           FROM %s
                          WHERE id = :id"
             ,
@@ -520,7 +521,7 @@ class ImportAssistantProcessConfigMapping extends DbObject
         $this->isSibling               = (bool)$DO->is_sibling;
         $this->siblingRatio            = $DO->sibling_ratio;
         $this->requiredAdditionalLayer = (bool)$DO->required_additional_layer;
-        $this->created = $DO->created;
+        $this->created = $DO->created ?? null;
 
         if (isset($DO->units)) {
             $this->units = str_getcsv(trim($DO->units, '{}'));

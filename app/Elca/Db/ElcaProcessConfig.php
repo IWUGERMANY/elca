@@ -26,8 +26,6 @@ namespace Elca\Db;
 
 use Beibob\Blibs\DbObject;
 use Elca\Elca;
-use Elca\Model\ProcessConfig\Converter;
-use Elca\Model\ProcessConfig\ProcessConfigId;
 use PDO;
 
 /**
@@ -131,7 +129,7 @@ class ElcaProcessConfig extends DbObject
      * @var float
      */
     private $defaultSize;
-	
+
 	/**
 	 * Abfallschluessel gemaess Abfallverzeichnis-Verordnung (AVV)
 	 *
@@ -145,24 +143,24 @@ class ElcaProcessConfig extends DbObject
 	 * @var int
 	 */
 	private $wasteCodeSuffix;
-	
+
 	/**
 	 *
 	 * @var float
-	 */	
+	 */
 	private $lambdaValue;
-	
-	/**
-	 *
-	 * @var boolean
-	 */	
-	private $elementGroupA;	
 
 	/**
 	 *
 	 * @var boolean
-	 */	
-	private $elementGroupB;	
+	 */
+	private $elementGroupA;
+
+	/**
+	 *
+	 * @var boolean
+	 */
+	private $elementGroupB;
 
     /**
      * uuid
@@ -264,28 +262,27 @@ class ElcaProcessConfig extends DbObject
      * @param string  $defaultSize
      * @param integer  $wasteCode
      * @param integer  $wasteCodeSuffix
-     * @param string  $lambdaValue	 
+     * @param string  $lambdaValue
      * @return ElcaProcessConfig
      */
     public static function create(
-		$name, 
-		$processCategoryNodeId, 
-		$description = null, 
-		$density = null, 
-		$thermalConductivity = null, 
-		$thermalResistance = null, 
-		$isReference = true, 
-		$fHsHi = null, 
-		$minLifeTime = null, 
-		$avgLifeTime = null, 
-		$maxLifeTime = null, 
-		$lifeTimeInfo = null, 
-		$avgLifeTimeInfo = null, 
-		$minLifeTimeInfo = null, 
-		$maxLifeTimeInfo = null, 
-		$uuid = null, 
-		$svgPatternId = null, 
-		$isStale = false, 
+		$name,
+		$processCategoryNodeId,
+		$description = null,
+		$thermalConductivity = null,
+		$thermalResistance = null,
+		$isReference = true,
+		$fHsHi = null,
+		$minLifeTime = null,
+		$avgLifeTime = null,
+		$maxLifeTime = null,
+		$lifeTimeInfo = null,
+		$avgLifeTimeInfo = null,
+		$minLifeTimeInfo = null,
+		$maxLifeTimeInfo = null,
+		$uuid = null,
+		$svgPatternId = null,
+		$isStale = false,
 		$defaultSize = null,
 		$wasteCode = null,
 		$wasteCodeSuffix = null,
@@ -299,7 +296,6 @@ class ElcaProcessConfig extends DbObject
         $processConfig->setProcessCategoryNodeId($processCategoryNodeId);
         $processConfig->setAvgLifeTime($avgLifeTime);
         $processConfig->setDescription($description);
-        $processConfig->setDensity($density);
         $processConfig->setThermalConductivity($thermalConductivity);
         $processConfig->setThermalResistance($thermalResistance);
         $processConfig->setIsReference($isReference);
@@ -317,7 +313,7 @@ class ElcaProcessConfig extends DbObject
         $processConfig->setWasteCodeSuffix($wasteCodeSuffix);
         $processConfig->setLambdaValue($lambdaValue);
         $processConfig->setElementGroupA($elementGroupA);
-        $processConfig->setElementGroupB($elementGroupB);				
+        $processConfig->setElementGroupB($elementGroupB);
 
         if($uuid)
             $processConfig->setUuid($uuid);
@@ -757,7 +753,6 @@ class ElcaProcessConfig extends DbObject
                 $newName ?? $this->name . ' (Kopie)',
                 $this->processCategoryNodeId,
                 $this->description,
-                $this->density,
                 $this->thermalConductivity,
                 $this->thermalResistance,
                 false,
@@ -959,14 +954,13 @@ class ElcaProcessConfig extends DbObject
      *
      * @param  number  $density - density
      * @return
+     * @deprecated
      */
     public function setDensity(float $density = null)
     {
-        $this->density = $density;
+        throw new \InvalidArgumentException("Setting the density in this context is not supported anymore");
     }
     // End setDensity
-
-
 
     /**
      * Sets the property thermalConductivity
@@ -1028,14 +1022,14 @@ class ElcaProcessConfig extends DbObject
     {
         $this->defaultSize = $defaultSize;
     }
-	
+
     /**
      * @param int $wasteCode
      */
     public function setWasteCode(int $wasteCode = null)
     {
         $this->wasteCode = $wasteCode;
-    }	
+    }
     /**
      * @param int $wasteCode
      */
@@ -1066,7 +1060,7 @@ class ElcaProcessConfig extends DbObject
     public function setElementGroupB(bool $elementGroupB = null)
     {
         $this->elementGroupB = $elementGroupB;
-    }	
+    }
 
     /**
      * Sets the property uuid
@@ -1303,12 +1297,12 @@ class ElcaProcessConfig extends DbObject
      * Returns the property density
      *
      * @return float|null
+     * @deprecated
      */
     public function getDensity() : ?float
     {
         return $this->density;
     }
-
 
     /**
      * Returns the property thermalConductivity
@@ -1366,7 +1360,7 @@ class ElcaProcessConfig extends DbObject
     {
         return $this->defaultSize;
     }
-	
+
     /**
 	 * Returns the property wasteCode
 	 *
@@ -1375,10 +1369,10 @@ class ElcaProcessConfig extends DbObject
     public function getWasteCode() : ?int
     {
         return $this->wasteCode;
-    }	
+    }
     /**
      * Returns the property wasteCodeSuffix
-	 * 
+	 *
 	 * @param int|null
      */
     public function getWasteCodeSuffix() : ?int
@@ -1414,7 +1408,7 @@ class ElcaProcessConfig extends DbObject
     public function getElementGroupB() : ?bool
     {
         return $this->elementGroupB;
-    }	
+    }
 
     /**
      * Returns the property uuid
@@ -1500,60 +1494,33 @@ class ElcaProcessConfig extends DbObject
     // End getProcessConversionSet
 
     /**
-     * Returns the associated ElcaProcessConversions for this process config
-     *
-     * @param array    $orderBy
-     * @param  boolean $force
-     * @return ElcaProcessConversionSet
-     */
-    public function getProcessConversion($refUnit, $force = false)
-    {
-        return ElcaProcessConversion::findProductionByProcessConfigIdAndRefUnit($this->getId(), $refUnit, $force);
-    }
-    // End getProcessConversion
-
-
-    /**
      * Returns a conversion matrix
      *
      * @param bool $force
      * @return array
      */
-    public function getConversionMatrix($force = false)
+    public function getConversionMatrix($processDbId, $force = false)
     {
         if(!$force && $this->conversionMatrix)
             return $this->conversionMatrix;
 
-        $Conversions = $this->getProcessConversions();
+        $conversions = $this->getProcessConversions();
 
-        foreach($Conversions as $Conversion)
+        /**
+         * @var ElcaProcessConversion $conversion
+         */
+        foreach($conversions as $conversion)
         {
-            if(!$factor = $Conversion->getFactor())
+            $conversionVersion = ElcaProcessConversionVersion::findByPK($conversion->getId(), $processDbId);
+
+            if(!$factor = $conversionVersion->getFactor())
                 continue;
 
-            $this->conversionMatrix[$Conversion->getInUnit()][$Conversion->getOutUnit()] = $factor;
-            $this->conversionMatrix[$Conversion->getOutUnit()][$Conversion->getInUnit()] = 1 / $factor;
+            $this->conversionMatrix[$conversion->getInUnit()][$conversion->getOutUnit()] = $factor;
+            $this->conversionMatrix[$conversion->getOutUnit()][$conversion->getInUnit()] = 1 / $factor;
         }
 
         return $this->conversionMatrix;
-    }
-
-    /**
-     * @param bool $force
-     * @return Converter
-     */
-    public function getConverter($force = false)
-    {
-        $conversions = [];
-
-        /**
-         * @var ElcaProcessConversion $processConversion
-         */
-        foreach ($this->getProcessConversions(null, $force) as $processConversion) {
-            $conversions[] = $processConversion->toConversion();
-        }
-
-        return new Converter(new ProcessConfigId($this->id), $conversions);
     }
 
     /**
@@ -1599,7 +1566,7 @@ class ElcaProcessConfig extends DbObject
         if(!$this->isInitialized())
             return array();
 
-        $requiredUnits = $filter = array();
+        $requiredUnits = array();
 
         /**
          * Find all refUnits of all configured processes
@@ -1633,7 +1600,7 @@ class ElcaProcessConfig extends DbObject
         $matrix = array();
         foreach($requiredUnits as $inUnit => $foo)
         {
-            foreach($requiredUnits as $outUnit => $foo)
+            foreach($requiredUnits as $outUnit => $bar)
             {
                  if(!isset($matrix[$outUnit][$inUnit]))
                     $matrix[$inUnit][$outUnit] = true;
@@ -1646,7 +1613,7 @@ class ElcaProcessConfig extends DbObject
         /**
          * Find direct matches in -> out and vice versa
          */
-        $Conversions = $this->getProcessConversions(array('ident' => 'ASC', 'id' => 'ASC'), true);
+        $Conversions = $this->getProcessConversions(array('id' => 'ASC'), true);
         foreach($Conversions as $Conversion)
         {
             $inUnit  = $Conversion->getInUnit();
@@ -1825,7 +1792,7 @@ class ElcaProcessConfig extends DbObject
 										'wasteCodeSuffix'      => $this->wasteCodeSuffix,
 										'lambdaValue'		   => $this->lambdaValue,
 										'elementGroupA'		   => $this->elementGroupA,
-										'elementGroupB'		   => $this->elementGroupB,										
+										'elementGroupB'		   => $this->elementGroupB,
                                         'uuid'                 => $this->uuid,
                                         'svgPatternId'         => $this->svgPatternId,
                                         'isStale'              => $this->isStale,
@@ -2083,7 +2050,6 @@ class ElcaProcessConfig extends DbObject
             self::UNKNOWN_NAME,
             $othersInternCategory->getNodeId(),
             null,
-            \null,
             null,
             null,
             null,
@@ -2106,7 +2072,11 @@ class ElcaProcessConfig extends DbObject
         );
 
         foreach (Elca::$units as $unit => $caption) {
-            ElcaProcessConversion::create($unknownProcessConfig->getId(), $unit, $unit, 1);
+            $conversion = ElcaProcessConversion::create($unknownProcessConfig->getId(), $unit, $unit);
+
+            foreach (ElcaProcessDbSet::find() as $processDb) {
+                ElcaProcessConversionVersion::create($conversion->getId(), $processDb->getId(), 1);
+            }
         }
 
         return $unknownProcessConfig;

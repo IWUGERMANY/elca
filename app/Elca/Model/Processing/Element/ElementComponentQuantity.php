@@ -5,8 +5,8 @@ namespace Elca\Model\Processing\Element;
 
 use Elca\Db\ElcaElementComponent;
 use Elca\Model\Common\Quantity\Quantity;
-use Elca\Model\Common\Unit;
 use Elca\Model\ProcessConfig\Conversion\Conversion;
+use Elca\Model\ProcessConfig\ProcessConversion;
 
 class ElementComponentQuantity
 {
@@ -45,16 +45,15 @@ class ElementComponentQuantity
      */
     private $areaRatio;
 
-    public static function fromElcaElementComponent(ElcaElementComponent $elcaElementComponent): ElementComponentQuantity
+    public static function fromElcaElementComponent(ElcaElementComponent $elcaElementComponent,
+        ProcessConversion $processConversion): ElementComponentQuantity
     {
-        $processConversion = $elcaElementComponent->getProcessConversion()->toConversion();
-
         return new self(
             new Quantity(
                 $elcaElementComponent->getElement()->getQuantity() * $elcaElementComponent->getQuantity(),
                 $processConversion->fromUnit()
             ),
-            $processConversion,
+            $processConversion->conversion(),
             $elcaElementComponent->isLayer(),
             $elcaElementComponent->getLayerWidth(),
             $elcaElementComponent->getLayerLength(),
@@ -71,7 +70,8 @@ class ElementComponentQuantity
         float $length = null,
         float $size = null,
         float $areaRatio = null
-    ) {
+    )
+    {
         $this->quantity            = $quantity;
         $this->toProcessConversion = $toProcessConversion;
         $this->isLayer             = $isLayer;
@@ -85,10 +85,10 @@ class ElementComponentQuantity
     {
         $quantity = $this->isLayer()
             ? Quantity::inM3($this->quantity->value()
-                * $this->length
-                * $this->width
-                * $this->size
-                * $this->areaRatio
+                             * $this->length
+                             * $this->width
+                             * $this->size
+                             * $this->areaRatio
             )
             : $this->quantity;
 

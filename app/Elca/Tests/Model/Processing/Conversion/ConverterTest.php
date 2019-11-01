@@ -26,7 +26,6 @@
 namespace Elca\Tests\Model\Processing\Conversion;
 
 use Elca\Model\Common\Unit;
-use Elca\Model\ProcessConfig\Conversion\Conversion;
 use Elca\Model\ProcessConfig\Conversion\ConversionException;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\ProcessConfig\Converter;
@@ -36,7 +35,7 @@ use PHPUnit\Framework\TestCase;
 class ConverterTest extends TestCase
 {
 
-    public function test_trivial_conversion()
+    public function test_identity_conversion()
     {
         $converter = new Converter(
             new ProcessConfigId(1),
