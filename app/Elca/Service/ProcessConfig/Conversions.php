@@ -224,9 +224,9 @@ class Conversions
     public function findProductionConversions(ProcessLifeCycleId $processLifeCycleId): ConversionSet
     {
         $processLifeCycle = $this->processLifeCycleRepository->findById($processLifeCycleId);
-        $requiredUnits = $processLifeCycle->requiredUnits();
+        $requiredUnits    = $processLifeCycle->requiredUnits();
 
-        $conversions      = [];
+        $conversions = [];
         foreach ($processLifeCycle->conversions() as $conversion) {
             foreach ($requiredUnits as $unit) {
                 if ($unit->equals($conversion->toUnit()) || $unit->equals($conversion->fromUnit())) {
@@ -258,7 +258,7 @@ class Conversions
 
         if (!$quantity = $processLifeCycle->quantitativeReference()) {
             throw new InvalidArgumentException("Quantitative reference not found for :processLifeCycleId:", [
-                ':processLifeCycleId:' => $processLifeCycleId
+                ':processLifeCycleId:' => $processLifeCycleId,
             ]);
         }
 
@@ -310,6 +310,26 @@ class Conversions
     public function findConversion(ConversionId $conversionId, ProcessDbId $processDbId): ?ProcessConversion
     {
         return $this->processConversionsRepository->findById($conversionId, $processDbId);
+    }
+
+    public function findIdentityConversionForUnit(ProcessConfigId $processConfigId, ProcessDbId $processDbId,
+        Unit $unit)
+    {
+        return $this->processConversionsRepository->findIdentityConversionForReferenceUnit($processConfigId,
+            $processDbId, $unit);
+    }
+
+    public function removeIdentityConversionForUnit(ProcessConfigId $processConfigId, ProcessDbId $processDbId,
+        Unit $unit)
+    {
+        $processConversion = $this->processConversionsRepository->findIdentityConversionForReferenceUnit($processConfigId,
+            $processDbId, $unit);
+
+        if (null === $processConversion) {
+            return;
+        }
+
+        $this->processConversionsRepository->remove($processConversion);
     }
 
     protected function findAvgMpuaConversionFor(ProcessDbId $processDbId,

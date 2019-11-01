@@ -853,14 +853,22 @@ class ProjectDataCtrl extends AppCtrl
                         continue;
                     } // Should not happen
                     else {
-                        $matrix = $ProcessConfig->getConversionMatrix();
+                        $outUnit = null;
+                        $matrix = $ProcessConfig->getConversionMatrix($this->Elca->getProject()->getProcessDbId());
                         foreach ($matrix[$usedUnit] as $unit => $factor) {
                             if (isset($availableUnits[$unit])) {
                                 $outUnit = $unit;
+                                break;
                             }
                         }
-                        $quantity     = $matrix[$usedUnit][$outUnit] * $ResultItem->quantity;
-                        $conversionId = $availableUnits[$unit];
+
+                        if ($outUnit) {
+                            $quantity     = $matrix[$usedUnit][$outUnit] * $ResultItem->quantity;
+                            $conversionId = $availableUnits[$outUnit];
+                        }
+                        else {
+                            $conversionId = null;
+                        }
                     }
                 } else {
                     $conversionId = $availableUnits[$usedUnit];

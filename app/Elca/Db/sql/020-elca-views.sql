@@ -518,22 +518,23 @@ CREATE OR REPLACE VIEW elca.process_config_sanities_v AS
     UNION
     SELECT
         'MISSING_CONVERSIONS' AS status
-         , pc.id                 AS process_config_id
-         , pc.name
-         , pc.process_category_node_id
-         , null :: int           AS process_db_id
+            , pc.id                 AS process_config_id
+            , pc.name
+            , pc.process_category_node_id
+            , a.process_db_id           AS process_db_id
     FROM elca.process_configs pc
              JOIN (
         SELECT DISTINCT
             process_config_id
-                      , a.ref_unit AS in
-                      , b.ref_unit AS out
+                , process_db_id
+                , a.ref_unit AS in
+                , b.ref_unit AS out
         FROM elca.process_assignments_v a
-                 JOIN elca.process_assignments_v b USING (process_config_id)
-        WHERE 'op' NOT IN (a.life_cycle_phase, b.life_cycle_phase) AND a.ref_unit <> b.ref_unit
+                 JOIN elca.process_assignments_v b USING (process_config_id, process_db_id)
+        WHERE 'op' NOT IN (a.life_cycle_phase, b.life_cycle_phase)
+                AND a.ref_unit <> b.ref_unit
     ) a ON pc.id = a.process_config_id
-             LEFT JOIN elca.process_conversions c
-    ON pc.id = c.process_config_id AND (a.in, a.out) IN ((c.in_unit, c.out_unit), (c.out_unit, c.in_unit))
+             LEFT JOIN elca.process_conversions_v c ON pc.id = c.process_config_id AND (a.in, a.out) IN ((c.in_unit, c.out_unit), (c.out_unit, c.in_unit))
     WHERE c.id IS NULL
     UNION
     SELECT
@@ -571,10 +572,10 @@ CREATE OR REPLACE VIEW elca.process_config_sanities_v AS
         pc.id AS process_config_id,
         pc.name,
         pc.process_category_node_id,
-        null :: int           AS process_db_id
+        a.process_db_id   AS process_db_id
     FROM elca.process_configs pc
              JOIN elca.process_assignments_v a ON pc.id = a.process_config_id AND a.life_cycle_phase = 'prod' AND a.ref_unit = 'm2'
-             LEFT JOIN elca.process_conversions c ON pc.id = c.process_config_id AND c.in_unit = 'm3' AND c.out_unit = 'kg'
+             LEFT JOIN elca.process_conversions_v c ON pc.id = c.process_config_id AND c.process_db_id = a.process_db_id AND c.in_unit = 'm3' AND c.out_unit = 'kg'
     WHERE c.id IS NULL
     UNION
     SELECT
@@ -582,15 +583,16 @@ CREATE OR REPLACE VIEW elca.process_config_sanities_v AS
         pc.id AS process_config_id,
         pc.name,
         pc.process_category_node_id,
-        null :: int           AS process_db_id
+        a.process_db_id           AS process_db_id
     FROM elca.process_configs pc
              JOIN elca.process_assignments_v a ON pc.id = a.process_config_id
     WHERE
-        NOT EXISTS(SELECT * FROM elca.process_conversions c WHERE pc.id = c.process_config_id AND 'kg' IN (c.in_unit, c.out_unit))
+        NOT EXISTS(SELECT * FROM elca.process_conversions_v c WHERE (pc.id, a.process_db_id) = (c.process_config_id, a.process_db_id) AND 'kg' IN (c.in_unit, c.out_unit))
     GROUP BY
         pc.id
-           , pc.name
-           , pc.process_category_node_id
+            , pc.name
+            , pc.process_category_node_id
+            , a.process_db_id
     HAVING 'op' != ANY (array_agg(DISTINCT a.life_cycle_phase))
             AND 'kg' != ANY (array_agg(DISTINCT a.ref_unit));
 

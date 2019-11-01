@@ -444,7 +444,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
         }
 
         if ($this->processConfig && $this->processConfig->isInitialized()) {
-            $rgtGroup->add(new HtmlTag('h5', t('Bezugsgrößen')));
+            $rgtGroup->add(new HtmlTag('h5', t('Unterstützte Datenbanken')));
 
             $processConfigId   = new ProcessConfigId($this->processConfig->getId());
             $processLifeCycles = $this->processLifeCycleRepository->findAllByProcessConfigId($processConfigId);
@@ -559,7 +559,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
 
         $select = $rightGroup->add(new ElcaHtmlFormElementLabel(t('ÖKOBAUDAT Version'), new HtmlSelectbox('processDbId')));
         $select->setAttribute('onchange', '$(this.form).submit();');
-        foreach ($this->processDbRepository->findAll() as $processDb) {
+        foreach ($this->processDbRepository->findAll(['id' => 'DESC']) as $processDb) {
             $opt = $select->add(new HtmlSelectOption($processDb->name(), $processDb->id()));
 
             if ($processDb->id()->equals($this->processDbId)) {

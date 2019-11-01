@@ -789,19 +789,19 @@ class Soda4LcaImporter
     /**
      * Imports a single process data set
      *
-     * @param  object $ProcessDO
+     * @param  object $processDO
      * @param bool    $isPhaseTwo
      *
-     * @throws Soda4LcaException
      * @return int
+     *@throws Soda4LcaException
      */
-    private function importProcessDataSet($ProcessDO, $isPhaseTwo = false, $update = false)
+    private function importProcessDataSet($processDO, $isPhaseTwo = false, $update = false)
     {
         $context = $update ? 'Updating' : 'Importing';
         $this->Log->debug(
-            $context.' process '.$ProcessDO->nameOrig.' ['.$ProcessDO->uuid.'] ['.join(
+            $context.' process '.$processDO->nameOrig . ' [' . $processDO->uuid . '] [' . join(
                 ', ',
-                $ProcessDO->lcIdents
+                $processDO->lcIdents
             ).']',
             __METHOD__
         );
@@ -820,37 +820,37 @@ class Soda4LcaImporter
             /**
              * Some checks
              */
-            if (!isset($ProcessDO->refUnit)) {
+            if (!isset($processDO->refUnit)) {
                 throw new Soda4LcaException(
                     'Missing reference to referenceFlow',
                     Soda4LcaException::MISSING_REFERENCE_FLOW,
                     null,
-                    $ProcessDO
+                    $processDO
                 );
             }
 
-            if (!count($ProcessDO->epdModules)) {
+            if (!count($processDO->epdModules)) {
                 throw new Soda4LcaException(
                     'Missing epd modules and values',
                     Soda4LcaException::MISSING_EPD_MODULES,
                     null,
-                    $ProcessDO
+                    $processDO
                 );
             }
 
-            if (!isset($ProcessDO->processCategoryNodeId) || !$ProcessDO->processCategoryNodeId) {
+            if (!isset($processDO->processCategoryNodeId) || !$processDO->processCategoryNodeId) {
                 throw new Soda4LcaException(
-                    'Could not find a process category for classId '.$ProcessDO->classId,
+                    'Could not find a process category for classId '.$processDO->classId,
                     Soda4LcaException::PROCESS_CATEGORY_NOT_FOUND,
                     null,
-                    $ProcessDO
+                    $processDO
                 );
             }
 
             /**
              * Get matching ProcessConfigs
              */
-            $ProcessConfigSet = $this->findProcessConfigs($ProcessDO);
+            $ProcessConfigSet = $this->findProcessConfigs($processDO);
 
             /**
              * Scenarios
@@ -858,11 +858,11 @@ class Soda4LcaImporter
              * Don't add scenarios to process configs when ProcessDO has no phase PRODUCTION
              */
             $scenarioIdentMap = [];
-            if (count($ProcessDO->scenarios)) {
-                if (isset($ProcessDO->lcPhases[ElcaLifeCycle::PHASE_PROD])) {
+            if (count($processDO->scenarios)) {
+                if (isset($processDO->lcPhases[ElcaLifeCycle::PHASE_PROD])) {
                     if ($ProcessConfigSet->count() == 1) {
                         $ProcessConfig    = $ProcessConfigSet[0];
-                        $scenarioIdentMap = $this->applyScenariosForProcessConfig($ProcessDO, $ProcessConfig);
+                        $scenarioIdentMap = $this->applyScenariosForProcessConfig($processDO, $ProcessConfig);
 
                         if (count($scenarioIdentMap)) {
                             $scenarios = $defaultScenarios = [];
@@ -873,12 +873,12 @@ class Soda4LcaImporter
                             $scenarioText = join(', ', $scenarios);
 
                             $this->Log->notice(
-                                'Scenarios for `'.$ProcessDO->name.'\' ['.$ProcessDO->uuid.']: '.$scenarioText,
+                                'Scenarios for `'.$processDO->name . '\' [' . $processDO->uuid . ']: ' . $scenarioText,
                                 __METHOD__
                             );
                             $processStatusDetails[] = t('Gefundene Szenarien:').' '.$scenarioText;
 
-                            if (!count($ProcessDO->defaultScenarios)) {
+                            if (!count($processDO->defaultScenarios)) {
                                 $this->Log->warning(
                                     'No default scenarios were defined. Using the first one.',
                                     __METHOD__
@@ -890,7 +890,7 @@ class Soda4LcaImporter
                         }
                     } else {
                         $this->Log->warning(
-                            'Cannot apply scenarios for `'.$ProcessDO->name.'\' ['.$ProcessDO->uuid.'] to multiple process configs!',
+                            'Cannot apply scenarios for `'.$processDO->name . '\' [' . $processDO->uuid . '] to multiple process configs!',
                             __METHOD__
                         );
                         $processStatusDetails[] = t(
@@ -904,9 +904,9 @@ class Soda4LcaImporter
                     }
                 } else {
                     $this->Log->warning(
-                        'Scenarios found for `'.$ProcessDO->name.'\' ['.$ProcessDO->uuid.'] on process data set with the following phases: '.join(
+                        'Scenarios found for `'.$processDO->name . '\' [' . $processDO->uuid . '] on process data set with the following phases: ' . join(
                             ', ',
-                            array_keys($ProcessDO->lcPhases)
+                            array_keys($processDO->lcPhases)
                         ),
                         __METHOD__
                     );
@@ -917,35 +917,35 @@ class Soda4LcaImporter
             /**
              * Create or update processes for each found epdModule
              */
-            foreach ($ProcessDO->epdModules as $epdModule => $scenarioIdents) {
-                $lcIdent = $ProcessDO->lcIdents[$epdModule];
+            foreach ($processDO->epdModules as $epdModule => $scenarioIdents) {
+                $lcIdent = $processDO->lcIdents[$epdModule];
 
                 foreach ($scenarioIdents as $scenarioIdent => $indicatorUuids) {
                     $scenarioId = isset($scenarioIdentMap[$scenarioIdent]) && is_object(
                         $scenarioIdentMap[$scenarioIdent]
                     ) ? $scenarioIdentMap[$scenarioIdent]->getId() : null;
                     $Process    = ElcaProcess::findByUuidAndProcessDbIdAndLifeCycleIdentAndScenarioId(
-                        $ProcessDO->uuid,
+                        $processDO->uuid,
                         $this->ProcessDb->getId(),
                         $lcIdent,
                         $scenarioId
                     );
                     if ($Process->isInitialized()) {
-                        $Process->setProcessCategoryNodeId($ProcessDO->processCategoryNodeId);
-                        $Process->setName($ProcessDO->name);
-                        $Process->setNameOrig($ProcessDO->nameOrig);
-                        $Process->setRefUnit($ProcessDO->refUnit);
-                        $Process->setVersion($ProcessDO->version);
-                        $Process->setDateOfLastRevision($ProcessDO->dateOfLastRevision);
-                        $Process->setRefValue($ProcessDO->refValue);
-                        $Process->setDescription($ProcessDO->description);
-                        $Process->setEpdType(isset($ProcessDO->epdSubType) ? $ProcessDO->epdSubType : null);
-                        $Process->setGeographicalRepresentativeness($ProcessDO->geographicalRepresentativeness ?? null);
+                        $Process->setProcessCategoryNodeId($processDO->processCategoryNodeId);
+                        $Process->setName($processDO->name);
+                        $Process->setNameOrig($processDO->nameOrig);
+                        $Process->setRefUnit($processDO->refUnit);
+                        $Process->setVersion($processDO->version);
+                        $Process->setDateOfLastRevision($processDO->dateOfLastRevision);
+                        $Process->setRefValue($processDO->refValue);
+                        $Process->setDescription($processDO->description);
+                        $Process->setEpdType(isset($processDO->epdSubType) ? $processDO->epdSubType : null);
+                        $Process->setGeographicalRepresentativeness($processDO->geographicalRepresentativeness ?? null);
                         $Process->update();
 
                         if (!$Process->isValid()) {
                             throw new Soda4LcaException(
-                                'Process '.$ProcessDO->uuid.' ['.$ProcessDO->uuid.'] ['.$lcIdent.'] not valid after update',
+                                'Process '.$processDO->uuid . ' [' . $processDO->uuid . '] [' . $lcIdent . '] not valid after update',
                                 Soda4LcaException::INVALID_PROCESS_AFTER_CREATE_OR_UPDATE,
                                 null,
                                 $Process->getValidator()->getErrors()
@@ -953,31 +953,31 @@ class Soda4LcaImporter
                         }
 
                         $this->Log->debug(
-                            'Updated process '.$ProcessDO->name.' ['.$Process->getId(
-                            ).'] ['.$ProcessDO->uuid.'] ['.$lcIdent.'] in database '.$this->ProcessDb->getName(),
+                            'Updated process '.$processDO->name . ' [' . $Process->getId(
+                            ).'] ['.$processDO->uuid . '] [' . $lcIdent . '] in database ' . $this->ProcessDb->getName(),
                             __METHOD__
                         );
 
                     } else {
                         $Process = ElcaProcess::create(
                             $this->ProcessDb->getId(),
-                            $ProcessDO->processCategoryNodeId,
-                            $ProcessDO->name,
-                            $ProcessDO->nameOrig,
-                            $ProcessDO->uuid,
+                            $processDO->processCategoryNodeId,
+                            $processDO->name,
+                            $processDO->nameOrig,
+                            $processDO->uuid,
                             $lcIdent,
-                            $ProcessDO->refUnit,
-                            $ProcessDO->version,
-                            $ProcessDO->refValue ? $ProcessDO->refValue : 1,
+                            $processDO->refUnit,
+                            $processDO->version,
+                            $processDO->refValue ? $processDO->refValue : 1,
                             $scenarioId,
-                            $ProcessDO->description,
-                            $ProcessDO->dateOfLastRevision,
-                            $ProcessDO->epdSubType ?? null,
-                            $ProcessDO->geographicalRepresentativeness ?? null
+                            $processDO->description,
+                            $processDO->dateOfLastRevision,
+                            $processDO->epdSubType ?? null,
+                            $processDO->geographicalRepresentativeness ?? null
                         );
                         if (!$Process->isValid()) {
                             throw new Soda4LcaException(
-                                'Process '.$ProcessDO->uuid.' ['.$ProcessDO->uuid.'] ['.$lcIdent.'] not valid after create',
+                                'Process '.$processDO->uuid . ' [' . $processDO->uuid . '] [' . $lcIdent . '] not valid after create',
                                 Soda4LcaException::INVALID_PROCESS_AFTER_CREATE_OR_UPDATE,
                                 null,
                                 $Process->getValidator()->getErrors()
@@ -985,13 +985,13 @@ class Soda4LcaImporter
                         }
 
                         $this->Log->debug(
-                            'Created new process '.$ProcessDO->name.' ['.$ProcessDO->uuid.'] ['.$lcIdent.'] ['.$scenarioIdent.'] in database '.$this->ProcessDb->getName(
+                            'Created new process '.$processDO->name . ' [' . $processDO->uuid . '] [' . $lcIdent . '] [' . $scenarioIdent . '] in database ' . $this->ProcessDb->getName(
                             ),
                             __METHOD__
                         );
                     }
 
-                    $this->updateProcessNames($ProcessDO, $Process);
+                    $this->updateProcessNames($processDO, $Process);
 
                     /**
                      * create update process indicators
@@ -1027,7 +1027,7 @@ class Soda4LcaImporter
                      * Assign to processConfigs if this is a prod phase process or this is
                      * the second time coming through
                      */
-                    if ((!$ProcessDO->onlyEolOrRecPhase || $isPhaseTwo) &&
+                    if ((!$processDO->onlyEolOrRecPhase || $isPhaseTwo) &&
                         $ProcessConfigSet instanceOf ElcaProcessConfigSet && $ProcessConfigSet->count()
                     ) {
 
@@ -1042,7 +1042,7 @@ class Soda4LcaImporter
                         /**
                          * Skip modules A1, A2, A3 if there is also A1-3 aggregation
                          */
-                        if (isset($ProcessDO->lcIdents['A1-A3']) && in_array($lcIdent, ['A1', 'A2', 'A3'])) {
+                        if (isset($processDO->lcIdents['A1-A3']) && in_array($lcIdent, ['A1', 'A2', 'A3'])) {
                             $this->Log->debug(
                                 'Skipping '.$lcIdent.' assignment, because A1-3 exists and has precedence',
                                 __METHOD__
@@ -1097,7 +1097,7 @@ class Soda4LcaImporter
                                         true
                                     )->current();
 
-                                    if ($AssignedProcess->getUuid() == $ProcessDO->uuid) {
+                                    if ($AssignedProcess->getUuid() == $processDO->uuid) {
                                         continue;
                                     }
 
@@ -1127,7 +1127,7 @@ class Soda4LcaImporter
                             /**
                              * In phase 2 check single phase eol processes
                              */
-                            if ($isPhaseTwo && $ProcessDO->onlyEolOrRecPhase) {
+                            if ($isPhaseTwo && $processDO->onlyEolOrRecPhase) {
 
                                 /**
                                  * Assign them only if also a prod process has been assigned
@@ -1171,7 +1171,7 @@ class Soda4LcaImporter
                             if ($ProcessConfig->getName() === $Process->getName()) {
                                 $stage = Module::fromValue($Process->getLifeCycleIdent())->stage();
                                 if ($stage->isProduction() || $stage->isUsage()) {
-                                    $this->updateProcessConfigNames($ProcessDO, $ProcessConfig);
+                                    $this->updateProcessConfigNames($processDO, $ProcessConfig);
                                 }
                             }
                         }
@@ -1180,11 +1180,11 @@ class Soda4LcaImporter
                         /**
                          * Save unassigned processes for later
                          */
-                        $this->unassignedProcesses[$ProcessDO->uuid] = $ProcessDO;
+                        $this->unassignedProcesses[$processDO->uuid] = $processDO;
                         $this->Log->debug(
-                            'Delaying assignments for '.$ProcessDO->nameOrig.' ['.$ProcessDO->uuid.'] ['.join(
+                            'Delaying assignments for '.$processDO->nameOrig . ' [' . $processDO->uuid . '] [' . join(
                                 ', ',
-                                $ProcessDO->lcIdents
+                                $processDO->lcIdents
                             ).']',
                             __METHOD__
                         );
@@ -1195,31 +1195,36 @@ class Soda4LcaImporter
             /**
              * Insert or update material properties (But don't delete in case of update)
              */
-            if (isset($ProcessDO->lcPhases[ElcaLifeCycle::PHASE_PROD]) &&
+            if (isset($processDO->lcPhases[ElcaLifeCycle::PHASE_PROD]) &&
                 $ProcessConfigSet instanceOf ElcaProcessConfigSet &&
                 $ProcessConfigSet->count() == 1
             ) {
-                if ($matPropProblems = $this->applyMatPropertiesForProcessConfig($ProcessDO, $ProcessConfigSet[0])) {
+                if ($matPropProblems = $this->applyMatPropertiesForProcessConfig($processDO, $ProcessConfigSet[0])) {
                     foreach ($matPropProblems as $matPropProblem) {
                         $processStatusDetails[] = $matPropProblem;
                     }
                 }
+
+                /**
+                 * Insert PROD identity conversion if necessary
+                 */
+                $this->addIdentityConversionIfNecessary($processDO, $ProcessConfigSet[0]);
             }
 
             /**
              * Create process config variants for all flow descendants
              */
-            if (isset($ProcessDO->lcPhases[ElcaLifeCycle::PHASE_PROD]) &&
-                isset($ProcessDO->flowDescendants) &&
+            if (isset($processDO->lcPhases[ElcaLifeCycle::PHASE_PROD]) &&
+                isset($processDO->flowDescendants) &&
                 $ProcessConfigSet instanceOf ElcaProcessConfigSet
             ) {
-                $this->applyFlowDescendantsForProcessConfigs($ProcessDO, $ProcessConfigSet);
+                $this->applyFlowDescendantsForProcessConfigs($processDO, $ProcessConfigSet);
             }
 
             $this->Dbh->commit();
         } catch (Exception $Exception) {
             $this->Dbh->rollback();
-            throw new Soda4LcaException($Exception->getMessage(), $Exception->getCode(), $Exception, $ProcessDO);
+            throw new Soda4LcaException($Exception->getMessage(), $Exception->getCode(), $Exception, $processDO);
         }
 
         if (!$numAssignments && !$update) {
@@ -1325,11 +1330,10 @@ class Soda4LcaImporter
         $minLifeTime = isset($ProcessDO->MatProperties->lifeTime) && $ProcessDO->MatProperties->lifeTime
             ? $ProcessDO->MatProperties->lifeTime : null;
 
-        $ProcessConfig = ElcaProcessConfig::create(
+        $processConfig = ElcaProcessConfig::create(
             $ProcessDO->name,
             $ProcessDO->processCategoryNodeId,
             null, // description
-            $density,
             null, // $thermalConductivity
             null, // $thermalResistance
             true, // $isReference
@@ -1337,20 +1341,27 @@ class Soda4LcaImporter
             $minLifeTime
         );
 
-        $this->Log->notice('Created '.$ProcessConfig->getName().' ['.$ProcessConfig->getId().']', __METHOD__);
+        $this->Log->notice('Created '.$processConfig->getName().' ['.$processConfig->getId().']', __METHOD__);
+
+        $processDbId = new ProcessDbId($this->Import->getProcessDbId());
+        $processConfigId = new ProcessConfigId($processConfig->getId());
+
+        /**
+         * Set density
+         */
+        $this->conversions->changeProcessConfigDensity($processDbId, $processConfigId, $density);
 
         /**
          * Add identity conversion
          */
         $this->conversions->registerConversion(
-            new ProcessDbId($this->Import->getProcessDbId()),
-            new ProcessConfigId($ProcessConfig->getId()),
+            $processDbId,
+            $processConfigId,
             ImportedLinearConversion::forReferenceUnit(Unit::fromString($ProcessDO->refUnit))
         );
 
-        return $ProcessConfig;
+        return $processConfig;
     }
-    // End getProcessCategoryNodeIdByClassId
 
     /**
      * Applies the process scenarios for the given process config and returns a ident-scenarioId map
@@ -1435,13 +1446,13 @@ class Soda4LcaImporter
      */
     private function applyMatPropertiesForProcessConfig($processDO, ElcaProcessConfig $processConfig)
     {
+        $processConfigId   = new ProcessConfigId($processConfig->getId());
+        $processDbId       = new ProcessDbId($this->Import->getProcessDbId());
+
         $problems = [];
 
         $hasGrossDensity = false;
         foreach ($processDO->MatProperties->conversions as $ident => $convDO) {
-
-            $processConfigId   = new ProcessConfigId($processConfig->getId());
-            $processDbId       = new ProcessDbId($this->Import->getProcessDbId());
 
             $fromUnit = Unit::fromString($convDO->inUnit);
             $toUnit = Unit::fromString($convDO->outUnit);
@@ -1550,10 +1561,9 @@ class Soda4LcaImporter
                 }
             }
 
-            $importedLinearConversion = new ImportedLinearConversion($fromUnit, $toUnit, $convDO->factor,
-                new ConversionType($convDO->ident));
-
             try {
+                $importedLinearConversion = new ImportedLinearConversion($fromUnit, $toUnit, (float)($convDO->factor),
+                    new ConversionType($convDO->ident));
 
                 $this->conversions->registerConversion($processDbId, $processConfigId, $importedLinearConversion);
 
@@ -1562,7 +1572,7 @@ class Soda4LcaImporter
                     __METHOD__
                 );
             }
-            catch (\Exception $exception) {
+            catch (\Throwable $exception) {
                 $this->Log->error(
                     'Failed to register ProcessConversion `' . $convDO->ident . '\' for `' . $processConfig->getName() . '\': [in=' . $convDO->inUnit . ',out=' . $convDO->outUnit . ',f=' . $convDO->factor . ']:',
                     __METHOD__
@@ -1741,6 +1751,25 @@ class Soda4LcaImporter
                 );
             }
         }
+    }
+
+    private function addIdentityConversionIfNecessary($processDO, $processConfig)
+    {
+        $processConfigId   = new ProcessConfigId($processConfig->getId());
+        $processDbId       = new ProcessDbId($this->Import->getProcessDbId());
+
+        $identityConversion = $this->conversions->findIdentityConversionForUnit($processConfigId, $processDbId,
+            Unit::fromString($processDO->refUnit));
+
+        if (null !== $identityConversion) {
+            return;
+        }
+
+        $this->conversions->registerConversion(
+            $processDbId,
+            $processConfigId,
+            ImportedLinearConversion::forReferenceUnit(Unit::fromString($processDO->refUnit))
+        );
     }
 }
 // End Soda4LcaImporter

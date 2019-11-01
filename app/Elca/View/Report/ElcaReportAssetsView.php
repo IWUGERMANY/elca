@@ -47,7 +47,6 @@ use Elca\View\helpers\ElcaHtmlNumericInput;
 use Elca\View\helpers\ElcaHtmlNumericText;
 use Elca\View\helpers\ElcaReportAssetsConverter;
 use Elca\View\helpers\ElcaTranslatorConverter;
-use Elca\View\Report\ElcaReportsView;
 
 /**
  * Builds the asset report for construction elements
@@ -271,14 +270,16 @@ class ElcaReportAssetsView extends ElcaReportsView
             $Row = $Body->addTableRow();
             $Row->setAttribute('class', 'component');
 
-            $Row->getColumn('process_config_name')->setOutputElement(new ElcaHtmlComponentAssets('process_config_name'));
+            $Row->getColumn('process_config_name')->setOutputElement(new ElcaHtmlComponentAssets('process_config_name',
+                null, null, $this->Project->getProcessDbId()));
             $Row->getColumn('component_layer_position')->setOutputElement(new HtmlText('component_layer_position', $Converter));
 
             if ($this->buildMode !== self::BUILDMODE_NON_DEFAULT_LIFE_TIME_ASSETS) {
                 $Row = $Body->addTableRow();
                 $Row->setAttribute('class', 'details');
                 $Row->getColumn('component_layer_position')->setColSpan(2);
-                $Row->getColumn('component_layer_position')->setOutputElement(new ElcaHtmlComponentAssets('component_layer_position', $Converter));
+                $Row->getColumn('component_layer_position')->setOutputElement(new ElcaHtmlComponentAssets('component_layer_position', $Converter,
+                     null, $this->Project->getProcessDbId()));
             }
 
             $Body->setDataSet($components[true]);
@@ -293,13 +294,15 @@ class ElcaReportAssetsView extends ElcaReportsView
             $Body = $Table->createTableBody();
             $Row = $Body->addTableRow();
             $Row->setAttribute('class', 'component');
-            $Row->getColumn('process_config_name')->setOutputElement(new ElcaHtmlComponentAssets('process_config_name'));
+            $Row->getColumn('process_config_name')->setOutputElement(new ElcaHtmlComponentAssets('process_config_name',
+                null, null, $this->Project->getProcessDbId()));
 
             if ($this->buildMode !== self::BUILDMODE_NON_DEFAULT_LIFE_TIME_ASSETS) {
                 $Row = $Body->addTableRow();
                 $Row->setAttribute('class', 'details');
                 $Row->getColumn('component_layer_position')->setColSpan(2);
-                $Row->getColumn('component_layer_position')->setOutputElement(new ElcaHtmlComponentAssets('component_layer_position', $Converter));
+                $Row->getColumn('component_layer_position')->setOutputElement(new ElcaHtmlComponentAssets('component_layer_position', $Converter,
+                    null, $this->Project->getProcessDbId()));
             }
 
             $Body->setDataSet($components[false]);

@@ -477,6 +477,8 @@ class Soda4LcaParser
                     break;
 
                 case self::MATML_PROP_NAME_CONVERSION_TO_MASS:
+                    $this->Log->notice('Found material property `'. $name.'\'. Import is currently not enabled', __METHOD__);
+                    break;
                     if (!$refUnit) {
                         $this->Log->warning('Can not apply material property `'. $name .'\': missing the reference quantity.', __METHOD__);
                         break;

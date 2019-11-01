@@ -51,7 +51,6 @@ class DbProcessConversionsRepository implements ProcessConversionsRepository
     public function findByConversion(ProcessConfigId $processConfigId, ProcessDbId $processDbId, Unit $fromUnit,
         Unit $toUnit): ?ProcessConversion
     {
-
         $processConversion = ElcaProcessConversion::findByProcessConfigIdAndInOut(
             $processConfigId->value(),
             $fromUnit->value(),
@@ -73,6 +72,23 @@ class DbProcessConversionsRepository implements ProcessConversionsRepository
         }
 
         return $this->build($processConversion, $processConversionVersion);
+    }
+
+    public function findIdentityConversionForReferenceUnit(ProcessConfigId $processConfigId, ProcessDbId $processDbId,
+        Unit $referenceUnit): ?ProcessConversion
+    {
+        $processConversionVersion = ElcaProcessConversionVersion::findExtendedIdentityByProcessConfigIdProcessDbIdAndUnit(
+            $processConfigId->value(),
+            $processDbId->value(),
+            $referenceUnit->value(),
+            true
+        );
+
+        if (!$processConversionVersion->isInitialized()) {
+            return null;
+        }
+
+        return $this->buildFromExtendedElcaProcessConversionVersion($processConversionVersion);
     }
 
     /**

@@ -15,6 +15,9 @@ interface ProcessConversionsRepository
     public function findByConversion(ProcessConfigId $processConfigId, ProcessDbId $processDbId, Unit $fromUnit,
         Unit $toUnit): ?ProcessConversion;
 
+    public function findIdentityConversionForReferenceUnit(ProcessConfigId $processConfigId, ProcessDbId $processDbId,
+        Unit $referenceUnit): ?ProcessConversion;
+
     /**
      * @return ProcessConversion[]
      */

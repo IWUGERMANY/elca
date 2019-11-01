@@ -25,11 +25,7 @@
 namespace Elca\Db;
 
 use Beibob\Blibs\DbObject;
-use Elca\Model\Common\Unit;
 use Elca\Model\Process\ProcessDbId;
-use Elca\Model\ProcessConfig\Conversion\Conversion;
-use Elca\Model\ProcessConfig\Conversion\ConversionType;
-use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use PDO;
 
 /**
@@ -45,18 +41,6 @@ class ElcaProcessConversion extends DbObject
      * Tablename
      */
     const TABLE_NAME = 'elca.process_conversions';
-
-    /**
-     * Idents
-     */
-    const IDENT_INITIAL = 'INIT';
-    const IDENT_PRODUCTION = 'PROD';
-    const IDENT_GROSS_DENSITY = 'GROSS_DENSITY';
-    const IDENT_AVG_MPUA = 'AVG_MPUA';
-    const IDENT_BULK_DENSITY = 'BULK_DENSITY';
-    const IDENT_LAYER_THICKNESS = 'LAYER_THICKNESS';
-    const IDENT_PRODUCTIVENESS = 'PRODUCTIVENESS';
-    const IDENT_LINEAR_DENSITY = 'LINEAR_DENSITY';
 
     //////////////////////////////////////////////////////////////////////////////////////
 
@@ -187,92 +171,6 @@ class ElcaProcessConversion extends DbObject
     }
     // End findById
 
-    //////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Inits a `ElcaProcessConversion' by its unique key (processConfigId, ident)
-     *
-     * @param  integer  $processConfigId - processConfigId
-     * @param  string   $ident          - internal ident
-     * @param  boolean  $force          - Bypass caching
-     * @return ElcaProcessConversion
-     * @deprecated
-     * @todo
-     */
-    public static function findByProcessConfigIdAndIdent($processConfigId, $ident = null, $force = false)
-    {
-        if(!$processConfigId)
-            return new ElcaProcessConversion();
-
-        $initValues = array('processConfigId' => $processConfigId);
-        if(!is_null($ident))
-        {
-            $identSql = " AND ident = :ident";
-            $initValues['ident'] = $ident;
-        }
-        else
-        {
-            $identSql = " AND ident is NULL";
-        }
-
-        $sql = sprintf("SELECT id
-                             , process_config_id
-                             , in_unit
-                             , out_unit
-                             , created
-                             , modified
-                          FROM %s
-                         WHERE process_config_id = :processConfigId
-                           %s"
-                       , self::TABLE_NAME, $identSql
-                       );
-
-        return self::findBySql(get_class(), $sql, $initValues, $force);
-    }
-    // End findByProcessConfigIdAndIdent
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Inits a `ElcaProcessConversion' by its unique key (processConfigId, ident)
-     *
-     * @param  integer  $processConfigId - processConfigId
-     * @param  string   $ident          - internal ident
-     * @param  boolean  $force          - Bypass caching
-     * @return ElcaProcessConversion
-     * @deprecated
-     * @todo
-     */
-    public static function findProductionByProcessConfigIdAndRefUnit($processConfigId, $refUnit, $force = false)
-    {
-        if(!$processConfigId || !$refUnit)
-            return new ElcaProcessConversion();
-
-        $initValues = array('ident' => ConversionType::PRODUCTION,
-                            'processConfigId' => $processConfigId,
-                            'inUnit' => $refUnit,
-                            'outUnit' => $refUnit
-                            );
-
-        $sql = sprintf("SELECT id
-                             , process_config_id
-                             , in_unit
-                             , out_unit
-                             , created
-                             , modified
-                          FROM %s
-                         WHERE ident = :ident
-                           AND process_config_id = :processConfigId
-                           AND in_unit = :inUnit
-                           AND out_unit = :outUnit"
-                       , self::TABLE_NAME
-                       );
-
-        return self::findBySql(get_class(), $sql, $initValues, $force);
-    }
-    // End findProductionByProcessConfigIdAndRefUnit
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Inits a `ElcaProcessConversion' by its unique key (processConfigId, ident)
@@ -626,20 +524,6 @@ class ElcaProcessConversion extends DbObject
             return $columnTypes[$column];
 
         return $columnTypes;
-    }
-
-    /**
-     * @return Conversion
-     * @deprecated
-     * @todo
-     */
-    public function toConversion()
-    {
-        return new LinearConversion(
-            Unit::fromString($this->getInUnit()),
-            Unit::fromString($this->getOutUnit()),
-            $this->getFactor()
-        );
     }
 
     //////////////////////////////////////////////////////////////////////////////////////

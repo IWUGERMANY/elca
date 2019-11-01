@@ -224,14 +224,13 @@ class ElcaProcessConfig extends DbObject
      * @param bool     $isStale
      * @return ElcaProcessConfig
      */
-    public static function create($name, $processCategoryNodeId, $description = null, $density = null, $thermalConductivity = null, $thermalResistance = null, $isReference = true, $fHsHi = null, $minLifeTime = null, $avgLifeTime = null, $maxLifeTime = null, $lifeTimeInfo = null, $avgLifeTimeInfo = null, $minLifeTimeInfo = null, $maxLifeTimeInfo = null, $uuid = null, $svgPatternId = null, $isStale = false, $defaultSize = null)
+    public static function create($name, $processCategoryNodeId, $description = null, $thermalConductivity = null, $thermalResistance = null, $isReference = true, $fHsHi = null, $minLifeTime = null, $avgLifeTime = null, $maxLifeTime = null, $lifeTimeInfo = null, $avgLifeTimeInfo = null, $minLifeTimeInfo = null, $maxLifeTimeInfo = null, $uuid = null, $svgPatternId = null, $isStale = false, $defaultSize = null)
     {
         $processConfig = new ElcaProcessConfig();
         $processConfig->setName($name);
         $processConfig->setProcessCategoryNodeId($processCategoryNodeId);
         $processConfig->setAvgLifeTime($avgLifeTime);
         $processConfig->setDescription($description);
-        $processConfig->setDensity($density);
         $processConfig->setThermalConductivity($thermalConductivity);
         $processConfig->setThermalResistance($thermalResistance);
         $processConfig->setIsReference($isReference);
@@ -644,7 +643,6 @@ class ElcaProcessConfig extends DbObject
                 $newName ?? $this->name . ' (Kopie)',
                 $this->processCategoryNodeId,
                 $this->description,
-                $this->density,
                 $this->thermalConductivity,
                 $this->thermalResistance,
                 false,
@@ -1285,7 +1283,6 @@ class ElcaProcessConfig extends DbObject
      * @param array    $orderBy
      * @param  boolean $force
      * @return ElcaProcessConversionSet
-     * @deprecated
      */
     public function getProcessConversions(array $orderBy = null, $force = false)
     {
@@ -1299,20 +1296,25 @@ class ElcaProcessConfig extends DbObject
      * @param bool $force
      * @return array
      */
-    public function getConversionMatrix($force = false)
+    public function getConversionMatrix($processDbId, $force = false)
     {
         if(!$force && $this->conversionMatrix)
             return $this->conversionMatrix;
 
-        $Conversions = $this->getProcessConversions();
+        $conversions = $this->getProcessConversions();
 
-        foreach($Conversions as $Conversion)
+        /**
+         * @var ElcaProcessConversion $conversion
+         */
+        foreach($conversions as $conversion)
         {
-            if(!$factor = $Conversion->getFactor())
+            $conversionVersion = ElcaProcessConversionVersion::findByPK($conversion->getId(), $processDbId);
+
+            if(!$factor = $conversionVersion->getFactor())
                 continue;
 
-            $this->conversionMatrix[$Conversion->getInUnit()][$Conversion->getOutUnit()] = $factor;
-            $this->conversionMatrix[$Conversion->getOutUnit()][$Conversion->getInUnit()] = 1 / $factor;
+            $this->conversionMatrix[$conversion->getInUnit()][$conversion->getOutUnit()] = $factor;
+            $this->conversionMatrix[$conversion->getOutUnit()][$conversion->getInUnit()] = 1 / $factor;
         }
 
         return $this->conversionMatrix;
@@ -1361,7 +1363,7 @@ class ElcaProcessConfig extends DbObject
         if(!$this->isInitialized())
             return array();
 
-        $requiredUnits = $filter = array();
+        $requiredUnits = array();
 
         /**
          * Find all refUnits of all configured processes
@@ -1408,7 +1410,7 @@ class ElcaProcessConfig extends DbObject
         /**
          * Find direct matches in -> out and vice versa
          */
-        $Conversions = $this->getProcessConversions(array('ident' => 'ASC', 'id' => 'ASC'), true);
+        $Conversions = $this->getProcessConversions(array('id' => 'ASC'), true);
         foreach($Conversions as $Conversion)
         {
             $inUnit  = $Conversion->getInUnit();
@@ -1770,7 +1772,6 @@ class ElcaProcessConfig extends DbObject
             self::UNKNOWN_NAME,
             $othersInternCategory->getNodeId(),
             null,
-            \null,
             null,
             null,
             null,
@@ -1788,7 +1789,11 @@ class ElcaProcessConfig extends DbObject
         );
 
         foreach (Elca::$units as $unit => $caption) {
-            ElcaProcessConversion::create($unknownProcessConfig->getId(), $unit, $unit, 1);
+            $conversion = ElcaProcessConversion::create($unknownProcessConfig->getId(), $unit, $unit);
+
+            foreach (ElcaProcessDbSet::find() as $processDb) {
+                ElcaProcessConversionVersion::create($conversion->getId(), $processDb->getId(), 1);
+            }
         }
 
         return $unknownProcessConfig;

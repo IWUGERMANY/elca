@@ -627,7 +627,6 @@ class ProcessesCtrl extends TabsCtrl
                         $this->Request->name,
                         $this->Request->processCategoryNodeId,
                         $this->Request->description ?: null,
-                        $density,
                         $thermalConductivity,
                         $thermalResistance,
                         $this->Request->has('isReference'),
@@ -1478,18 +1477,8 @@ class ProcessesCtrl extends TabsCtrl
                 /**
                  * Remove identity production conversion for this process
                  */
-                $conversion = ElcaProcessConversion::findProductionByProcessConfigIdAndRefUnit(
-                    $processConfigId,
-                    $processRefUnit
-                );
-
-                if ($conversion->isInitialized()) {
-
-                    try {
-                        $conversion->delete();
-                    } catch (Exception $e) {
-                    }
-                }
+                $this->conversions->removeIdentityConversionForUnit(new ProcessConfigId($processConfigId),
+                    new ProcessDbId($processDbId), Unit::fromString($processRefUnit));
 
                 $this->updateLca($processConfigId);
 

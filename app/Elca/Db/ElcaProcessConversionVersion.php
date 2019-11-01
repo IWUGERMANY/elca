@@ -161,6 +161,38 @@ class ElcaProcessConversionVersion extends DbObject
         );
     }
 
+    public static function findExtendedIdentityByProcessConfigIdProcessDbIdAndUnit($processConfigId, $processDbId, $unit,
+        $force = false)
+    {
+        if (!$processConfigId || !$processDbId || !$unit) {
+            return new ElcaProcessConversionVersion();
+        }
+
+        $sql = sprintf(
+            'SELECT cv.*
+                                    , c.process_config_id
+                                    , c.in_unit
+                                    , c.out_unit
+                                 FROM %s c 
+                                 JOIN %s cv ON c.id = cv.conversion_id
+                                WHERE (c.process_config_id, cv.process_db_id) = (:processConfigId, :processDbId)
+                                  AND (c.in_unit, c.out_unit) = (:unit, :unit)',
+            ElcaProcessConversion::TABLE_NAME,
+            ElcaProcessConversionVersion::TABLE_NAME
+        );
+
+        return self::findBySql(
+            get_class(),
+            $sql,
+            [
+                'processConfigId' => $processConfigId,
+                'processDbId'     => $processDbId,
+                'unit' => $unit,
+            ],
+            $force
+        );
+    }
+
     public static function exists($conversionId, $processDbId, $force = false)
     {
         return self::findByPK($conversionId, $processDbId, $force)->isInitialized();

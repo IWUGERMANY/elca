@@ -51,9 +51,4 @@ class ImportedLinearConversion extends LinearConversion
         return $this->type ?? parent::type();
     }
 
-    public function toLinearConversion(): LinearConversion
-    {
-
-    }
-
 }

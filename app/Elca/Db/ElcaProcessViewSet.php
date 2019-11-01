@@ -392,73 +392,6 @@ class ElcaProcessViewSet extends DataObjectSet
     /**
      * Finds all prod and eol processes assignments for 2011 process configs
      *
-     * @param  boolean  $force     - Bypass caching
-     * @return ElcaProcessViewSet
-     */
-    public static function findProcessAssignments($dbVersion, $force = false)
-    {
-        $initValues = array();
-        $initValues['version'] = $dbVersion;
-
-        $sql = sprintf("SELECT c.name
-                             , prod.version AS process_db_version
-                             , prod.uuid AS prod_uuid
-                             , prod.name_orig AS prod_name
-                             , prod.ref_value AS prod_ref_value
-                             , prod.ref_unit AS prod_ref_unit
-                             , eol.uuid AS eol_uuid
-                             , eol.name AS eol_name
-                             , eol.ref_value AS eol_ref_value
-                             , eol.ref_unit AS eol_ref_unit
-                             , c.density
-                             , c.avg_life_time
-                             , c.min_life_time
-                             , c.max_life_time
-                             , c.life_time_info
-                             , c.avg_life_time_info
-                             , c.min_life_time_info
-                             , c.max_life_time_info
-                             , c.f_hs_hi
-                             , array_to_string(array_accum(round(conv.factor, 2) ||' '|| conv.out_unit||'/'||conv.in_unit||''), '; ') AS conversions
-                          FROM %s c
-                          JOIN %s prod ON c.id = prod.process_config_id AND prod.life_cycle_ident = 'prod' AND prod.version = :version
-                     LEFT JOIN %s eol  ON c.id = eol.process_config_id AND eol.life_cycle_ident = 'eol' AND eol.version = :version
-                     LEFT JOIN %s conv ON c.id = conv.process_config_id AND conv.in_unit <> conv.out_unit
-                      GROUP BY c.name
-                             , prod.version
-                             , prod.uuid
-                             , prod.name_orig
-                             , prod.ref_value
-                             , prod.ref_unit
-                             , eol.uuid
-                             , eol.name
-                             , eol.ref_value
-                             , eol.ref_unit
-                             , c.density
-                             , c.avg_life_time
-                             , c.min_life_time
-                             , c.max_life_time
-                             , c.life_time_info
-                             , c.avg_life_time_info
-                             , c.min_life_time_info
-                             , c.max_life_time_info
-                             , c.f_hs_hi
-                      ORDER BY prod.name_orig ASC"
-                       , ElcaProcessConfig::TABLE_NAME
-                       , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
-                       , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
-                       , ElcaProcessConversion::TABLE_NAME
-                       );
-
-        return self::_findBySql(get_class(), $sql, $initValues, $force);
-    }
-    // End findProcessAssignments2011
-
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Finds all prod and eol processes assignments for 2011 process configs
-     *
      * @param ElcaProcessDb $ProcessDb
      * @param  boolean      $force - Bypass caching
      * @throws Exception
@@ -513,7 +446,7 @@ class ElcaProcessViewSet extends DataObjectSet
                              , array_to_string(array_accum(round(conv.factor, 2) ||' '|| conv.out_unit||'/'||conv.in_unit||''), '; ') AS conversions
                           FROM %s c
                             %s
-                     LEFT JOIN %s conv ON c.id = conv.process_config_id AND conv.in_unit <> conv.out_unit
+                     LEFT JOIN %s conv ON c.id = conv.process_config_id AND conv.process_db_id = :processDbId AND conv.in_unit <> conv.out_unit
                          WHERE coalesce(%s) IS NOT NULL
                       GROUP BY c.id
                              , c.name
@@ -531,10 +464,11 @@ class ElcaProcessViewSet extends DataObjectSet
             , join(', ', $columns)
             , ElcaProcessConfig::TABLE_NAME
             , join(' ', $lftJoins)
-            , ElcaProcessConversion::TABLE_NAME
+            , ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS
             , join(', ', $idColumns)
             , join(', ', $grpColumns)
         );
+
         return self::_findBySql(get_class(), $sql, $initValues, $force);
     }
     // End findProcessAssignmentsByProcessDbId
