@@ -73,6 +73,8 @@
 		<div class="infocolumn">
 			<h2>Präsentationen</h2>
 			<ul class="downloads">
+				<li><a href="/docs/praesentationen/Berlin-spart-Energie-2019.pdf" target="_blank" title="BERLIN SPART ENERGIE" class="iconsheet no-xhr">BERLIN SPART ENERGIE (04.11.2019) [PDF, DE]</a></li>
+				<li><a href="/docs/praesentationen/Kammerforum_AK-Berlin-2019.pdf" target="_blank" title="Kammerforum an der Ak Berlin" class="iconsheet no-xhr">Kammerforum an der Ak Berlin (24.10.2019) [PDF, DE]</a></li>
 				<li><a href="/docs/praesentationen/BauTec2018_EnEV2eLCA-final.pdf" target="_blank" title="BauTec 2018 Berlin - BMUB Messetalk" class="iconsheet no-xhr">BauTec 2018 Berlin - BMUB Messetalk [PDF, DE]</a></li>
 			</ul>	
 		</div>
