@@ -34,6 +34,7 @@ use Elca\Db\ElcaElementAttribute;
 use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaElementComponentSet;
 use Elca\Db\ElcaElementSet;
+use Elca\Db\ElcaProcessConversionVersion;
 use Elca\Db\ElcaProject;
 use Elca\Db\ElcaProjectAttribute;
 use Elca\Db\ElcaProjectConstruction;
@@ -112,6 +113,8 @@ class Exporter
      */
     public function exportProject(ElcaProject $project)
     {
+        $processDbId = $project->getProcessDbId();
+
         /**
          * Create project container inside elca root element
          */
@@ -225,7 +228,7 @@ class Exporter
              */
             $elementsNode = $variantNode->appendChild($this->get('elements'));
             foreach (ElcaElementSet::findByProjectVariantId($variant->getId()) as $Element) {
-                $this->appendElement($elementsNode, $Element);
+                $this->appendElement($elementsNode, $Element, $processDbId);
             }
 
             /**
@@ -368,7 +371,7 @@ class Exporter
      * @param  ElcaElement $element
      * @return void
      */
-    protected function appendElement(DOMElement $container, ElcaElement $element)
+    protected function appendElement(DOMElement $container, ElcaElement $element, $processDbId = null)
     {
         /**
          * @var DOMElement $elementNode
@@ -397,7 +400,7 @@ class Exporter
                 );
             }
         } else {
-            $this->appendElementComponents($elementNode, $element);
+            $this->appendElementComponents($elementNode, $element, $processDbId);
         }
 
         /**
@@ -439,7 +442,7 @@ class Exporter
      * @param  ElcaElement $element
      * @return DOMElement
      */
-    protected function appendElementComponents(DOMElement $container, ElcaElement $element)
+    protected function appendElementComponents(DOMElement $container, ElcaElement $element, $processDbId)
     {
         $componentsNode = $container->appendChild($this->get('components'));
 
@@ -493,15 +496,32 @@ class Exporter
             } else {
                 $conversion = $component->getProcessConversion();
 
+                // conversion factor is unknown for template element exports
+                $versionedConversionFactor = null;
+                if (!$element->isTemplate()) {
+                    $conversionVersion         = ElcaProcessConversionVersion::findByPK($conversion->getId(),
+                        $processDbId);
+                    $versionedConversionFactor = $conversionVersion->getFactor();
+                }
+
                 $this->addAttributes(
                     $componentNode,
                     [
                         'quantity'          => $component->getQuantity(),
                         'conversionInUnit'  => $conversion->getInUnit(),
                         'conversionOutUnit' => $conversion->getOutUnit(),
-                        'conversionFactor'  => $conversion->getFactor(),
                     ]
                 );
+
+                if ($versionedConversionFactor) {
+                    $this->addAttributes(
+                        $componentNode,
+                        [
+                            'conversionFactor'  => $versionedConversionFactor,
+                        ]
+                    );
+
+                }
             }
 
             $containerNode->appendChild($componentNode);

@@ -44,5 +44,5 @@ interface Conversion
 
     public function isKnown(): bool;
 
-    public function isTrivial(): bool;
+    public function isIdentity(): bool;
 }

@@ -42,8 +42,6 @@ use Elca\Db\ElcaLifeCycle;
 use Elca\Db\ElcaProcess;
 use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessConfigAttribute;
-use Elca\Db\ElcaProcessConversion;
-use Elca\Db\ElcaProcessConversionSet;
 use Elca\Db\ElcaProcessIndicator;
 use Elca\Db\ElcaProcessIndicatorSet;
 use Elca\Db\ElcaProcessSet;
@@ -54,8 +52,6 @@ use Elca\Db\ElcaProjectFinalEnergyRefModel;
 use Elca\Db\ElcaProjectFinalEnergyRefModelSet;
 use Elca\Db\ElcaProjectFinalEnergySupply;
 use Elca\Db\ElcaProjectFinalEnergySupplySet;
-use Elca\Db\ElcaProjectLifeCycleUsage;
-use Elca\Db\ElcaProjectLifeCycleUsageSet;
 use Elca\Db\ElcaProjectVariant;
 use Elca\Elca;
 use Elca\Model\Common\Quantity\Quantity;
@@ -66,9 +62,12 @@ use Elca\Model\Indicator\IndicatorIdent;
 use Elca\Model\Indicator\IndicatorRepository;
 use Elca\Model\Indicator\IndicatorValue;
 use Elca\Model\Process\Module;
+use Elca\Model\Process\ProcessDbId;
 use Elca\Model\Process\ProcessId;
 use Elca\Model\Process\ProcessName;
+use Elca\Model\ProcessConfig\Conversion\Conversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
+use Elca\Model\ProcessConfig\ConversionId;
 use Elca\Model\ProcessConfig\LifeCycle\Process;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycle;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycleRepository;
@@ -76,17 +75,16 @@ use Elca\Model\ProcessConfig\ProcessConfig;
 use Elca\Model\ProcessConfig\ProcessConfigAttribute;
 use Elca\Model\ProcessConfig\ProcessConfigId;
 use Elca\Model\ProcessConfig\ProcessConfigRepository;
+use Elca\Model\ProcessConfig\ProcessConversion;
 use Elca\Model\Processing\ElcaCache;
 use Elca\Model\Processing\ElcaLcaProcessor;
 use Elca\Model\Processing\IndicatorResult;
 use Elca\Model\Processing\IndicatorResults;
 use Elca\Model\Processing\LifeCycleUsage\LifeCycleUsage;
 use Elca\Model\Processing\LifeCycleUsage\LifeCycleUsages;
-use Elca\Model\Project\ProjectId;
+use Elca\Service\ProcessConfig\Conversions;
 use Elca\Service\Project\LifeCycleUsageService;
-use Exception;
 use PHPUnit\Framework\TestCase;
-use SebastianBergmann\Diff\Line;
 
 class ElcaLcaProcessorTest extends TestCase
 {
@@ -128,42 +126,53 @@ class ElcaLcaProcessorTest extends TestCase
     private $lifeCycleUsageService;
 
     /**
-     *
+     * @var Conversions|\PHPUnit_Framework_MockObject_MockObject
      */
+    private $conversions;
+
     public function setUp()
     {
-        $this->logger = $this->createMock(Logger::class);
-        $this->cache  = $this->getMockBuilder(ElcaCache::class)->disableOriginalConstructor()->getMock();
-        $this->processConfigRepository = $this->createMock(ProcessConfigRepository::class);
+        $this->logger                     = $this->createMock(Logger::class);
+        $this->cache                      = $this->getMockBuilder(ElcaCache::class)->disableOriginalConstructor()->getMock();
+        $this->processConfigRepository    = $this->createMock(ProcessConfigRepository::class);
         $this->processLifeCycleRepository = $this->createMock(ProcessLifeCycleRepository::class);
-        $this->indicatorRepository = $this->createMock(IndicatorRepository::class);
-        $this->indicators       = [
-            IndicatorIdent::GWP => new Indicator(new IndicatorId(9), 'GWP', new IndicatorIdent(IndicatorIdent::GWP), 'kg', true),
-            IndicatorIdent::ODP => new Indicator(new IndicatorId(13), 'ODP', new IndicatorIdent(IndicatorIdent::ODP), 'kg', true),
-            IndicatorIdent::PERT => new Indicator(new IndicatorId(16), 'PERT', new IndicatorIdent(IndicatorIdent::PERT), 'MJ', true),
-            IndicatorIdent::PENRT => new Indicator(new IndicatorId(19), 'PENRT', new IndicatorIdent(IndicatorIdent::PENRT), 'MJ', true),
-            IndicatorIdent::PET => new Indicator(new IndicatorId(34), 'PET', new IndicatorIdent(IndicatorIdent::PET), 'MJ', true),
+        $this->indicatorRepository        = $this->createMock(IndicatorRepository::class);
+        $this->conversions                = $this->createMock(Conversions::class);
+
+        $this->indicators = [
+            IndicatorIdent::GWP   => new Indicator(new IndicatorId(9), 'GWP', new IndicatorIdent(IndicatorIdent::GWP),
+                'kg', true),
+            IndicatorIdent::ODP   => new Indicator(new IndicatorId(13), 'ODP', new IndicatorIdent(IndicatorIdent::ODP),
+                'kg', true),
+            IndicatorIdent::PERT  => new Indicator(new IndicatorId(16), 'PERT',
+                new IndicatorIdent(IndicatorIdent::PERT), 'MJ', true),
+            IndicatorIdent::PENRT => new Indicator(new IndicatorId(19), 'PENRT',
+                new IndicatorIdent(IndicatorIdent::PENRT), 'MJ', true),
+            IndicatorIdent::PET   => new Indicator(new IndicatorId(34), 'PET', new IndicatorIdent(IndicatorIdent::PET),
+                'MJ', true),
         ];
 
         $this->lifeCycleUsageService = $this->createMock(LifeCycleUsageService::class);
 
-        $this->lcaProcessor = new ElcaLcaProcessor([], $this->processConfigRepository, $this->processLifeCycleRepository, $this->indicatorRepository, $this->lifeCycleUsageService, $this->cache, $this->logger);
+        $this->lcaProcessor = new ElcaLcaProcessor([], $this->processConfigRepository,
+            $this->processLifeCycleRepository, $this->indicatorRepository, $this->lifeCycleUsageService,
+            $this->conversions, $this->cache, $this->logger);
     }
 
     public function test_computeElementComponentQuantity_component_quantity_is_component_quantity_multiplied_with_element_quantity()
     {
-        $conversion    = $this->given_trivial_process_conversion(Elca::UNIT_STK);
-        $processConfig = $this->given_process_config_with_conversions([$conversion]);
+        $conversion    = $this->given_identity_process_conversion(1, 1, 1, Elca::UNIT_STK);
+        $processConfig = $this->given_elca_process_config();
 
         $component = $this->given_component(
             $elementQuantity = 10,
             $componentQuantity = 10,
-            $conversion,
+            $conversion->conversionId()->value(),
             $processConfig,
             $isLayer = false
         );
 
-        $outQuantity = $this->lcaProcessor->computeElementComponentQuantity($component);
+        $outQuantity = $this->lcaProcessor->computeElementComponentQuantity($component,  $conversion->processDbId());
 
         static::assertEquals(
             [$elementQuantity * $componentQuantity, Unit::PIECE],
@@ -171,16 +180,15 @@ class ElcaLcaProcessorTest extends TestCase
         );
     }
 
-    public function test_computeElementComponentQuantity_layer_quantity_is_layer_volume_multiplied_with_element_quantity(
-    )
+    public function test_computeElementComponentQuantity_layer_quantity_is_layer_volume_multiplied_with_element_quantity()
     {
-        $conversion    = $this->given_trivial_process_conversion(Elca::UNIT_M3);
-        $processConfig = $this->given_process_config_with_conversions([$conversion]);
+        $conversion    = $this->given_identity_process_conversion(1, 1, 1, Elca::UNIT_M3);
+        $processConfig = $this->given_elca_process_config();
 
         $component = $this->given_component(
             $elementQuantity = 10,
             $componentQuantity = 10,
-            $conversion,
+            $conversion->conversionId()->value(),
             $processConfig,
             $isLayer = true,
             $layerLength = 2,
@@ -189,7 +197,7 @@ class ElcaLcaProcessorTest extends TestCase
             $layerAreaRatio = 0.2
         );
 
-        $outQuantity = $this->lcaProcessor->computeElementComponentQuantity($component);
+        $outQuantity = $this->lcaProcessor->computeElementComponentQuantity($component, $conversion->processDbId());
 
         static::assertEquals(
             [
@@ -222,17 +230,14 @@ class ElcaLcaProcessorTest extends TestCase
         $element->method('getProjectVariant')
                 ->willReturn($projectVariant);
 
-        $conversion = $this->given_process_conversion(Elca::UNIT_KG, Elca::UNIT_KG, 1);
+        $conversion = $this->given_process_conversion(1, 1, 1, Elca::UNIT_KG, Elca::UNIT_KG, 1);
 
         $componentQuantity = 1;
-        $elementComponent = $this->given_component(
+        $elementComponent  = $this->given_component(
             1,
             $componentQuantity,
-            $conversion,
+            $conversion->conversionId()->value(),
             $this->given_process_config_with_conversions_and_processes(
-                [
-                    $conversion,
-                ],
                 [
                     $this->given_process(
                         1,
@@ -257,7 +262,7 @@ class ElcaLcaProcessorTest extends TestCase
                          ->willReturn(Elca::DEFAULT_LIFE_TIME);
 
         $elementComponent->method('getProcessConfigId')
-                         ->willReturn(1);
+                         ->willReturn($conversion->processConfigId()->value());
 
         $cacheElementItem = $this->getMockBuilder(ElcaCacheElementComponent::class)->disableOriginalConstructor()->getMock();
         $cacheElementItem->method('getItem')
@@ -270,7 +275,7 @@ class ElcaLcaProcessorTest extends TestCase
                         $cacheElementItem
                     );
 
-        $this->lcaProcessor->computeElementComponent($elementComponent, 1, Elca::DEFAULT_LIFE_TIME);
+        $this->lcaProcessor->computeElementComponent($elementComponent, $conversion->processDbId(), Elca::DEFAULT_LIFE_TIME);
     }
 
     public function test_computeElementComponent_storeIndicators_will_be_called_given_processes_and_maintenance()
@@ -305,15 +310,15 @@ class ElcaLcaProcessorTest extends TestCase
         $element->method('getProjectVariant')
                 ->willReturn($projectVariant);
 
-        $conversion        = $this->given_process_conversion(Elca::UNIT_KG, Elca::UNIT_KG, 1);
+        $conversion        = $this->given_process_conversion(1, 1, 1, Elca::UNIT_KG, Elca::UNIT_KG, 1);
         $componentQuantity = 1;
 
         $elementComponent = $this->given_component(
             1,
             $componentQuantity,
-            $conversion,
+            $conversion->conversionId()->value(),
             $processConfig = $this->given_elca_process_config(),
-             false, 1, 1, 1, 1, $element
+            false, 1, 1, 1, 1, $element
         );
 
         $processLifeCycle = $this->given_process_life_cycle([
@@ -342,9 +347,9 @@ class ElcaLcaProcessorTest extends TestCase
         ]);
 
         $this->processLifeCycleRepository->method('findById')
-            ->willReturn(
-                $processLifeCycle
-            );
+                                         ->willReturn(
+                                             $processLifeCycle
+                                         );
 
         $elementComponent->method('getCalcLca')
                          ->willReturn(true);
@@ -405,7 +410,7 @@ class ElcaLcaProcessorTest extends TestCase
                         ]
                     );
 
-        $this->lcaProcessor->computeElementComponent($elementComponent, 1, Elca::DEFAULT_LIFE_TIME);
+        $this->lcaProcessor->computeElementComponent($elementComponent, $conversion->processDbId(), Elca::DEFAULT_LIFE_TIME);
     }
 
     /**
@@ -427,7 +432,8 @@ class ElcaLcaProcessorTest extends TestCase
         $isExtant,
         $lifeTime,
         $resultIndicators
-    ) {
+    )
+    {
         $this->indicatorRepository
             ->method('findForProcessingByProcessDbId')
             ->willReturn([
@@ -482,10 +488,11 @@ class ElcaLcaProcessorTest extends TestCase
                                              $processLifeCycle
                                          );
 
+        $conversion       = $this->given_process_conversion(1, 1, 1, $convConf['in'], $convConf['out'], $convConf['factor']);
         $elementComponent = $this->given_component(
             1, // elementQuantity
             $componentQuantity,
-            $this->given_process_conversion($convConf['in'], $convConf['out'], $convConf['factor']),
+            $conversion->conversionId()->value(),
             $processConfig = $this->given_elca_process_config(),
             false, 1, 1, 1, 1, $element
         );
@@ -529,7 +536,7 @@ class ElcaLcaProcessorTest extends TestCase
             }
         }
 
-        $this->lcaProcessor->computeElementComponent($elementComponent, 1, Elca::DEFAULT_LIFE_TIME);
+        $this->lcaProcessor->computeElementComponent($elementComponent, $conversion->processDbId(), Elca::DEFAULT_LIFE_TIME);
     }
 
     /**
@@ -551,40 +558,40 @@ class ElcaLcaProcessorTest extends TestCase
             'lcIdent'    => ElcaLifeCycle::IDENT_A13,
             'lcPhase'    => ElcaLifeCycle::PHASE_PROD,
         ];
-        $processKG_A4 = [
+        $processKG_A4  = [
             'refValue'   => 1,
             'refUnit'    => Elca::UNIT_KG,
             'indicators' => [ElcaIndicator::IDENT_GWP => 5.83],
             'lcIdent'    => ElcaLifeCycle::IDENT_A4,
             'lcPhase'    => ElcaLifeCycle::PHASE_PROD,
         ];
-        $processKG_A5 = [
+        $processKG_A5  = [
             'refValue'   => 1,
             'refUnit'    => Elca::UNIT_KG,
             'indicators' => [ElcaIndicator::IDENT_GWP => 5.83],
             'lcIdent'    => ElcaLifeCycle::IDENT_A5,
             'lcPhase'    => ElcaLifeCycle::PHASE_PROD,
         ];
-        $processKG_C3 = [
+        $processKG_C3  = [
             'refValue'   => 1,
             'refUnit'    => Elca::UNIT_KG,
             'indicators' => [ElcaIndicator::IDENT_GWP => 3.23],
             'lcIdent'    => ElcaLifeCycle::IDENT_C3,
-            'lcPhase'    => ElcaLifeCycle::PHASE_EOL
+            'lcPhase'    => ElcaLifeCycle::PHASE_EOL,
         ];
-        $processKG_C1 = [
+        $processKG_C1  = [
             'refValue'   => 1,
             'refUnit'    => Elca::UNIT_KG,
             'indicators' => [ElcaIndicator::IDENT_GWP => 3.23],
             'lcIdent'    => ElcaLifeCycle::IDENT_C1,
-            'lcPhase'    => ElcaLifeCycle::PHASE_EOL
+            'lcPhase'    => ElcaLifeCycle::PHASE_EOL,
         ];
-        $processKG_C2 = [
+        $processKG_C2  = [
             'refValue'   => 1,
             'refUnit'    => Elca::UNIT_KG,
             'indicators' => [ElcaIndicator::IDENT_GWP => 3.23],
             'lcIdent'    => ElcaLifeCycle::IDENT_C2,
-            'lcPhase'    => ElcaLifeCycle::PHASE_EOL
+            'lcPhase'    => ElcaLifeCycle::PHASE_EOL,
         ];
 
         // [ $componentQuantity,
@@ -596,11 +603,11 @@ class ElcaLcaProcessorTest extends TestCase
         //  $resultIndicators
         // ]
         return [
-            'calcLcaIsFalse' => [
+            'calcLcaIsFalse'              => [
                 1,
-                [ 'in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
+                ['in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
                 [
-                    [ 'in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1]
+                    ['in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
                 ],
                 [$processKG_A13, $processKG_C3],
                 false,
@@ -612,11 +619,11 @@ class ElcaLcaProcessorTest extends TestCase
                     ElcaLifeCycle::PHASE_MAINT => [9 => 0, 34 => null],
                 ],
             ],
-            'calcLcaIsTrue' => [
+            'calcLcaIsTrue'               => [
                 1,
-                [ 'in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
+                ['in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
                 [
-                    [ 'in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1]
+                    ['in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
                 ],
                 [$processKG_A13, $processKG_C3],
                 true,
@@ -628,12 +635,12 @@ class ElcaLcaProcessorTest extends TestCase
                     ElcaLifeCycle::PHASE_MAINT => [9 => 0, 34 => null],
                 ],
             ],
-            'convertEolIndicators' => [
+            'convertEolIndicators'        => [
                 1,
-                [ 'in' => Elca::UNIT_M2, 'out' => Elca::UNIT_KG, 'factor' => 10],
+                ['in' => Elca::UNIT_M2, 'out' => Elca::UNIT_KG, 'factor' => 10],
                 [
-                    [ 'in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
-                    [ 'in' => Elca::UNIT_M2, 'out' => Elca::UNIT_KG, 'factor' => 10],
+                    ['in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
+                    ['in' => Elca::UNIT_M2, 'out' => Elca::UNIT_KG, 'factor' => 10],
                 ],
                 [$processM2_A13, $processKG_C3],
                 true,
@@ -647,10 +654,10 @@ class ElcaLcaProcessorTest extends TestCase
             ],
             'convertProdAndEolIndicators' => [
                 1,
-                [ 'in' => Elca::UNIT_M2, 'out' => Elca::UNIT_KG, 'factor' => 10],
+                ['in' => Elca::UNIT_M2, 'out' => Elca::UNIT_KG, 'factor' => 10],
                 [
-                    [ 'in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
-                    [ 'in' => Elca::UNIT_M2, 'out' => Elca::UNIT_KG, 'factor' => 10],
+                    ['in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
+                    ['in' => Elca::UNIT_M2, 'out' => Elca::UNIT_KG, 'factor' => 10],
                 ],
                 [$processKG_A13, $processKG_C3],
                 true,
@@ -662,11 +669,11 @@ class ElcaLcaProcessorTest extends TestCase
                     ElcaLifeCycle::PHASE_MAINT => [9 => 0, 34 => null],
                 ],
             ],
-            'computeWithMaintenance' => [
+            'computeWithMaintenance'      => [
                 1,
-                [ 'in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
+                ['in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
                 [
-                    [ 'in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1]
+                    ['in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
                 ],
                 [$processKG_A13, $processKG_C3],
                 true,
@@ -678,11 +685,11 @@ class ElcaLcaProcessorTest extends TestCase
                     ElcaLifeCycle::PHASE_MAINT => [9 => (5.83 + 3.23), 34 => null],
                 ],
             ],
-            'excludeLifeTimeIdents' => [
+            'excludeLifeTimeIdents'       => [
                 1,
-                [ 'in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
+                ['in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
                 [
-                    [ 'in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1]
+                    ['in' => Elca::UNIT_KG, 'out' => Elca::UNIT_KG, 'factor' => 1],
                 ],
                 [$processKG_A13, $processKG_A4, $processKG_A5, $processKG_C1, $processKG_C2, $processKG_C3],
                 true,
@@ -705,11 +712,12 @@ class ElcaLcaProcessorTest extends TestCase
      * @param array $resultIndicators
      * @dataProvider finalEnergyDemandIndicatorsProvider
      */
-    public function test_computeFinalEnergyDemand(array $quantities, $ngfEnEv, array $opProcessIndicators, $fhsHi, array $resultIndicators)
+    public function test_computeFinalEnergyDemand(array $quantities, $ngfEnEv, array $opProcessIndicators, $fhsHi,
+        array $resultIndicators)
     {
-        $variantId = 1;
+        $variantId   = 1;
         $processDbId = 1;
-        $lifeTime = Elca::DEFAULT_LIFE_TIME;
+        $lifeTime    = Elca::DEFAULT_LIFE_TIME;
 
         $processes = [];
         foreach ($opProcessIndicators as $processId => $indicators) {
@@ -734,14 +742,14 @@ class ElcaLcaProcessorTest extends TestCase
         $processConfig = $this->given_process_config($fhsHi);
 
         $this->processConfigRepository->method('findById')
-                                         ->willReturn($processConfig);
+                                      ->willReturn($processConfig);
 
         $finalEnergyDemands = $this->given_finalEnergyDemands($quantities, $processConfig->id());
 
-        $cacheItem        = $this->getMockWithoutInvokingTheOriginalConstructor(ElcaCacheItem::class);
+        $cacheItem       = $this->getMockWithoutInvokingTheOriginalConstructor(ElcaCacheItem::class);
         $cacheDemandItem = $this->getMockWithoutInvokingTheOriginalConstructor(ElcaCacheFinalEnergyDemand::class);
         $cacheDemandItem->method('getItem')
-                         ->willReturn($cacheItem);
+                        ->willReturn($cacheItem);
 
         /**
          * Expectations
@@ -749,7 +757,7 @@ class ElcaLcaProcessorTest extends TestCase
         $index = 0;
         $this->cache->expects(static::at($index++))
                     ->method('removeFinalEnergyDemands')
-            ->with(static::equalTo($variantId));
+                    ->with(static::equalTo($variantId));
 
         $this->cache->expects(static::at($index++))
                     ->method('storeFinalEnergyDemand')
@@ -775,13 +783,14 @@ class ElcaLcaProcessorTest extends TestCase
         }
 
         $indicatorIdents = array_keys(current($opProcessIndicators));
-        $indicators = [];
+        $indicators      = [];
         foreach ($indicatorIdents as $indicatorIdent) {
             $indicators[] = $this->indicators[$indicatorIdent];
         }
         $indicators[] = $this->indicators['pet'];
 
-        $this->lcaProcessor->computeFinalEnergyDemand($variantId, $finalEnergyDemands, $processDbId, $lifeTime, $ngfEnEv, $indicators);
+        $this->lcaProcessor->computeFinalEnergyDemand($variantId, $finalEnergyDemands, $processDbId, $lifeTime,
+            $ngfEnEv, $indicators);
     }
 
     /**
@@ -797,56 +806,56 @@ class ElcaLcaProcessorTest extends TestCase
         //       $fhsHi
         // array $resultIndicators
         return [
-            'petAddsUp' => [
+            'petAddsUp'               => [
                 [
                     'heating' => 100,
                 ],
                 1,
                 [
                     1 => [
-                        ElcaIndicator::IDENT_GWP => 5.83,
-                        ElcaIndicator::IDENT_ODP => -0.0009,
-                        ElcaIndicator::IDENT_PERT => -950.02,
+                        ElcaIndicator::IDENT_GWP   => 5.83,
+                        ElcaIndicator::IDENT_ODP   => -0.0009,
+                        ElcaIndicator::IDENT_PERT  => -950.02,
                         ElcaIndicator::IDENT_PENRT => 1008.95,
                     ],
                 ],
                 1,
                 [
-                    ElcaLifeCycle::IDENT_B6.'_1' => [
+                    ElcaLifeCycle::IDENT_B6 . '_1' => [
                         9  => 5.83 * 100 * $lifeTime,
                         13 => -0.0009 * 100 * $lifeTime,
                         16 => -950.02 * 100 * $lifeTime,
                         19 => 1008.95 * 100 * $lifeTime,
                         34 => (-950.02 + 1008.95) * 100 * $lifeTime,
-                    ]
+                    ],
                 ],
             ],
-            'quantitiesAddUp' => [
+            'quantitiesAddUp'         => [
                 [
                     'heating' => 100,
-                    'water' => 50,
+                    'water'   => 50,
                 ],
                 1,
                 [
                     1 => [
-                        ElcaIndicator::IDENT_GWP => 5.83,
-                        ElcaIndicator::IDENT_ODP => -0.0009,
-                        ElcaIndicator::IDENT_PERT => -950.02,
+                        ElcaIndicator::IDENT_GWP   => 5.83,
+                        ElcaIndicator::IDENT_ODP   => -0.0009,
+                        ElcaIndicator::IDENT_PERT  => -950.02,
                         ElcaIndicator::IDENT_PENRT => 1008.95,
                     ],
                 ],
                 1,
                 [
-                    ElcaLifeCycle::IDENT_B6.'_1' => [
+                    ElcaLifeCycle::IDENT_B6 . '_1' => [
                         9  => 5.83 * 150 * $lifeTime,
                         13 => -0.0009 * 150 * $lifeTime,
                         16 => -950.02 * 150 * $lifeTime,
                         19 => 1008.95 * 150 * $lifeTime,
                         34 => (-950.02 + 1008.95) * 150 * $lifeTime,
-                    ]
+                    ],
                 ],
             ],
-            'fhsHiIsBeingReflected' => [
+            'fhsHiIsBeingReflected'   => [
                 [
                     'heating' => 100,
                 ],
@@ -858,10 +867,10 @@ class ElcaLcaProcessorTest extends TestCase
                 ],
                 2,
                 [
-                    ElcaLifeCycle::IDENT_B6.'_1' => [
+                    ElcaLifeCycle::IDENT_B6 . '_1' => [
                         9  => 5.83 * 100 / 2 * $lifeTime,
                         34 => null,
-                    ]
+                    ],
                 ],
             ],
             'ngfEnEvIsBeingReflected' => [
@@ -876,13 +885,13 @@ class ElcaLcaProcessorTest extends TestCase
                 ],
                 1,
                 [
-                    ElcaLifeCycle::IDENT_B6.'_1' => [
+                    ElcaLifeCycle::IDENT_B6 . '_1' => [
                         9  => 5.83 * 10 * 100 * $lifeTime,
                         34 => null,
-                    ]
+                    ],
                 ],
             ],
-            'multipleProcesses' => [
+            'multipleProcesses'       => [
                 [
                     'heating' => 1,
                 ],
@@ -897,16 +906,16 @@ class ElcaLcaProcessorTest extends TestCase
                 ],
                 1,
                 [
-                    ElcaLifeCycle::IDENT_B6 .'_1' => [
+                    ElcaLifeCycle::IDENT_B6 . '_1' => [
                         9  => 5.83 * $lifeTime,
                         34 => null,
                     ],
-                    ElcaLifeCycle::IDENT_B6 .'_2' => [
+                    ElcaLifeCycle::IDENT_B6 . '_2' => [
                         9  => 1.02 * $lifeTime,
                         34 => null,
                     ],
                 ],
-            ]
+            ],
         ];
     }
 
@@ -918,11 +927,12 @@ class ElcaLcaProcessorTest extends TestCase
      * @param array $resultIndicators
      * @dataProvider finalEnergySupplyIndicatorsProvider
      */
-    public function test_computeFinalEnergySupply($quantity, $enEvRatio, array $opProcessIndicators, array $processConfigAttributes, array $resultIndicators)
+    public function test_computeFinalEnergySupply($quantity, $enEvRatio, array $opProcessIndicators,
+        array $processConfigAttributes, array $resultIndicators)
     {
-        $variantId = 1;
+        $variantId   = 1;
         $processDbId = 1;
-        $lifeTime = Elca::DEFAULT_LIFE_TIME;
+        $lifeTime    = Elca::DEFAULT_LIFE_TIME;
 
         $processes = [];
         foreach ($opProcessIndicators as $processId => $indicators) {
@@ -948,18 +958,18 @@ class ElcaLcaProcessorTest extends TestCase
 
         foreach ($processConfigAttributes as $attributeIdent => $attributeValue) {
             $this->processConfigRepository->method('findAttributeForId')
-                                             ->willReturn(
-                                                 new ProcessConfigAttribute(
-                                                     $processConfig->id(),
-                                                     $attributeIdent,
-                                                     $attributeValue
-                                                 )
-                                         );
+                                          ->willReturn(
+                                              new ProcessConfigAttribute(
+                                                  $processConfig->id(),
+                                                  $attributeIdent,
+                                                  $attributeValue
+                                              )
+                                          );
         }
 
         $finalEnergySupplies = $this->given_finalEnergySupplies($quantity, $enEvRatio, $processConfig->id());
 
-        $cacheItem        = $this->getMockWithoutInvokingTheOriginalConstructor(ElcaCacheItem::class);
+        $cacheItem       = $this->getMockWithoutInvokingTheOriginalConstructor(ElcaCacheItem::class);
         $cacheSupplyItem = $this->getMockWithoutInvokingTheOriginalConstructor(ElcaCacheFinalEnergySupply::class);
         $cacheSupplyItem->method('getItem')
                         ->willReturn($cacheItem);
@@ -996,14 +1006,14 @@ class ElcaLcaProcessorTest extends TestCase
         }
 
         $indicatorIdents = array_keys(current($opProcessIndicators));
-        $indicators = [];
+        $indicators      = [];
         foreach ($indicatorIdents as $indicatorIdent) {
             $indicators[] = $this->indicators[$indicatorIdent];
         }
         $indicators[] = $this->indicators['pet'];
-        $this->lcaProcessor->computeFinalEnergySupply($variantId, $finalEnergySupplies, $lifeTime, $processDbId, 1, $indicators);
+        $this->lcaProcessor->computeFinalEnergySupply($variantId, $finalEnergySupplies, $lifeTime, $processDbId, 1,
+            $indicators);
     }
-
 
 
     /**
@@ -1019,29 +1029,29 @@ class ElcaLcaProcessorTest extends TestCase
         // array $processConfigAttributes
         // array $resultIndicators
         return [
-            'petAddsUp' => [
+            'petAddsUp'      => [
                 100,
                 0,
                 [
                     1 => [
-                        ElcaIndicator::IDENT_GWP => 5.83,
-                        ElcaIndicator::IDENT_ODP => -0.0009,
-                        ElcaIndicator::IDENT_PERT => -950.02,
+                        ElcaIndicator::IDENT_GWP   => 5.83,
+                        ElcaIndicator::IDENT_ODP   => -0.0009,
+                        ElcaIndicator::IDENT_PERT  => -950.02,
                         ElcaIndicator::IDENT_PENRT => 1008.95,
                     ],
                 ],
                 [],
                 [
-                    ElcaLifeCycle::IDENT_D.'_1' => [
+                    ElcaLifeCycle::IDENT_D . '_1' => [
                         9  => 5.83 * 100 * $lifeTime,
                         13 => -0.0009 * 100 * $lifeTime,
                         16 => -950.02 * 100 * $lifeTime,
                         19 => 1008.95 * 100 * $lifeTime,
                         34 => (-950.02 + 1008.95) * 100 * $lifeTime,
-                    ]
+                    ],
                 ],
             ],
-            'enEvRatio' => [
+            'enEvRatio'      => [
                 100,
                 0.5,
                 [
@@ -1051,10 +1061,10 @@ class ElcaLcaProcessorTest extends TestCase
                 ],
                 [],
                 [
-                    ElcaLifeCycle::IDENT_D.'_1' => [
+                    ElcaLifeCycle::IDENT_D . '_1' => [
                         9  => 5.83 * 50 * $lifeTime,
-                        34 => null
-                    ]
+                        34 => null,
+                    ],
                 ],
             ],
             'invertedValues' => [
@@ -1062,23 +1072,23 @@ class ElcaLcaProcessorTest extends TestCase
                 0,
                 [
                     1 => [
-                        ElcaIndicator::IDENT_GWP => 5.83,
-                        ElcaIndicator::IDENT_ODP => -0.0009,
-                        ElcaIndicator::IDENT_PERT => -950.02,
+                        ElcaIndicator::IDENT_GWP   => 5.83,
+                        ElcaIndicator::IDENT_ODP   => -0.0009,
+                        ElcaIndicator::IDENT_PERT  => -950.02,
                         ElcaIndicator::IDENT_PENRT => 1008.95,
                     ],
                 ],
                 [
-                    ElcaProcessConfigAttribute::IDENT_OP_INVERT_VALUES => true
+                    ElcaProcessConfigAttribute::IDENT_OP_INVERT_VALUES => true,
                 ],
                 [
-                    ElcaLifeCycle::IDENT_D.'_1' => [
+                    ElcaLifeCycle::IDENT_D . '_1' => [
                         9  => 5.83 * 100 * $lifeTime * -1,
                         13 => -0.0009 * 100 * $lifeTime * -1,
                         16 => -950.02 * 100 * $lifeTime * -1,
                         19 => 1008.95 * 100 * $lifeTime * -1,
                         34 => (-950.02 + 1008.95) * 100 * $lifeTime * -1,
-                    ]
+                    ],
                 ],
             ],
         ];
@@ -1093,12 +1103,13 @@ class ElcaLcaProcessorTest extends TestCase
      * @param array $resultIndicators
      * @dataProvider finalEnergyRefModelIndicatorsProvider
      */
-    public function test_computeFinalEnergyRefModel($refModelIdent, $quantities, $ngfEnEv, array $opProcessIndicators, $fhsHi, array $resultIndicators)
+    public function test_computeFinalEnergyRefModel($refModelIdent, $quantities, $ngfEnEv, array $opProcessIndicators,
+        $fhsHi, array $resultIndicators)
     {
-        $variantId = 1;
+        $variantId   = 1;
         $processDbId = 1;
-        $projectId = 1;
-        $lifeTime = Elca::DEFAULT_LIFE_TIME;
+        $projectId   = 1;
+        $lifeTime    = Elca::DEFAULT_LIFE_TIME;
 
         $variant = $this->getMockWithoutInvokingTheOriginalConstructor(ElcaProjectVariant::class);
         $variant->method('getId')
@@ -1129,10 +1140,10 @@ class ElcaLcaProcessorTest extends TestCase
         $processConfig = $this->given_elca_process_config($fhsHi);
 
         $benchmarkRefProcessConfigSet = new ElcaBenchmarkRefProcessConfigSet();
-        $benchmarkRefProcessConfig = $this->getMockBuilder(ElcaBenchmarkRefProcessConfig::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getIdent', 'getProcessConfigId', 'getProcessConfig'])
-            ->getMock();
+        $benchmarkRefProcessConfig    = $this->getMockBuilder(ElcaBenchmarkRefProcessConfig::class)
+                                             ->disableOriginalConstructor()
+                                             ->setMethods(['getIdent', 'getProcessConfigId', 'getProcessConfig'])
+                                             ->getMock();
 
         $benchmarkRefProcessConfig->method('getIdent')
                                   ->willReturn($refModelIdent);
@@ -1145,10 +1156,10 @@ class ElcaLcaProcessorTest extends TestCase
 
         $finalEnergyRefModels = $this->given_finalEnergyRefModels($refModelIdent, $quantities);
 
-        $cacheItem        = $this->getMockWithoutInvokingTheOriginalConstructor(ElcaCacheItem::class);
+        $cacheItem         = $this->getMockWithoutInvokingTheOriginalConstructor(ElcaCacheItem::class);
         $cacheRefModelItem = $this->getMockWithoutInvokingTheOriginalConstructor(ElcaCacheFinalEnergyRefModel::class);
         $cacheRefModelItem->method('getItem')
-                        ->willReturn($cacheItem);
+                          ->willReturn($cacheItem);
 
         /**
          * Expectations
@@ -1182,7 +1193,7 @@ class ElcaLcaProcessorTest extends TestCase
         }
 
         $indicatorIdents = array_keys(current($opProcessIndicators));
-        $indicators = [];
+        $indicators      = [];
         foreach ($indicatorIdents as $indicatorIdent) {
             $indicators[] = $this->indicators[$indicatorIdent];
         }
@@ -1199,7 +1210,6 @@ class ElcaLcaProcessorTest extends TestCase
     }
 
 
-
     /**
      *
      */
@@ -1214,7 +1224,7 @@ class ElcaLcaProcessorTest extends TestCase
         //       $fhsHi
         // array $resultIndicators
         return [
-            'petAddsUp' => [
+            'petAddsUp'               => [
                 ElcaBenchmarkRefProcessConfig::IDENT_HEATING,
                 [
                     'heating' => 100,
@@ -1222,50 +1232,50 @@ class ElcaLcaProcessorTest extends TestCase
                 1,
                 [
                     1 => [
-                        ElcaIndicator::IDENT_GWP => 5.83,
-                        ElcaIndicator::IDENT_ODP => -0.0009,
-                        ElcaIndicator::IDENT_PERT => -950.02,
+                        ElcaIndicator::IDENT_GWP   => 5.83,
+                        ElcaIndicator::IDENT_ODP   => -0.0009,
+                        ElcaIndicator::IDENT_PERT  => -950.02,
                         ElcaIndicator::IDENT_PENRT => 1008.95,
                     ],
                 ],
                 1,
                 [
-                    ElcaLifeCycle::IDENT_B6.'_1' => [
+                    ElcaLifeCycle::IDENT_B6 . '_1' => [
                         9  => 5.83 * 100 * $lifeTime,
                         13 => -0.0009 * 100 * $lifeTime,
                         16 => -950.02 * 100 * $lifeTime,
                         19 => 1008.95 * 100 * $lifeTime,
                         34 => (-950.02 + 1008.95) * 100 * $lifeTime,
-                    ]
+                    ],
                 ],
             ],
-            'quantitiesAddUp' => [
+            'quantitiesAddUp'         => [
                 ElcaBenchmarkRefProcessConfig::IDENT_HEATING,
                 [
                     'heating' => 100,
-                    'water' => 50,
+                    'water'   => 50,
                 ],
                 1,
                 [
                     1 => [
-                        ElcaIndicator::IDENT_GWP => 5.83,
-                        ElcaIndicator::IDENT_ODP => -0.0009,
-                        ElcaIndicator::IDENT_PERT => -950.02,
+                        ElcaIndicator::IDENT_GWP   => 5.83,
+                        ElcaIndicator::IDENT_ODP   => -0.0009,
+                        ElcaIndicator::IDENT_PERT  => -950.02,
                         ElcaIndicator::IDENT_PENRT => 1008.95,
                     ],
                 ],
                 1,
                 [
-                    ElcaLifeCycle::IDENT_B6.'_1' => [
+                    ElcaLifeCycle::IDENT_B6 . '_1' => [
                         9  => 5.83 * 150 * $lifeTime,
                         13 => -0.0009 * 150 * $lifeTime,
                         16 => -950.02 * 150 * $lifeTime,
                         19 => 1008.95 * 150 * $lifeTime,
                         34 => (-950.02 + 1008.95) * 150 * $lifeTime,
-                    ]
+                    ],
                 ],
             ],
-            'fhsHiIsBeingReflected' => [
+            'fhsHiIsBeingReflected'   => [
                 ElcaBenchmarkRefProcessConfig::IDENT_HEATING,
                 [
                     'heating' => 100,
@@ -1278,10 +1288,10 @@ class ElcaLcaProcessorTest extends TestCase
                 ],
                 2,
                 [
-                    ElcaLifeCycle::IDENT_B6.'_1' => [
+                    ElcaLifeCycle::IDENT_B6 . '_1' => [
                         9  => 5.83 * 100 / 2 * $lifeTime,
                         34 => null,
-                    ]
+                    ],
                 ],
             ],
             'ngfEnEvIsBeingReflected' => [
@@ -1297,13 +1307,13 @@ class ElcaLcaProcessorTest extends TestCase
                 ],
                 1,
                 [
-                    ElcaLifeCycle::IDENT_B6.'_1' => [
+                    ElcaLifeCycle::IDENT_B6 . '_1' => [
                         9  => 5.83 * 10 * 100 * $lifeTime,
                         34 => null,
-                    ]
+                    ],
                 ],
             ],
-            'multipleProcesses' => [
+            'multipleProcesses'       => [
                 ElcaBenchmarkRefProcessConfig::IDENT_HEATING,
                 [
                     'heating' => 1,
@@ -1319,16 +1329,16 @@ class ElcaLcaProcessorTest extends TestCase
                 ],
                 1,
                 [
-                    ElcaLifeCycle::IDENT_B6 .'_1' => [
+                    ElcaLifeCycle::IDENT_B6 . '_1' => [
                         9  => 5.83 * $lifeTime,
                         34 => null,
                     ],
-                    ElcaLifeCycle::IDENT_B6 .'_2' => [
+                    ElcaLifeCycle::IDENT_B6 . '_2' => [
                         9  => 1.02 * $lifeTime,
                         34 => null,
                     ],
                 ],
-            ]
+            ],
         ];
     }
 
@@ -1336,6 +1346,21 @@ class ElcaLcaProcessorTest extends TestCase
     //******************************************************************************************************************
     //******************************************************************************************************************
     //******************************************************************************************************************
+
+    public function given_process_config(float $fhsHi = null)
+    {
+        static $id = 0;
+
+        $processConfig = $this->createMock(ProcessConfig::class);
+
+        $processConfig->method('id')
+                      ->willReturn(new ProcessConfigId(++$id));
+
+        $processConfig->method('energyEfficiency')
+                      ->willReturn($fhsHi);
+
+        return $processConfig;
+    }
 
     /**
      * @param array $quantities
@@ -1348,7 +1373,13 @@ class ElcaLcaProcessorTest extends TestCase
 
         $finalEnergyDemand = $this->getMockBuilder(ElcaProjectFinalEnergyDemand::class)
                                   ->disableOriginalConstructor()
-                                  ->setMethods(['getProcessConfig', 'getProcessConfigId', 'getId', 'getHeating', 'getWater'])
+                                  ->setMethods([
+                                      'getProcessConfig',
+                                      'getProcessConfigId',
+                                      'getId',
+                                      'getHeating',
+                                      'getWater',
+                                  ])
                                   ->getMock();
         $finalEnergyDemand->method('getProcessConfigId')
                           ->willReturn($processConfigId->value());
@@ -1356,7 +1387,7 @@ class ElcaLcaProcessorTest extends TestCase
                           ->willReturn(123);
 
         foreach ($quantities as $ident => $quantity) {
-            $finalEnergyDemand->method('get'.ucfirst($ident))
+            $finalEnergyDemand->method('get' . ucfirst($ident))
                               ->willReturn($quantity);
         }
 
@@ -1411,7 +1442,7 @@ class ElcaLcaProcessorTest extends TestCase
                             ->willReturn(123);
 
         foreach ($quantities as $qtyIdent => $quantity) {
-            $finalEnergyRefModel->method('get'.ucfirst($qtyIdent))
+            $finalEnergyRefModel->method('get' . ucfirst($qtyIdent))
                                 ->willReturn($quantity);
         }
 
@@ -1424,25 +1455,25 @@ class ElcaLcaProcessorTest extends TestCase
      * @param $inUnit
      * @param $outUnit
      * @param $factor
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @return Conversion
      */
-    private function given_process_conversion($inUnit, $outUnit, $factor)
+    private function given_process_conversion(int $conversionIdInt, int $processDbIdInt, int $processConfigIdInt, string $inUnit, string $outUnit,
+        float $factor): ProcessConversion
     {
-        $conversion = $this->getMockBuilder(ElcaProcessConversion::class)
-                           ->disableOriginalConstructor()
-                           ->setMethods(['isTrivial', 'getInUnit', 'getOutUnit', 'getFactor'])
-                           ->getMock();
+        $processDbId  = new ProcessDbId($processDbIdInt);
+        $conversionId = new ConversionId($conversionIdInt);
 
-        $conversion->method('isTrivial')
-                   ->willReturn($inUnit === $outUnit);
-        $conversion->method('getInUnit')
-                   ->willReturn($inUnit);
-        $conversion->method('getOutUnit')
-                   ->willReturn($outUnit);
-        $conversion->method('getFactor')
-                   ->willReturn($factor);
+        $processConversion = new ProcessConversion($processDbId, new ProcessConfigId($processConfigIdInt),
+            new LinearConversion(Unit::fromString($inUnit), Unit::fromString($outUnit), $factor)
+        );
 
-        return $conversion;
+        $processConversion->setConversionId($conversionId);
+
+        $this->conversions->method('findConversion')
+            ->with($conversionId, $processDbId)
+            ->willReturn($processConversion);
+
+        return $processConversion;
     }
 
     /**
@@ -1460,7 +1491,7 @@ class ElcaLcaProcessorTest extends TestCase
     private function given_component(
         $elementQuantity,
         $componentQuantity,
-        $conversion,
+        $conversionId,
         $processConfig,
         $isLayer = false,
         $layerLength = 1,
@@ -1468,7 +1499,8 @@ class ElcaLcaProcessorTest extends TestCase
         $layerSize = 1,
         $layerAreaRatio = 1,
         $elementMock = null
-    ) {
+    )
+    {
         if (null == $elementMock) {
             $element = $this->getMockWithoutInvokingTheOriginalConstructor(ElcaElement::class);
         } else {
@@ -1484,8 +1516,8 @@ class ElcaLcaProcessorTest extends TestCase
                   ->willReturn($element);
         $component->method('getQuantity')
                   ->willReturn($componentQuantity);
-        $component->method('getProcessConversion')
-                  ->willReturn($conversion);
+        $component->method('getProcessConversionId')
+                  ->willReturn($conversionId instanceOf ConversionId ? $conversionId->value() : $conversionId);
         $component->method('getProcessConfig')
                   ->willReturn(
                       $processConfig
@@ -1515,30 +1547,28 @@ class ElcaLcaProcessorTest extends TestCase
     }
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @return ProcessConversion|\PHPUnit_Framework_MockObject_MockObject
      */
-    private function given_trivial_process_conversion($unit = Elca::UNIT_STK)
+    private function given_identity_process_conversion(int $conversionId, int $processDbId, int $processConfigId, $unit = Elca::UNIT_STK)
     {
-        return $this->given_process_conversion($unit, $unit, 1);
+        return $this->given_process_conversion($conversionId, $processDbId, $processConfigId, $unit, $unit, 1);
     }
 
-    private function given_process_config_with_conversions($conversions, $fhsHi = 1, array $attributes = [])
+    private function given_process_config_with_conversions($fhsHi = 1, array $attributes = [])
     {
-        $processConversionSet = new ElcaProcessConversionSet();
-        foreach ($conversions as $conversion) {
-            $processConversionSet->add($conversion);
-        }
-
         $processConfig = $this->getMockBuilder(ElcaProcessConfig::class)
                               ->disableOriginalConstructor()
-                              ->setMethods(['getId', 'getProcessConversions', 'getProcessesByProcessDbId', 'getFHsHi', 'getAttributeValue'])
+                              ->setMethods([
+                                  'getId',
+                                  'getProcessConversions',
+                                  'getProcessesByProcessDbId',
+                                  'getFHsHi',
+                                  'getAttributeValue',
+                              ])
                               ->getMock();
 
         $processConfig->method('getId')
                       ->willReturn(1);
-
-        $processConfig->method('getProcessConversions')
-                      ->willReturn($processConversionSet);
 
         $processConfig->method('getFHsHi')
                       ->willReturn($fhsHi);
@@ -1573,34 +1603,18 @@ class ElcaLcaProcessorTest extends TestCase
         return $processConfig;
     }
 
-    public function given_process_config(float $fhsHi = null)
-    {
-        static $id = 0;
-
-        $processConfig = $this->createMock(ProcessConfig::class);
-
-        $processConfig->method('id')
-                      ->willReturn(new ProcessConfigId(++$id));
-
-        $processConfig->method('energyEfficiency')
-            ->willReturn($fhsHi);
-
-        return $processConfig;
-    }
-
-
     /**
      * @return ProcessLifeCycle
      */
     private function given_process_life_cycle(array $conversions, array $processes = [])
     {
         $processLifeCycle = $this->getMockBuilder(ProcessLifeCycle::class)
-                              ->disableOriginalConstructor()
-                              ->setMethods(['findProcessById', 'processes', 'conversions', 'processConfigId'])
-                              ->getMock();
+                                 ->disableOriginalConstructor()
+                                 ->setMethods(['findProcessById', 'processes', 'conversions', 'processConfigId'])
+                                 ->getMock();
 
         $processLifeCycle->method('conversions')
-            ->willReturn($conversions);
+                         ->willReturn($conversions);
 
         $processLifeCycle->method('processConfigId')
                          ->willReturn($this->createMock(ProcessConfigId::class));
@@ -1610,22 +1624,23 @@ class ElcaLcaProcessorTest extends TestCase
             ->willReturn(array_values($processes));
 
         $processLifeCycle->method('findProcessById')
-            ->willReturnCallback(function (ProcessId $processId) use ($processes) {
-                foreach ($processes as $process) {
-                    if ($processId->equals($process->id())) {
-                        return $process;
-                    }
-                }
+                         ->willReturnCallback(function (ProcessId $processId) use ($processes) {
+                             foreach ($processes as $process) {
+                                 if ($processId->equals($process->id())) {
+                                     return $process;
+                                 }
+                             }
 
-                return null;
-            });
+                             return null;
+                         });
 
         return $processLifeCycle;
     }
 
-    private function given_process_config_with_conversions_and_processes(array $conversions, array $processes, $fhsHi = 1, array $attributes = [])
+    private function given_process_config_with_conversions_and_processes(array $processes,
+        $fhsHi = 1, array $attributes = [])
     {
-        $processConfig = $this->given_process_config_with_conversions($conversions, $fhsHi, $attributes);
+        $processConfig = $this->given_elca_process_config($fhsHi, $attributes);
 
         $processSet = new ElcaProcessSet();
         foreach ($processes as $process) {
@@ -1692,7 +1707,8 @@ class ElcaLcaProcessorTest extends TestCase
         $lifeCycleIdent = null,
         $lifeCyclePhase = null,
         $processId = null
-    ) {
+    )
+    {
         $indicatorSet        = new ElcaIndicatorSet();
         $processIndicatorSet = new ElcaProcessIndicatorSet();
 
@@ -1746,6 +1762,12 @@ class ElcaLcaProcessorTest extends TestCase
     private function getMockWithoutInvokingTheOriginalConstructor($class)
     {
         return $this->getMockBuilder($class)->disableOriginalConstructor()->getMock();
+    }
+
+    private function given_conversions(ProcessConfigId $processConfigId, ProcessDbId $processDbId, array $conversions)
+    {
+//        $this->conversions->method('findConversion')
+//                          ->with()
     }
 
 

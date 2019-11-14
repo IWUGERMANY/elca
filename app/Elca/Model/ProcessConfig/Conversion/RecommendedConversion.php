@@ -25,9 +25,7 @@
 
 namespace Elca\Model\ProcessConfig\Conversion;
 
-use Elca\Model\Common\Unit;
 use Elca\Model\Exception\InvalidArgumentException;
-use Utils\Model\SurrogateIdTrait;
 
 class RecommendedConversion extends AbstractConversion
 {

@@ -30,6 +30,7 @@ use Elca\Model\Process\Module;
 use Elca\Model\Process\ProcessDbId;
 use Elca\Model\Process\ProcessId;
 use Elca\Model\Process\ProcessName;
+use Elca\Model\Process\Stage;
 use Elca\Model\ProcessConfig\Conversion\Conversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\ProcessConfig\Conversion\RequiredConversion;
@@ -120,7 +121,7 @@ class ProcessLifeCycleTest extends TestCase
     public function requiredUnitsProvider()
     {
         return [
-            'trivial'              => [
+            'identity'             => [
                 [
                     ['module' => Module::A13, 'refUnit' => Unit::KILOGRAMM],
                     ['module' => Module::C3, 'refUnit' => Unit::KILOGRAMM],
@@ -383,7 +384,65 @@ class ProcessLifeCycleTest extends TestCase
         );
     }
 
-    public function test_quantitativeReference_returns_null_when_no_production_processes_available()
+    public function test_quantitativeReference_returns_quantity_from_prod_process_by_default()
+    {
+        $processes = $this->setupProcesses([
+            ['id' => 123, 'module' => Module::A13, 'refValue' => 2, 'refUnit' => Unit::KILOGRAMM],
+            ['id' => 126, 'module' => Module::B6, 'refValue' => 1, 'refUnit' => Unit::KILOWATTHOUR],
+        ]);
+
+        $processLifeCycle = new ProcessLifeCycle(
+            new ProcessConfigId(1),
+            $this->processDbId,
+            $processes
+        );
+
+        $this->assertSame(
+            '2 kg',
+            (string)$processLifeCycle->quantitativeReference()
+        );
+    }
+
+    public function test_quantitativeReference_returns_quantity_from_usage_process_when_requested()
+    {
+        $processes = $this->setupProcesses([
+            ['id' => 123, 'module' => Module::A13, 'refValue' => 2, 'refUnit' => Unit::KILOGRAMM],
+            ['id' => 126, 'module' => Module::B6, 'refValue' => 1, 'refUnit' => Unit::KILOWATTHOUR],
+        ]);
+
+        $processLifeCycle = new ProcessLifeCycle(
+            new ProcessConfigId(1),
+            $this->processDbId,
+            $processes
+        );
+
+        $this->assertSame(
+            '1 kWh',
+            (string)$processLifeCycle->quantitativeReference(Stage::usage())
+        );
+    }
+
+    public function test_quantitativeReference_returns_quantity_from_b6_process_when_prod_is_not_available()
+    {
+        $processes = $this->setupProcesses([
+            ['id' => 126, 'module' => Module::B6, 'refValue' => 1, 'refUnit' => Unit::KILOWATTHOUR],
+        ]);
+
+        $processLifeCycle = new ProcessLifeCycle(
+            new ProcessConfigId(1),
+            $this->processDbId,
+            $processes
+        );
+
+        $this->assertSame(
+            '1 kWh',
+            (string)$processLifeCycle->quantitativeReference()
+        );
+    }
+
+
+
+    public function test_quantitativeReference_returns_null_when_no_production_prods_available_and_explicit_requested()
     {
         $processes = $this->setupProcesses([
             ['id' => 126, 'module' => Module::B6, 'refValue' => 1, 'refUnit' => Unit::KILOWATTHOUR],
@@ -396,7 +455,7 @@ class ProcessLifeCycleTest extends TestCase
         );
 
         $this->assertNull(
-            $processLifeCycle->quantitativeReference()
+            $processLifeCycle->quantitativeReference(Stage::production())
         );
     }
 

@@ -35,14 +35,12 @@ use Beibob\HtmlTools\HtmlHiddenField;
 use Beibob\HtmlTools\HtmlLink;
 use Beibob\HtmlTools\HtmlStaticText;
 use Beibob\HtmlTools\HtmlTag;
-use Beibob\HtmlTools\HtmlTextInput;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaProcessConfig;
 use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\View\helpers\ElcaHtmlFormElementLabel;
 use Elca\View\helpers\ElcaHtmlNumericInput;
-use Elca\View\helpers\ElcaHtmlProcessConfigSelectorLink;
 use Elca\View\helpers\ElcaHtmlSubmitButton;
 
 /**
@@ -257,16 +255,24 @@ class ElcaProjectSearchAndReplaceProcessesView extends HtmlView
                             $forbidden = true;
                         else
                         {
-                            $matrix = $ProcessConfig->getConversionMatrix();
+                            $matrix = $ProcessConfig->getConversionMatrix($this->Project->getProcessDbId());
+                            $outUnit = null;
                             foreach ($matrix[$usedUnit] as $unit => $factor)
                             {
                                 if (isset($availableUnits[$unit]))
                                     $outUnit = $unit;
                             }
 
-                            $quantity = $matrix[$usedUnit][$outUnit] * $ResultItem->quantity * $ResultItem->element_quantity;
+                            if ($outUnit) {
+                                $quantity = $matrix[$usedUnit][$outUnit] * $ResultItem->quantity * $ResultItem->element_quantity;
 
-                            $PCD->add(new HtmlTag('span', '⇒ ' . ElcaNumberFormat::formatQuantity($quantity, $outUnit, 3), ['class' => 'conversion']));
+                                $PCD->add(new HtmlTag('span',
+                                    '⇒ ' . ElcaNumberFormat::formatQuantity($quantity, $outUnit, 3),
+                                    ['class' => 'conversion']));
+                            }
+                            else {
+                                $forbidden = true;
+                            }
                         }
                     }
 

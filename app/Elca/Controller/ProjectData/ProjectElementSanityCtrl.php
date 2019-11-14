@@ -26,16 +26,12 @@
 declare(strict_types = 1);
 namespace Elca\Controller\ProjectData;
 
-use Beibob\Blibs\Environment;
 use Beibob\Blibs\SessionNamespace;
 use Elca\Controller\AppCtrl;
-use Elca\Controller\ProjectDataCtrl;
 use Elca\Db\ElcaElementComponent;
-use Elca\Db\ElcaElementComponentAttribute;
 use Elca\Db\ElcaElementComponentSet;
 use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessConfigSearchSet;
-use Elca\Db\ElcaProjectEnEv;
 use Elca\Db\ElcaSearchAndReplaceResultSet;
 use Elca\Elca;
 use Elca\Model\Element\SearchAndReplaceObserver;
@@ -285,7 +281,7 @@ class ProjectElementSanityCtrl extends AppCtrl
                     continue;
                 } // Should not happen
                 else {
-                    $matrix  = $processConfig->getConversionMatrix();
+                    $matrix  = $processConfig->getConversionMatrix($this->Elca->getProject()->getProcessDbId());
                     $outUnit = null;
                     foreach ($matrix[$usedUnit] as $unit => $factor) {
                         if (isset($availableUnits[$unit])) {

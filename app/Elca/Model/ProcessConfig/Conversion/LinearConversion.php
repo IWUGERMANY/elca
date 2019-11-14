@@ -51,13 +51,16 @@ class LinearConversion extends AbstractConversion
 
     public function convert(float $value): float
     {
-        if ($this->isTrivial()) {
+        if ($this->isIdentity()) {
             return $value;
         }
 
         return $value * $this->factor;
     }
 
+    /**
+     * @return self
+     */
     public function invert(): Conversion
     {
         return new self($this->toUnit(), $this->fromUnit(), 1 / $this->factor());

@@ -49,15 +49,19 @@ use Elca\Db\ElcaProjectVariant;
 use Elca\Elca;
 use Elca\Model\Common\Quantity\Quantity;
 use Elca\Model\Common\Unit;
+use Elca\Model\Exception\InvalidArgumentException;
 use Elca\Model\Indicator\IndicatorRepository;
 use Elca\Model\Process\Module;
 use Elca\Model\Process\ProcessDbId;
+use Elca\Model\ProcessConfig\ConversionId;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycleRepository;
 use Elca\Model\ProcessConfig\ProcessConfigId;
 use Elca\Model\ProcessConfig\ProcessConfigRepository;
+use Elca\Model\ProcessConfig\ProcessLifeCycleId;
 use Elca\Model\ProcessConfig\UsefulLife;
 use Elca\Model\Processing\Element\ElementComponentQuantity;
 use Elca\Model\Project\ProjectId;
+use Elca\Service\ProcessConfig\Conversions;
 use Elca\Service\Project\LifeCycleUsageService;
 use Exception;
 
@@ -134,6 +138,11 @@ class ElcaLcaProcessor
     private $lifeCycleUsageService;
 
     /**
+     * @var Conversions
+     */
+    private $conversions;
+
+    /**
      * Constructor
      *
      * @param array                      $processors
@@ -147,7 +156,7 @@ class ElcaLcaProcessor
     public function __construct(
         array $processors, ProcessConfigRepository $processConfigRepository,
         ProcessLifeCycleRepository $processLifeCycleRepository, IndicatorRepository $indicatorRepository,
-        LifeCycleUsageService $lifeCycleUsageService, ElcaCache $cache, Logger $logger
+        LifeCycleUsageService $lifeCycleUsageService, Conversions $conversions, ElcaCache $cache, Logger $logger
     ) {
         $this->processors                 = $processors;
         $this->cache                      = $cache;
@@ -156,6 +165,7 @@ class ElcaLcaProcessor
         $this->processLifeCycleRepository = $processLifeCycleRepository;
         $this->indicatorRepository        = $indicatorRepository;
         $this->lifeCycleUsageService      = $lifeCycleUsageService;
+        $this->conversions                = $conversions;
     }
     // End __construct
 
@@ -163,16 +173,16 @@ class ElcaLcaProcessor
      * Recomputes a project variant
      *
      * @param ElcaProjectVariant $variant
-     * @param  int               $processDbId
+     * @param  ProcessDbId               $processDbId
      * @param  int               $lifeTime
      * @return ElcaLcaProcessor
      */
-    public function computeProjectVariant(ElcaProjectVariant $variant, $processDbId = null, $lifeTime = null)
+    public function computeProjectVariant(ElcaProjectVariant $variant, ProcessDbId $processDbId = null, $lifeTime = null)
     {
         if (!$lifeTime || !$processDbId) {
             $Project     = $variant->getProject();
             $lifeTime    = $lifeTime ? $lifeTime : $Project->getLifeTime();
-            $processDbId = $processDbId ? $processDbId : $Project->getProcessDbId();
+            $processDbId = $processDbId ?? new ProcessDbId($Project->getProcessDbId());
         }
 
         /**
@@ -196,7 +206,7 @@ class ElcaLcaProcessor
          * Notify observers
          */
         foreach ($this->processors as $processor) {
-            $processor->afterRecomputation($variant, $processDbId, $lifeTime);
+            $processor->afterRecomputation($variant, $processDbId->value(), $lifeTime);
         }
 
         $this->logger->debug('CURRENT MEMORY USAGE: ' . File::formatFileSize(memory_get_usage()), __METHOD__);
@@ -211,24 +221,24 @@ class ElcaLcaProcessor
      * Computes the lca and mass for a single element and its components
      *
      * @param  ElcaElement $Element
-     * @param  int         $processDbId
+     * @param  ProcessDbId         $processDbId
      * @param  int         $lifeTime
      * @param null         $compositeItemId
      * @return ElcaLcaProcessor
      */
-    public function computeElement(ElcaElement $Element, $processDbId = null, $lifeTime = null, $compositeItemId = null)
+    public function computeElement(ElcaElement $Element, ProcessDbId $processDbId = null, $lifeTime = null, $compositeItemId = null)
     {
         if (!$lifeTime || !$processDbId) {
             $Project     = $Element->getProjectVariant()->getProject();
             $lifeTime    = $lifeTime ? $lifeTime : $Project->getLifeTime();
-            $processDbId = $processDbId ? $processDbId : $Project->getProcessDbId();
+            $processDbId = $processDbId ?? new ProcessDbId($Project->getProcessDbId());
         }
 
         /**
          * Invoke additional lca processors
          */
         foreach ($this->processors as $Processor) {
-            $Processor->beforeElementProcessing($Element, $processDbId, $lifeTime);
+            $Processor->beforeElementProcessing($Element, $processDbId->value(), $lifeTime);
         }
 
         /**
@@ -285,18 +295,18 @@ class ElcaLcaProcessor
      * Computes lca and the mass for the given element component
      *
      * @param  ElcaElementComponent $component
-     * @param  int                  $processDbId
+     * @param  ProcessDbId                  $processDbId
      * @param  int                  $projectLifeTime - project lifeTime for maintenance calculation
      * @throws Exception
      * @return ElcaLcaProcessor
      */
     public function computeElementComponent(
-        ElcaElementComponent $component, $processDbId = null, $projectLifeTime = null
+        ElcaElementComponent $component, ProcessDbId $processDbId = null, $projectLifeTime = null
     ) {
         $project = $component->getElement()->getProjectVariant()->getProject();
 
         $projectLifeTime = $projectLifeTime ?? $project->getLifeTime();
-        $processDbId     = $processDbId ?? $project->getProcessDbId();
+        $processDbId     = $processDbId ?? new ProcessDbId($project->getProcessDbId());
 
         /**
          * Init result set
@@ -312,32 +322,37 @@ class ElcaLcaProcessor
             $lifeCycleUsages = $this->lifeCycleUsageService->findLifeCycleUsagesForProject(new ProjectId($project->getId()));
 
             $processLifeCycle = $this->processLifeCycleRepository->findById(
-                new ProcessConfigId($component->getProcessConfigId()),
-                new ProcessDbId($processDbId)
+                new ProcessLifeCycleId($processDbId,
+                    new ProcessConfigId($component->getProcessConfigId())
+                )
             );
 
-            /**
-             * Compute the quantity of the component
-             */
-            $quantity = $this->computeElementComponentQuantity($component);
+            try {
+                /**
+                 * Compute the quantity of the component
+                 */
+                $quantity = $this->computeElementComponentQuantity($component, $processDbId);
 
-            $componentLcaCalculator = new ElementComponentLcaCalculator(
-                $lifeCycleUsages,
-                $projectLifeTime,
-                $this->indicatorRepository->findForProcessingByProcessDbId(new ProcessDbId($processDbId)),
-                $this->logger
-            );
-
-            $componentResults = $componentLcaCalculator
-                ->compute(
-                    $processLifeCycle,
-                    $quantity,
-                    new UsefulLife(
-                        (int)$component->getLifeTime(),
-                        (int)$component->getLifeTimeDelay()
-                    ),
-                    $component->isExtant()
+                $componentLcaCalculator = new ElementComponentLcaCalculator(
+                    $lifeCycleUsages,
+                    $projectLifeTime,
+                    $this->indicatorRepository->findForProcessingByProcessDbId($processDbId),
+                    $this->logger
                 );
+
+                $componentResults = $componentLcaCalculator
+                    ->compute(
+                        $processLifeCycle,
+                        $quantity,
+                        new UsefulLife(
+                            (int)$component->getLifeTime(),
+                            (int)$component->getLifeTimeDelay()
+                        ),
+                        $component->isExtant()
+                    );
+            } catch (\Exception $exception) {
+                $this->logger->notice('Error during LCA calculation of component `'.$component->getProcessConfig()->getName().'\': ' . $exception->getMessage());
+            }
         }
 
         /**
@@ -371,14 +386,23 @@ class ElcaLcaProcessor
      * @param ElcaElementComponent $elcaElementComponent
      * @return Quantity
      */
-    public function computeElementComponentQuantity(ElcaElementComponent $elcaElementComponent): Quantity
+    public function computeElementComponentQuantity(ElcaElementComponent $elcaElementComponent, ProcessDbId $processDbId): Quantity
     {
-        $elementComponent = ElementComponentQuantity::fromElcaElementComponent($elcaElementComponent);
+        $processConversion = $this->conversions->findConversion(new ConversionId($elcaElementComponent->getProcessConversionId()), $processDbId);
+
+        if (null === $processConversion) {
+            throw new InvalidArgumentException('Could not find a conversion for conversionId=:conversionId: and processDbId=:processDbId:', [
+                ':conversionId:' => $elcaElementComponent->getProcessConversionId(),
+                ':processDbId:' => $processDbId
+            ]);
+        }
+
+        $elementComponentQuantity = ElementComponentQuantity::fromElcaElementComponent($elcaElementComponent, $processConversion);
 
         /**
          * Convert quantity into outUnits
          */
-        $convertedQuantity = $elementComponent->convertedQuantity();
+        $convertedQuantity = $elementComponentQuantity->convertedQuantity();
 
         $this->logger->debug(
             sprintf(
@@ -387,7 +411,7 @@ class ElcaLcaProcessor
                     ? $elcaElementComponent->getLayerPosition() . '. Layer'
                     : 'Component',
                 $elcaElementComponent->getProcessConfig()->getName(),
-                $elementComponent->quantity(),
+                $elementComponentQuantity->quantity(),
                 $convertedQuantity
             ),
             __METHOD__
@@ -487,10 +511,8 @@ class ElcaLcaProcessor
         foreach ($finalEnergyDemandSet as $finalEnergyDemand) {
             $processConfigId  = new ProcessConfigId($finalEnergyDemand->getProcessConfigId());
 
-            $processLifeCycle = $this->processLifeCycleRepository->findById(
-                $processConfigId,
-                new ProcessDbId($processDbId)
-            );
+            $processLifeCycle = $this->processLifeCycleRepository->findById(new ProcessLifeCycleId(
+                new ProcessDbId($processDbId), $processConfigId));
 
             $qE = 0;
             foreach (['heating', 'water', 'lighting', 'ventilation', 'cooling'] as $property) {
@@ -569,10 +591,8 @@ class ElcaLcaProcessor
          */
         foreach ($finalEnergySupplies as $finalEnergySupply) {
             $processConfigId  = new ProcessConfigId($finalEnergySupply->getProcessConfigId());
-            $processLifeCycle = $this->processLifeCycleRepository->findById(
-                $processConfigId,
-                new ProcessDbId($processDbId)
-            );
+            $processLifeCycle = $this->processLifeCycleRepository->findById(new ProcessLifeCycleId(
+                new ProcessDbId($processDbId), $processConfigId));
 
             $qE = $finalEnergySupply->getQuantity() * (1 - $finalEnergySupply->getEnEvRatio());
 
@@ -656,10 +676,8 @@ class ElcaLcaProcessor
                 continue;
             }
 
-            $processLifeCycle = $this->processLifeCycleRepository->findById(
-                new ProcessConfigId($benchmarkRefProcessConfig->getProcessConfigId()),
-                new ProcessDbId($processDbId)
-            );
+            $processLifeCycle = $this->processLifeCycleRepository->findById(new ProcessLifeCycleId(
+                new ProcessDbId($processDbId), new ProcessConfigId($benchmarkRefProcessConfig->getProcessConfigId())));
 
             $processConfig = $benchmarkRefProcessConfig->getProcessConfig();
 
@@ -723,9 +741,8 @@ class ElcaLcaProcessor
 
             /** @var ElcaProjectTransportMean $transportMean */
             foreach ($means as $transportMean) {
-                $processLifeCycle = $this->processLifeCycleRepository->findById(
-                    new ProcessConfigId($transportMean->getProcessConfigId()),
-                    new ProcessDbId($processDb->getId())
+                $processLifeCycle = $this->processLifeCycleRepository->findById(new ProcessLifeCycleId(
+                    new ProcessDbId($processDb->getId()), new ProcessConfigId($transportMean->getProcessConfigId()))
                 );
 
                 $processLcaCalculator = new ProcessLcaCalculator(

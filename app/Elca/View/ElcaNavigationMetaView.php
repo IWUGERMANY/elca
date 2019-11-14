@@ -71,10 +71,6 @@ class ElcaNavigationMetaView extends HtmlView
 
         if ($User->isInitialized()) {
 
-            // Handbook
-            $Container->appendChild($this->getLi([], $this->getText('|')));
-            $Container->appendChild($this->getLi([], $this->getA(['href' => '/handbook/', 'class' => 'no-xhr', 'target' => '_blank'], ucfirst(t('Handbuch')))));
-
             // Administration
             if ($User->hasRole(Elca::ELCA_ROLES, Elca::ELCA_ROLE_ADMIN)) {
                 $Container->appendChild($this->getLi([], $this->getText('|')));

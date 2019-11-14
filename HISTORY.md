@@ -1,3 +1,31 @@
+# 1.7.0 (0.9.6)
++ Ergänzt eine zeitliche Begrenzung von Projekt-Passwörtern für Hochschulaccounts
++ Ergänzt in der LCC die Angabe von Energieträgern mit unterschiedlichen Kosten
++ Ergänzt die Auswertung "Eingesparte Umweltwirkungen" für Bestandsgebäude
++ Ergänzt den Export einer Liste verwendeter Materialien im Projekt
++ Ergänzt die Auswertung "Auswertung pro Person"
++ Ergänzt eine Funktion die Bestandskomponenten hervorhebt, wenn diese von Baustoffen mit höheren Nutzungsdauern eingeschlossen werden
++ Ergänzt die Funktion "Klonen" für Bauteil-Baustoffe
++ Ergänzt die Funktion zum Exportieren eines Projekts im Projektkontext
++ Ergänzt den Bauteilassistent für Dachfenster
++ Ergänzt eine Exportfunktion für EOL Baustoffe im Baustoffbereich
++ Erlaubt das Bearbeiten von importierten Umrechnungsfaktoren für Administratoren
++ Ergänzt die Exportfunktion "Baustoffe im Projekt"
++ Ergänzt eine neue Schemaversion für den Import von Projekten aus EnEV-Programmen
++ Ergänzt eine Funktion zum Ersetzen von Bauteilen innerhalb eines Projektes
++ Ergänzt eine Funktion zum Importieren von Bauteilen in ein neues Projekt auf Basis einer CSV Datei
++ Ergänzt eine neue Informationsseite
++ Erweitert die Darstellung in der Nutzerverwaltung
++ Ergänzt Eigenschaften von Bauteilkonfigurationen
++ Ergänzt eine Darstellung der ID und UUID von Baustoffen und Bauteilen
++ Behebt einen Fehler im Projektimport-Assistenten bei der Zuordnung von Nutzungsdatensätzen
++ Behebt einen Fehler bei der Berechnung der Kostenprogression in der LCC
++ Behebt einen Fehler beim Kopieren von Projekten im Ergebnis-Zwischenspeicher
++ Behebt einen Fehler beim Erstellen von PDFs, wenn mehrere Prozesse sich gegenseitig blockieren
++ Behebt einen Fehler bei der Darstellung der A1-3 Aggregation in der Auswertung nach Bauteilgruppen
++ Behebt ein Problem im Zusammenhang mit freigegebenen und passwortgeschützten Projekten
++ Redaktionelle Anpassungen im Bereich der Trinkwasser-Rechenhilfe
+
 # 1.6.3 
 + Ergänzt mehrsprachige Baustoffnamen
 + Ergänzt eine spanische Sprachversion

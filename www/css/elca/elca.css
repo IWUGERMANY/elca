@@ -634,13 +634,11 @@ h1.projectHeader { float: left; margin-right: 3em; }
 
 #content ul.pageable li.next-page a.loading { background: transparent url(/img/elca/loader/indicator_medium.gif) left center no-repeat; }
 
+#content.websiteinfo .inforow { margin: 30px 0 20px 10px; border-bottom: 1px solid #dedede; padding: 0 0 20px 0; }
+
 #content.websiteinfo .flex { display: flex; }
 
-#content.websiteinfo .wrap { flex-wrap: wrap; }
-
-#content.websiteinfo .infocolumns { width: 840px; }
-
-#content.websiteinfo .infocolumn { padding: 30px 10px 0 10px; width: 400px; }
+#content.websiteinfo .infocolumn { padding: 0 10px 0 10px; width: 400px; }
 
 #content.websiteinfo h2 { text-decoration: underline; font-weight: bold; padding: 0 0 10px 0; }
 
@@ -1316,7 +1314,7 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #processConfig .column.properties .form-section.is4108Compat { float: right; }
 
-#processConfig .column.properties .form-section.density, #processConfig .column.properties .form-section.defaultSize, #processConfig .column.properties .form-section.fHsHi { width: 110px; float: left; padding-right: 30px; }
+#processConfig .column.properties .form-section.defaultSize, #processConfig .column.properties .form-section.fHsHi { width: 110px; float: left; padding-right: 30px; }
 
 #processConfig .column.properties .form-section.defaultSize, #processConfig .column.properties .form-section.fHsHi { width: 90px; }
 
@@ -1351,7 +1349,7 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #conversions a.function-link.add-conversion { display: block; position: absolute; top: 22px; left: 150px; }
 
-#conversions .hl-row, #conversions .elt-row { clear: both; position: relative; height: 20px; }
+#conversions .hl-row, #conversions .elt-row { clear: both; position: relative; height: 50px; }
 
 #conversions .hl-row h5, #conversions .elt-row .form-section, #conversions .elt-row a.delete-link, #conversions .elt-row a.edit-link, #conversions .elt-row a.cancel-link { position: absolute; }
 
@@ -1379,11 +1377,15 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #conversions .elt-row .elt-factor { left: 140px; width: 70px; text-align: right; }
 
-#conversions .elt-row .elt-ident { right: 15px; width: 480px; }
+#conversions .elt-row .elt-ident { right: 75px; width: 420px; }
 
 #conversions .elt-row a.delete-link, #conversions .elt-row a.edit-link, #conversions .elt-row a.cancel-link { right: 15px; margin: 5px 0 10px 20px; line-height: 20px; display: block; color: #004f80; text-decoration: underline; background-color: #f9f9f9; }
 
-#conversions .elt-row .elt-ident .form-elt { font-size: 12px; }
+#conversions .elt-row .elt-ident .form-elt { font-size: 12px; line-height: 1.1; }
+
+#conversions .form-section.processDbId { width: 300px; float: left; }
+
+#conversions .form-section.density { width: 120px; float: left; margin-left: 20px; }
 
 #processConfigVariants { width: 620px; }
 

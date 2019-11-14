@@ -110,6 +110,11 @@ class ElcaProcessCategorySet extends DbObjectSet
             if (\utf8_strpos($inUnit, ',') !== false)
                 $inUnit = explode(',', $inUnit);
 
+            $procDbSql = '';
+            if (count($processDbIds)) {
+                $procDbSql = sprintf("AND pc.process_db_id IN (%s)", \implode(',', $processDbIds));
+            }
+
             if (is_array($inUnit))
             {
                 foreach ($inUnit as $i => $unit)
@@ -118,9 +123,10 @@ class ElcaProcessCategorySet extends DbObjectSet
                     $parts[] = ':unit' . $i;
                 }
 
-                $sql .= sprintf(' JOIN %s pc ON p.id = pc.process_config_id
+                $sql .= sprintf(' JOIN %s pc ON p.id = pc.process_config_id %s
                              WHERE (pc.in_unit IN (%s) OR pc.out_unit IN (%s))'
-                , ElcaProcessConversion::TABLE_NAME
+                , $procDbSql ? ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS : ElcaProcessConversion::TABLE_NAME
+                , $procDbSql
                 , implode(', ', $parts)
                     , implode(', ', $parts)
                     );
@@ -128,9 +134,11 @@ class ElcaProcessCategorySet extends DbObjectSet
             else
             {
                 $initValues['inUnit'] = $inUnit;
-                $sql .= sprintf(' JOIN %s pc ON p.id = pc.process_config_id
+                $sql .= sprintf(' JOIN %s pc ON p.id = pc.process_config_id %s
                              WHERE :inUnit IN (pc.in_unit, pc.out_unit)'
-                    , ElcaProcessConversion::TABLE_NAME);
+                    , $procDbSql ? ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS : ElcaProcessConversion::TABLE_NAME,
+                $procDbSql
+                );
             }
         }
 
@@ -194,14 +202,14 @@ class ElcaProcessCategorySet extends DbObjectSet
                           JOIN %s c2 ON c.lft BETWEEN c2.lft AND c2.rgt AND c.level = c2.level + 1
                           JOIN %s p  ON c.node_id = p.process_category_node_id
                           JOIN %s pa ON p.id = pa.process_config_id
-                          JOIN %s pc ON p.id = pc.process_config_id
+                          JOIN %s pc ON p.id = pc.process_config_id AND pc.process_db_id = pa.process_db_id
                          WHERE pa.life_cycle_phase = :lifeCyclePhase
                            AND pc.in_unit = :inUnit %s"
             , self::VIEW_ELCA_PROCESS_CATEGORIES
             , self::VIEW_ELCA_PROCESS_CATEGORIES
             , ElcaProcessConfig::TABLE_NAME
             , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
-            , ElcaProcessConversion::TABLE_NAME
+            , ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS
             , $referenceProcessConfigsOnly ? ' AND p.is_reference = true' : ''
         );
 
@@ -247,7 +255,7 @@ class ElcaProcessCategorySet extends DbObjectSet
                           JOIN %s p  ON c.node_id = p.process_category_node_id
                           JOIN %s pca ON p.id = pca.process_config_id AND pca.ident = :opAsSupply AND pca.numeric_value = 1
                           JOIN %s pa ON p.id = pa.process_config_id
-                          JOIN %s pc ON p.id = pc.process_config_id
+                          JOIN %s pc ON p.id = pc.process_config_id  AND pc.process_db_id = pa.process_db_id
                          WHERE pa.life_cycle_phase = :lifeCyclePhase
                            AND pc.in_unit = :inUnit %s"
             , self::VIEW_ELCA_PROCESS_CATEGORIES
@@ -255,7 +263,7 @@ class ElcaProcessCategorySet extends DbObjectSet
             , ElcaProcessConfig::TABLE_NAME
             , ElcaProcessConfigAttribute::TABLE_NAME
             , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
-            , ElcaProcessConversion::TABLE_NAME
+            , ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS
             , $referenceProcessConfigsOnly ? ' AND p.is_reference = true' : ''
         );
 
@@ -301,14 +309,14 @@ class ElcaProcessCategorySet extends DbObjectSet
                           JOIN %s c2 ON c.lft BETWEEN c2.lft AND c2.rgt AND c.level = c2.level + 1
                           JOIN %s p  ON c.node_id = p.process_category_node_id
                           JOIN %s pa ON p.id = pa.process_config_id
-                          JOIN %s pc ON p.id = pc.process_config_id
+                          JOIN %s pc ON p.id = pc.process_config_id AND pc.process_db_id = pa.process_db_id
                          WHERE pa.life_cycle_ident IN (:lifeCycleIdent1, :lifeCycleIdent2)
                            AND pc.in_unit = :inUnit %s"
             , self::VIEW_ELCA_PROCESS_CATEGORIES
             , self::VIEW_ELCA_PROCESS_CATEGORIES
             , ElcaProcessConfig::TABLE_NAME
             , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
-            , ElcaProcessConversion::TABLE_NAME
+            , ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS
             , $referenceProcessConfigsOnly ? ' AND p.is_reference = true' : ''
         );
 

@@ -35,7 +35,6 @@ use Elca\Db\ElcaProjectVariant;
 use Elca\Model\ElcaModuleInterface;
 use Elca\Model\Navigation\ElcaNavigationInterface;
 use Elca\Service\ElcaTranslator;
-use Elca\Service\ProcessConfigNameTranslator;
 use Exception;
 
 /**
@@ -57,8 +56,8 @@ class Elca
     /**
      * Version
      */
-    const VERSION = '1.6.3';
-    const VERSION_BBSR = '0.9.5';
+    const VERSION = '1.7.0';
+    const VERSION_BBSR = '0.9.6';
 
     /**
      * Default ini path

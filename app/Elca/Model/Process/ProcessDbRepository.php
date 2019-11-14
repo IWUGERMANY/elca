@@ -30,7 +30,7 @@ interface ProcessDbRepository
     /**
      * @return ProcessDb[]
      */
-    public function findAll(): array;
+    public function findAll(array $orderBy = null): array;
 
     public function findById(ProcessDbId $processDbId): ?ProcessDb;
 }

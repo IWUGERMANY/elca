@@ -31,8 +31,8 @@ final class ConversionType
 {
     public const UNKNOWN = '';
     public const GROSS_DENSITY = 'GROSS_DENSITY';
-    public const INITIAL = 'INITIAL';
-    public const PRODUCTION = 'PRODUCTION';
+    public const INITIAL = 'INIT';
+    public const PRODUCTION = 'PROD';
     public const AVG_MPUA = 'AVG_MPUA';
     public const BULK_DENSITY = 'BULK_DENSITY';
     public const LAYER_THICKNESS = 'LAYER_THICKNESS';
@@ -71,6 +71,21 @@ final class ConversionType
         return new self(
             self::$knownTypes[(string)$fromUnit][(string)$toUnit] ?? self::UNKNOWN
         );
+    }
+
+    public static function production(): ConversionType
+    {
+        return new self(self::PRODUCTION);
+    }
+
+    public static function initial(): ConversionType
+    {
+        return new self(self::INITIAL);
+    }
+
+    public static function unknown()
+    {
+        return new self(self::UNKNOWN);
     }
 
     public function __construct(string $value)

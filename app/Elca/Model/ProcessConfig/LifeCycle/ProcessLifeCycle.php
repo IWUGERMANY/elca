@@ -30,9 +30,9 @@ use Elca\Model\Common\Transform\ArrayOfObjects;
 use Elca\Model\Common\Unit;
 use Elca\Model\Process\ProcessDbId;
 use Elca\Model\Process\ProcessId;
+use Elca\Model\Process\Stage;
 use Elca\Model\ProcessConfig\Conversion\Conversion;
 use Elca\Model\ProcessConfig\Conversion\ConversionSet;
-use Elca\Model\ProcessConfig\Conversion\ConversionType;
 use Elca\Model\ProcessConfig\Conversion\RequiredConversion;
 use Elca\Model\ProcessConfig\Converter;
 use Elca\Model\ProcessConfig\ProcessConfigId;
@@ -104,12 +104,7 @@ class ProcessLifeCycle
      */
     public function productionProcesses(): array
     {
-        return \array_filter(
-            $this->processes(),
-            function (Process $process) {
-                return $process->stage()->isProduction();
-            }
-        );
+        return $this->processesByStage(Stage::production());
     }
 
     /**
@@ -117,12 +112,7 @@ class ProcessLifeCycle
      */
     public function usageProcesses(): array
     {
-        return \array_filter(
-            $this->processes(),
-            function (Process $process) {
-                return $process->stage()->isUsage();
-            }
-        );
+        return $this->processesByStage(Stage::usage());
     }
 
     /**
@@ -216,11 +206,28 @@ class ProcessLifeCycle
         return $this->processes[(string)$processId] ?? null;
     }
 
-    public function quantitativeReference(): ?Quantity
+    public function quantitativeReference(Stage $stage = null): ?Quantity
     {
-        $productionProcess = current($this->productionProcesses());
+        $processByStage = current($this->processesByStage($stage ?? Stage::production()));
 
-        return $productionProcess ? $productionProcess->quantitativeReference() : null;
+        /**
+         * Fallback to usage processes if no explicit stage was requested
+         */
+        if (null === $stage && !$processByStage) {
+            return $this->quantitativeReference(Stage::usage());
+        }
+
+        return $processByStage ? $processByStage->quantitativeReference() : null;
+    }
+
+    public function hasProcesses()
+    {
+        return count($this->processes) > 0;
+    }
+
+    public function hasConversions()
+    {
+        return count($this->conversions) > 0;
     }
 
     private function extractUnits(\Closure $filter = null): array
@@ -236,5 +243,15 @@ class ProcessLifeCycle
         }
 
         return $units;
+    }
+
+    private function processesByStage(Stage $stage): array
+    {
+        return \array_filter(
+            $this->processes(),
+            function (Process $process) use ($stage) {
+                return $process->stage()->equals($stage);
+            }
+        );
     }
 }

@@ -39,7 +39,6 @@
 #processConfig .column.properties .form-section.is4108Compat {
   float:right;
 }
-#processConfig .column.properties .form-section.density,
 #processConfig .column.properties .form-section.defaultSize,
 #processConfig .column.properties .form-section.fHsHi {
   width:110px;
@@ -143,7 +142,7 @@
 #conversions .elt-row {
   clear: both;
   position:relative;
-  height:20px;
+  height:50px;
 }
 #conversions .hl-row h5,
 #conversions .elt-row .form-section,
@@ -177,7 +176,7 @@
 #conversions .elt-row .elt-out-unit   { left:230px; width:60px; }
 #conversions .elt-row .elt-colon      { left:10px; width:30px; text-align:center; }
 #conversions .elt-row .elt-factor     { left:140px; width:70px; text-align: right; }
-#conversions .elt-row .elt-ident      { right:15px; width:480px; }
+#conversions .elt-row .elt-ident      { right:75px; width:420px; }
 #conversions .elt-row a.delete-link,
 #conversions .elt-row a.edit-link,
 #conversions .elt-row a.cancel-link {
@@ -192,6 +191,18 @@
 
 #conversions .elt-row .elt-ident .form-elt {
   font-size: 12px;
+  line-height:1.1;
+
+}
+
+#conversions .form-section.processDbId {
+  width:300px;
+  float:left;
+}
+#conversions .form-section.density {
+  width:120px;
+  float:left;
+  margin-left:20px;
 }
 
 #processConfigVariants {

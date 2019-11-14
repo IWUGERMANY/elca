@@ -822,16 +822,9 @@ class Importer
         } else {
             $inUnit  = $this->getAttribute($componentNode, 'conversionInUnit');
             $outUnit = $this->getAttribute($componentNode, 'conversionOutUnit');
-            $factor  = $this->getAttribute($componentNode, 'conversionFactor');
 
-            $conversion = ElcaProcessConversion::findByProcessConfigIdAndInOut(
-                $processConfig->getId(),
-                $inUnit,
-                $outUnit
-            );
-            if (!$conversion->isInitialized()) {
-                $conversion = ElcaProcessConversion::create($processConfig->getId(), $inUnit, $outUnit, $factor);
-            }
+            $conversion = ElcaProcessConversion::findByProcessConfigIdAndInOut($processConfig->getId(),
+                $inUnit, $outUnit);
 
             $processConversionId = $conversion->getId();
         }
