@@ -24,7 +24,6 @@
  */
 namespace Elca\View\helpers;
 
-use Beibob\Blibs\Environment;
 use Beibob\Blibs\HtmlDOMFactory;
 use Beibob\HtmlTools\HtmlDataElement;
 use Beibob\HtmlTools\HtmlTable;
@@ -34,8 +33,6 @@ use DOMDocument;
 use Elca\Db\ElcaProcessConversion;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Common\Quantity\Quantity;
-use Elca\Model\Common\Unit;
-use Elca\Model\Processing\ElcaLcaProcessor;
 use Elca\Model\Processing\Element\ElementComponentQuantity;
 
 /**
@@ -95,7 +92,7 @@ class ElcaHtmlComponentAssets extends HtmlDataElement
                 }
 
                 // add quantity info
-                if ($dataObject->cache_component_quantity) {
+                if (isset($dataObject->cache_component_quantity)) {
                     $formatQuantity = ElcaNumberFormat::toString(
                             $dataObject->cache_component_quantity
                         ) . ' ' . ElcaNumberFormat::formatUnit($dataObject->cache_component_ref_unit);
