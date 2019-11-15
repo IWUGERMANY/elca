@@ -109,7 +109,7 @@ class ElcaHtmlComponentAssets extends HtmlDataElement
                 }
 
                 // add quantity info
-                if ($dataObject->cache_component_quantity) {
+                if (isset($dataObject->cache_component_quantity)) {
                     $formatQuantity = ElcaNumberFormat::toString(
                             $dataObject->cache_component_quantity
                         ) . ' ' . ElcaNumberFormat::formatUnit($dataObject->cache_component_ref_unit);
