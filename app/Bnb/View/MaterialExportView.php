@@ -38,6 +38,7 @@ use Elca\Db\ElcaCacheDataObjectSet;
 use Elca\Elca;
 use Elca\View\helpers\ElcaHtmlFormElementLabel;
 use Elca\View\helpers\ElcaHtmlSubmitButton;
+use Elca\View\helpers\ElcaHtmlNumericText;
 use Elca\View\helpers\HtmlNumericTextWithUnit;
 
 
