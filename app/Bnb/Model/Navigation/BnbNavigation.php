@@ -62,7 +62,7 @@ class BnbNavigation implements ElcaNavigationInterface
             $Item->add(t('Projekt'), 'bnb', ProjectExportCtrl::class);
             $Item->add(t('eBNB'), 'bnb', XmlExportCtrl::class);
             $Item->add(t('CSV'), 'bnb', CsvExportCtrl::class);
-            $Item->add(t('Baustoffe im Projekt'), 'bnb', MaterialExportCtrl::class);
+            $Item->add(t('Stoffstromanalyse'), 'bnb', MaterialExportCtrl::class);
         }
 
         return $Navigation;
