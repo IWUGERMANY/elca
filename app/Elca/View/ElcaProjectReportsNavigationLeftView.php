@@ -61,22 +61,11 @@ class ElcaProjectReportsNavigationLeftView extends HtmlView
         $Item->add(t('Bilanz nach Bauteilgruppen'), 'elca', ProjectReportsCtrl::class, 'summaryElementTypes');
         $Item->add(t('Benchmarks'), 'elca', ProjectReportsCtrl::class, 'benchmarks');
 
-        if ($dbIsEn15804Compliant) {
-            $Item->add(t('Bilanz nach EPD Typen'), 'elca', EpdTypesCtrl::class, 'epdTypes');
-        }
         $Item->add(t('Bauteilkatalog'), 'elca', ProjectReportsCtrl::class, 'elements');
-        $Item->add(t('Eigene Nutzungsdauern'), 'elca', ProjectReportAssetsCtrl::class, 'nonDefaultLifeTime');
-
-        if ($dbIsEn15804Compliant) {
-            $Item->add(t('Zusätzliche Indikatoren'), 'elca', ProjectReportsCtrl::class, 'summaryAdditionalIndicators');
-        }
-        $Item->add(t('Nicht bilanziert'), 'elca', ProjectReportAssetsCtrl::class, 'notCalculatedComponents');
-
+       
         if (Elca::getInstance()->getProject()->getProjectConstruction()->isExtantBuilding()) {
             $Item->add(t('Eingesparte Umweltwirkungen'), 'elca', ExtantSavingsCtrl::class, 'savings');
         }
-
-        $Item->add(t('Auswertung pro Person'), 'elca', ProjectReportsCtrl::class, 'summaryPerResident');
 
 
         $Item = $Navigation->add(t('Massenbilanz'));
@@ -98,6 +87,7 @@ class ElcaProjectReportsNavigationLeftView extends HtmlView
         $Item->add(t('Gesamtbilanz'), 'elca', ProjectReportsCtrl::class, 'compareSummary');
         $Item->add(t('Bilanz nach Bauteilgruppen'), 'elca', ProjectReportsCtrl::class, 'compareElementTypes');
 
+
         /**
          * add module navigations
          */
@@ -113,6 +103,23 @@ class ElcaProjectReportsNavigationLeftView extends HtmlView
             foreach($ModuleFirstItem->getChildren() as $ChildItem)
                 $ModuleItem->add($ChildItem->getCaption(), $ChildItem->getModule(), $ChildItem->getCtrlName(), $ChildItem->getAction(), $ChildItem->getArgs(), $ChildItem->getData());
         }
+
+
+		/**  
+		add new item 
+		*
+		*/
+		$Item = $Navigation->add(t('Zusätzlich'));
+		if ($dbIsEn15804Compliant) {
+            $Item->add(t('Bilanz nach EPD Typen'), 'elca', EpdTypesCtrl::class, 'epdTypes');
+        }
+		$Item->add(t('Eigene Nutzungsdauern'), 'elca', ProjectReportAssetsCtrl::class, 'nonDefaultLifeTime');
+		if ($dbIsEn15804Compliant) {
+            $Item->add(t('Zusätzliche Indikatoren'), 'elca', ProjectReportsCtrl::class, 'summaryAdditionalIndicators');
+        }
+		$Item->add(t('Nicht bilanziert'), 'elca', ProjectReportAssetsCtrl::class, 'notCalculatedComponents');
+		$Item->add(t('Auswertung pro Person'), 'elca', ProjectReportsCtrl::class, 'summaryPerResident');
+		
 
         $this->assign('mainNav', $Navigation);
     }
