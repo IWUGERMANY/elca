@@ -38,7 +38,9 @@ use Elca\Db\ElcaCacheDataObjectSet;
 use Elca\Elca;
 use Elca\View\helpers\ElcaHtmlFormElementLabel;
 use Elca\View\helpers\ElcaHtmlSubmitButton;
+use Elca\View\helpers\ElcaHtmlNumericText;
 use Elca\View\helpers\HtmlNumericTextWithUnit;
+
 
 /**
  * BnbCsvExportView
@@ -78,6 +80,7 @@ class MaterialExportView extends HtmlView
         $table->addColumn('name', t('Name'))->addClass('name');
         $table->addColumn('mass', t('Masse'));
         $table->addColumn('volume', t('Volumen'));
+		$table->addColumn('avv', t('AVV'));
         $head = $table->createTableHead();
         $headRow = $head->addTableRow(new HtmlTableHeadRow());
         $headRow->addClass('table-headlines');
@@ -86,8 +89,9 @@ class MaterialExportView extends HtmlView
         $row = $body->addTableRow();
         $row->getColumn('mass')->setOutputElement(new HtmlNumericTextWithUnit('mass', 'kg', null, null, 1));
         $row->getColumn('volume')->setOutputElement($columnOutputElement = new HtmlNumericTextWithUnit('volume', 'm3', null, null, 2));
-        $columnOutputElement->setNullDisplayValue('-');
-
+		$row->getColumn('avv')->setOutputElement(new ElcaHtmlNumericText('avv'));
+		$columnOutputElement->setNullDisplayValue('-');
+		
         $body->setDataSet($data);
 
         $foot = $table->createTableFoot();
