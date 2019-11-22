@@ -263,24 +263,36 @@ abstract class ElcaReportsView extends HtmlView
                                ->findLifeCycleUsagesForProject(new ProjectId($this->Project->getId()));
 
         $parts = [];
-
+		// var_dump($lcUsages);
         foreach ($lcUsages->modulesAppliedInTotal() as $module) {
-            if ($en15804Compliant && $module->isLegacy()) {
-                continue;
-            }
-
-            if (!$en15804Compliant && !$module->isLegacy()) {
-                continue;
-            }
-
             $parts[$module->value()] = t($module->name());
         }
 
-        $parts = $this->cleanupLifeCycleIdents($parts);
+		
 
+        $parts = $this->cleanupLifeCycleIdents($parts);
+		
         sort($parts);
-        return implode(', ', $parts);
+		return implode(', ', $parts);
     }
+
+    /**
+     * @return string
+     */
+    protected function getTotalLifeCycleIdentsReal($reports,$excludesArray)
+    {
+        $parts = [];
+		foreach ($reports as $datasetObj) 
+		{
+			$dataset = (array)$datasetObj;
+			if(!in_array($dataset['category'],$excludesArray) && trim($dataset['category'])!="" )  
+			{
+				$parts[$dataset['category']] = $dataset['category'];
+			}	
+		}
+		return implode(', ', $parts);
+    }
+
 
     /**
      * @return string

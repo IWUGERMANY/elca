@@ -262,7 +262,17 @@ class ElcaReportSummaryView extends ElcaReportsView
             $LifeCycleEffects->add($do);
         }
 
-        $this->buildEffects($TdContainer, $TotalEffects);
+		// ermittle nur enthaltene Reports (Anzaige: Gesamt inkl. )
+		$realCategories = null;
+		$excludeArray = array('Gesamt',t('Instandhaltung'),'D','D energetisch','D stofflich');
+		$tempReportsCategories = $this->getTotalLifeCycleIdentsReal($LifeCycleEffects,$excludeArray);
+		if($tempReportsCategories!="")  
+		{
+			$realCategories .= $tempReportsCategories;
+		}		
+
+        $this->buildEffects($TdContainer, $TotalEffects,false,false,null,$realCategories);
+		
         $this->buildEffects(
             $TdContainer,
             $LifeCycleEffects,
@@ -411,6 +421,7 @@ class ElcaReportSummaryView extends ElcaReportsView
      * @param bool           $isLifeCycle
      * @param bool           $addBenchmarks
      * @param array          $totalEffects
+	 * @param string         $realCategories
      *
      * @return void -
      */
@@ -419,7 +430,8 @@ class ElcaReportSummaryView extends ElcaReportsView
         ElcaReportSet $ReportSet,
         $isLifeCycle = false,
         $addBenchmarks = false,
-        array $totalEffects = null
+        array $totalEffects = null,
+		$realCategories = null
     ) {
         if (!$ReportSet->count()) {
             return;
@@ -509,15 +521,26 @@ class ElcaReportSummaryView extends ElcaReportsView
         }
 
         $TypeUl = $Container->appendChild($this->getUl(['class' => 'category']));
-        foreach ($reports as $category => $dataSet) {
-            $TypeLi = $TypeUl->appendChild($this->getLi(['class' => 'section clearfix']));
 
+
+		
+		foreach ($reports as $category => $dataSet) {
+            $TypeLi = $TypeUl->appendChild($this->getLi(['class' => 'section clearfix']));
+			
             $H1 = $TypeLi->appendChild($this->getH1(t($category)));
             if ($category === 'Gesamt') {
-                $H1->appendChild($this->getSpan(t('inkl.').' '.$this->getTotalLifeCycleIdents()));
+			   if($realCategories) {
+				   $showCategories = $realCategories;
+			   }  
+			   else
+			   {
+				    $showCategories = $this->getTotalLifeCycleIdents();
+			   }		
+			   $H1->appendChild($this->getSpan(t('inkl.').' '.$showCategories));
+			   // $H1->appendChild($this->getSpan(t('inkl.').' '.$this->getTotalLifeCycleIdents()));
+			   // $H1->appendChild($this->getSpan(t('inkl.').' '. $realCategories));
             } elseif ($category === t('Instandhaltung')) {
-
-                $H1->appendChild($this->getSpan(t('inkl.').' '.$this->getMaintenanceLifeCycleIdents()));
+                $H1->appendChild($this->getSpan(t('inkl. ').' '.$this->getMaintenanceLifeCycleIdents()));
             } elseif ($isLifeCycle && $category === 'D') {
                 $H1->appendChild($this->getSpan(t('Gesamt (energetisch und stofflich)')));
             } elseif ($isLifeCycle && $category === 'D energetisch') {
