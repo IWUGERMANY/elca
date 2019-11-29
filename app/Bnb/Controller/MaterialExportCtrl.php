@@ -75,7 +75,7 @@ class MaterialExportCtrl extends AppCtrl
          */
         if ($addNavigationViews) {
             $this->addView(new ElcaProjectNavigationLeftView());
-            $this->Osit->add(new ElcaOsitItem(t('Baustoffe im Projekt'), null, t('Export')));
+            $this->Osit->add(new ElcaOsitItem(t('Stoffstromanalyse'), null, t('Export')));
         }
     }
     // End defaultAction
@@ -120,10 +120,10 @@ class MaterialExportCtrl extends AppCtrl
         $data = ElcaCacheDataObjectSet::findProcessConfigMassByProjectVariantId($projectVariant->getId(),
             ['mass' => 'DESC'])->getArrayCopy();
 
-        $headers = [t('Baustoff'), t('Masse') .' (kg)', t('Volumen') . ' (m³)'];
-        $columns = ['name', 'mass', 'volume'];
+        $headers = [t('Baustoff'), t('Masse') .' (kg)', t('Volumen') . ' (m³)', t('AVV')];
+        $columns = ['name', 'mass', 'volume', 'avv'];
 
-        $filename = \trim($project->getName() .'-Baustoffe-'. date('YmdHis')).".csv";
+        $filename = \trim($project->getName() .'-Stoffstromanalyse-'. date('YmdHis')).".csv";
 
         $exporter->setHeaders($headers);
         $exporter->setDataObjectlist($data, $columns);

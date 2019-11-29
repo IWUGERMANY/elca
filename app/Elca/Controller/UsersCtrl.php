@@ -150,7 +150,7 @@ class UsersCtrl extends TabsCtrl
 
             else
             {
-                $this->setView(new ElcaUsersView());
+				$this->setView(new ElcaUsersView(['status'=>$this->Request->status]));
                 $this->Osit->add(new ElcaOsitItem(t('Benutzer'), null, t('Nutzerverwaltung')));
             }
         }
