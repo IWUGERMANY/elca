@@ -114,6 +114,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
         ConversionType::PRODUCTIVENESS          => 'Ergiebigkeit',
         ConversionType::LINEAR_DENSITY          => 'Längengewicht',
         ConversionType::ENERGY_EQUIVALENT       => 'Energieäquivalent',
+        ConversionType::CONVERSION_TO_MASS      => 'Masseumrechnung',
     ];
 
     /**
@@ -244,6 +245,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
             default:
             case self::BUILDMODE_DEFAULT:
                 $this->appendDefault($form);
+                $this->appendProcessDbAndConversionsInfoTable($form);
                 $this->appendConversions($form);
                 $this->appendButtons($form);
 
@@ -325,6 +327,28 @@ class ElcaProcessConfigGeneralView extends HtmlView
             new ElcaHtmlFormElementLabel(t('Info zur maximalen Nutzungsdauer'), new HtmlTextInput('maxLifeTimeInfo'))
         );
 
+        // SVG pattern select only in categories 1-7
+        $processCategory = ElcaProcessCategory::findByNodeId($this->processCategoryNodeId);
+        list($mainCatNo, $subCatNo) = explode('.', $processCategory->getRefNum());
+
+        if ($processCategory->isInitialized()) {
+            if ($mainCatNo < 8) {
+                $PatternSelect = $rgtGroup->add(
+                    new ElcaHtmlFormElementLabel(
+                        t('Schraffur'),
+                        new ElcaHtmlSvgPatternSelect(
+                            'svgPatternId',
+                            null,
+                            $this->readOnly
+                        ),
+                        false, null,
+                        t('Schraffur für die Bauteildarstellung')
+                    )
+                );
+                $PatternSelect->setDefaultSvgPatternId($processCategory->getSvgPatternId());
+            }
+        }
+
         $numberFormatConverter = new ElcaNumberFormatConverter(2);
         $lftGroup->add(
             new ElcaHtmlFormElementLabel(
@@ -347,6 +371,17 @@ class ElcaProcessConfigGeneralView extends HtmlView
                 false,
                 null,
                 t('Vorgabewert für Nutzungsbaustoffe')
+            )
+        );
+
+        $numberFormatConverter = new ElcaNumberFormatConverter(3);
+        $lambdaElement = new ElcaHtmlNumericInput('lambdaValue', null, $this->readOnly, $numberFormatConverter);
+        $lftGroup->add(
+            new ElcaHtmlFormElementLabel(
+                t('Lamda (λ)'),
+                $lambdaElement,
+                false,
+                'W/mK'
             )
         );
 
@@ -384,19 +419,6 @@ class ElcaProcessConfigGeneralView extends HtmlView
 			);
 		}
 
-		$numberFormatConverter = new ElcaNumberFormatConverter(3);
-
-		$lambdaElement = new ElcaHtmlNumericInput('lambdaValue', null, $this->readOnly, $numberFormatConverter);
-
-		$lftGroup->add(
-			new ElcaHtmlFormElementLabel(
-				t('Lamda (λ)'),
-				$lambdaElement,
-				false,
-				'W/mK'
-			)
-		);
-
 		if(!$this->readOnly) {
 
 			$lftGroup->add(new ElcaHtmlFormElementLabel(t('Stoffgruppe A'), new HtmlCheckbox('elementGroupA')));
@@ -407,13 +429,9 @@ class ElcaProcessConfigGeneralView extends HtmlView
         //$LftGroup->add(new ElcaHtmlFormElementLabel(t('Wärmeleitfähigkeit'), new ElcaHtmlNumericInput('thermalConductivity'), false, 'W / mk'));
         //$LftGroup->add(new ElcaHtmlFormElementLabel(t('Wärmedurchgangswiderstand'), new ElcaHtmlNumericInput('thermalResistance'), false, 'Km² / W'));
 
-        $ProcessCategory = ElcaProcessCategory::findByNodeId($this->processCategoryNodeId);
-
-        if ($ProcessCategory->isInitialized()) {
-            list($mainCatNo, $subCatNo) = explode('.', $ProcessCategory->getRefNum());
-
+        if ($processCategory->isInitialized()) {
             // only show in transport category
-            if ($ProcessCategory->getRefNum() == '9.03') {
+            if ($processCategory->getRefNum() == '9.03') {
                 $payLoad    = ElcaProcessConfigAttribute::findValue(
                     $this->processConfig->getId(),
                     ElcaProcessConfigAttribute::IDENT_TRANSPORT_PAYLOAD
@@ -442,24 +460,8 @@ class ElcaProcessConfigGeneralView extends HtmlView
                     )
                 );
             }
-
-            // SVG pattern select only in categories 1-7
-            if ($mainCatNo < 8) {
-                $PatternSelect = $lftGroup->add(
-                    new ElcaHtmlFormElementLabel(
-                        t('Schraffur'),
-                        new ElcaHtmlSvgPatternSelect(
-                            'svgPatternId',
-                            null,
-                            $this->readOnly
-                        ),
-                        false, null,
-                        t('Schraffur für die Bauteildarstellung')
-                    )
-                );
-                $PatternSelect->setDefaultSvgPatternId($ProcessCategory->getSvgPatternId());
-            }
         }
+
 
         /**
          * Add operational attributes
@@ -502,55 +504,6 @@ class ElcaProcessConfigGeneralView extends HtmlView
             );
 
         }
-
-        if ($this->processConfig && $this->processConfig->isInitialized()) {
-            $rgtGroup->add(new HtmlTag('h5', t('Unterstützte Datenbanken')));
-
-            $processConfigId   = new ProcessConfigId($this->processConfig->getId());
-            $processLifeCycles = $this->processLifeCycleRepository->findAllByProcessConfigId($processConfigId);
-
-            usort(
-                $processLifeCycles,
-                function (ProcessLifeCycle $a, ProcessLifeCycle $b) {
-                    return $a->processDbId()->value() <=> $b->processDbId()->value();
-                }
-            );
-
-            $table = new HtmlTable('quantitative-references');
-            $table->addColumn('processDb', t('Baustoffdatenbank'))->addClass('process-db');
-            $table->addColumn('quantitativeReference', t('Quantitative Referenz'))->addClass('quantitative-reference');
-
-            $head = $table->createTableHead();
-            $head->addTableRow(new HtmlTableHeadRow());
-
-            $body = $table->createTableBody();
-            $row  = $body->addTableRow();
-            $row->getColumn('quantitativeReference')->setOutputElement(
-                new ElcaHtmlNumericText('quantitativeReference')
-            );
-
-            $dataSet = [];
-            foreach ($processLifeCycles as $processLifeCycle) {
-                if (!$processDb = $this->processDbRepository->findById($processLifeCycle->processDbId())) {
-                    continue;
-                }
-                if (!$quantitativeReference = $processLifeCycle->quantitativeReference()) {
-                    continue;
-                }
-
-                $dataSet[] = (object)[
-                    'processDb'             => $processDb->name(),
-                    'quantitativeReference' => ElcaNumberFormat::formatQuantity(
-                        $quantitativeReference->value(),
-                        (string)$quantitativeReference->unit()
-                    ),
-                ];
-            }
-
-            $body->setDataSet($dataSet);
-
-            $rgtGroup->add($table);
-        }
     }
     // End appendDefault
 
@@ -589,6 +542,97 @@ class ElcaProcessConfigGeneralView extends HtmlView
         return $dataObject;
     }
 
+    protected function appendProcessDbAndConversionsInfoTable(HtmlElement $form)
+    {
+        if (!$this->processConfig || !$this->processConfig->isInitialized()) {
+            return;
+        }
+
+        $container = $form->add(new HtmlFormGroup(t('Unterstützte Datenbanken und Umrechnungsfaktoren')));
+        $container->addClass('clearfix clear');
+
+        $processConfigId   = new ProcessConfigId($this->processConfig->getId());
+        $processLifeCycles = $this->processLifeCycleRepository->findAllByProcessConfigId($processConfigId);
+
+        usort(
+            $processLifeCycles,
+            function (ProcessLifeCycle $a, ProcessLifeCycle $b) {
+                return $a->processDbId()->value() <=> $b->processDbId()->value();
+            }
+        );
+
+        $conversionsPerProcessDbId = [];
+        $processDbIds              = [];
+        $uniqueConversions         = [];
+        foreach ($processLifeCycles as $processLifeCycle) {
+            $processDbIds[] = $processLifeCycle->processDbId();
+            $index          = $processLifeCycle->processDbId()->value();
+
+            foreach ($processLifeCycle->conversions() as $conversion) {
+                if ($conversion->isIdentity()) {
+                    continue;
+                }
+
+                $conversionIdent                                     = $conversion->toUnit() . '_' . $conversion->fromUnit();
+                $conversionsPerProcessDbId[$index][$conversionIdent] = (object)[
+                    'name'       => sprintf("%s / %s",
+                        ElcaNumberFormat::formatUnit($conversion->toUnit()->value()),
+                        ElcaNumberFormat::formatUnit($conversion->fromUnit()->value())),
+                    'conversion' => $conversion,
+                ];
+
+                $uniqueConversions[$conversionIdent] = $conversionsPerProcessDbId[$index][$conversionIdent]->name;
+            }
+        }
+
+        $table = new HtmlTable('quantitative-references');
+        $table->addColumn('processDb', t('Baustoffdatenbank'))->addClass('process-db');
+        $table->addColumn('quantitativeReference', t('Quantitative Referenz'))->addClass('quantitative-reference');
+
+        foreach ($uniqueConversions as $conversionIdent => $conversionContext) {
+            $table->addColumn($conversionIdent, $conversionContext)->addClass('conversion');
+        }
+
+        $head = $table->createTableHead();
+        $head->addTableRow(new HtmlTableHeadRow());
+
+        $body = $table->createTableBody();
+        $row  = $body->addTableRow();
+        $row->getColumn('quantitativeReference')->setOutputElement(
+            new ElcaHtmlNumericText('quantitativeReference')
+        );
+
+        $dataSet = [];
+        foreach ($processLifeCycles as $processLifeCycle) {
+            if (!$processDb = $this->processDbRepository->findById($processLifeCycle->processDbId())) {
+                continue;
+            }
+            if (!$quantitativeReference = $processLifeCycle->quantitativeReference()) {
+                continue;
+            }
+
+            $dataObject = (object)[
+                'processDb'             => $processDb->name(),
+                'quantitativeReference' => ElcaNumberFormat::formatQuantity(
+                    $quantitativeReference->value(),
+                    (string)$quantitativeReference->unit()
+                ),
+            ];
+            foreach ($conversionsPerProcessDbId[$processDb->id()->value()] as $conversionIdent => $conversionContext) {
+                $dataObject->$conversionIdent = ElcaNumberFormat::toString($conversionContext->conversion->factor(), 3);
+            }
+
+            $dataSet[] = $dataObject;
+
+        }
+
+        $body->setDataSet($dataSet);
+
+        $container->add($table);
+
+        return $processLifeCycles;
+    }
+
     /**
      * Appends the conversion form group
      *
@@ -601,7 +645,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
             return;
         }
 
-        $rightGroup = $form->add(new HtmlFormGroup(t('Umrechnungsfaktoren')));
+        $rightGroup = $form->add(new HtmlFormGroup(t('Umrechnungsfaktoren bearbeiten')));
         $rightGroup->setAttribute('id', 'conversions');
         $rightGroup->addClass('clearfix column clear');
 
