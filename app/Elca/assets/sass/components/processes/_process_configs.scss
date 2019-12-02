@@ -49,9 +49,6 @@
 #processConfig .column.properties .form-section.fHsHi {
   width:90px;
 }
-#processConfig .column.properties .form-section.fHsHi {
-  padding-right:0px;
-}
 
 #processConfig .column.properties .form-section.transportPayLoad {
   width:125px;
@@ -125,6 +122,14 @@
   th.quantitative-reference,
   td.quantitative-reference {
     text-align: right;
+    width: 120px;
+
+  }
+
+  th.conversion,
+  td.conversion {
+    text-align: center;
+    width: 50px;
   }
 }
 
@@ -136,7 +141,7 @@
   display:block;
   position:absolute;
   top:22px;
-  left:150px;
+  left:250px;
 }
 #conversions .hl-row,
 #conversions .elt-row {
@@ -337,6 +342,7 @@
 #processConfig .column.properties .form-section.wasteCodeSuffix {
 	float:left;
 }
+#processConfig .column.properties .form-section.wasteCode,
 #processConfig .column.properties .form-section.elementGroupA {
   clear:both;
 }
@@ -352,12 +358,10 @@
     width:105px;
 	padding-left: 15px;
 }
-#processConfig .column.properties .form-section.lambdaValue {	
-	clear: both;
+#processConfig .column.properties .form-section.lambdaValue {
     float:left;
-    width:125px;
+    width:110px;
 }
 #processConfig .column.properties .form-section.lambdaValue .form-elt {
-	padding-right: 26px;
-    width:125px;
+    width:100px;
 }

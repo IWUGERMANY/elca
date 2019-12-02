@@ -1318,8 +1318,6 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #processConfig .column.properties .form-section.defaultSize, #processConfig .column.properties .form-section.fHsHi { width: 90px; }
 
-#processConfig .column.properties .form-section.fHsHi { padding-right: 0px; }
-
 #processConfig .column.properties .form-section.transportPayLoad { width: 125px; float: left; padding-right: 30px; }
 
 #processConfig .column.properties .form-section.transportEfficiency { padding-right: 0px; float: left; width: 125px; }
@@ -1343,11 +1341,12 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #processConfig .ElcaHtmlSvgPatternSelect-section select { width: 90%; margin-left: 15px; }
 
 #processConfig table.quantitative-references { width: 100%; }
-#processConfig table.quantitative-references th.quantitative-reference, #processConfig table.quantitative-references td.quantitative-reference { text-align: right; }
+#processConfig table.quantitative-references th.quantitative-reference, #processConfig table.quantitative-references td.quantitative-reference { text-align: right; width: 120px; }
+#processConfig table.quantitative-references th.conversion, #processConfig table.quantitative-references td.conversion { text-align: center; width: 50px; }
 
 #conversions { position: relative; width: 800px; }
 
-#conversions a.function-link.add-conversion { display: block; position: absolute; top: 22px; left: 150px; }
+#conversions a.function-link.add-conversion { display: block; position: absolute; top: 22px; left: 250px; }
 
 #conversions .hl-row, #conversions .elt-row { clear: both; position: relative; height: 50px; }
 
@@ -1454,7 +1453,7 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #processConfig .column.properties .form-section.elementGroupA, #processConfig .column.properties .form-section.elementGroupB, #processConfig .column.properties .form-section.wasteCode, #processConfig .column.properties .form-section.wasteCodeSuffix { float: left; }
 
-#processConfig .column.properties .form-section.elementGroupA { clear: both; }
+#processConfig .column.properties .form-section.wasteCode, #processConfig .column.properties .form-section.elementGroupA { clear: both; }
 
 #processConfig .column.properties .form-section.elementGroupA, #processConfig .column.properties .form-section.elementGroupB { width: 140px; }
 
@@ -1462,9 +1461,9 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #processConfig .column.properties .form-section.wasteCodeSuffix { width: 105px; padding-left: 15px; }
 
-#processConfig .column.properties .form-section.lambdaValue { clear: both; float: left; width: 125px; }
+#processConfig .column.properties .form-section.lambdaValue { float: left; width: 110px; }
 
-#processConfig .column.properties .form-section.lambdaValue .form-elt { padding-right: 26px; width: 125px; }
+#processConfig .column.properties .form-section.lambdaValue .form-elt { width: 100px; }
 
 /** Process Datenbanken ------------------*/
 #content.process-databases div.button.export { margin: 0 20px 15px 0; float: left; }

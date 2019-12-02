@@ -66,7 +66,12 @@ class ElcaAdminNavigationLeftView extends HtmlView
 
         if ($access->hasAdminPrivileges()) {
             $navItem = $navigation->add(t('Nutzerverwaltung'));
-            $navItem->add(t('Benutzer'), 'elca', 'Elca\Controller\UsersCtrl');
+			$navItem->add(t('Benutzer'), 'elca', 'Elca\Controller\UsersCtrl');
+            $navItem->add(t('Benutzer aktiv'), 'elca', 'Elca\Controller\UsersCtrl',null,['status'=>'confirmed']);
+			$navItem->add(t('Benutzer inaktiv'), 'elca', 'Elca\Controller\UsersCtrl',null,['status'=>'requested']);
+			$navItem->add(t('Benutzer nicht aktualisiert'), 'elca', 'Elca\Controller\UsersCtrl',null,['status'=>'legacy']);
+			$navItem->add(t('Benutzer gesperrt'), 'elca', 'Elca\Controller\UsersCtrl',null,['status'=>'locked']);
+			// $navItem->add(t('Benutzer'), 'elca', 'Elca\Controller\UsersCtrl');
             $navItem->add(t('Gruppen'), 'elca', 'Elca\Controller\GroupsCtrl');
 
             $navItem = $navigation->add(t('Schraffuren'));
