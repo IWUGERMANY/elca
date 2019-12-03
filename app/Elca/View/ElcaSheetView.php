@@ -179,7 +179,7 @@ class ElcaSheetView extends HtmlView
     /**
      * Adds a info
      *
-     * @param  string $text
+     * @param  string $text 
      * @return -
      */
     protected function addInfo($info, $caption = null, $unit = null, $newLine = false)

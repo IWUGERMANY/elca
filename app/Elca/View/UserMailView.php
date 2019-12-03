@@ -65,6 +65,7 @@ class UserMailView extends MailView
     {
         $this->assignSalutation();
 
+		var_dump($this->tplName);
         switch ($this->tplName) {
             case 'mail/confirmation':
                 $hasAuthName = $this->getElementById('hasAuthName', true);
@@ -100,6 +101,22 @@ class UserMailView extends MailView
                 }
 
                 break;
+			case 'mail/deactivation':
+                $hasAuthName = $this->getElementById('hasAuthName', true);
+                $OptEmail    = $this->getElementById('OptEmail', true);
+
+                if ($this->get('User')->getAuthName() == $this->get('User')->getEmail() || $this->get(
+                        'User'
+                    )->getAuthName() == $this->get('User')->getCandidateEmail()
+                ) {
+                    $hasAuthName->parentNode->removeChild($hasAuthName);
+                }
+				
+                if (!Environment::getInstance()->getConfig()->elca->auth->uniqueEmail) {
+                    if($OptEmail) $OptEmail->parentNode->removeChild($OptEmail);
+                }
+
+                break;				
         }
 
     }

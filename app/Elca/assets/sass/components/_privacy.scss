@@ -44,3 +44,12 @@
   position: absolute;
   background: url(/img/elca/ic-download-sheet.png) no-repeat;
 }
+
+#content.users #elca-users .createdyear {
+	margin: 30px 0 20px 0;
+	text-decoration: underline;
+}
+#content.users #elca-users .createdyear h2 {
+	font-weight:bold;
+	font-size: 20px;
+}

@@ -89,6 +89,25 @@ class UserMailService
             $user
         );
     }
+	
+	public function sendDeactivationMail(User $user): void
+    {
+        $urlProfil = $this->urlGenerator->absoluteUrlTo(UpdateProfileCtrl::class, $user->getCryptId());
+		$urlForgetPassword = $this->urlGenerator->absoluteUrlTo(ForgotCtrl::class, $user->getCryptId());
+
+		
+        $userMailView = new UserMailView('mail/deactivation', $user);
+        $userMailView->assign('urlProfil', (string)$urlProfil);
+		$userMailView->assign('urlForgetPassword', (string)$urlForgetPassword);
+		
+        $this->sendMail(
+            t('eLCA | Account Deaktivierung'),
+            $userMailView,
+            'boeneke@online-now.de',
+            $user
+        ); // $user->getCandidateEmail() ?: $user->getEmail(),
+    }
+	
 
     public function sendForgotMail(User $user): void
     {
@@ -100,10 +119,15 @@ class UserMailService
         $this->sendMail(t('eLCA | Passwort zurücksetzen'), $userMailView, $user->getEmail(), $user);
     }
 
+
+
+
     private function sendMail(string $subject, HtmlView $view, string $to, User $user): void
     {
         try {
+			var_dump($view);
             $view->process();
+			var_dump($view);
 
             $this->mailer->setSubject($subject);
             $this->mailer->setHtmlContent((string)$view);
