@@ -75,6 +75,8 @@ class ElcaReportSet extends DataObjectSet
     const VIEW_REPORT_FINAL_ENERGY_REF_MODEL_EFFECTS = 'elca_cache.report_final_energy_ref_model_effects_v';
     const VIEW_REPORT_TOTAL_CONSTRUCTION_RECYCLING_EFFECTS = 'elca_cache.report_total_construction_recycling_effects_v';
     const VIEW_REPORT_TOTAL_ENERGY_RECYCLING_EFFECTS = 'elca_cache.report_total_energy_recycling_potential';
+	
+	const TABLE_REPORT_PDF_QUEUE = 'elca.reports_pdf_queue';
 
 
     /**
@@ -446,6 +448,57 @@ class ElcaReportSet extends DataObjectSet
         );
     }
     // End findTransportEffects
+
+
+    /**
+     * Find data in PDF Queue
+	 * @param  $projectId
+	 * @param  $projectVariantId
+     * @return array
+     */
+    public static function findPdfInQueue($projectId, $projectVariantId)
+    {
+		$initValues = array('project_variant_id' => $projectVariantId, 'project_id' => $projectId);
+
+        $sql = sprintf(
+            'SELECT * FROM %s 
+                    WHERE current_variant_id = :project_variant_id
+					AND projects_id = :project_id'
+            , self::TABLE_REPORT_PDF_QUEUE
+        );
+		
+        return self::_findBySql(get_class(), $sql, $initValues);		
+    }	
+
+	/**
+     * Save data in PDF queue
+     */
+    public static function setPdfInQueue(array $initValues)
+    {
+
+        $sql = sprintf(
+            'INSERT INTO %s (id, benchmark_version_id, name)
+             VALUES  (:id, :benchmarkVersionId, :name)"'
+            ,
+            self::TABLE_REPORT_PDF_QUEUE
+        );
+
+        $Stmt = DbObject::prepareStatement(
+            $sql,
+            array(
+                'oldAccessGroupId' => $oldAccessGroupId,
+                'newAccessGroupId' => $newAccessGroupId,
+            )
+        );
+
+        if (!$Stmt->execute()) {
+            throw new \Exception(DbObject::getSqlErrorMessage($dbObjectName, $sql, $initValues));
+        }
+
+        return true;
+    }
+
+
 
 
     /**
@@ -1594,5 +1647,6 @@ class ElcaReportSet extends DataObjectSet
 
         return [$initValues, $filterSql];
     }
+	
 }
 // End ElcaReportSet

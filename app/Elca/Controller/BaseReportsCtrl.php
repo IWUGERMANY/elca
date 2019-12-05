@@ -40,6 +40,7 @@ use Elca\Service\ElcaSessionRecovery;
 use Elca\Service\ProjectAccess;
 use Elca\View\Report\ElcaReportsHeaderFooterView;
 use Elca\View\ReportsPdfModalView;
+use Elca\Db\ElcaReportSet;
 
 /**
  * BaseReportsCtrl
@@ -150,12 +151,15 @@ abstract class BaseReportsCtrl extends AppCtrl
         );
 
         Log::getInstance()->debug($cmd);
-        exec($cmd);
+		exec($cmd);
 
         // delete tmp header and footer files
         $tmpHeaderFile->delete();
         $tmpFooterFile->delete();
 
+		$test = ElcaReportSet::findPdfInQueue($this->Elca->getProjectId(), $this->Elca->getProjectVariantId());	
+
+		var_dump($test);
         $View = $this->addView(new HtmlView());
         $View->appendChild($View->getDiv(['id' => 'download-pdf'], $P = $View->getP('')));
 
