@@ -182,11 +182,12 @@ class UsersMailCtrl extends TabsCtrl
 		if(!$this->Access->hasAdminPrivileges())
 			return;
 		
-		$this->initValues['login_time'] = NULL; 
 		$this->initValues['deactivated'] = NULL; 
 		$this->initValues['deactivatedmail'] = NULL; 
 
-		$Users = UserSet::find($this->initValues, ['created' => 'ASC']);
+		// $Users = UserSet::find($this->initValues, ['created' => 'ASC']);
+		$Users = UserSet::findUsersNotActive($this->initValues, ['login_time' => 'ASC'], false);
+		
         if(!count($Users)) { return; }
 		
            $Dbh = DbHandle::getInstance();
@@ -227,7 +228,7 @@ class UsersMailCtrl extends TabsCtrl
 					$this->messages->add(t('Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es später wieder'));
 				}
 				
-				var_dump($this->messages);
+				// DEBUG - NUR EINE MAIL PRO KLICK - Mail an definiert in: sendDeactivationMail / Mailadresse aus config.ini
 				exit();
 			}
 			

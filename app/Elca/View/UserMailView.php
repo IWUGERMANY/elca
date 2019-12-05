@@ -65,7 +65,6 @@ class UserMailView extends MailView
     {
         $this->assignSalutation();
 
-		var_dump($this->tplName);
         switch ($this->tplName) {
             case 'mail/confirmation':
                 $hasAuthName = $this->getElementById('hasAuthName', true);

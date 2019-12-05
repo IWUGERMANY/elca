@@ -76,11 +76,13 @@ class ElcaUsersMailView extends HtmlView
     protected function beforeRender()
     {
 		switch ($this->showStatus) {
-			case 'nologin': 	$this->initValues['login_time'] = NULL; break;
+			case 'nologin': 	$this->initValues['deactivated'] = NULL; 
+								$this->initValues['deactivatedmail'] = NULL; 
+							break;
         }
-		
-        // $Users = UserSet::find($this->initValues, ['CASE WHEN lastname <> \'\' THEN lower(lastname) ELSE lower(auth_name) END' => 'ASC']);
-		$Users = UserSet::find($this->initValues, ['created' => 'ASC']);
+
+		// $Users = UserSet::find($this->initValues, ['created' => 'ASC']);
+		$Users = UserSet::findUsersNotActive($this->initValues, ['login_time' => 'ASC'], false);
 
         if(!count($Users))
             return;
@@ -106,10 +108,20 @@ class ElcaUsersMailView extends HtmlView
         {
             
 			$CreatedDate = BlibsDateTime::factory($User->getCreated());
-			$CreatedYear = $CreatedDate->getYear(FORMAT_YEAR);
-			if($CreatedYear != $this->year2show)  
+			if(!is_null($User->getLoginTime()))
+			{	
+				$LoginDate = BlibsDateTime::factory($User->getLoginTime());
+				$LoginYear = $LoginDate->getYear(FORMAT_YEAR);
+			}	
+			else 
 			{
-				$this->year2show = $CreatedYear;
+				$LoginYear = 'Ohne Login';
+			}	
+			
+			if($LoginYear != $this->year2show)  
+			{
+				$this->year2show = $LoginYear;
+
 				$Li = $Ul->appendChild($this->getLi(['class' => 'createdyear']));
 				$IncludeYear = $Li->appendChild($this->getH2($this->year2show));
 			}
