@@ -26,6 +26,7 @@ namespace Bnb\Model\Navigation;
 
 use Bnb\Controller\CsvExportCtrl;
 use Bnb\Controller\MaterialExportCtrl;
+use Bnb\Controller\WasteCodeExportCtrl;
 use Bnb\Controller\ProjectExportCtrl;
 use Bnb\Controller\XmlExportCtrl;
 use Elca\Controller\ExportsCtrl;
@@ -53,6 +54,7 @@ class BnbNavigation implements ElcaNavigationInterface
         $Navigation = ElcaNavigation::getInstance('bnb-data');
         $Item = $Navigation->add(t('Rückbau, Trennung und Verwertung'));
         $Item->add(t('Rückbau, Trennung und Verwertung (4.1.4)'), 'bnb', 'Bnb\Controller\EolSeparationRecyclingCtrl');
+		$Item->add(t('Abfallschlüssel'), 'bnb', WasteCodeExportCtrl::class);
 
         $access = ElcaAccess::getInstance();
 
@@ -81,7 +83,7 @@ class BnbNavigation implements ElcaNavigationInterface
         $Navigation = ElcaNavigation::getInstance('bnb-reports');
         $Item = $Navigation->add(t('Rückbau, Trennung und Verwertung'));
         $Item->add(t('Rückbau, Trennung und Verwertung (4.1.4)'), 'bnb', 'Bnb\Controller\ProjectReportEolSeparationRecyclingCtrl');
-
+		$Item->add(t('Abfallschlüssel'), 'bnb', WasteCodeExportCtrl::class);
         return $Navigation;
     }
     // End getProjectReportNavigation
