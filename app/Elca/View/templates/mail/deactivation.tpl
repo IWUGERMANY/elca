@@ -36,24 +36,25 @@
             <table border="0" cellpadding="0" cellspacing="0" width="550" align="center" bgcolor="#ffffff" style="background-color:#ffffff;margin-left:auto;margin-right:auto;width:550px;border-style:none;border-width:0;border-collapse:collapse;">
                 <tr>
                     <td width="530" bgcolor="#ffffff" style="background-color:#ffffff;">
-                        <h1 style="font-family: Arial,sans-serif;font-size:16px;color:#004f80;">_(Mitteilung zu Ihrem Account für eLCA Bauteileditor)_</h1>
+                        <h1 style="font-family: Arial,sans-serif;font-size:16px;color:#004f80;">_(eLCA Bauteileditor - Mitteilung zu Ihrem Account)_</h1>
 
-                        <p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">$$salutation$$<br/>_(vielen Dank für Ihr Interesse an eLCA.)_</p>
-						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Text mit Hinweis zu Deaktivierung / Löschung durch Nichtnutzung)_</p>
-						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Text mit Optionen zum Export Projekte bzw. Reaktivierung)_</p>
+                        <p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">$$salutation$$,<br/><br/>_(wir schreiben Sie an, da Sie sich für die BBSR Online-Anwendung eLCA Bauteileditor interessiert oder angemeldet haben.)_</p>
+						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Diese Anwendung befindet sich in der erweiterten Beta-Phase. Rückmeldungen und Anmerkungen zur Nutzung, zu Berechnungergebnissen sowie das Einreichen von Bauteilvorlagen durch die Teilnehmer sind für den Anbieter zur wissenschaftlichen Auswertung sinnvoll.)_</p>
 						
-                        <p id="hasAuthName" style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Ihr Benutzername lautet:)_ <strong style="color:#004f80;font-weight:bold;">$$User:authName$$</strong><br/>_(Alternativ können Sie Ihre E-Mail-Adresse für die Anmeldung verwenden.)_</p>
-                        <p id="hasNoAuthName" style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Ihr Benutzername lautet:)_ <strong style="color:#004f80;font-weight:bold;">$$User:authName$$</strong></p>
+						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Leider haben Sie sich seit längerem nicht mehr auf der Website angemeldet. Wir möchten Sie deshalb einladen, wieder aktiv die eLCA Anwendung zu nutzen.)_</p>
+                        
+						<p id="hasAuthName" style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Ihr gespeicherter Benutzername lautet:)_ <strong style="color:#004f80;font-weight:bold;">$$User:authName$$</strong><br/>_(Alternativ können Sie Ihre E-Mail-Adresse für die Anmeldung verwenden.)_</p>
 						<br/>
-						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Sie haben noch kein Passwort gesetzt?)_</p>
-                        <p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Bitte folgen Sie dem untenstehenden Link, um Ihr persönliches Passwort zu setzen)_</p>
-                        <p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;"><a style="text-decoration:none;font-family: Arial,sans-serif;font-size:12px;font-weight:bold;color:#004f80;" href="$$urlProfil$$">$$urlProfil$$</a></p>
+						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;"><strong>_(Sie haben noch keinen bestätigten Zugang / kein Passwort?)_</strong></p>
+                        <p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Bitte schließen Sie Ihre Anmeldung über den folgenden Link ab)_:<br/><a style="text-decoration:none;font-family: Arial,sans-serif;font-size:12px;font-weight:bold;color:#004f80;" href="$$urlProfil$$">$$urlProfil$$</a></p>
 					
-						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Passwort zurücksetzen)_</p>
-						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Um ein neues Passwort für Ihren Zugang zu eLCA zu setzen, klicken Sie bitte auf den folgenden Link:)_</p>
-						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;"><a style="text-decoration:none;font-family: Arial,sans-serif;font-size:12px;font-weight:bold;color:#004f80;" href="$$urlForgetPassword$$">$$urlForgetPassword$$</a></p>
+						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;"><strong>_(Passwort zurücksetzen)_</strong></p>
+						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Um ein neues Passwort für Ihren Zugang zu eLCA zu setzen, klicken Sie bitte auf den folgenden Link)_:<br/><a style="text-decoration:none;font-family: Arial,sans-serif;font-size:12px;font-weight:bold;color:#004f80;" href="$$urlForgetPassword$$">$$urlForgetPassword$$</a></p>
 					
-						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Nachdem Sie Ihr persönliches Passwort gesetzt haben, können sie sich jederzeit unter)_ <a style="text-decoration:none;font-family: Arial,sans-serif;font-size:12px;font-weight:bold;color:#004f80;" href="http://$$hostname$$">http://$$hostname$$</a> _(anmelden.)_</p>
+						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Nachdem Sie Ihr persönliches Passwort gesetzt haben, können sie sich jederzeit unter)_ <a style="text-decoration:none;font-family: Arial,sans-serif;font-size:12px;font-weight:bold;color:#004f80;" href="http://$$hostname$$">http://$$hostname$$</a> _(anmelden und Ihr(e) Projekt(e) bearbeiten.)_</p>
+			            <br/>
+						<p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Sollten Sie kein weiteres Interesse an der eLCA Anwendung haben, so müssen Sie nichts weiter tun. Ihr Account (inkl. erstellter Projekte) wird dann in Kürze automatisch und DSGVO-konform gelöscht.)_</p>
+						<br/>
 
                         <p style="font-family: Arial,sans-serif;font-size:12px;color:#555555;">_(Gerne stehen wir Ihnen bei Fragen zur Verfügung)_</p>
                     </td>

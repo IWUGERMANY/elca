@@ -94,27 +94,39 @@ class UserMailService
 	
 	public function sendDeactivationMail(User $user): void
     {
-        $urlProfil = $this->urlGenerator->absoluteUrlTo(UpdateProfileCtrl::class, $user->getCryptId());
-		$urlForgetPassword = $this->urlGenerator->absoluteUrlTo(ForgotCtrl::class, $user->getCryptId());
+        
+		switch($user->getStatus())
+		{
+			case -1: $urlProfil = $this->urlGenerator->absoluteUrlTo(UpdateProfileCtrl::class, $user->getCryptId());
+					break;
+		}
 
+		$urlForgetPassword = $this->urlGenerator->absoluteUrlTo(ForgotCtrl::class, $user->getCryptId());
 		
         $userMailView = new UserMailView('mail/deactivation', $user);
         $userMailView->assign('urlProfil', (string)$urlProfil);
 		$userMailView->assign('urlForgetPassword', (string)$urlForgetPassword);
 		
-		// DEBUG - nur eine Mail - an config.ini Eintrag elca.mailAddress
-		// 
+
 		$environment = Environment::getInstance();
         $config = $environment->getConfig();
-
-        if (isset($config->elca) &&  isset($config->elca->mailAddress)) {
-
+		
+		$userMailView->assign('hostname', $environment->getServerHostName());
+		
+		// Debug-TEST-Version
+		// Versand einer Mail an hinterlegte E-Mailadresse
+		// $MailTo = $user->getCandidateEmail() ?: $user->getEmail();
+		// ----------------------------------------------------------
+		
+        if (isset($config->elca) &&  isset($config->elca->mailAddress)) 
+		{
             $MailTo = $config->elca->mailAddress;
         }
 		else
 		{
 			$MailTo = "bauteileditor@online-now.de";
 		}	
+		// ----------------------------------------------------------
 		
         $this->sendMail(
             t('eLCA | Account Deaktivierung'),

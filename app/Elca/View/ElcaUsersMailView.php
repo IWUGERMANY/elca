@@ -76,8 +76,8 @@ class ElcaUsersMailView extends HtmlView
     protected function beforeRender()
     {
 		switch ($this->showStatus) {
-			case 'nologin': 	$this->initValues['deactivated'] = NULL; 
-								$this->initValues['deactivatedmail'] = NULL; 
+			case 'nologin': 	$this->initValues[':deactivated'] = NULL; 
+								$this->initValues[':deactivatedmail'] = NULL; 
 							break;
         }
 

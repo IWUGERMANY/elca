@@ -159,7 +159,7 @@ class UsersMailCtrl extends TabsCtrl
             else
             {
 				$this->setView(new ElcaUsersMailView(['status'=>$this->Request->status]));
-                $this->Osit->add(new ElcaOsitItem(t('Benutzer ohne login - Mail'), null, t('Nutzerbenachrichtigung')));
+                $this->Osit->add(new ElcaOsitItem(t('Benutzer ohne Login bzw. letzter Login > 6 Monate - Mail'), null, t('Nutzerbenachrichtigung')));
             }
         }
     }
@@ -191,17 +191,17 @@ class UsersMailCtrl extends TabsCtrl
         if(!count($Users)) { return; }
 		
            $Dbh = DbHandle::getInstance();
-			$reloadView = false;
+			$reloadView = true;
 			foreach($Users as $user)
 			{
-				
-				try
+				$tempmailuser = ""
+;				try
 				{
 					
 					if($user->isInitialized())
 					{
 						$Dbh->begin();
-						$reloadView = false;
+						
 
 						// set in class User
 						// $user->setDeactivated(time());	 
@@ -214,9 +214,16 @@ class UsersMailCtrl extends TabsCtrl
 						// $user = User::findExtendedById($user->getId(), true);
 						
 						//if ($adminMode) 
-						$this->userMailService->sendDeactivationMail($user);
-						
-						$this->messages->add(t('Eine E-Mail wurde an "%email%" versendet', null, ['%email%' => $user->getCandidateEmail() ? $user->getCandidateEmail() : $user->getEmail()]), ElcaMessages::TYPE_NOTICE);
+						$tempmailuser = trim( $user->getCandidateEmail() ? $user->getCandidateEmail() : $user->getEmail() );
+						if(!is_null($tempmailuser) && $tempmailuser!="")
+						{
+							$this->userMailService->sendDeactivationMail($user);
+							$this->messages->add(t('Eine E-Mail wurde an "%nutzer%" versendet', null, ['%nutzer%' => $tempmailuser]), ElcaMessages::TYPE_NOTICE);
+						}	
+						else
+						{
+							$this->messages->add(t('Nutzer ohne E-Mail:  "%nutzer%" kein Mailversand', null, ['%nutzer%' => $user->getAuthName()]), ElcaMessages::TYPE_ERROR);
+						}			
 					}
 				}
 				catch (Exception $Exception)
@@ -225,7 +232,7 @@ class UsersMailCtrl extends TabsCtrl
 						$Dbh->rollback();
 
 					Log::getInstance()->error($Exception->getMessage());
-					$this->messages->add(t('Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es später wieder'));
+					$this->messages->add(t('Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut'));
 				}
 				
 				// DEBUG - NUR EINE MAIL PRO KLICK - Mail an definiert in: sendDeactivationMail / Mailadresse aus config.ini
@@ -237,7 +244,7 @@ class UsersMailCtrl extends TabsCtrl
 				/**
 				* Render view by default action
 				*/
-				// $this->getView()->assign('redirect', '/users-mail/?status='.$this->Request->status);
+				$this->getView()->assign('redirect', '/users-mail/?status='.$this->Request->status);
 			}			
 
     }
