@@ -30,12 +30,14 @@ use Beibob\Blibs\HtmlView;
 use Beibob\Blibs\Interfaces\Logger;
 use Beibob\Blibs\Log;
 use Beibob\Blibs\User;
+use Beibob\Blibs\Environment;
 use Elca\Controller\ForgotCtrl;
 use Elca\Controller\SubscribeCtrl;
 use Elca\Controller\UpdateProfileCtrl;
 use Elca\Service\Mailer;
 use Elca\Service\UrlGenerator;
 use Elca\View\UserMailView;
+
 
 class UserMailService
 {
@@ -89,6 +91,51 @@ class UserMailService
             $user
         );
     }
+	
+	public function sendDeactivationMail(User $user): void
+    {
+        
+		switch($user->getStatus())
+		{
+			case -1: $urlProfil = $this->urlGenerator->absoluteUrlTo(UpdateProfileCtrl::class, $user->getCryptId());
+					break;
+		}
+
+		$urlForgetPassword = $this->urlGenerator->absoluteUrlTo(ForgotCtrl::class, $user->getCryptId());
+		
+        $userMailView = new UserMailView('mail/deactivation', $user);
+        $userMailView->assign('urlProfil', (string)$urlProfil);
+		$userMailView->assign('urlForgetPassword', (string)$urlForgetPassword);
+		
+
+		$environment = Environment::getInstance();
+        $config = $environment->getConfig();
+		
+		$userMailView->assign('hostname', $environment->getServerHostName());
+		
+		// Debug-TEST-Version
+		// Versand einer Mail an hinterlegte E-Mailadresse
+		// $MailTo = $user->getCandidateEmail() ?: $user->getEmail();
+		// ----------------------------------------------------------
+		
+        if (isset($config->elca) &&  isset($config->elca->mailAddress)) 
+		{
+            $MailTo = $config->elca->mailAddress;
+        }
+		else
+		{
+			$MailTo = "bauteileditor@online-now.de";
+		}	
+		// ----------------------------------------------------------
+		
+        $this->sendMail(
+            t('eLCA | Account Deaktivierung'),
+            $userMailView,
+            $MailTo,
+            $user
+        ); // $user->getCandidateEmail() ?: $user->getEmail(),
+    }
+	
 
     public function sendForgotMail(User $user): void
     {
@@ -99,6 +146,9 @@ class UserMailService
 
         $this->sendMail(t('eLCA | Passwort zurücksetzen'), $userMailView, $user->getEmail(), $user);
     }
+
+
+
 
     private function sendMail(string $subject, HtmlView $view, string $to, User $user): void
     {
