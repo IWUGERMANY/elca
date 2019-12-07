@@ -52,6 +52,7 @@ use Elca\View\Report\ElcaReportElementTypeEffectsView;
 use Elca\View\Report\ElcaReportSummaryComparisonView;
 use Elca\View\Report\ElcaReportSummaryPerResidentView;
 use Elca\View\Report\ElcaReportSummaryView;
+use Elca\View\Report\ElcaReportSummaryWasteCodeView;
 
 /**
  * Reports controller
@@ -169,6 +170,25 @@ class ProjectReportsCtrl extends BaseReportsCtrl
         $view->assign('filterDO', $filterDO);
 
         $this->Osit->add(new ElcaOsitItem(t('Gesamtbilanz pro Person und Jahr'), null, t('Auswertung')));
+        $this->addView(new ElcaProjectReportsNavigationLeftView());
+
+        /**
+         * Summary is the default action, highlight current nav item in project navigation view
+         */
+        $view = $this->addView(new ElcaProjectNavigationView());
+        $view->assign('activeCtrlName', get_class());
+    }
+
+/**
+     * waste code action
+     */
+    protected function summaryWasteCodeAction()
+    {
+        $view = $this->setView(new ElcaReportSummaryWasteCodeView());
+        $view->assign('buildMode', ElcaReportSummaryView::BUILDMODE_TOTAL);
+        $view->assign('projectVariantId', $this->Elca->getProjectVariantId());
+
+        $this->Osit->add(new ElcaOsitItem(t('Abfallschlüssel'), null, t('Auswertung')));
         $this->addView(new ElcaProjectReportsNavigationLeftView());
 
         /**
