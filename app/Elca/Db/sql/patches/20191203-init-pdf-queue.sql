@@ -6,12 +6,13 @@ CREATE SEQUENCE queue_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 9223372036854775807
 CREATE TABLE elca.reports_pdf_queue
 (
       "pdf_queue_id"  		  int DEFAULT nextval('queue_id_seq') NOT NULL	  -- pdfQueueId
+	, "user_id"           	  int	   		 NOT NULL                 -- nutzert id
     , "projects_id"           int	   		 NOT NULL                 -- projekt id
     , "projects_name"     	  varchar(250)   NOT NULL                 -- project name
 	, "current_variant_id" 	  int									  -- variant id	
 	, "pdf_cmd"				  text 									  -- cmd to create pdf		
 	, "created" 			  timestamptz(0) DEFAULT now() NOT NULL   -- create 
-    , "ready"                 timestamptz(0) DEFAULT NULL	          -- modify
+    , "ready"                 timestamptz(0) DEFAULT NULL	          -- datetime ready to download status 
 	, "key"					  int			 NOT NULL				  -- identifier random
     , PRIMARY KEY ("pdf_queue_id")
 	, UNIQUE ("key")

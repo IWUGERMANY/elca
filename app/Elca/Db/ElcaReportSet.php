@@ -462,7 +462,8 @@ class ElcaReportSet extends DataObjectSet
 
         $sql = sprintf(
             'SELECT * FROM %s 
-                    WHERE current_variant_id = :project_variant_id
+                    WHERE user_id = :user_id 
+					AND	current_variant_id = :project_variant_id
 					AND projects_id = :project_id'
             , self::TABLE_REPORT_PDF_QUEUE
         );
@@ -477,18 +478,10 @@ class ElcaReportSet extends DataObjectSet
     {
 
         $sql = sprintf(
-            'INSERT INTO %s (id, benchmark_version_id, name)
+            'INSERT INTO %s (user_id,projects_id,projects_name,current_variant_id,pdf_cmd,key)
              VALUES  (:id, :benchmarkVersionId, :name)"'
             ,
             self::TABLE_REPORT_PDF_QUEUE
-        );
-
-        $Stmt = DbObject::prepareStatement(
-            $sql,
-            array(
-                'oldAccessGroupId' => $oldAccessGroupId,
-                'newAccessGroupId' => $newAccessGroupId,
-            )
         );
 
         if (!$Stmt->execute()) {
