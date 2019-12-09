@@ -59,7 +59,21 @@ abstract class BaseReportsCtrl extends AppCtrl
      */
     protected function pdfModalAction()
     {
+		// elca.js Row:2158 preparePdf: function ($context) 
+		// 
         $V      = $this->addView(new ReportsPdfModalView());
+        $pdfUrl = FrontController::getInstance()->getUrlTo(null, 'pdf', ['a' => $this->Request->a]);
+        $V->assign('action', $pdfUrl);
+    }
+
+    /**
+     * Open modal to start download pdf if generation has been completed
+     */
+    protected function pdfModalDownloadAction()
+    {
+		// elca.js Row:2158 preparePdf: function ($context) 
+		// 
+        $V      = $this->addView(new ReportsPdfModalDownloadView());
         $pdfUrl = FrontController::getInstance()->getUrlTo(null, 'pdf', ['a' => $this->Request->a]);
         $V->assign('action', $pdfUrl);
     }
@@ -91,8 +105,6 @@ abstract class BaseReportsCtrl extends AppCtrl
         $SessionRecovery->storeNamespace($this->Session->getNamespace('elca'));
         $SessionRecovery->storeNamespace($this->Session->getNamespace('elca.locale'));
         $SessionRecovery->storeNamespace($this->Session->getNamespace(ProjectAccess::NAMESPACE_NAME));
-		
-		var_dump($this->Session);
 
         $environment = Environment::getInstance();
 
@@ -140,11 +152,13 @@ abstract class BaseReportsCtrl extends AppCtrl
         $config = $environment->getConfig();
         $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('cacheDir', true, 'tmp/cache');
         
+		$tempTitle = date('Ymd') . '_' . $this->buildFilename($this->Elca->getProject()->getName()) . '.pdf';
+		
         $cmd = sprintf(
             'timeout %s /usr/local/bin/wkhtmltopdf --quiet --window-status ready_to_print --cache-dir %s --title %s -s A4 --margin-top 55 --margin-bottom 30 --margin-right 10 --margin-left 25 --print-media-type --no-stop-slow-scripts --javascript-delay %d --header-html %s --header-spacing 15 --footer-html %s %s %s',
             self::TIMEOUT,
             escapeshellarg($tmpCacheDir),
-            escapeshellarg(date('Ymd') . '_' . $this->buildFilename($this->Elca->getProject()->getName()) . '.pdf'),
+            escapeshellarg($tempTitle),
             1000, // javascript-delay
             escapeshellarg((string)$tmpHeaderFile->getFilepath()),
             escapeshellarg((string)$tmpFooterFile->getFilepath()),
@@ -152,6 +166,7 @@ abstract class BaseReportsCtrl extends AppCtrl
             $pdf->getFilepath()
         );
 
+			
         Log::getInstance()->debug($cmd);
 		// exec($cmd);
 
@@ -159,9 +174,20 @@ abstract class BaseReportsCtrl extends AppCtrl
         $tmpHeaderFile->delete();
         $tmpFooterFile->delete();
 
-		// $test = ElcaReportSet::findPdfInQueue($this->Elca->getProjectId(), $this->Elca->getProjectVariantId());	
-
-
+		// saving / placing PDF report data in queue
+		// :user_id, :projects_id, :projects_name, :current_variant_id, :pdf_cmd, :key
+		$queue_values = [
+				':user_id' => $this->Session->getNamespace('blibs.userStore')->__get('userId'), 
+				':projects_id' => $this->Elca->getProjectId(), 
+				':projects_name' => $this->Elca->getProject()->getName(), 
+				':projects_filename' => $tempTitle,
+				':current_variant_id' => $this->Elca->getProjectVariantId(), 
+				':pdf_cmd' => $cmd, 
+				':key' => $key
+				];
+				
+		ElcaReportSet::setPdfInQueue($queue_values);
+		
         $View = $this->addView(new HtmlView());
         $View->appendChild($View->getDiv(['id' => 'download-pdf'], $P = $View->getP('')));
 
@@ -176,6 +202,21 @@ abstract class BaseReportsCtrl extends AppCtrl
             )
         );
     }
+
+    /**
+     * Check for generated pdf to deliver
+     */
+    protected function checkPdfAction()
+    {
+		$reportsPDF = ElcaReportSet::findPdfInQueue(
+				$this->Elca->getProjectId(), 
+				$this->Elca->getProjectVariantId(),
+				$this->Session->getNamespace('blibs.userStore')->__get('userId')
+		);	
+		
+		return $reportsPDF;
+	}
+	
 
     /**
      * Delivers generated pdf

@@ -464,7 +464,8 @@ class ElcaReportSet extends DataObjectSet
             'SELECT * FROM %s 
                     WHERE user_id = :user_id 
 					AND	current_variant_id = :project_variant_id
-					AND projects_id = :project_id'
+					AND projects_id = :project_id
+					AND ready IS NOT NULL'
             , self::TABLE_REPORT_PDF_QUEUE
         );
 		
@@ -476,16 +477,16 @@ class ElcaReportSet extends DataObjectSet
      */
     public static function setPdfInQueue(array $initValues)
     {
-
-        $sql = sprintf(
-            'INSERT INTO %s (user_id,projects_id,projects_name,current_variant_id,pdf_cmd,key)
-             VALUES  (:id, :benchmarkVersionId, :name)"'
+		$sql = sprintf(
+            'INSERT INTO %s (user_id,projects_id,projects_name,projects_filename,current_variant_id,pdf_cmd,key)
+             VALUES  (:user_id, :projects_id, :projects_name, :projects_filename, :current_variant_id, :pdf_cmd, :key)'
             ,
             self::TABLE_REPORT_PDF_QUEUE
         );
 
+		$Stmt = self::prepareStatement($sql,$initValues );
         if (!$Stmt->execute()) {
-            throw new \Exception(DbObject::getSqlErrorMessage($dbObjectName, $sql, $initValues));
+            throw new \Exception(self::getSqlErrorMessage($sql, $initValues));
         }
 
         return true;

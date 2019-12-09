@@ -9,11 +9,12 @@ CREATE TABLE elca.reports_pdf_queue
 	, "user_id"           	  int	   		 NOT NULL                 -- nutzert id
     , "projects_id"           int	   		 NOT NULL                 -- projekt id
     , "projects_name"     	  varchar(250)   NOT NULL                 -- project name
+	, "projects_filename"     varchar(250)   NOT NULL                 -- project file name (with date)
 	, "current_variant_id" 	  int									  -- variant id	
 	, "pdf_cmd"				  text 									  -- cmd to create pdf		
 	, "created" 			  timestamptz(0) DEFAULT now() NOT NULL   -- create 
     , "ready"                 timestamptz(0) DEFAULT NULL	          -- datetime ready to download status 
-	, "key"					  int			 NOT NULL				  -- identifier random
+	, "key"					  varchar(50)   NOT NULL				  -- identifier random
     , PRIMARY KEY ("pdf_queue_id")
 	, UNIQUE ("key")
 );
