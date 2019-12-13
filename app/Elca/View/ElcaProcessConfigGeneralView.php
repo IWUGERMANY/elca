@@ -618,8 +618,11 @@ class ElcaProcessConfigGeneralView extends HtmlView
                     (string)$quantitativeReference->unit()
                 ),
             ];
-            foreach ($conversionsPerProcessDbId[$processDb->id()->value()] as $conversionIdent => $conversionContext) {
-                $dataObject->$conversionIdent = ElcaNumberFormat::toString($conversionContext->conversion->factor(), 3);
+            if (isset($conversionsPerProcessDbId[$processDb->id()->value()]) && is_array($conversionsPerProcessDbId[$processDb->id()->value()])) {
+                foreach ($conversionsPerProcessDbId[$processDb->id()->value()] as $conversionIdent => $conversionContext) {
+                    $dataObject->$conversionIdent = ElcaNumberFormat::toString($conversionContext->conversion->factor(),
+                        3);
+                }
             }
 
             $dataSet[] = $dataObject;
