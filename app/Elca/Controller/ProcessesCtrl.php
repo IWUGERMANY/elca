@@ -280,9 +280,8 @@ class ProcessesCtrl extends TabsCtrl
             return;
         }
 
-        $this->initProcessDbId();
-
         $processConfig = ElcaProcessConfig::findById($this->Request->processConfigId);
+        $this->initProcessDbId($processConfig->getId());
 
         if (isset($this->Request->saveGeneral)) {
             $validator = new ElcaProcessConfigValidator($this->Request);

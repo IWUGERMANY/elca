@@ -615,7 +615,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
                 'processDb'             => $processDb->name(),
                 'quantitativeReference' => ElcaNumberFormat::formatQuantity(
                     $quantitativeReference->value(),
-                    (string)$quantitativeReference->unit()
+                    (string)$quantitativeReference->unit(), 3
                 ),
             ];
             if (isset($conversionsPerProcessDbId[$processDb->id()->value()]) && is_array($conversionsPerProcessDbId[$processDb->id()->value()])) {
