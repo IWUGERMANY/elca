@@ -167,7 +167,7 @@ abstract class BaseReportsCtrl extends AppCtrl
         );
 
         Log::getInstance()->debug($cmd);
-		// exec($cmd);
+		exec($cmd);
 
         // delete tmp header and footer files
         $tmpHeaderFile->delete();
