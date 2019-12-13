@@ -68,8 +68,6 @@ class ElcaNavigationMetaView extends HtmlView
     {
         $Container = $this->getElementById('meta');
 
-		
-		var_dump($_SESSION);
         $User = UserStore::getInstance()->getUser();
         if ($User->getFirstname() && $User->getLastName())
             $name = trim($User->getFirstname() . ' ' . $User->getLastname());

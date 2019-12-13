@@ -28,6 +28,7 @@ use Beibob\Blibs\Environment;
 use Beibob\Blibs\FrontController;
 use Beibob\Blibs\HtmlView;
 use Beibob\Blibs\UserStore;
+use Beibob\Blibs\BlibsDateTime;
 use DOMElement;
 use Elca\Db\ElcaLifeCycle;
 use Elca\Db\ElcaProcess;
@@ -119,8 +120,31 @@ abstract class ElcaReportsView extends HtmlView
 
         $pdfUrl = FrontController::getInstance()->getUrlTo(null, 'pdf', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default']);
         $modalUrl = FrontController::getInstance()->getUrlTo(null, 'pdfModal', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default']);
-        $PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal', 'href' => $modalUrl], t('PDF')));
+		$PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal', 'href' => $modalUrl], t('PDF erstellen')));
 
+		// PDF in work / already exists - project_variant, project_id, user_id
+		$PDFinfo = ElcaReportSet::findPdfInQueue($this->Project->getId(),$this->projectVariantId, UserStore::getInstance()->getUserId(),FrontController::getInstance()->getUrlTo().(FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default').'/');
+		if(!$PDFinfo->isEmpty())
+		{
+			// PDF ready?
+			$infoArrayReady = (array)$PDFinfo[0]->ready;
+			if(	!is_null($infoArrayReady[0]) )
+			{
+				$PDFreadyDate = BlibsDateTime::factory($infoArrayReady[0]);
+				$PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal','title' => t('Erstellt:').$PDFreadyDate->getDateTimeString(t('DATETIME_FORMAT_DMY') . ' ' . t('DATETIME_FORMAT_HI')), 'href' => $modalUrl], t('PDF anzeigen')));	
+				
+				$infoArrayKey = (array)$PDFinfo[0]->key;
+				if($infoArrayKey[0])
+				{	
+					
+				}
+			}		
+			else
+			{
+				$PrintDiv->appendChild($this->getSpan(t('PDF wird erstellt'),['class'=>'pdfcreate']));
+			}	
+		}	
+		
         $ProjectVariant = ElcaProjectVariant::findById($this->projectVariantId);
         $ProjectConstruction = ElcaProjectConstruction::findByProjectVariantId($this->projectVariantId);
 

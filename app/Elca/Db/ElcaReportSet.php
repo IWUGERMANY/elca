@@ -452,23 +452,23 @@ class ElcaReportSet extends DataObjectSet
 
     /**
      * Find data in PDF Queue
-	 * @param  $projectId
 	 * @param  $projectVariantId
+	 * @param  $projectId
+	 * @param  $userId
      * @return array
      */
-    public static function findPdfInQueue($projectId, $projectVariantId)
+    public static function findPdfInQueue($projectId, $projectVariantId,$userId, $report_name)
     {
-		$initValues = array('project_variant_id' => $projectVariantId, 'project_id' => $projectId);
-
+		$initValues = array('project_variant_id' => $projectVariantId, 'project_id' => $projectId, 'user_id' => $userId, 'report_name' => $report_name);
         $sql = sprintf(
             'SELECT * FROM %s 
                     WHERE user_id = :user_id 
 					AND	current_variant_id = :project_variant_id
 					AND projects_id = :project_id
-					AND ready IS NOT NULL'
+					AND report_name = :report_name'
             , self::TABLE_REPORT_PDF_QUEUE
         );
-		
+		// 	AND ready IS NOT NULL
         return self::_findBySql(get_class(), $sql, $initValues);		
     }	
 
@@ -477,22 +477,76 @@ class ElcaReportSet extends DataObjectSet
      */
     public static function setPdfInQueue(array $initValues)
     {
-		$sql = sprintf(
-            'INSERT INTO %s (user_id,projects_id,projects_name,projects_filename,current_variant_id,pdf_cmd,key)
-             VALUES  (:user_id, :projects_id, :projects_name, :projects_filename, :current_variant_id, :pdf_cmd, :key)'
-            ,
-            self::TABLE_REPORT_PDF_QUEUE
-        );
-
-		$Stmt = self::prepareStatement($sql,$initValues );
-        if (!$Stmt->execute()) {
-            throw new \Exception(self::getSqlErrorMessage($sql, $initValues));
+		$PDFinfo = self::findPdfInQueue($initValues['projects_id'], $initValues['current_variant_id'],$initValues['user_id'], $initValues['report_name']);
+		
+		if( $PDFinfo->isEmpty() )
+		{
+			$sql = sprintf(
+				'INSERT INTO %s (user_id,projects_id,report_name,projects_filename,current_variant_id,pdf_cmd,key)
+				 VALUES  (:user_id, :projects_id, :report_name, :projects_filename, :current_variant_id, :pdf_cmd, :key)'
+				,
+				self::TABLE_REPORT_PDF_QUEUE
+			);
+		}	
+		else
+		{
+			$infoArrayKey = (array)$PDFinfo[0]->key;
+			$initValues['key'] = $infoArrayKey[0];
+			
+			$sql = sprintf(
+				'UPDATE %s set projects_filename=:projects_filename, pdf_cmd=:pdf_cmd, key=:key, ready=NULL, created=NOW()
+				WHERE user_id=:user_id
+				AND	projects_id=:projects_id
+				AND report_name=:report_name
+				AND current_variant_id=:current_variant_id
+				AND key=:key',
+				self::TABLE_REPORT_PDF_QUEUE
+			);
+		}	
+	
+		$Stmt = self::prepareStatement($sql,$initValues ); 
+		if (!$Stmt->execute()) {
+			throw new \Exception(self::getSqlErrorMessage($sql, $initValues));
         }
-
         return true;
     }
+	
+	
+	/**
+     * Save data in PDF queue
+     */
+    public static function setPdfReadyInQueue($initValues)
+    {
+		$sql = sprintf(
+				'UPDATE %s set ready=NOW()
+				WHERE user_id=:user_id
+				AND	projects_id=:projects_id
+				AND report_name=:report_name
+				AND current_variant_id=:current_variant_id',
+				self::TABLE_REPORT_PDF_QUEUE
+		);
 
+		$Stmt = self::prepareStatement($sql,$initValues ); 
+		if (!$Stmt->execute()) {
+			throw new \Exception(self::getSqlErrorMessage($sql, $initValues));
+        }
+        return true;
+    }	
 
+    /**
+     * Create PDF - query Queue in runner.php Task
+     * @return array
+     */
+    public static function createPdfInQueue()
+    {
+		$sql = sprintf(
+            'SELECT * FROM %s 
+                    WHERE ready IS NULL' 
+            , self::TABLE_REPORT_PDF_QUEUE
+        );
+		// 	AND ready IS NOT NULL
+        return self::_findBySql(get_class(), $sql, null);		
+    }	
 
 
     /**

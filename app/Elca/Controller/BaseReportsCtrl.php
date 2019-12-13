@@ -153,7 +153,7 @@ abstract class BaseReportsCtrl extends AppCtrl
         $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('cacheDir', true, 'tmp/cache');
         
 		$tempTitle = date('Ymd') . '_' . $this->buildFilename($this->Elca->getProject()->getName()) . '.pdf';
-		
+
         $cmd = sprintf(
             'timeout %s /usr/local/bin/wkhtmltopdf --quiet --window-status ready_to_print --cache-dir %s --title %s -s A4 --margin-top 55 --margin-bottom 30 --margin-right 10 --margin-left 25 --print-media-type --no-stop-slow-scripts --javascript-delay %d --header-html %s --header-spacing 15 --footer-html %s %s %s',
             self::TIMEOUT,
@@ -166,7 +166,6 @@ abstract class BaseReportsCtrl extends AppCtrl
             $pdf->getFilepath()
         );
 
-			
         Log::getInstance()->debug($cmd);
 		// exec($cmd);
 
@@ -177,17 +176,17 @@ abstract class BaseReportsCtrl extends AppCtrl
 		// saving / placing PDF report data in queue
 		// :user_id, :projects_id, :projects_name, :current_variant_id, :pdf_cmd, :key
 		$queue_values = [
-				':user_id' => $this->Session->getNamespace('blibs.userStore')->__get('userId'), 
-				':projects_id' => $this->Elca->getProjectId(), 
-				':projects_name' => $this->Elca->getProject()->getName(), 
-				':projects_filename' => $tempTitle,
-				':current_variant_id' => $this->Elca->getProjectVariantId(), 
-				':pdf_cmd' => $cmd, 
-				':key' => $key
+				'user_id' => $this->Session->getNamespace('blibs.userStore')->__get('userId'), 
+				'projects_id' => $this->Elca->getProjectId(), 
+				'report_name' => FrontController::getInstance()->getUrlTo(get_class($this), $this->Request->a), 
+				'projects_filename' => $tempTitle,
+				'current_variant_id' => $this->Elca->getProjectVariantId(), 
+				'pdf_cmd' => $cmd, 
+				'key' => $key
 				];
-				
-		ElcaReportSet::setPdfInQueue($queue_values);
-		
+		$testPDF = ElcaReportSet::setPdfInQueue($queue_values);
+
+
         $View = $this->addView(new HtmlView());
         $View->appendChild($View->getDiv(['id' => 'download-pdf'], $P = $View->getP('')));
 
@@ -201,6 +200,7 @@ abstract class BaseReportsCtrl extends AppCtrl
                 $this->buildFilename($this->Elca->getProject()->getName()) . '.pdf'
             )
         );
+
     }
 
     /**

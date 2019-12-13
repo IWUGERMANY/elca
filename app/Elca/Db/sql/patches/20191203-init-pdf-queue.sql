@@ -8,7 +8,7 @@ CREATE TABLE elca.reports_pdf_queue
       "pdf_queue_id"  		  int DEFAULT nextval('queue_id_seq') NOT NULL	  -- pdfQueueId
 	, "user_id"           	  int	   		 NOT NULL                 -- nutzert id
     , "projects_id"           int	   		 NOT NULL                 -- projekt id
-    , "projects_name"     	  varchar(250)   NOT NULL                 -- project name
+    , "report_name"     	  varchar(250)   NOT NULL                 -- report name
 	, "projects_filename"     varchar(250)   NOT NULL                 -- project file name (with date)
 	, "current_variant_id" 	  int									  -- variant id	
 	, "pdf_cmd"				  text 									  -- cmd to create pdf		
