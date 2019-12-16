@@ -45,6 +45,7 @@ use Elca\Db\ElcaLifeCycle;
 use Elca\Db\ElcaProjectConstruction;
 use Elca\Db\ElcaProjectEnEv;
 use Elca\Db\ElcaProjectFinalEnergyDemand;
+use Elca\Db\ElcaProjectKwk;
 use Elca\Db\ElcaProjectTransportSet;
 use Elca\Db\ElcaProjectVariant;
 use Elca\Db\ElcaReportSet;
@@ -134,7 +135,7 @@ class ElcaReportEffectsView extends ElcaReportsView
                                       ->get(LifeCycleUsageService::class)
                                       ->findLifeCycleUsagesForProject(new ProjectId($this->Project->getId()));
 
-        $TdContainer = $this->appendPrintTable($Container);
+        $tdContainer = $this->appendPrintTable($Container);
 
         switch($this->buildMode)
         {
@@ -155,12 +156,12 @@ class ElcaReportEffectsView extends ElcaReportsView
 
                 $Form->appendTo($Container);
 
-                $this->buildElementEffects($TdContainer, ElcaReportSet::findConstructionEffects($this->projectVariantId), $m2a, $isEn15804Compliant, $lifeCycleUsages);
+                $this->buildElementEffects($tdContainer, ElcaReportSet::findConstructionEffects($this->projectVariantId), $m2a, $isEn15804Compliant, $lifeCycleUsages);
                 break;
 
             case self::BUILDMODE_ELEMENTS:
                 $this->appendNonDefaultLifeTimeInfo($InfoDl);
-                $this->buildElementEffects($TdContainer, ElcaReportSet::findElementCatalogEffects($this->projectVariantId), $m2a, $isEn15804Compliant, $lifeCycleUsages);
+                $this->buildElementEffects($tdContainer, ElcaReportSet::findElementCatalogEffects($this->projectVariantId), $m2a, $isEn15804Compliant, $lifeCycleUsages);
                 break;
 
             case self::BUILDMODE_SYSTEMS:
@@ -179,7 +180,7 @@ class ElcaReportEffectsView extends ElcaReportsView
                 $Radio->add(new HtmlRadiobox(t('aggregiert'), 1));
 
                 $Form->appendTo($Container);
-                $this->buildElementEffects($TdContainer, ElcaReportSet::findSystemEffects($this->projectVariantId), $m2a, $isEn15804Compliant, $lifeCycleUsages);
+                $this->buildElementEffects($tdContainer, ElcaReportSet::findSystemEffects($this->projectVariantId), $m2a, $isEn15804Compliant, $lifeCycleUsages);
                 break;
 
             case self::BUILDMODE_OPERATION:
@@ -187,10 +188,22 @@ class ElcaReportEffectsView extends ElcaReportsView
                 $InfoDl->appendChild($this->getDt([], t('EnEV-Bezugsfläche (NGF)') . ': '));
                 $InfoDl->appendChild($this->getDd([], $ProjectEnEv->getNgf().' m²'));
 
-                $TdContainer->appendChild($this->getH1(t('Endenergiebereitstellung')));
-                $this->buildOperationEffects($TdContainer, ElcaReportSet::findFinalEnergySupplyEffects($this->projectVariantId), $m2a, $isEn15804Compliant, true);
-                $TdContainer->appendChild($this->getH1(t('Endenergiebedarf')));
-                $this->buildOperationEffects($TdContainer, ElcaReportSet::findFinalEnergyDemandEffects($this->projectVariantId), $m2a, $isEn15804Compliant);
+                $tdContainer->appendChild($this->getH1(t('Endenergiebereitstellung')));
+                $this->buildOperationEffects($tdContainer, ElcaReportSet::findFinalEnergySupplyEffects($this->projectVariantId), $m2a, $isEn15804Compliant, true);
+                $tdContainer->appendChild($this->getH1(t('Endenergiebedarf')));
+                $this->buildOperationEffects($tdContainer, ElcaReportSet::findFinalEnergyDemandEffects($this->projectVariantId), $m2a, $isEn15804Compliant);
+
+                $projectKwk = ElcaProjectKwk::findByProjectVariantId($this->projectVariantId);
+
+                if ($projectKwk->isInitialized()) {
+                    $h1 = $tdContainer->appendChild($this->getH1(t('KWK / Fernwärme')));
+
+                    if ($projectKwk->getName()) {
+                        $h1->appendChild($this->getText(' "'. $projectKwk->getName() .'"'));
+                    }
+                    $this->buildOperationEffects($tdContainer,
+                        ElcaReportSet::findKwkFinalEnergyDemandEffects($this->projectVariantId), $m2a, $isEn15804Compliant);
+                }
                 break;
 
             case self::BUILDMODE_TRANSPORTS:
@@ -198,14 +211,14 @@ class ElcaReportEffectsView extends ElcaReportsView
                 if (!$TransportSet->count() || !$TransportSet[0]->getCalcLca())
                     return;
 
-                $this->buildTransportEffects($TdContainer, ElcaReportSet::findTransportEffects($this->projectVariantId), $m2a, $isEn15804Compliant);
+                $this->buildTransportEffects($tdContainer, ElcaReportSet::findTransportEffects($this->projectVariantId), $m2a, $isEn15804Compliant);
                 break;
 
             case self::BUILDMODE_TOP_ELEMENTS:
-                $this->appendTopElements($TdContainer, $ProjectVariant, $m2a);
+                $this->appendTopElements($tdContainer, $ProjectVariant, $m2a);
                 break;
             case self::BUILDMODE_TOP_PROCESSES:
-                $this->appendTopProcesses($TdContainer, $ProjectVariant, $m2a);
+                $this->appendTopProcesses($tdContainer, $ProjectVariant, $m2a);
                 break;
 
         }
@@ -383,6 +396,11 @@ class ElcaReportEffectsView extends ElcaReportsView
         }
 
         $Dl = $Container->appendChild($this->getDl(['class' => 'clearfix']));
+        if (isset($DataObject->ratio) && $DataObject->ratio != 1) {
+            $Dl->appendChild($this->getDt([], t('Anteil') . ':'));
+            $Dl->appendChild($this->getDd([], ElcaNumberFormat::formatQuantity($DataObject->ratio, '%', 2, true)));
+        }
+
         $Dl->appendChild($this->getDt([], t('Menge') . ': '));
 
         $qtyStr = ElcaNumberFormat::toString($DataObject->element_quantity, 2) .' '. ElcaNumberFormat::formatUnit($DataObject->element_ref_unit);
