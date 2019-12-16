@@ -120,6 +120,8 @@ abstract class ElcaReportsView extends HtmlView
 
         $pdfUrl = FrontController::getInstance()->getUrlTo(null, 'pdf', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default']);
         $modalUrl = FrontController::getInstance()->getUrlTo(null, 'pdfModal', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default']);
+		$modalUrlDownload = FrontController::getInstance()->getUrlTo(null, 'pdfModalDownload', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default']);
+		
 		$PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal', 'href' => $modalUrl], t('PDF erstellen')));
 
 		// PDF in work / already exists - project_variant, project_id, user_id
@@ -131,7 +133,7 @@ abstract class ElcaReportsView extends HtmlView
 			if(	!is_null($infoArrayReady[0]) )
 			{
 				$PDFreadyDate = BlibsDateTime::factory($infoArrayReady[0]);
-				$PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal','title' => t('Erstellt:').$PDFreadyDate->getDateTimeString(t('DATETIME_FORMAT_DMY') . ' ' . t('DATETIME_FORMAT_HI')), 'href' => $modalUrl], t('PDF anzeigen')));	
+				$PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal','title' => t('Erstellt:').$PDFreadyDate->getDateTimeString(t('DATETIME_FORMAT_DMY') . ' ' . t('DATETIME_FORMAT_HI')), 'href' => $modalUrlDownload], t('PDF anzeigen')));	
 				
 				$infoArrayKey = (array)$PDFinfo[0]->key;
 				if($infoArrayKey[0])

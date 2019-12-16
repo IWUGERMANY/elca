@@ -40,6 +40,7 @@ use Elca\Service\ElcaSessionRecovery;
 use Elca\Service\ProjectAccess;
 use Elca\View\Report\ElcaReportsHeaderFooterView;
 use Elca\View\ReportsPdfModalView;
+use Elca\View\ReportsPdfModalDownloadView;
 use Elca\Db\ElcaReportSet;
 
 /**
@@ -73,8 +74,8 @@ abstract class BaseReportsCtrl extends AppCtrl
     {
 		// elca.js Row:2158 preparePdf: function ($context) 
 		// 
-        $V      = $this->addView(new ReportsPdfModalDownloadView());
-        $pdfUrl = FrontController::getInstance()->getUrlTo(null, 'pdf', ['a' => $this->Request->a]);
+        $V  = $this->addView(new ReportsPdfModalDownloadView());
+        $pdfUrl = FrontController::getInstance()->getUrlTo(null, 'pdfDownload', ['a' => $this->Request->a]);
         $V->assign('action', $pdfUrl);
     }
 
@@ -83,16 +84,40 @@ abstract class BaseReportsCtrl extends AppCtrl
      */
     protected function pdfAction()
     {
-        $pdf = new File();
-        $pdf->createTemporaryFile();
+		$key = IdFactory::getUniqueId();
+
+	
+		$PDFinfo = ElcaReportSet::findPdfInQueue(
+			$this->Elca->getProjectId(), 
+			$this->Elca->getProjectVariantId(),
+			$this->Session->getNamespace('blibs.userStore')->__get('userId'), 
+			FrontController::getInstance()->getUrlTo(get_class($this), $this->Request->a)
+		);
+		
+		if( !$PDFinfo->isEmpty() )
+		{
+			$infoArrayKey = (array)$PDFinfo[0]->key;
+			$key = $infoArrayKey[0];
+		}	
+		
+		$environment = Environment::getInstance();
+		$config = $environment->getConfig();
+		
+        $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('pdfCreateDir', true, 'tmp/pdf-data').$key;		
+		$pdf = new File();
+		if(!$pdf->isDir($tmpCacheDir))
+		{
+			mkdir($tmpCacheDir,0777);
+			chmod($tmpCacheDir,0777);
+		}	
+		
+        $pdf->createTemporaryFile($tmpCacheDir);
 
         $namespace = $this->getSessionNamespace();
         $keys      = $namespace->pdfKeys;
         if (!is_array($keys)) {
             $keys = [];
         }
-
-        $key        = IdFactory::getUniqueId();
         $keys[$key] = $pdf->getFilepath();
 
         $namespace->pdfKeys = $keys;
@@ -106,7 +131,7 @@ abstract class BaseReportsCtrl extends AppCtrl
         $SessionRecovery->storeNamespace($this->Session->getNamespace('elca.locale'));
         $SessionRecovery->storeNamespace($this->Session->getNamespace(ProjectAccess::NAMESPACE_NAME));
 
-        $environment = Environment::getInstance();
+		// $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('cacheDir', true, 'tmp/cache');
 
         $projectsUrl = new Url(
             FrontController::getInstance()->getUrlTo('Elca\Controller\ProjectsCtrl', $this->Elca->getProjectId())
@@ -127,10 +152,11 @@ abstract class BaseReportsCtrl extends AppCtrl
         );
 
         $tmpHeaderFile = new File();
-        $tmpHeaderFile->createTemporaryFile();
+        $tmpHeaderFile->createTemporaryFile($tmpCacheDir);
         $tmpHeaderFile->write(file_get_contents((string)$headerUrl));
         $tmpHeaderFile->close();
-        File::move($tmpHeaderFile->getFilepath(), $tmpHeaderFile->getFilepath() .'.html');
+		
+		File::move($tmpHeaderFile->getFilepath(), $tmpHeaderFile->getFilepath() .'.html');
         $tmpHeaderFile = new File($tmpHeaderFile->getFilepath() .'.html');
 
         $footerUrl = new Url(
@@ -143,15 +169,13 @@ abstract class BaseReportsCtrl extends AppCtrl
         );
 
         $tmpFooterFile = new File();
-        $tmpFooterFile->createTemporaryFile();
+        $tmpFooterFile->createTemporaryFile($tmpCacheDir);
         $tmpFooterFile->write(file_get_contents((string)$footerUrl));
         $tmpFooterFile->close();
         File::move($tmpFooterFile->getFilepath(), $tmpFooterFile->getFilepath() .'.html');
         $tmpFooterFile = new File($tmpFooterFile->getFilepath() .'.html');
 
-        $config = $environment->getConfig();
-        $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('cacheDir', true, 'tmp/cache');
-        
+       
 		$tempTitle = date('Ymd') . '_' . $this->buildFilename($this->Elca->getProject()->getName()) . '.pdf';
 
         $cmd = sprintf(
@@ -167,11 +191,11 @@ abstract class BaseReportsCtrl extends AppCtrl
         );
 
         Log::getInstance()->debug($cmd);
-		exec($cmd);
+		// exec($cmd);
 
         // delete tmp header and footer files
-        $tmpHeaderFile->delete();
-        $tmpFooterFile->delete();
+        // $tmpHeaderFile->delete();
+        // $tmpFooterFile->delete();
 
 		// saving / placing PDF report data in queue
 		// :user_id, :projects_id, :projects_name, :current_variant_id, :pdf_cmd, :key
@@ -187,6 +211,7 @@ abstract class BaseReportsCtrl extends AppCtrl
 		$testPDF = ElcaReportSet::setPdfInQueue($queue_values);
 
 
+		/*
         $View = $this->addView(new HtmlView());
         $View->appendChild($View->getDiv(['id' => 'download-pdf'], $P = $View->getP('')));
 
@@ -200,7 +225,46 @@ abstract class BaseReportsCtrl extends AppCtrl
                 $this->buildFilename($this->Elca->getProject()->getName()) . '.pdf'
             )
         );
+        */
+    }
 
+    /**
+     * show pdf for downloading
+     */
+    protected function pdfDownloadAction()
+    {
+       $PDFinfo = ElcaReportSet::findPdfInQueue(
+			$this->Elca->getProjectId(), 
+			$this->Elca->getProjectVariantId(),
+			$this->Session->getNamespace('blibs.userStore')->__get('userId'), 
+			FrontController::getInstance()->getUrlTo(get_class($this), $this->Request->a)
+		);
+	  
+	   if( !$PDFinfo->isEmpty() )
+		{
+			$infoArray = (array)$PDFinfo[0];
+			
+			if(!is_null($infoArray["ready"]))
+			{
+				$environment = Environment::getInstance();
+				$config = $environment->getConfig();
+				
+				$View = $this->addView(new HtmlView());
+				$View->appendChild($View->getDiv(['id' => 'download-pdf'], $P = $View->getP('')));
+				
+				$tmpCacheDir = $config->toDir('baseDir') . $config->toDir('pdfCreateDir', true, 'tmp/pdf-data'). $infoArray["key"];
+				$downloadUrl = new Url(
+					FrontController::getInstance()->getUrlTo(get_class($this), 'downloadPdf'),
+					['key' => $infoArray["key"]]
+				);
+				$P->appendChild(
+					$View->getA(
+						['class' => 'no-xhr', 'href' => $downloadUrl],
+						$this->buildFilename($infoArray["projects_filename"]) 
+					)
+				);
+			}	
+		}	
     }
 
     /**
