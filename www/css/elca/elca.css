@@ -650,6 +650,8 @@ h1.projectHeader { float: left; margin-right: 3em; }
 
 #content .pdfcreate { padding: 0 5px; }
 
+#content.report-effects .reportForm, #content.report-summary-element-types .reportForm { position: absolute; top: 50px; left: 700px; width: 100px; }
+
 .toggle { display: none; }
 .toggle, .toggle:after, .toggle:before, .toggle *, .toggle *:after, .toggle *:before, .toggle + .toggle-btn { box-sizing: border-box; }
 .toggle::selection, .toggle:after::selection, .toggle:before::selection, .toggle *::selection, .toggle *:after::selection, .toggle *:before::selection, .toggle + .toggle-btn::selection { background: none; }

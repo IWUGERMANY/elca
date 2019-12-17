@@ -3,5 +3,6 @@
     <h1>_(PDF-Datei zum Download)_</h1>
 
     <div class="spinning-wheel" data-action="$$action$$"></div>
+	<p class="pdf-gen"></p>
     <p class="pdf-gen-done"><strong>_(Ihr Dokument ist verfügbar.)_ <div id="download-pdf"></div></strong></p>
 </div>

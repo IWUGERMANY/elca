@@ -48,3 +48,10 @@
 #content .pdfcreate { 
 	padding: 0 5px;
 }
+
+#content.report-effects .reportForm, #content.report-summary-element-types .reportForm {
+    position: absolute;
+    top: 50px;
+    left: 700px;
+    width: 100px;
+}

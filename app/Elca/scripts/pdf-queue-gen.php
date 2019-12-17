@@ -26,22 +26,33 @@
 use Beibob\Blibs\Environment;
 use Elca\Db\ElcaReportSet;
 
-
 $appDir = realpath('./app');
 $config = Environment::getInstance()->getConfig();
+
+// temp. file - check script is running
+if( !isset($config->pdfTempCreateFilename) || !isset($config->pdfCreateDir) ) 
+{
+	logerror('Error: Create PDF Reports - check configuration - missing values: pdfCreateDir, pdfTempCreateFilename');
+}	
+
+$tmpCacheDirFile = $config->toDir('baseDir') . $config->toDir('pdfCreateDir', true, 'tmp/pdf-data').$config->pdfTempCreateFilename; 	
+
+if( file_exists($tmpCacheDirFile) )
+{
+	exit();
+}
+
 try {
-	loginfo('Create PDF Reports');
-    loginfo('----------------------------------------------------------------');
-    loginfo(ElcaReportSet::TABLE_REPORT_PDF_QUEUE);
-	loginfo('----------------------------------------------------------------');
+	
+	if( touch($tmpCacheDirFile) === false) 
+	{
+		logerror('Error: Create PDF Reports - no temp file created to check if script is running');
+		exit();
+	}	
 	
 	$PDF2Create = ElcaReportSet::createPdfInQueue();
 	
-	if( $PDF2Create->isEmpty() )
-	{
-		exit();
-	}	
-	else
+	if( !$PDF2Create->isEmpty() )
 	{
 		foreach($PDF2Create as $PDFreport)
 		{
@@ -55,13 +66,16 @@ try {
 			ElcaReportSet::setPdfReadyInQueue($initValues);
 		}
 	}	
+	
 }
 catch (\Exception $Exception)
 {
-    logerror($Exception->getMessage());
+	logerror('Error: Create PDF Reports');
+    logerror(ElcaReportSet::TABLE_REPORT_PDF_QUEUE);
+	logerror($Exception->getMessage());
 }
-
-
+unlink($tmpCacheDirFile);
+?>
 
 
 

@@ -455,6 +455,7 @@ class ElcaReportSet extends DataObjectSet
 	 * @param  $projectVariantId
 	 * @param  $projectId
 	 * @param  $userId
+	 * @param  $report_name
      * @return array
      */
     public static function findPdfInQueue($projectId, $projectVariantId,$userId, $report_name)
@@ -466,6 +467,29 @@ class ElcaReportSet extends DataObjectSet
 					AND	current_variant_id = :project_variant_id
 					AND projects_id = :project_id
 					AND report_name = :report_name'
+            , self::TABLE_REPORT_PDF_QUEUE
+        );
+		// 	AND ready IS NOT NULL
+        return self::_findBySql(get_class(), $sql, $initValues);		
+    }	
+
+    /**
+     * Find data in PDF Queue
+	 * @param  $projectVariantId
+	 * @param  $projectId
+	 * @param  $userId
+	 * @param  $key
+     * @return array
+     */
+    public static function findPdfInQueueByHash($projectId, $projectVariantId,$userId, $key_hash)
+    {
+		$initValues = array('project_variant_id' => $projectVariantId, 'project_id' => $projectId, 'user_id' => $userId, 'key' => $key_hash);
+        $sql = sprintf(
+            'SELECT * FROM %s 
+                    WHERE user_id = :user_id 
+					AND	current_variant_id = :project_variant_id
+					AND projects_id = :project_id
+					AND key = :key'
             , self::TABLE_REPORT_PDF_QUEUE
         );
 		// 	AND ready IS NOT NULL

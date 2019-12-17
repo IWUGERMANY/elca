@@ -86,7 +86,6 @@ abstract class BaseReportsCtrl extends AppCtrl
     {
 		$key = IdFactory::getUniqueId();
 
-	
 		$PDFinfo = ElcaReportSet::findPdfInQueue(
 			$this->Elca->getProjectId(), 
 			$this->Elca->getProjectVariantId(),
@@ -103,16 +102,20 @@ abstract class BaseReportsCtrl extends AppCtrl
 		$environment = Environment::getInstance();
 		$config = $environment->getConfig();
 		
-        $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('pdfCreateDir', true, 'tmp/pdf-data').$key;		
-		$pdf = new File();
-		if(!$pdf->isDir($tmpCacheDir))
+        $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('pdfCreateDir', true, 'tmp/pdf-data').$key;	
+		$tempTitle = date('Ymd') . '_' . $this->buildFilename($this->Elca->getProject()->getName()) . '.pdf';		
+		
+		$pdfDir = new File();
+		if(!$pdfDir->isDir($tmpCacheDir))
 		{
 			mkdir($tmpCacheDir,0777);
 			chmod($tmpCacheDir,0777);
 		}	
-		
-        $pdf->createTemporaryFile($tmpCacheDir);
+		$pdfDir->close();
+	
+		$pdf = new File($tmpCacheDir.'/tempPDF.pdf');
 
+		// -----------------------------------------
         $namespace = $this->getSessionNamespace();
         $keys      = $namespace->pdfKeys;
         if (!is_array($keys)) {
@@ -130,8 +133,9 @@ abstract class BaseReportsCtrl extends AppCtrl
         $SessionRecovery->storeNamespace($this->Session->getNamespace('elca'));
         $SessionRecovery->storeNamespace($this->Session->getNamespace('elca.locale'));
         $SessionRecovery->storeNamespace($this->Session->getNamespace(ProjectAccess::NAMESPACE_NAME));
-
+		
 		// $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('cacheDir', true, 'tmp/cache');
+		// -----------------------------------------
 
         $projectsUrl = new Url(
             FrontController::getInstance()->getUrlTo('Elca\Controller\ProjectsCtrl', $this->Elca->getProjectId())
@@ -176,8 +180,8 @@ abstract class BaseReportsCtrl extends AppCtrl
         $tmpFooterFile = new File($tmpFooterFile->getFilepath() .'.html');
 
        
-		$tempTitle = date('Ymd') . '_' . $this->buildFilename($this->Elca->getProject()->getName()) . '.pdf';
-
+		
+		
         $cmd = sprintf(
             'timeout %s /usr/local/bin/wkhtmltopdf --quiet --window-status ready_to_print --cache-dir %s --title %s -s A4 --margin-top 55 --margin-bottom 30 --margin-right 10 --margin-left 25 --print-media-type --no-stop-slow-scripts --javascript-delay %d --header-html %s --header-spacing 15 --footer-html %s %s %s',
             self::TIMEOUT,
@@ -259,8 +263,8 @@ abstract class BaseReportsCtrl extends AppCtrl
 				);
 				$P->appendChild(
 					$View->getA(
-						['class' => 'no-xhr', 'href' => $downloadUrl],
-						$this->buildFilename($infoArray["projects_filename"]) 
+						['class' => 'no-xhr', 'href' => $downloadUrl],$infoArray["projects_filename"]
+						//$this->buildFilename($infoArray["projects_filename"]) 
 					)
 				);
 			}	
@@ -273,9 +277,10 @@ abstract class BaseReportsCtrl extends AppCtrl
     protected function checkPdfAction()
     {
 		$reportsPDF = ElcaReportSet::findPdfInQueue(
-				$this->Elca->getProjectId(), 
-				$this->Elca->getProjectVariantId(),
-				$this->Session->getNamespace('blibs.userStore')->__get('userId')
+			$this->Elca->getProjectId(), 
+			$this->Elca->getProjectVariantId(),
+			$this->Session->getNamespace('blibs.userStore')->__get('userId'), 
+			FrontController::getInstance()->getUrlTo(get_class($this), $this->Request->a)
 		);	
 		
 		return $reportsPDF;
@@ -287,19 +292,43 @@ abstract class BaseReportsCtrl extends AppCtrl
      */
     protected function downloadPdfAction()
     {
-        $namespace = $this->getSessionNamespace();
+        /*
+		$namespace = $this->getSessionNamespace();
         $pdf = File::factory($namespace->pdfKeys[$this->Request->key]);
 
-        if (!$pdf->exists())
+         
+		if (!$pdf->exists())
         {
             $this->messages->add('Die angeforderte Datei ist nicht verfügbar!', ElcaMessages::TYPE_ERROR);
             return;
         }
+		*/
+		$PDFinfo = ElcaReportSet::findPdfInQueueByHash(
+			$this->Elca->getProjectId(), 
+			$this->Elca->getProjectVariantId(),
+			$this->Session->getNamespace('blibs.userStore')->__get('userId'), 
+			$this->Request->key
+			// FrontController::getInstance()->getUrlTo(get_class($this), $this->Request->key)
+		);
 
-        $this->Response->setHeader('Content-Type: application/pdf');
-        $this->Response->setHeader('Content-Disposition: attachment; filename=' . urlencode(date('Ymd') . '_' . $this->buildFilename($this->Elca->getProject()->getName()) . '.pdf'));
+		if( !$PDFinfo->isEmpty() )
+		{
+			$infoArray = (array)$PDFinfo[0];
+			
+			$environment = Environment::getInstance();
+			$config = $environment->getConfig();
+			$tmpCacheDir = $config->toDir('baseDir') . $config->toDir('pdfCreateDir', true, 'tmp/pdf-data').$infoArray["key"];	
 
-        $this->setBaseView(new FileView($pdf->getFilepath()));
+			$pdf = new File($tmpCacheDir."/tempPDF.pdf");
+			$this->Response->setHeader('Content-Type: application/pdf');
+			$this->Response->setHeader('Content-Disposition: attachment; filename=' . urlencode($infoArray["projects_filename"]));
+			$this->setBaseView(new FileView($pdf->getFilepath()));
+		}
+		else
+		{
+			$this->messages->add('Die angeforderte Datei ist nicht verfügbar!', ElcaMessages::TYPE_ERROR);
+            return;
+		}		
     }
 
     /**
