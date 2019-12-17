@@ -499,7 +499,41 @@ class ElcaValidator extends HtmlFormValidator
 
         return true;
     }
-    // End assertProjectFinalEnergyDemands
+
+    /**
+     * Asserts project final energy demans
+     *
+     * @return boolean
+     */
+    public function assertProjectKwkFinalEnergyDemands()
+    {
+        $processConfigIds = $this->getValue('processConfigId');
+        if (!is_array($processConfigIds)) {
+            return true;
+        }
+
+        $atLeastOneIsset = false;
+        foreach (['kwkHeating', 'kwkWater', ] as $property) {
+            $value = $this->getValue($property);
+            $atLeastOneIsset |= !empty($value);
+        }
+        if (!$this->assertTrue('atleastonereq', $atLeastOneIsset, t('Mindestens ein Wert muss angegeben sein'))) {
+            foreach (['kwkHeating', 'kwkWater'] as $property) {
+                $this->setError($property);
+            }
+        }
+
+        $ratios = $this->getValue('ratio');
+        $overallRatio = 0;
+        foreach ($processConfigIds as $key => $processConfigId) {
+            $this->assertProjectKwkFinalEnergyDemand($key);
+            $overallRatio += ElcaNumberFormat::fromString($ratios[$key]);
+        }
+
+        $this->assertTrue('ratio['. $key .']', $overallRatio >= 0 && $overallRatio <= 100, t('Der Wert muss zwischen 0 und 100 liegen'));
+
+        return true;
+    }
 
     /**
      * Asserts a ProjectFinalEnergyDemand row
@@ -526,7 +560,22 @@ class ElcaValidator extends HtmlFormValidator
             }
         }
     }
-    // End assertProjectFinalEnergyDemand
+
+    /**
+     * Asserts a ProjectFinalEnergyDemand row
+     */
+    public function assertProjectKwkFinalEnergyDemand($key)
+    {
+        $processConfigIds = $this->getValue('processConfigId');
+        if (!is_array($processConfigIds) || !isset($processConfigIds[$key])) {
+            return;
+        }
+
+        $suffix = '[' . $key . ']';
+
+        $value = $this->getValue('ratio' . $suffix);
+        $this->assertNotEmpty('ratio'. $suffix, $value, t('Der Wert darf nicht leer sein'));
+    }
 
 
     /**

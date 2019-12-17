@@ -22,6 +22,7 @@ use Beibob\HtmlTools\HtmlFormElement;
 use Beibob\HtmlTools\HtmlFormGroup;
 use Beibob\HtmlTools\HtmlHiddenField;
 use Beibob\HtmlTools\HtmlLink;
+use Beibob\HtmlTools\HtmlStaticText;
 use Beibob\HtmlTools\HtmlTable;
 use Beibob\HtmlTools\HtmlTableHeadRow;
 use Beibob\HtmlTools\HtmlTag;
@@ -34,7 +35,6 @@ use Elca\Db\ElcaCacheFinalEnergyDemand;
 use Elca\Db\ElcaCacheFinalEnergyRefModel;
 use Elca\Db\ElcaCacheFinalEnergySupply;
 use Elca\Db\ElcaIndicatorSet;
-use Elca\Db\ElcaProcessCategory;
 use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessViewSet;
 use Elca\Db\ElcaProjectConstruction;
@@ -82,6 +82,7 @@ class ElcaProjectDataEnEvView extends HtmlView
      */
     private $addNewProjectFinalEnergyDemand;
     private $addNewProjectFinalEnergySupply;
+    private $addNewProjectKwkFinalEnergyDemand;
 
     /**
      * nfg
@@ -106,7 +107,6 @@ class ElcaProjectDataEnEvView extends HtmlView
         ElcaBenchmarkRefProcessConfig::IDENT_PROCESS_ENERGY => 'Prozessenergie'
     ];
 
-
     protected function init(array $args = [])
     {
         parent::init($args);
@@ -121,6 +121,7 @@ class ElcaProjectDataEnEvView extends HtmlView
         $this->Data = $this->get('Data');
         $this->addNewProjectFinalEnergyDemand = $this->get('addNewProjectFinalEnergyDemand', false);
         $this->addNewProjectFinalEnergySupply = $this->get('addNewProjectFinalEnergySupply', false);
+        $this->addNewProjectKwkFinalEnergyDemand = $this->get('addNewProjectKwkFinalEnergyDemand', false);
 
         /**
          * Changed elements
@@ -166,31 +167,40 @@ class ElcaProjectDataEnEvView extends HtmlView
          */
         $refModelProcessEnergyProcessConfigId = null;
         if ($Project->getBenchmarkVersion()->getUseReferenceModel()) {
-            $Form = $this->getSectionForm('projectFinalEnergyRefModelForm', $this->Data->RefModel);
-            $this->appendReferenceModelSection($Form);
-            $Form->appendTo($Container);
+            $form = $this->getSectionForm('projectFinalEnergyRefModelForm', $this->Data->RefModel);
+            $this->appendReferenceModelSection($form);
+            $form->appendTo($Container);
             $refModelProcessEnergyProcessConfigId = $this->Data->RefModel->processConfigId[ElcaBenchmarkRefProcessConfig::IDENT_PROCESS_ENERGY];
         }
 
         /**
          * Append final energy demand form
          */
-        $Form = $this->getSectionForm('projectFinalEnergyDemandForm', $this->Data->Demand);
-        $Form->add(new HtmlHiddenField('addDemand', $this->addNewProjectFinalEnergyDemand));
+        $form = $this->getSectionForm('projectFinalEnergyDemandForm', $this->Data->Demand);
+        $form->add(new HtmlHiddenField('addDemand', $this->addNewProjectFinalEnergyDemand));
 
-        $this->appendEnergyDemandSection($Form, $refModelProcessEnergyProcessConfigId);
-        $Form->appendTo($Container);
+        $this->appendEnergyDemandSection($form, $refModelProcessEnergyProcessConfigId);
+        $form->appendTo($Container);
 
         /**
          * Append final energy supply form
          */
         if ($ProjectVariant->getPhase()->getStep() > 0 && ElcaAccess::getInstance()->canEditFinalEnergySupplies()) {
 
-            $Form = $this->getSectionForm('projectFinalEnergySupplyForm', $this->Data->Supply);
-            $Form->add(new HtmlHiddenField('addSupply', $this->addNewProjectFinalEnergySupply));
-            $this->appendEnergySupplySection($Form);
-            $Form->appendTo($Container);
+            $form = $this->getSectionForm('projectFinalEnergySupplyForm', $this->Data->Supply);
+            $form->add(new HtmlHiddenField('addSupply', $this->addNewProjectFinalEnergySupply));
+            $this->appendEnergySupplySection($form);
+            $form->appendTo($Container);
         }
+
+        /**
+         * Append KWK final energy demand form
+         */
+        $form = $this->getSectionForm('projectKwkFinalEnergyDemandForm', $this->Data->KwkDemand);
+        $form->add(new HtmlHiddenField('addKwkDemand', $this->addNewProjectKwkFinalEnergyDemand));
+
+        $this->appendKwkEnergyDemandSection($form);
+        $form->appendTo($Container);
 
         /**
          * Append projections if in first phase and project has a specified a benchmark version
@@ -560,6 +570,183 @@ class ElcaProjectDataEnEvView extends HtmlView
     /**
      * Appends the energy demand section
      *
+     * @param  HtmlForm $form
+     */
+    protected function appendKwkEnergyDemandSection(HtmlForm $form)
+    {
+        $group = $form->add(new HtmlFormGroup(''));
+        $group->addClass('clear');
+        $group->addClass('final-energy-section energy-demand project-kwks');
+
+        /**
+         * Headline
+         */
+        $group->add(new HtmlTag('h5', t('KWK / Fernwärme') . ' in kWh/m²a', ['class' => 'hl-final-energy-demand']));
+
+        $this->appendHlRow($group, ['hl-usage'       => t('Beschreibung'),
+                                    'hl-heating'     => t('Heizung') . ' kWh / m²a',
+                                    'hl-water'       => t('Warmwasser') . ' kWh / m²a',
+                                    'hl-overall'     => t('Gesamt') . ' kWh / m²a'
+        ]);
+
+        $container = $group->add(new HtmlTag('div', null, ['class' => 'clear']));
+
+        $kwkUl = $container->add(new HtmlTag('ul', null, ['class' => 'kwk-list']));
+        $kwkLi = $kwkUl->add(new HtmlTag('li', null, ['class' => 'kwk']));
+
+        $kwkContainer = $kwkLi->add(new HtmlTag('div', null, ['class' => 'kwk-row clearfix']));
+        $kwkProjectContainer = $kwkContainer->add(new HtmlTag('div', null, ['class' => 'kwk-project clearfix']));
+        $kwkProjectContainer->add(new ElcaHtmlFormElementLabel('', new HtmlTextInput('kwkName', $this->Data->Kwk->name)))->addClass('description');
+
+        $numberConverter = new ElcaNumberFormatConverter();
+        $kwkProjectContainer->add(new ElcaHtmlFormElementLabel('', new ElcaHtmlNumericInput('kwkHeating', $this->Data->Kwk->heating, false, $numberConverter)))->addClass('heating');
+        $kwkProjectContainer->add(new ElcaHtmlFormElementLabel('', new ElcaHtmlNumericInput('kwkWater', $this->Data->Kwk->water, false, $numberConverter)))->addClass('water');
+
+        $overallContainer = new ElcaHtmlFormElementLabel('', new HtmlStaticText($numberConverter->convertToText($this->Data->Kwk->overall)));
+        $overallContainer->setAttribute('class', 'overall');
+        $kwkProjectContainer->add($overallContainer);
+
+        $this->appendHlRow($kwkContainer, ['hl-usage' => t('Energieträger'), 'hl-ratio' => t('Anteil %')]);
+
+        $demandsUl = $kwkContainer->add(new HtmlTag('ul', null, ['class' => 'kwk-demands']));
+        $demandLi = null;
+        if (isset($this->Data->KwkDemand->processConfigId) &&
+            is_array($this->Data->KwkDemand->processConfigId) &&
+            count($this->Data->KwkDemand->processConfigId)
+        ) {
+            foreach ($this->Data->KwkDemand->processConfigId as $key => $foo) {
+                $finalEnergyDemand = ElcaProjectFinalEnergyDemand::findById($key);
+                $demandLi                = $demandsUl->add(new HtmlTag('li'));
+
+                $this->appendKwkDemandRow($demandLi, $key, $finalEnergyDemand);
+            }
+        }
+
+        if ($this->addNewProjectKwkFinalEnergyDemand) {
+            $demandLi = $demandsUl->add(new HtmlTag('li'));
+            $this->appendKwkDemandRow($demandLi, 'newKwkDemand');
+        }
+
+        if ($demandLi) {
+            $demandLi->addClass('last');
+        }
+
+        if (!$this->readOnly) {
+            $buttonGroup = $container->add(new HtmlFormGroup(''));
+            $buttonGroup->addClass('buttons');
+            $buttonGroup->add(new ElcaHtmlSubmitButton('addKwkEnergyDemand', t('Energieträger hinzufügen')))->addClass(
+                'add-energy-carrier'
+            );
+            $buttonGroup->add(new ElcaHtmlSubmitButton('saveKwkEnergyDemand', t('Speichern'), true));
+        }
+    }
+
+    /**
+     * Appends a row
+     *
+     * @param HtmlElement                  $li
+     * @param                              $key
+     * @param ElcaProjectFinalEnergyDemand $finalEnergyDemand
+     *
+     * @internal param HtmlForm $Form
+     */
+    protected function appendKwkDemandRow(HtmlElement $li, $key, ElcaProjectFinalEnergyDemand $finalEnergyDemand = null)
+    {
+        $container = $li->add(new HtmlTag('div', null, ['class' => 'clearfix final-energy-row final-energy-demand']));
+        $container->setAttribute('id', 'final-energy-demand-' . $key);
+
+        if (!is_numeric($key))
+            $container->addClass('new');
+
+        /**
+         * ProcessConfig selector
+         *
+         * @var ElcaHtmlProcessConfigSelectorLink $selector
+         */
+        $selector = $container->add(new ElcaHtmlProcessConfigSelectorLink('processConfigId[' . $key . ']'));
+        $selector->addClass('process-config-selector');
+        $selector->setRelId($key);
+        $selector->setProjectVariantId($this->projectVariantId);
+        $selector->setBuildMode(ElcaProcessConfigSelectorView::BUILDMODE_OPERATION);
+        $selector->setContext(ProjectDataCtrl::CONTEXT);
+
+        $this->checkElementChange($selector);
+
+        $Request = FrontController::getInstance()->getRequest();
+
+        if ((isset($this->Data->KwkDemand->processConfigId[$key]) && $this->Data->KwkDemand->processConfigId[$key]) || (isset($Request->processConfigId[$key]) && $Request->processConfigId[$key])) {
+            $ProcessConfig = ElcaProcessConfig::findById(isset($Request->processConfigId[$key]) ? $Request->processConfigId[$key] : $this->Data->KwkDemand->processConfigId[$key]);
+            if ($ProcessConfig->isInitialized())
+                $selector->setProcessCategoryNodeId($ProcessConfig->getProcessCategoryNodeId());
+
+            if ($finalEnergyDemand !== null) {
+                $CacheDemand = ElcaCacheFinalEnergyDemand::findByFinalEnergyDemandId($finalEnergyDemand->getId());
+                if ($CacheDemand->isInitialized()) {
+                    if (!ElcaProcessViewSet::findResultsByCacheItemId($CacheDemand->getItemId(), 1)->count()) {
+                        $li->addClass('no-results');
+                        $this->Data->toggle[$key] = true;
+                    }
+                } else {
+                    $li->addClass('no-results');
+                    $this->Data->toggle[$key] = true;
+                }
+            }
+            if ($ProcessConfig->isStale()) {
+                $this->Data->toggle[$key] = true;
+            }
+
+            /**
+             * FinalEnergyDemand Data
+             */
+            $percentageConverter = new ElcaNumberFormatConverter(2, true);
+
+            $container->add(new ElcaHtmlFormElementLabel('', $numInput = new ElcaHtmlNumericInput('ratio[' . $key . ']', null, false, $percentageConverter)));
+            $numInput->disableNegative(true);
+            $container->add(new ElcaHtmlFormElementLabel('', new ElcaHtmlNumericText('heating[' . $key . ']', 2, false)));
+            $container->add(new ElcaHtmlFormElementLabel('', new ElcaHtmlNumericText('water[' . $key . ']', 2, false)));
+
+            $overallContainer = new ElcaHtmlFormElementLabel('', new ElcaHtmlNumericText('overall[' . $key . ']'));
+            $overallContainer->setAttribute('class', 'overall');
+            $container->add($overallContainer);
+        }
+
+        /**
+         * Toggler
+         */
+        if ($key !== 'newKwkDemand') {
+            $container->add(new HtmlHiddenField(
+                    'toggle[' . $key . ']',
+                    isset($this->Data->toggle[$key]) ? $this->Data->toggle[$key] : null)
+            )->setAttribute('class', 'toggle');
+            $container->add(new ElcaHtmlToggleLink())->addClass('no-xhr');
+        }
+
+        /**
+         * Remove link
+         */
+        if (!$this->readOnly) {
+            if (is_numeric($key)) {
+                $container->add(
+                    new HtmlLink(t('Löschen'), Url::factory('/project-data/deleteFinalEnergyDemand/', ['id' => $key]))
+                )
+                          ->addClass('function-link delete-link');
+            } else {
+                $container->add(new HtmlLink(t('Abbrechen'), Url::factory('/project-data/enEv/')))
+                          ->addClass('function-link cancel-link');
+            }
+        }
+
+        /**
+         * Add results table
+         */
+        if (is_numeric($key)) {
+            $this->appendDemandResults($container, $finalEnergyDemand);
+        }
+    }
+
+    /**
+     * Appends the energy supply section
+     *
      * @param  HtmlForm $Form
      */
     protected function appendEnergySupplySection(HtmlForm $Form)
@@ -581,9 +768,9 @@ class ElcaProjectDataEnEvView extends HtmlView
             'hl-overall'     => t('D energetisch') . ' kWh / a'
         ]);
 
-        $Container = $Group->add(new HtmlTag('div', null, ['class' => 'clear']));
+        $container = $Group->add(new HtmlTag('div', null, ['class' => 'clear']));
 
-        $Ul = $Container->add(new HtmlTag('ul', null));
+        $ul = $container->add(new HtmlTag('ul', null));
 
         if (isset($this->Data->Supply->processConfigId) &&
             is_array($this->Data->Supply->processConfigId) &&
@@ -591,18 +778,18 @@ class ElcaProjectDataEnEvView extends HtmlView
         ) {
             foreach ($this->Data->Supply->processConfigId as $key => $foo) {
                 $FinalEnergySupply = ElcaProjectFinalEnergySupply::findById($key);
-                $Li = $Ul->add(new HtmlTag('li'));
+                $Li = $ul->add(new HtmlTag('li'));
 
                 $this->appendSupplyRow($Li, $key, $FinalEnergySupply);
             }
         }
 
         if ($this->addNewProjectFinalEnergySupply) {
-            $Li = $Ul->add(new HtmlTag('li'));
+            $Li = $ul->add(new HtmlTag('li'));
             $this->appendSupplyRow($Li, 'newSupply');
         }
 
-        $ButtonGroup = $Container->add(new HtmlFormGroup(''));
+        $ButtonGroup = $container->add(new HtmlFormGroup(''));
         $ButtonGroup->addClass('buttons');
         $ButtonGroup->add(new ElcaHtmlSubmitButton('addEnergySupply', t('Bereitstellung hinzufügen')))->addClass('add-energy-carrier');
         $ButtonGroup->add(new ElcaHtmlSubmitButton('saveEnergySupply', t('Speichern'), true));

@@ -151,6 +151,7 @@
         background-color:$noResultsColor;
       }
     }
+    .kwk-row,
     .final-energy-row {
       position: relative;
       width: 100%;
@@ -181,17 +182,19 @@
       width: 60px;
       text-align: left;
       right: 115px;
-      top:0px;
+      top:0;
     }
 
     .form-section.description     { right: 410px }
+    .form-section.kwkName         { left: 10px; right:auto}
     .form-section.quantity        { right: 315px }
     .form-section.enEvRatio       { right: 220px }
-
+    .form-section.ratio           { right: 585px }
 
     .form-section.description,
     .form-section.quantity,
     .form-section.enEvRatio,
+    .form-section.ratio,
     .form-section.heating,
     .form-section.water,
     .form-section.lighting,
@@ -206,6 +209,7 @@
 
     .form-section.quantity,
     .form-section.enEvRatio,
+    .form-section.ratio,
     .form-section.heating,
     .form-section.water,
     .form-section.lighting,
@@ -337,6 +341,69 @@
 
       &.open {
         background-image: url('/img/elca/ic-arrow-open.png');
+      }
+    }
+
+    &.project-kwks {
+      .hl-row > .hl-heating {
+        right: 499px;
+      }
+      .hl-row > .hl-water {
+        right: 403px;
+      }
+
+      .form-section.kwkName     { width:325px}
+      .form-section.heating       { right: 490px }
+      .form-section.water    { right: 395px }
+    }
+
+    .kwk-row {
+      .kwk-project {height:30px}
+
+      > .hl-row {
+        height:20px;
+
+        h6 {
+          top:auto;
+        }
+
+        .hl-usage {left:50px}
+        .hl-ratio {right:600px}
+      }
+
+      .final-energy-row {
+        .process-config-selector {
+          left: 25px
+        }
+
+        .form-section.ratio {
+          right: 585px;
+        }
+
+        .form-section.heating {
+          text-align: right;
+          right: 480px;
+        }
+        .form-section.water {
+          text-align: right;
+          right: 388px;
+        }
+
+      }
+
+      .kwk-demands {
+        li {
+          margin-left:50px;
+
+          &.last {
+            border-bottom: none;
+          }
+        }
+
+        table {
+          width:95%;
+          padding-top:10px;
+        }
       }
     }
 
