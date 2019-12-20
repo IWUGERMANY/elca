@@ -51,7 +51,7 @@
 
 #content.report-effects .reportForm, #content.report-summary-element-types .reportForm {
     position: absolute;
-    top: 50px;
-    left: 700px;
+    top: 50px !important;
+    left: 700px !important;
     width: 100px;
 }

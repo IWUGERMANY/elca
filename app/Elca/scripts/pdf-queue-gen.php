@@ -39,7 +39,7 @@ $tmpCacheDirFile = $config->toDir('baseDir') . $config->toDir('pdfCreateDir', tr
 
 if( file_exists($tmpCacheDirFile) )
 {
-	exit();
+	exit(); // script is running
 }
 
 try {
