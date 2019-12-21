@@ -35,13 +35,13 @@ use Beibob\Blibs\JsLoader;
 use Beibob\Blibs\Log;
 use Beibob\Blibs\SessionNamespace;
 use Beibob\Blibs\Url;
-use Elca\Service\Messages\ElcaMessages;
+use Elca\Db\ElcaReportSet;
 use Elca\Service\ElcaSessionRecovery;
+use Elca\Service\Messages\ElcaMessages;
 use Elca\Service\ProjectAccess;
 use Elca\View\Report\ElcaReportsHeaderFooterView;
-use Elca\View\ReportsPdfModalView;
 use Elca\View\ReportsPdfModalDownloadView;
-use Elca\Db\ElcaReportSet;
+use Elca\View\ReportsPdfModalView;
 
 /**
  * BaseReportsCtrl
@@ -105,14 +105,13 @@ abstract class BaseReportsCtrl extends AppCtrl
         $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('pdfCreateDir', true, 'tmp/pdf-data').$key;	
 		$tempTitle = date('Ymd') . '_' . $this->buildFilename($this->Elca->getProject()->getName()) . '.pdf';		
 		
-		$pdfDir = new File();
-		if(!$pdfDir->isDir($tmpCacheDir))
-		{
-			mkdir($tmpCacheDir,0777);
+		if (!\is_dir($tmpCacheDir)) {
+            if (!mkdir($tmpCacheDir, 0777, true) && !is_dir($tmpCacheDir)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $tmpCacheDir));
+            }
 			chmod($tmpCacheDir,0777);
 		}	
-		$pdfDir->close();
-	
+
 		$pdf = new File($tmpCacheDir.'/tempPDF.pdf');
 
 		// -----------------------------------------
