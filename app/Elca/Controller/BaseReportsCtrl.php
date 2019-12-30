@@ -24,6 +24,7 @@
  */
 namespace Elca\Controller;
 
+use Beibob\Blibs\Config;
 use Beibob\Blibs\CssLoader;
 use Beibob\Blibs\Environment;
 use Beibob\Blibs\File;
@@ -48,7 +49,7 @@ use Elca\View\ReportsPdfModalView;
  */
 abstract class BaseReportsCtrl extends AppCtrl
 {
-    const TIMEOUT = '5m';
+    const DEFAULT_PATH_WKHTMLTOPDF = "/usr/bin/wkhtmltopdf";
 
     /**
      * @return SessionNamespace
@@ -178,12 +179,12 @@ abstract class BaseReportsCtrl extends AppCtrl
         File::move($tmpFooterFile->getFilepath(), $tmpFooterFile->getFilepath() .'.html');
         $tmpFooterFile = new File($tmpFooterFile->getFilepath() .'.html');
 
-       
-		
-		
+
+        $wkhtmltopdfCmd = $this->resolveWkhtmltopdfCmd($config);
+
         $cmd = sprintf(
-            'timeout %s /usr/local/bin/wkhtmltopdf --quiet --window-status ready_to_print --cache-dir %s --title %s -s A4 --margin-top 55 --margin-bottom 30 --margin-right 10 --margin-left 25 --print-media-type --no-stop-slow-scripts --javascript-delay %d --header-html %s --header-spacing 15 --footer-html %s %s %s',
-            self::TIMEOUT,
+            '%s --quiet --window-status ready_to_print --cache-dir %s --title %s -s A4 --margin-top 55 --margin-bottom 30 --margin-right 10 --margin-left 25 --print-media-type --no-stop-slow-scripts --javascript-delay %d --header-html %s --header-spacing 15 --footer-html %s %s %s',
+            $wkhtmltopdfCmd,
             escapeshellarg($tmpCacheDir),
             escapeshellarg($tempTitle),
             1000, // javascript-delay
@@ -393,7 +394,16 @@ abstract class BaseReportsCtrl extends AppCtrl
         $View = $this->setView(new ElcaReportsHeaderFooterView());
         $View->assign('buildMode', ElcaReportsHeaderFooterView::BUILDMODE_FOOTER);
     }
-    // End pdfFooterAction
+
+    private function resolveWkhtmltopdfCmd(Config $config): string
+    {
+        if (!isset($config->elca->wkhtmltopdf)) {
+            $this->Log->warning("Path to wkhtmltopdf is not configured. Assuming the default location is `".
+                                self::DEFAULT_PATH_WKHTMLTOPDF ."'",__FUNCTION__);
+        }
+
+        return $config->elca->wkhtmltopdf ?? self::DEFAULT_PATH_WKHTMLTOPDF;
+    }
 
     /**
      * Execute a command and return it's output. Either wait until the command exits or the timeout has expired.
