@@ -2161,7 +2161,6 @@ $(window).load(function () {
                         var $container = $(this);
 
                         if ($container.data('action')) {
-
                             jBlibs.App.query($container.data('action'), null, {
                                 complete: function (xhr, response) {
                                     $context.removeClass('spin').addClass('done');
@@ -2171,6 +2170,14 @@ $(window).load(function () {
                                     alert('Error: ' + xhr.responseText);
                                 }
                             });
+                        }
+
+                        if ($container.data('close-after-time-in-ms')) {
+                            setTimeout(function() {
+                                $('#elca-modal').fadeOut('fast', function () {
+                                    $('#elca-modal-content').empty();
+                                });
+                            }, $container.data('close-after-time-in-ms'));
                         }
                     });
                 },

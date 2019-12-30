@@ -50,6 +50,7 @@ use Elca\View\ReportsPdfModalView;
 abstract class BaseReportsCtrl extends AppCtrl
 {
     const DEFAULT_PATH_WKHTMLTOPDF = "/usr/bin/wkhtmltopdf";
+    const MODAL_CLOSE_TIMEOUT = 2000;
 
     /**
      * @return SessionNamespace
@@ -63,9 +64,10 @@ abstract class BaseReportsCtrl extends AppCtrl
     {
 		// elca.js Row:2158 preparePdf: function ($context) 
 		// 
-        $V      = $this->addView(new ReportsPdfModalView());
+        $view      = $this->addView(new ReportsPdfModalView());
         $pdfUrl = FrontController::getInstance()->getUrlTo(null, 'pdf', ['a' => $this->Request->a]);
-        $V->assign('action', $pdfUrl);
+        $view->assign('action', $pdfUrl);
+        $view->assign('closeAfterTimeInMs', self::MODAL_CLOSE_TIMEOUT);
     }
 
     /**
@@ -230,6 +232,8 @@ abstract class BaseReportsCtrl extends AppCtrl
             )
         );
         */
+
+		$this->reloadHashUrl();
     }
 
     /**
