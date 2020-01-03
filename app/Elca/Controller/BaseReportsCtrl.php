@@ -132,6 +132,7 @@ abstract class BaseReportsCtrl extends AppCtrl
          */
         $SessionRecovery = $this->container->get('Elca\Service\ElcaSessionRecovery');
         $SessionRecovery->storeNamespace($namespace);
+        $SessionRecovery->storeNamespace($this->Session->getNamespace('blibs.userStore'));
         $SessionRecovery->storeNamespace($this->Session->getNamespace('elca'));
         $SessionRecovery->storeNamespace($this->Session->getNamespace('elca.locale'));
         $SessionRecovery->storeNamespace($this->Session->getNamespace(ProjectAccess::NAMESPACE_NAME));

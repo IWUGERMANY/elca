@@ -576,7 +576,7 @@ class ElcaReportSet extends DataObjectSet
 		{
 			$sql = sprintf(
 				'INSERT INTO %s (user_id,projects_id,report_name,projects_filename,current_variant_id,pdf_cmd,key)
-				 VALUES  (:user_id, :projects_id, :report_name, :projects_filename, :current_variant_id, :pdf_cmd, :key)'
+				 VALUES  (:user_id, :projects_id, :report_name, :projects_filename, :current_variant_id, :pdf_cmd, (:key)::varchar)'
 				,
 				self::TABLE_REPORT_PDF_QUEUE
 			);
@@ -587,7 +587,7 @@ class ElcaReportSet extends DataObjectSet
 			$initValues['key'] = $infoArrayKey[0];
 			
 			$sql = sprintf(
-				'UPDATE %s set projects_filename=:projects_filename, pdf_cmd=:pdf_cmd, key=:key, ready=NULL, created=NOW()
+				'UPDATE %s set projects_filename=:projects_filename, pdf_cmd=:pdf_cmd, key=(:key)::varchar, ready=NULL, created=NOW()
 				WHERE user_id=:user_id
 				AND	projects_id=:projects_id
 				AND report_name=:report_name
