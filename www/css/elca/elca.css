@@ -652,6 +652,10 @@ h1.projectHeader { float: left; margin-right: 3em; }
 
 #content.users #elca-users .createdyear h2 { font-weight: bold; font-size: 20px; }
 
+#content .pdfcreate { padding: 0 5px; }
+
+#content.report-effects .reportForm, #content.report-summary-element-types .reportForm { position: absolute; top: 50px !important; left: 700px !important; width: 100px; }
+
 .toggle { display: none; }
 .toggle, .toggle:after, .toggle:before, .toggle *, .toggle *:after, .toggle *:before, .toggle + .toggle-btn { box-sizing: border-box; }
 .toggle::selection, .toggle:after::selection, .toggle:before::selection, .toggle *::selection, .toggle *:after::selection, .toggle *:before::selection, .toggle + .toggle-btn::selection { background: none; }

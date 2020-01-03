@@ -24,6 +24,7 @@
  */
 namespace Elca\View\Report;
 
+use Beibob\Blibs\BlibsDateTime;
 use Beibob\Blibs\Environment;
 use Beibob\Blibs\FrontController;
 use Beibob\Blibs\HtmlView;
@@ -33,14 +34,11 @@ use Elca\Db\ElcaLifeCycle;
 use Elca\Db\ElcaProcess;
 use Elca\Db\ElcaProject;
 use Elca\Db\ElcaProjectConstruction;
-use Elca\Db\ElcaProjectLifeCycleUsage;
 use Elca\Db\ElcaProjectVariant;
 use Elca\Db\ElcaReportSet;
 use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Process\Module;
-use Elca\Model\Processing\LifeCycleUsage\LifeCycleUsage;
-use Elca\Model\Processing\LifeCycleUsage\LifeCycleUsages;
 use Elca\Model\Project\ProjectId;
 use Elca\Service\Project\LifeCycleUsageService;
 
@@ -119,8 +117,33 @@ abstract class ElcaReportsView extends HtmlView
 
         $pdfUrl = FrontController::getInstance()->getUrlTo(null, 'pdf', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default']);
         $modalUrl = FrontController::getInstance()->getUrlTo(null, 'pdfModal', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default']);
-        $PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal', 'href' => $modalUrl], t('PDF')));
+		$modalUrlDownload = FrontController::getInstance()->getUrlTo(null, 'pdfModalDownload', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default']);
+		
+		$PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal', 'href' => $modalUrl], t('PDF erstellen')));
 
+		// PDF in work / already exists - project_variant, project_id, user_id
+		$PDFinfo = ElcaReportSet::findPdfInQueue($this->Project->getId(),$this->projectVariantId, UserStore::getInstance()->getUserId(),FrontController::getInstance()->getUrlTo().(FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default').'/');
+		if(!$PDFinfo->isEmpty())
+		{
+			// PDF ready?
+			$infoArrayReady = (array)$PDFinfo[0]->ready;
+			if (isset($infoArrayReady[0]))
+			{
+				$PDFreadyDate = BlibsDateTime::factory($infoArrayReady[0]);
+				$PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal','title' => t('Erstellt:').$PDFreadyDate->getDateTimeString(t('DATETIME_FORMAT_DMY') . ' ' . t('DATETIME_FORMAT_HI')), 'href' => $modalUrlDownload], t('PDF anzeigen')));	
+				
+				$infoArrayKey = (array)$PDFinfo[0]->key;
+				if($infoArrayKey[0])
+				{	
+					
+				}
+			}
+			else
+			{
+				$PrintDiv->appendChild($this->getSpan(t('PDF wird erstellt'),['class'=>'pdfcreate']));
+			}	
+		}	
+		
         $ProjectVariant = ElcaProjectVariant::findById($this->projectVariantId);
         $ProjectConstruction = ElcaProjectConstruction::findByProjectVariantId($this->projectVariantId);
 
