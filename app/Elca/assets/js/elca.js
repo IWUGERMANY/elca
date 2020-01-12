@@ -1304,9 +1304,9 @@ $(window).load(function () {
                      */
                     $('.toggle-link', $context).each(function () {
                         $(this).click(function (e) {
+                            console.log('click');
                             var $parent = $(this).parent().attr('id'),
                                 $table = $('#' + $parent + ' .results');
-
                             if ($table.is(':hidden')) {
                                 $('#' + $parent + ' .toggle').val(1);
                                 $(this).addClass('open');

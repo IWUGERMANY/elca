@@ -186,7 +186,7 @@
     }
 
     .form-section.description     { right: 410px }
-    .form-section.kwkName         { left: 10px; right:auto}
+    .form-section.kwkName         { left: 25px; right:auto}
     .form-section.quantity        { right: 315px }
     .form-section.enEvRatio       { right: 220px }
     .form-section.ratio           { right: 585px }
@@ -225,6 +225,15 @@
 
     .add-energy-carrier {
       display: inline-block;
+
+      &.kwk {
+        background-color: transparent;
+        border:none;
+        color:$linkFuncColor;
+        margin: 0;
+        margin-right: 25px;
+
+      }
     }
 
     .process-config-selector a,
@@ -352,57 +361,66 @@
         right: 403px;
       }
 
-      .form-section.kwkName     { width:325px}
+      .form-section.kwkName     { width:310px}
       .form-section.heating       { right: 490px }
       .form-section.water    { right: 395px }
     }
 
     .kwk-row {
-      .kwk-project {height:30px}
+      .kwk-project {
 
-      > .hl-row {
-        height:20px;
-
-        h6 {
-          top:auto;
+        .HtmlStaticText {
+          font-size: 12px
         }
 
-        .hl-usage {left:50px}
-        .hl-ratio {right:600px}
-      }
+        > .hl-row {
+          top:30px;
+          height: 20px;
 
-      .final-energy-row {
-        .process-config-selector {
-          left: 25px
-        }
+          h6 {
+            top: auto;
+          }
 
-        .form-section.ratio {
-          right: 585px;
-        }
+          .hl-usage {
+            left: 25px
+          }
 
-        .form-section.heating {
-          text-align: right;
-          right: 480px;
-        }
-        .form-section.water {
-          text-align: right;
-          right: 388px;
-        }
-
-      }
-
-      .kwk-demands {
-        li {
-          margin-left:50px;
-
-          &.last {
-            border-bottom: none;
+          .hl-ratio {
+            right: 667px
           }
         }
 
-        table {
-          width:95%;
-          padding-top:10px;
+        .final-energy-row {
+          .process-config-selector {
+            left: 10px
+          }
+
+          .form-section.ratio {
+            right: 665px;
+            width: 50px;
+          }
+
+          .form-section.heating {
+            text-align: right;
+          }
+
+          .form-section.water {
+            text-align: right;
+          }
+
+        }
+
+        .kwk-demands {
+          margin-top:34px;
+          li {
+            margin-left: 15px;
+            border-bottom: none;
+          }
+
+          table {
+            width: 95%;
+            padding-top: 10px;
+          }
         }
       }
     }

@@ -485,12 +485,17 @@ class ElcaValidator extends HtmlFormValidator
     public function assertProjectFinalEnergyDemands()
     {
         $processConfigIds = $this->getValue('processConfigId');
+        $isKwk = $this->getValue('isKwk');
         if (!is_array($processConfigIds)) {
-            return;
+            return true;
         }
 
         foreach ($processConfigIds as $key => $processConfigId) {
             if ($key === ElcaProjectFinalEnergyDemand::IDENT_PROCESS_ENERGY) {
+                continue;
+            }
+
+            if (isset($isKwk[$key]) && $isKwk[$key]) {
                 continue;
             }
 
@@ -508,6 +513,8 @@ class ElcaValidator extends HtmlFormValidator
     public function assertProjectKwkFinalEnergyDemands()
     {
         $processConfigIds = $this->getValue('processConfigId');
+        $isKwk = $this->getValue('isKwk');
+
         if (!is_array($processConfigIds)) {
             return true;
         }
@@ -526,13 +533,15 @@ class ElcaValidator extends HtmlFormValidator
         $ratios = $this->getValue('ratio');
         $overallRatio = 0;
         foreach ($processConfigIds as $key => $processConfigId) {
+            if (isset($isKwk[$key]) && !$isKwk[$key]) {
+                continue;
+            }
+
             $this->assertProjectKwkFinalEnergyDemand($key);
             $overallRatio += ElcaNumberFormat::fromString($ratios[$key]);
         }
 
-        $this->assertTrue('ratio['. $key .']', $overallRatio >= 0 && $overallRatio <= 100, t('Der Wert muss zwischen 0 und 100 liegen'));
-
-        return true;
+        return $this->assertTrue('ratio['. $key .']', $overallRatio >= 0 && $overallRatio <= 100, t('Der Wert muss zwischen 0 und 100 liegen'));
     }
 
     /**

@@ -1300,11 +1300,45 @@ class ProjectDataCtrl extends AppCtrl
                 $this->messages->add(t('Der Energiebedarf für das Referenzgebäude wurde gespeichert'));
             }
         } elseif (isset($this->Request->saveEnergyDemand)) {
+            $projectKwk = ElcaProjectKwk::findByProjectVariantId($projectVariantId);
+
             $validator->assertProjectFinalEnergyDemands();
 
-            if ($validator->isValid() && is_array($this->Request->processConfigId)) {
+            if ($projectKwk->isInitialized()) {
+                if (!$validator->assertProjectKwkFinalEnergyDemands()) {
+                    $addNewKwkDemand = true;
+                }
+            }
+
+            if ($validator->isValid() && is_array($this->Request->processConfigId) && is_array($this->Request->isKwk)) {
+                $isKwk = $this->Request->isKwk;
+
+                if ($this->Request->has('kwkName')) {
+                    $name    = $this->Request->get('kwkName');
+                    $heating = ElcaNumberFormat::fromString($this->Request->get('kwkHeating'));
+                    $water   = ElcaNumberFormat::fromString($this->Request->get('kwkWater'));
+
+                    if (!$projectKwk->isInitialized()) {
+                        $projectKwk = ElcaProjectKwk::create($projectVariantId, $name, $heating, $water);
+                    } else {
+                        if (empty($name) && empty($heating) && (empty($water))) {
+                            $projectKwk->delete();
+                            $projectKwk = null;
+                        } else {
+                            $projectKwk->setName($name);
+                            $projectKwk->setHeating($heating);
+                            $projectKwk->setWater($water);
+                            $projectKwk->update();
+                        }
+                    }
+                }
+
                 foreach ($this->Request->processConfigId as $key => $processConfigId) {
-                    $modified |= $this->saveEnergyDemand($key);
+                    if ($projectKwk->isInitialized() && $isKwk[$key]) {
+                        $modified |= $this->saveKwkEnergyDemand($projectKwk, $key);
+                    } else {
+                        $modified |= $this->saveEnergyDemand($key);
+                    }
                 }
 
                 $this->messages->add(t('Der Energiebedarf wurde gespeichert'));
@@ -1326,39 +1360,12 @@ class ProjectDataCtrl extends AppCtrl
             } else {
                 $addNewDemand = true;
             }
-        } elseif (isset($this->Request->saveKwkEnergyDemand)) {
-            $validator->assertProjectKwkFinalEnergyDemands();
-
-            if ($validator->isValid()) {
-                $name    = $this->Request->get('kwkName');
-                $heating = ElcaNumberFormat::fromString($this->Request->get('kwkHeating'));
-                $water   = ElcaNumberFormat::fromString($this->Request->get('kwkWater'));
-
+        } elseif (isset($this->Request->addKwk)) {
                 $projectKwk = ElcaProjectKwk::findByProjectVariantId($projectVariantId);
 
                 if (!$projectKwk->isInitialized()) {
-                    $projectKwk = ElcaProjectKwk::create($projectVariantId, $name, $heating, $water);
-                } else {
-                    if (empty($name) && empty($heating) && (empty($water))) {
-                        $projectKwk->delete();
-                        $projectKwk = null;
-                    }
-                    else {
-                        $projectKwk->setName($name);
-                        $projectKwk->setHeating($heating);
-                        $projectKwk->setWater($water);
-                        $projectKwk->update();
-                    }
+                    ElcaProjectKwk::create($projectVariantId, t('Fernwärme Mix'));
                 }
-            }
-
-            if (null !== $projectKwk && $validator->isValid() && is_array($this->Request->processConfigId)) {
-                foreach ($this->Request->processConfigId as $key => $processConfigId) {
-                    $modified |= $this->saveKwkEnergyDemand($projectKwk, $key);
-                }
-
-                $this->messages->add(t('Der Energiebedarf wurde gespeichert'));
-            }
         } elseif (isset($this->Request->addKwkEnergyDemand)) {
             $key = 'newKwkDemand';
 
@@ -1368,7 +1375,9 @@ class ProjectDataCtrl extends AppCtrl
                 /**
                  * Save previously added energy-carrier
                  */
-                $modified = $this->saveEnergyDemand($key);
+                $projectKwk = ElcaProjectKwk::findByProjectVariantId($projectVariantId);
+
+                $modified = $this->saveKwkEnergyDemand($projectKwk, $key);
                 $this->Request->__set('b', ElcaProcessConfigSelectorView::BUILDMODE_OPERATION);
                 $this->Request->__set('processCategoryNodeId',
                     ElcaProcessCategory::findByRefNum(self::PROCESS_CATEGORY_KWK_DEFAULT_REF)->getNodeId());
@@ -1557,6 +1566,10 @@ class ProjectDataCtrl extends AppCtrl
             return false;
         }
 
+        if (isset($this->Request->isKwk) && $this->Request->isKwk[$key]) {
+            return false;
+        }
+
         $processConfigId = $this->Request->processConfigId[$key];
         $heating         = $this->Request->heating[$key] ? ElcaNumberFormat::fromString(
             $this->Request->heating[$key],
@@ -1670,6 +1683,10 @@ class ProjectDataCtrl extends AppCtrl
     protected function saveKwkEnergyDemand(ElcaProjectKwk $projectKwk, $key)
     {
         if (!isset($this->Request->processConfigId[$key])) {
+            return false;
+        }
+
+        if (isset($this->Request->isKwk) && !$this->Request->isKwk[$key]) {
             return false;
         }
 
@@ -1849,8 +1866,7 @@ class ProjectDataCtrl extends AppCtrl
     {
         $data           = new \stdClass();
         $data->Demand   = new \stdClass();
-        $data->Kwk      = (object)['id' => null, 'name' => null, 'heating' => null, 'water' => null, 'overall' => 0];
-        $data->KwkDemand = new \stdClass();
+        $data->Kwk      = (object)['id' => null, 'name' => t('KWK / Fernwärme'), 'heating' => null, 'water' => null, 'overall' => 0];
         $data->Supply   = new \stdClass();
         $data->RefModel = new \stdClass();
 
@@ -1899,28 +1915,30 @@ class ProjectDataCtrl extends AppCtrl
             ) ? $projectFinalEnergyDemand->getCooling() * $factor : null);
             $data->Demand->overall[$key]         = $overall / $factor;
             $data->Demand->toggle[$key]          = 0;
+            $data->Demand->isKwk[$key]           = false;
         }
 
         foreach ($kwkProjectFinalEnergyDemands as $kwkProjectFinalEnergyDemand) {
             $overall = 0;
 
-            $key    = $kwkProjectFinalEnergyDemand->getId();
+            $key   = $kwkProjectFinalEnergyDemand->getId();
             $ratio = $kwkProjectFinalEnergyDemand->getRatio();
 
-            $data->KwkDemand->processConfigId[$key] = $kwkProjectFinalEnergyDemand->getProcessConfigId();
-            $data->KwkDemand->ratio[$key] = $ratio;
+            $data->Demand->processConfigId[$key] = $kwkProjectFinalEnergyDemand->getProcessConfigId();
+            $data->Demand->ratio[$key] = $ratio;
 
-            $overall                             += $data->KwkDemand->heating[$key] = $kwkProjectFinalEnergyDemand->getHeating()
+            $overall                             += $data->Demand->heating[$key] = $kwkProjectFinalEnergyDemand->getHeating()
                 ? $kwkProjectFinalEnergyDemand->getHeating() * $ratio
                 : 0;
-            $overall                             += $data->KwkDemand->water[$key] = $kwkProjectFinalEnergyDemand->getWater()
+            $overall                             += $data->Demand->water[$key] = $kwkProjectFinalEnergyDemand->getWater()
                 ? $kwkProjectFinalEnergyDemand->getWater() * $ratio
                 : 0;
 
-            $data->KwkDemand->overall[$key]         = $overall;
-            $data->KwkDemand->toggle[$key]          = 0;
+            $data->Demand->overall[$key]         = $overall;
+            $data->Demand->toggle[$key]          = 0;
+            $data->Demand->isKwk[$key]           = true;
 
-            $data->Kwk->overall += $data->KwkDemand->overall[$key];
+            $data->Kwk->overall += $data->Demand->overall[$key];
         }
 
         $ProjectFinalEnergySupplySet = ElcaProjectFinalEnergySupplySet::find(
