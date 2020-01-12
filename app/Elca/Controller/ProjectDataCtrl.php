@@ -1310,7 +1310,7 @@ class ProjectDataCtrl extends AppCtrl
                 }
             }
 
-            if ($validator->isValid() && is_array($this->Request->processConfigId) && is_array($this->Request->isKwk)) {
+            if ($validator->isValid()) {
                 $isKwk = $this->Request->isKwk;
 
                 if ($this->Request->has('kwkName')) {
@@ -1333,15 +1333,17 @@ class ProjectDataCtrl extends AppCtrl
                     }
                 }
 
-                foreach ($this->Request->processConfigId as $key => $processConfigId) {
-                    if ($projectKwk->isInitialized() && $isKwk[$key]) {
-                        $modified |= $this->saveKwkEnergyDemand($projectKwk, $key);
-                    } else {
-                        $modified |= $this->saveEnergyDemand($key);
+                if (is_array($this->Request->processConfigId)) {
+                    foreach ($this->Request->processConfigId as $key => $processConfigId) {
+                        if ($projectKwk->isInitialized() && $isKwk[$key]) {
+                            $modified |= $this->saveKwkEnergyDemand($projectKwk, $key);
+                        } else {
+                            $modified |= $this->saveEnergyDemand($key);
+                        }
                     }
-                }
 
-                $this->messages->add(t('Der Energiebedarf wurde gespeichert'));
+                    $this->messages->add(t('Der Energiebedarf wurde gespeichert'));
+                }
             }
         } elseif (isset($this->Request->addEnergyDemand)) {
             $key = 'newDemand';
@@ -1365,6 +1367,7 @@ class ProjectDataCtrl extends AppCtrl
 
                 if (!$projectKwk->isInitialized()) {
                     ElcaProjectKwk::create($projectVariantId, t('Fernwärme Mix'));
+                    $addNewKwkDemand = true;
                 }
         } elseif (isset($this->Request->addKwkEnergyDemand)) {
             $key = 'newKwkDemand';
