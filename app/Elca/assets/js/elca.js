@@ -2824,8 +2824,13 @@ $(window).load(function () {
                 },
 
                 prepareFinalEnergyKwkPieChart: function ($context) {
-                    var $chart = $('.pie-chart', $context),
-                        data = $chart.data('values');
+                    var $chart = $('.pie-chart', $context);
+
+                    if ($chart.length === 0) {
+                        return;
+                    }
+
+                    var data = $chart.data('values');
 
                     var self = this;
 
