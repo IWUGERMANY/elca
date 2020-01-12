@@ -592,6 +592,8 @@ class ElcaProjectDataEnEvView extends HtmlView
      */
     protected function appendKwkEnergyDemands(HtmlElement $group )
     {
+        $pieData = [];
+
         $container = $group->add(new HtmlTag('div', null, ['class' => 'clear']));
 
         $kwkUl = $container->add(new HtmlTag('ul', null, ['class' => 'kwk-list']));
@@ -635,6 +637,14 @@ class ElcaProjectDataEnEvView extends HtmlView
                 $demandLi                = $demandsUl->add(new HtmlTag('li'));
 
                 $this->appendKwkDemandRow($demandLi, $key, $finalEnergyDemand);
+
+                $processConfigName      = $finalEnergyDemand->getProcessConfig()->getName();
+                $pieData[] = (object)['name' => $processConfigName,
+                                      'tooltip' =>
+                                          $processConfigName
+                                          . ': ' .
+                                          ElcaNumberFormat::toString($this->Data->Demand->ratio[$key],1, true) . '%',
+                                      'value' => $this->Data->Demand->ratio[$key]];
             }
         }
 
@@ -651,6 +661,12 @@ class ElcaProjectDataEnEvView extends HtmlView
          * Add results table
          */
         $this->appendKwkDemandResults($kwkProjectContainer);
+
+        $kwkProjectContainer->add(new HtmlTag('div', null, [
+            'class' => 'chart pie-chart',
+            'style' => 'height:'. max(100, count($pieData) * 60) .'px',
+            'data-values' => json_encode($pieData)
+        ]));
 
         if (!$this->readOnly) {
             $buttonGroup = $kwkContainer->add(new HtmlFormGroup(''));

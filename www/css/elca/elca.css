@@ -1753,6 +1753,8 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #content.project-final-energy .final-energy-section .kwk-row .kwk-project .kwk-demands { margin-top: 34px; }
 #content.project-final-energy .final-energy-section .kwk-row .kwk-project .kwk-demands li { margin-left: 15px; border-bottom: none; }
 #content.project-final-energy .final-energy-section .kwk-row .kwk-project .kwk-demands table { width: 95%; padding-top: 10px; }
+#content.project-final-energy .final-energy-section .kwk-row .chart.pie-chart { position: absolute; top: 0; right: 230px; width: 200px; }
+#content.project-final-energy .final-energy-section .kwk-row .chart.pie-chart svg { height: 100%; width: 100%; }
 
 #content.elca-project-life-cycle-usage { width: 920px; }
 #content.elca-project-life-cycle-usage #nonComplianceNotice { border: 2px solid #ff0000; padding: 10px 15px; margin: 10px 0; font-size: 14px; color: #ff0000; display: inline-block; }

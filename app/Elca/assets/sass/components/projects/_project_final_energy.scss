@@ -423,6 +423,18 @@
           }
         }
       }
+
+      .chart.pie-chart {
+        position: absolute;
+        top:0;
+        right:230px;
+        width:200px;
+
+        svg {
+          height:100%;
+          width:100%;
+        }
+      }
     }
 
   }
