@@ -1715,7 +1715,7 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #content.project-final-energy .final-energy-section .form-section.overall { right: 20px; text-align: right; }
 #content.project-final-energy .final-energy-section .delete-link, #content.project-final-energy .final-energy-section .cancel-link { width: 60px; text-align: left; right: 115px; top: 0; }
 #content.project-final-energy .final-energy-section .form-section.description { right: 410px; }
-#content.project-final-energy .final-energy-section .form-section.kwkName { left: 10px; right: auto; }
+#content.project-final-energy .final-energy-section .form-section.kwkName { left: 25px; right: auto; }
 #content.project-final-energy .final-energy-section .form-section.quantity { right: 315px; }
 #content.project-final-energy .final-energy-section .form-section.enEvRatio { right: 220px; }
 #content.project-final-energy .final-energy-section .form-section.ratio { right: 585px; }
@@ -1723,6 +1723,7 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #content.project-final-energy .final-energy-section .form-section.quantity, #content.project-final-energy .final-energy-section .form-section.enEvRatio, #content.project-final-energy .final-energy-section .form-section.ratio, #content.project-final-energy .final-energy-section .form-section.heating, #content.project-final-energy .final-energy-section .form-section.water, #content.project-final-energy .final-energy-section .form-section.lighting, #content.project-final-energy .final-energy-section .form-section.ventilation, #content.project-final-energy .final-energy-section .form-section.cooling, #content.project-final-energy .final-energy-section .form-section.overall { width: 70px; }
 #content.project-final-energy .final-energy-section .form-section.description { width: 250px; }
 #content.project-final-energy .final-energy-section .add-energy-carrier { display: inline-block; }
+#content.project-final-energy .final-energy-section .add-energy-carrier.kwk { background-color: transparent; border: none; color: #004f80; margin: 0; margin-right: 25px; }
 #content.project-final-energy .final-energy-section .process-config-selector a, #content.project-final-energy .final-energy-section span.process-energy-demand, #content.project-final-energy .final-energy-section a.delete-link, #content.project-final-energy .final-energy-section a.cancel-link { padding: 0; line-height: 24px; display: block; position: absolute; color: #004f80; }
 #content.project-final-energy .final-energy-section .process-config-selector.changed a { color: #ff0000; }
 #content.project-final-energy .final-energy-section span.process-energy-demand { color: #333; }
@@ -1745,21 +1746,23 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #content.project-final-energy .final-energy-section .toggle-link.open { background-image: url("/img/elca/ic-arrow-open.png"); }
 #content.project-final-energy .final-energy-section.project-kwks .hl-row > .hl-heating { right: 499px; }
 #content.project-final-energy .final-energy-section.project-kwks .hl-row > .hl-water { right: 403px; }
-#content.project-final-energy .final-energy-section.project-kwks .form-section.kwkName { width: 325px; }
+#content.project-final-energy .final-energy-section.project-kwks .form-section.kwkName { width: 310px; }
 #content.project-final-energy .final-energy-section.project-kwks .form-section.heating { right: 490px; }
 #content.project-final-energy .final-energy-section.project-kwks .form-section.water { right: 395px; }
-#content.project-final-energy .final-energy-section .kwk-row .kwk-project { height: 30px; }
-#content.project-final-energy .final-energy-section .kwk-row > .hl-row { height: 20px; }
-#content.project-final-energy .final-energy-section .kwk-row > .hl-row h6 { top: auto; }
-#content.project-final-energy .final-energy-section .kwk-row > .hl-row .hl-usage { left: 50px; }
-#content.project-final-energy .final-energy-section .kwk-row > .hl-row .hl-ratio { right: 600px; }
-#content.project-final-energy .final-energy-section .kwk-row .final-energy-row .process-config-selector { left: 25px; }
-#content.project-final-energy .final-energy-section .kwk-row .final-energy-row .form-section.ratio { right: 585px; }
-#content.project-final-energy .final-energy-section .kwk-row .final-energy-row .form-section.heating { text-align: right; right: 480px; }
-#content.project-final-energy .final-energy-section .kwk-row .final-energy-row .form-section.water { text-align: right; right: 388px; }
-#content.project-final-energy .final-energy-section .kwk-row .kwk-demands li { margin-left: 50px; }
-#content.project-final-energy .final-energy-section .kwk-row .kwk-demands li.last { border-bottom: none; }
-#content.project-final-energy .final-energy-section .kwk-row .kwk-demands table { width: 95%; padding-top: 10px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .HtmlStaticText { font-size: 12px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project > .hl-row { top: 30px; height: 20px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project > .hl-row h6 { top: auto; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project > .hl-row .hl-usage { left: 25px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project > .hl-row .hl-ratio { right: 667px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .final-energy-row .process-config-selector { left: 10px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .final-energy-row .form-section.ratio { right: 665px; width: 50px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .final-energy-row .form-section.heating { text-align: right; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .final-energy-row .form-section.water { text-align: right; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .kwk-demands { margin-top: 34px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .kwk-demands li { margin-left: 15px; border-bottom: none; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .kwk-demands table { width: 95%; padding-top: 10px; }
+#content.project-final-energy .final-energy-section .kwk-row .chart.pie-chart { position: absolute; top: 0; right: 230px; width: 200px; }
+#content.project-final-energy .final-energy-section .kwk-row .chart.pie-chart svg { height: 100%; width: 100%; }
 
 #content.elca-project-life-cycle-usage { width: 920px; }
 #content.elca-project-life-cycle-usage #nonComplianceNotice { border: 2px solid #ff0000; padding: 10px 15px; margin: 10px 0; font-size: 14px; color: #ff0000; display: inline-block; }
