@@ -620,6 +620,19 @@ CREATE TABLE elca.project_constructions
 
 -------------------------------------------------------------------------------
 
+CREATE TABLE elca.project_kwks
+(
+    "id"                      serial          NOT NULL                -- kwks
+  , "project_variant_id"      int             NOT NULL                -- projectVariantId
+  , "name"                    varchar(250)    NOT NULL                -- name
+  , "heating"                 numeric                                 -- heating in kWh/(m2*a)
+  , "water"                   numeric                                 -- water in kWh/(m2*a)
+  , PRIMARY KEY ("id")
+  , FOREIGN KEY ("project_variant_id") REFERENCES elca.project_variants("id") ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-------------------------------------------------------------------------------
+
 CREATE TABLE elca.project_final_energy_demands
 (
    "id"                      serial          NOT NULL                -- projectFinalEnergyDemandId
@@ -633,9 +646,13 @@ CREATE TABLE elca.project_final_energy_demands
  , "ventilation"             numeric                                 -- ventilation in kWh/(m2*a)
  , "cooling"                 numeric                                 -- cooling in kWh/(m2*a)
 
+ , "ratio"                   numeric         NOT NULL DEFAULT 1      -- ratio
+ , "kwk_id"                  int                                     -- kwkId
+
  , PRIMARY KEY ("id")
  , FOREIGN KEY ("project_variant_id") REFERENCES elca.project_variants ("id") ON UPDATE CASCADE ON DELETE CASCADE
  , FOREIGN KEY ("process_config_id") REFERENCES elca.process_configs ("id") ON UPDATE CASCADE ON DELETE CASCADE
+ , FOREIGN KEY ("kwk_id")   REFERENCES elca.project_kwks ("id") ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -------------------------------------------------------------------------------

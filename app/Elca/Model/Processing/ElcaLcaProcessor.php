@@ -36,6 +36,7 @@ use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaElementSet;
 use Elca\Db\ElcaProcessConfigAttribute;
 use Elca\Db\ElcaProjectEnEv;
+use Elca\Db\ElcaProjectFinalEnergyDemand;
 use Elca\Db\ElcaProjectFinalEnergyDemandSet;
 use Elca\Db\ElcaProjectFinalEnergyRefModel;
 use Elca\Db\ElcaProjectFinalEnergyRefModelSet;
@@ -507,6 +508,7 @@ class ElcaLcaProcessor
 
         /**
          * Calculate new values
+         * @var ElcaProjectFinalEnergyDemand $finalEnergyDemand
          */
         foreach ($finalEnergyDemandSet as $finalEnergyDemand) {
             $processConfigId  = new ProcessConfigId($finalEnergyDemand->getProcessConfigId());
@@ -518,6 +520,8 @@ class ElcaLcaProcessor
             foreach (['heating', 'water', 'lighting', 'ventilation', 'cooling'] as $property) {
                 $qE += (float)$finalEnergyDemand->__get($property);
             }
+
+            $qE *= $finalEnergyDemand->getRatio() ?? 1;;
 
             if (!$processConfig = $this->processConfigRepository->findById($processConfigId)) {
                 continue;

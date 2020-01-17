@@ -1,0 +1,11 @@
+
+cd ~/httpdocs/src/elca
+
+// Create PDF Files from queue
+php ./scripts/runner.php Elca pdf-queue-gen.php _script.local
+
+Cron: * * * * * /var/www/vhosts/beta.bauteileditor.local/httpdocs/src/elca/cron-create-pdf.sh 
+
+
+// Create .po file from all file / texts
+php ./scripts/runner.php Elca po-file-gen.php _script.local

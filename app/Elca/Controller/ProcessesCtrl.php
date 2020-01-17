@@ -42,6 +42,7 @@ use Elca\Db\ElcaProcessConfigAttribute;
 use Elca\Db\ElcaProcessConversion;
 use Elca\Db\ElcaProcessConversionVersion;
 use Elca\Db\ElcaProcessDb;
+use Elca\Db\ElcaProcessDbSet;
 use Elca\Db\ElcaProcessLifeCycleAssignment;
 use Elca\Db\ElcaProcessSearchSet;
 use Elca\Db\ElcaProcessSet;
@@ -225,9 +226,10 @@ class ProcessesCtrl extends TabsCtrl
      */
     protected function generalAction()
     {
-        $this->initProcessDbId();
-
         $processConfigId = $this->processConfigId ?: $this->Request->processConfigId;
+
+        $this->initProcessDbId($processConfigId);
+
         $view            = $this->setView(new ElcaProcessConfigGeneralView());
         $view->assign('processConfigId', $processConfigId);
         $view->assign('readOnly', !$this->Access->hasAdminPrivileges());
@@ -278,9 +280,8 @@ class ProcessesCtrl extends TabsCtrl
             return;
         }
 
-        $this->initProcessDbId();
-
         $processConfig = ElcaProcessConfig::findById($this->Request->processConfigId);
+        $this->initProcessDbId($processConfig->getId());
 
         if (isset($this->Request->saveGeneral)) {
             $validator = new ElcaProcessConfigValidator($this->Request);
@@ -1757,21 +1758,22 @@ class ProcessesCtrl extends TabsCtrl
         }
     }
 
-    private function initProcessDbId(): void
+    private function initProcessDbId($processConfigId): void
     {
         $processDbId = $this->Request->get('processDbId');
 
         if (!$processDbId) {
-            $processDbId = $this->namespace->processDbId
-                ? $this->namespace->processDbId
-                : ElcaProcessDb::findMostRecentVersion()->getId();
+
+            if ($this->namespace->processDbId) {
+                $processDbId = $this->namespace->processDbId;
+            }
+            else {
+                $processDb   = ElcaProcessDbSet::findRecentForProcessConfigId($processConfigId)->current();
+                $processDbId = $processDb->getId();
+            }
         }
 
         $this->namespace->processDbId = $processDbId;
     }
-    // End setSanityFalsePositiveAction
-
-    //////////////////////////////////////////////////////////////////////////////////////
-
 }
 // End ElcaProcessesCtrl

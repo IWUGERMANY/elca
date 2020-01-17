@@ -27,17 +27,19 @@ namespace Elca\View;
 use Beibob\Blibs\HtmlView;
 use Beibob\Blibs\UserSet;
 use Beibob\Blibs\User;
+use Beibob\Blibs\BlibsDateTime;
 use Elca\Security\ElcaAccess;
 
 /**
  * Builds the users view
  *
  * @package elca
+ * @authot Michael Böneke <boeneke@online-now.de>
  * @author Tobias Lode <tobias@beibob.de>
  * @author Fabian Moeller <fab@beibob.de>
  *
  */
-class ElcaUsersView extends HtmlView
+class ElcaUsersMailView extends HtmlView
 {
     /**
      * Lädt ein Template
@@ -46,14 +48,23 @@ class ElcaUsersView extends HtmlView
 	//	array where clause Table Users
 	private $showStatus = null;
 	private $initValues = null;
+	
+	/**
+    * Default year
+    */
+	const YEARSTART = 2000;
+	private $year2show;	
 	 
     public function __construct(array $args = [])
     {
-		parent::__construct('elca_users');
+		
+		parent::__construct('elca_users_mail');
 		
 		if(!is_null($args) && isset($args['status'])) {
 			$this->showStatus = $args['status'];
 		}
+		$this->year2show = self::YEARSTART;
+		
     }
     // End __construct
 
@@ -65,14 +76,13 @@ class ElcaUsersView extends HtmlView
     protected function beforeRender()
     {
 		switch ($this->showStatus) {
-			case 'requested': 	$this->initValues['status'] = User::STATUS_REQUESTED; break;
-			case 'confirmed': 	$this->initValues['status'] = User::STATUS_CONFIRMED; break;
-			case 'legacy': 		$this->initValues['status'] = User::STATUS_LEGACY; break;
-			case 'locked':		$this->initValues['is_locked'] = true; break;
-			case 'nologin': 	$this->initValues['login_time'] = NULL; break;
+			case 'nologin': 	$this->initValues[':deactivated'] = NULL; 
+								$this->initValues[':deactivatedmail'] = NULL; 
+							break;
         }
-		
-        $Users = UserSet::find($this->initValues, ['CASE WHEN lastname <> \'\' THEN lower(lastname) ELSE lower(auth_name) END' => 'ASC']);
+
+		// $Users = UserSet::find($this->initValues, ['created' => 'ASC']);
+		$Users = UserSet::findUsersNotActive($this->initValues, ['login_time' => 'ASC'], false);
 
         if(!count($Users))
             return;
@@ -96,10 +106,30 @@ class ElcaUsersView extends HtmlView
         $Ul = $this->getElementById('elca-users')->appendChild($this->getUl());
         foreach($Users as $User)
         {
-            $Li = $Ul->appendChild($this->getLi(['id' => 'user-' . $User->getId() ]));
+            
+			$CreatedDate = BlibsDateTime::factory($User->getCreated());
+			if(!is_null($User->getLoginTime()))
+			{	
+				$LoginDate = BlibsDateTime::factory($User->getLoginTime());
+				$LoginYear = $LoginDate->getYear(FORMAT_YEAR);
+			}	
+			else 
+			{
+				$LoginYear = 'Ohne Login';
+			}	
+			
+			if($LoginYear != $this->year2show)  
+			{
+				$this->year2show = $LoginYear;
+
+				$Li = $Ul->appendChild($this->getLi(['class' => 'createdyear']));
+				$IncludeYear = $Li->appendChild($this->getH2($this->year2show));
+			}
+			
+			$Li = $Ul->appendChild($this->getLi(['id' => 'user-' . $User->getId() ]));
 
             $Include = $Li->appendChild($this->createElement('include'));
-            $Include->setAttribute('name', 'Elca\View\ElcaUserSheetView');
+            $Include->setAttribute('name', 'Elca\View\ElcaUserSheetAdvancedView');
             $Include->setAttribute('itemId', $User->getId());
             $Include->setAttribute('headline', $User->getIdentifier(true));
             $Include->setAttribute('canEdit', $Access->canEditUser($User));
@@ -115,7 +145,7 @@ class ElcaUsersView extends HtmlView
                     break;
                 case User::STATUS_CONFIRMED:
 					$userStatistics['confirmed']++;
-                    break;
+                    break; 
                 case User::STATUS_LEGACY:
 					$userStatistics['legacy']++;
                     break;
@@ -131,10 +161,11 @@ class ElcaUsersView extends HtmlView
 		$this->assign('userLegacy', $userStatistics['legacy']);
 		$this->assign('userLocked', $userStatistics['locked']);
 		$this->assign('userCount', $userStatistics['count']);
+		$this->assign('status', $this->showStatus);
 		
     }
     // End render
 
     //////////////////////////////////////////////////////////////////////////////////////
 }
-// End ElcaUsersView
+// End ElcaUsersMailView
