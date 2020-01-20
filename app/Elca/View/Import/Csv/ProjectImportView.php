@@ -54,6 +54,7 @@ class ProjectImportView extends HtmlView
 {
     const BUILDMODE_DEFAULT = 'default';
     const URL_PATH_DOCS_DOWNLOADS_EXAMPLE_CSV_FILE = '/docs/downloads/CSV2eLCA/CSV2eLCA_Vorlage_BBSR-10-2019.csv';
+	const URL_PATH_DOCS_DOWNLOADS_EXAMPLE_XLS_FILE = '/docs/downloads/CSV2eLCA/Excel2eLCA_Vorlage_BBSR-10-2019.xlsx';
 
     private $readOnly;
 
@@ -237,8 +238,20 @@ class ProjectImportView extends HtmlView
                 ]
             )
         );
+		$group->add(
+            new HtmlTag(
+                'a',
+                t('Download Excel-Vorlage'),
+                [
+                    'href' => self::URL_PATH_DOCS_DOWNLOADS_EXAMPLE_XLS_FILE,
+                    'target' => 'blank',
+                    'class' => 'no-xhr download-link2',
+                ]
+            )
+        );
 
-        $group->add(new ElcaHtmlFormElementLabel(t('Datei (.csv, semikolon-separiert, UTF-8)'), new HtmlUploadInput('importFile')));
+
+        $group->add(new ElcaHtmlFormElementLabel(t('Datei (.csv, semikolon-separiert, UTF-8 // .xls, .xlsx)'), new HtmlUploadInput('importFile')));
 
         $group->add(new HtmlTag('p', t('Die erste Zeile der Importdatei wird ignoriert!')));
 
