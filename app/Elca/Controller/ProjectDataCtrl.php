@@ -55,6 +55,8 @@ use Elca\Db\ElcaProjectFinalEnergySupply;
 use Elca\Db\ElcaProjectFinalEnergySupplySet;
 use Elca\Db\ElcaProjectIndicatorBenchmark;
 use Elca\Db\ElcaProjectIndicatorBenchmarkSet;
+use Elca\Db\ElcaProjectKwk;
+use Elca\Db\ElcaProjectKwkSet;
 use Elca\Db\ElcaProjectLocation;
 use Elca\Db\ElcaProjectPhase;
 use Elca\Db\ElcaProjectPhaseSet;
@@ -104,6 +106,8 @@ class ProjectDataCtrl extends AppCtrl
     const DUMMY_PASSWORD = '*****************';
     const PROJECT_PASSWORD_LENGTH = 6;
     const PROCESS_CATEGORY_DEFAULT_REF = '8.06';
+    const PROCESS_CATEGORY_KWK_DEFAULT_REF = '9.02';
+
 
     /**
      * Default action
@@ -1235,40 +1239,41 @@ class ProjectDataCtrl extends AppCtrl
         }
 
         $addNewDemand     = isset($this->Request->addDemand) ? (bool)$this->Request->addDemand : false;
+        $addNewKwkDemand  = isset($this->Request->addKwkDemand) ? (bool)$this->Request->addKwkDemand : false;
         $addNewSupply     = isset($this->Request->addSupply) ? (bool)$this->Request->addSupply : false;
         $projectVariantId = $this->Request->projectVariantId;
-        $Validator        = new ElcaValidator($this->Request);
+        $validator        = new ElcaValidator($this->Request);
         $modified         = false;
 
         /**
          * Set view
          */
-        $View = $this->setView(new ElcaProjectDataEnEvView());
-        $View->assign('projectVariantId', $projectVariantId);
-        $View->assign('readOnly', !$this->Access->isProjectOwnerOrAdmin($this->Elca->getProject()));
+        $view = $this->setView(new ElcaProjectDataEnEvView());
+        $view->assign('projectVariantId', $projectVariantId);
+        $view->assign('readOnly', !$this->Access->isProjectOwnerOrAdmin($this->Elca->getProject()));
 
         /**
          * Ngf
          */
-        $Ngf = ElcaProjectEnEv::findByProjectVariantId($projectVariantId);
+        $ngf = ElcaProjectEnEv::findByProjectVariantId($projectVariantId);
 
         if ($this->Request->has('ngf')) {
-            $Validator->assertNotEmpty('ngf', null, t('Keine NGF-EnEv angegeben'));
+            $validator->assertNotEmpty('ngf', null, t('Keine NGF-EnEv angegeben'));
 
-            if ($Validator->isValid()) {
+            if ($validator->isValid()) {
                 $ngfEnEv     = ElcaNumberFormat::fromString($this->Request->ngf);
                 $enEvVersion = ElcaNumberFormat::fromString($this->Request->enEvVersion, 0);
 
-                if ($Ngf->isInitialized()) {
-                    $ngfChanged = $Ngf->getNgf() != $ngfEnEv;
+                if ($ngf->isInitialized()) {
+                    $ngfChanged = $ngf->getNgf() != $ngfEnEv;
 
-                    $Ngf->setProjectVariantId($projectVariantId);
-                    $Ngf->setNgf($ngfEnEv);
-                    $Ngf->setVersion($enEvVersion);
-                    $Ngf->update();
+                    $ngf->setProjectVariantId($projectVariantId);
+                    $ngf->setNgf($ngfEnEv);
+                    $ngf->setVersion($enEvVersion);
+                    $ngf->update();
                     $modified = true;
                 } else {
-                    $Ngf        = ElcaProjectEnEv::create($projectVariantId, $ngfEnEv, $enEvVersion);
+                    $ngf        = ElcaProjectEnEv::create($projectVariantId, $ngfEnEv, $enEvVersion);
                     $ngfChanged = true;
                 }
 
@@ -1283,9 +1288,9 @@ class ProjectDataCtrl extends AppCtrl
         }
 
         if (isset($this->Request->saveEnergyRefModel)) {
-            $Validator->assertProjectFinalEnergyRefModels();
+            $validator->assertProjectFinalEnergyRefModels();
 
-            if ($Validator->isValid() && is_array($this->Request->processConfigId)) {
+            if ($validator->isValid() && is_array($this->Request->processConfigId)) {
                 foreach ($this->Request->processConfigId as $ident => $processConfigId) {
                     if ($processConfigId) {
                         $modified |= $this->saveEnergyRefModel($ident);
@@ -1295,21 +1300,57 @@ class ProjectDataCtrl extends AppCtrl
                 $this->messages->add(t('Der Energiebedarf für das Referenzgebäude wurde gespeichert'));
             }
         } elseif (isset($this->Request->saveEnergyDemand)) {
-            $Validator->assertProjectFinalEnergyDemands();
+            $projectKwk = ElcaProjectKwk::findByProjectVariantId($projectVariantId);
 
-            if ($Validator->isValid() && is_array($this->Request->processConfigId)) {
-                foreach ($this->Request->processConfigId as $key => $processConfigId) {
-                    $modified |= $this->saveEnergyDemand($key);
+            $validator->assertProjectFinalEnergyDemands();
+
+            if ($projectKwk->isInitialized()) {
+                if (!$validator->assertProjectKwkFinalEnergyDemands()) {
+                    $addNewKwkDemand = true;
+                }
+            }
+
+            if ($validator->isValid()) {
+                $isKwk = $this->Request->isKwk;
+
+                if ($this->Request->has('kwkName')) {
+                    $name    = $this->Request->get('kwkName');
+                    $heating = ElcaNumberFormat::fromString($this->Request->get('kwkHeating'));
+                    $water   = ElcaNumberFormat::fromString($this->Request->get('kwkWater'));
+
+                    if (!$projectKwk->isInitialized()) {
+                        $projectKwk = ElcaProjectKwk::create($projectVariantId, $name, $heating, $water);
+                    } else {
+                        if (empty($name) && empty($heating) && (empty($water))) {
+                            $projectKwk->delete();
+                            $projectKwk = null;
+                        } else {
+                            $projectKwk->setName($name);
+                            $projectKwk->setHeating($heating);
+                            $projectKwk->setWater($water);
+                            $projectKwk->update();
+                        }
+                    }
                 }
 
-                $this->messages->add(t('Der Energiebedarf wurde gespeichert'));
+                if (is_array($this->Request->processConfigId)) {
+                    foreach ($this->Request->processConfigId as $key => $processConfigId) {
+                        if ($projectKwk->isInitialized() && $isKwk[$key]) {
+                            $modified |= $this->saveKwkEnergyDemand($projectKwk, $key);
+                        } else {
+                            $modified |= $this->saveEnergyDemand($key);
+                        }
+                    }
+
+                    $this->messages->add(t('Der Energiebedarf wurde gespeichert'));
+                }
             }
         } elseif (isset($this->Request->addEnergyDemand)) {
             $key = 'newDemand';
 
-            $Validator->assertProjectFinalEnergyDemand($key);
+            $validator->assertProjectFinalEnergyDemand($key);
 
-            if ($Validator->isValid()) {
+            if ($validator->isValid()) {
                 /**
                  * Save previously added energy-carrier
                  */
@@ -1321,10 +1362,36 @@ class ProjectDataCtrl extends AppCtrl
             } else {
                 $addNewDemand = true;
             }
+        } elseif (isset($this->Request->addKwk)) {
+                $projectKwk = ElcaProjectKwk::findByProjectVariantId($projectVariantId);
+
+                if (!$projectKwk->isInitialized()) {
+                    ElcaProjectKwk::create($projectVariantId, t('Fernwärme Mix'));
+                    $addNewKwkDemand = true;
+                }
+        } elseif (isset($this->Request->addKwkEnergyDemand)) {
+            $key = 'newKwkDemand';
+
+            $validator->assertProjectFinalEnergyDemand($key);
+
+            if ($validator->isValid()) {
+                /**
+                 * Save previously added energy-carrier
+                 */
+                $projectKwk = ElcaProjectKwk::findByProjectVariantId($projectVariantId);
+
+                $modified = $this->saveKwkEnergyDemand($projectKwk, $key);
+                $this->Request->__set('b', ElcaProcessConfigSelectorView::BUILDMODE_OPERATION);
+                $this->Request->__set('processCategoryNodeId',
+                    ElcaProcessCategory::findByRefNum(self::PROCESS_CATEGORY_KWK_DEFAULT_REF)->getNodeId());
+                $this->selectProcessConfigAction($key);
+            } else {
+                $addNewKwkDemand = true;
+            }
         } elseif (isset($this->Request->saveEnergySupply)) {
             if ($this->Access->canEditFinalEnergySupplies()) {
-                $Validator->assertProjectFinalEnergySupplies();
-                if ($Validator->isValid() && is_array($this->Request->processConfigId)) {
+                $validator->assertProjectFinalEnergySupplies();
+                if ($validator->isValid() && is_array($this->Request->processConfigId)) {
                     foreach ($this->Request->processConfigId as $key => $processConfigId) {
                         $modified |= $this->saveEnergySupply($key);
                     }
@@ -1336,7 +1403,7 @@ class ProjectDataCtrl extends AppCtrl
             if ($this->Access->canEditFinalEnergySupplies()) {
 
                 $key = 'newSupply';
-                if ($Validator->isValid()) {
+                if ($validator->isValid()) {
                     /**
                      * Save previously added energy-carrier
                      */
@@ -1351,27 +1418,28 @@ class ProjectDataCtrl extends AppCtrl
             }
         }
 
-        if ($Validator->isValid()) {
-            $addNewDemand = $addNewSupply = false;
+        if ($validator->isValid()) {
+            $addNewDemand = $addNewSupply = $addNewKwkDemand = false;
         } else {
-            foreach ($Validator->getErrors() as $property => $message) {
+            foreach ($validator->getErrors() as $property => $message) {
                 if ($message != Validator::ERR_INVALID) {
                     $this->messages->add($message, ElcaMessages::TYPE_ERROR);
                 }
             }
 
-            $View->assign('Validator', $Validator);
+            $view->assign('Validator', $validator);
         }
 
         /**
          * Assign addNewProjectFinalEnergyDemand to keep new ProjectFinalEnergyDemand at view
          */
-        $View->assign('addNewProjectFinalEnergyDemand', $addNewDemand);
-        $View->assign('addNewProjectFinalEnergySupply', $addNewSupply);
-        $View->assign('ngf', $Ngf->getNgf());
-        $View->assign('enEvVersion', $Ngf->getVersion());
+        $view->assign('addNewProjectFinalEnergyDemand', $addNewDemand);
+        $view->assign('addNewProjectKwkFinalEnergyDemand', $addNewKwkDemand);
+        $view->assign('addNewProjectFinalEnergySupply', $addNewSupply);
+        $view->assign('ngf', $ngf->getNgf());
+        $view->assign('enEvVersion', $ngf->getVersion());
 
-        $View->assign('Data', $this->getFinalEnergyDataObject($projectVariantId));
+        $view->assign('Data', $this->getFinalEnergyDataObject($projectVariantId));
 
         if ($modified) {
             $projectVariant = ElcaProjectVariant::findById($projectVariantId);
@@ -1501,6 +1569,10 @@ class ProjectDataCtrl extends AppCtrl
             return false;
         }
 
+        if (isset($this->Request->isKwk) && $this->Request->isKwk[$key]) {
+            return false;
+        }
+
         $processConfigId = $this->Request->processConfigId[$key];
         $heating         = $this->Request->heating[$key] ? ElcaNumberFormat::fromString(
             $this->Request->heating[$key],
@@ -1603,7 +1675,77 @@ class ProjectDataCtrl extends AppCtrl
 
         return $modified;
     }
-    // End selectFinalEnergyDemandProcessConfig
+
+    /**
+     * Saves a energy demand
+     *
+     * @param  String $key
+     *
+     * @return bool  $modified
+     */
+    protected function saveKwkEnergyDemand(ElcaProjectKwk $projectKwk, $key)
+    {
+        if (!isset($this->Request->processConfigId[$key])) {
+            return false;
+        }
+
+        if (isset($this->Request->isKwk) && !$this->Request->isKwk[$key]) {
+            return false;
+        }
+
+        $processConfigId = $this->Request->processConfigId[$key];
+        $heating         = $projectKwk->getHeating();
+        $water           = $projectKwk->getWater();
+        $ratio           = ElcaNumberFormat::fromString($this->Request->ratio[$key], 4, true);
+
+        $modified = false;
+
+        if (is_numeric($key)) {
+            $energyDemand = ElcaProjectFinalEnergyDemand::findById($key);
+        } else {
+            $energyDemand = ElcaProjectFinalEnergyDemand::findById(null);
+        }
+
+        if ($energyDemand->isInitialized()) {
+            if ($energyDemand->getProcessConfigId() != $processConfigId) {
+                $energyDemand->setProcessConfigId($processConfigId);
+                $modified = true;
+            }
+            if ($energyDemand->getHeating() != $heating) {
+                $energyDemand->setHeating($heating);
+                $modified = true;
+            }
+            if ($energyDemand->getWater() != $water) {
+                $energyDemand->setWater($water);
+                $modified = true;
+            }
+
+            if ($energyDemand->getRatio() != $ratio) {
+                $energyDemand->setRatio($ratio);
+                $modified = true;
+            }
+
+            if ($modified) {
+                $energyDemand->update();
+            }
+        } else {
+            ElcaProjectFinalEnergyDemand::create(
+                $this->Request->projectVariantId,
+                $processConfigId,
+                $heating,
+                $water,
+                null,
+                null,
+                null,
+                null,
+                $ratio,
+                $projectKwk->getId()
+            );
+            $modified = true;
+        }
+
+        return $modified;
+    }
 
     /**
      * Action selectProcessConfig
@@ -1725,41 +1867,81 @@ class ProjectDataCtrl extends AppCtrl
      */
     protected function getFinalEnergyDataObject($projectVariantId, $addSupply = false)
     {
-        $Data           = new \stdClass();
-        $Data->Demand   = new \stdClass();
-        $Data->Supply   = new \stdClass();
-        $Data->RefModel = new \stdClass();
+        $data           = new \stdClass();
+        $data->Demand   = new \stdClass();
+        $data->Kwk      = (object)['id' => null, 'name' => t('KWK / Fernwärme'), 'heating' => null, 'water' => null, 'overall' => 0];
+        $data->Supply   = new \stdClass();
+        $data->RefModel = new \stdClass();
 
         $ngf = ElcaProjectVariant::findById($projectVariantId)->getProjectConstruction()->getNetFloorSpace();
 
-        $ProjectFinalEnergyDemandSet = ElcaProjectFinalEnergyDemandSet::find(
+        $kwk = ElcaProjectKwkSet::findByProjectVariantId($projectVariantId)->current();
+
+        if ($kwk) {
+            $data->Kwk->id = $kwk->getId();
+            $data->Kwk->name = $kwk->getName();
+            $data->Kwk->heating = $kwk->getHeating();
+            $data->Kwk->water = $kwk->getWater();
+        }
+
+        $projectFinalEnergyDemandSet = ElcaProjectFinalEnergyDemandSet::find(
             ['project_variant_id' => $projectVariantId],
             ['id' => 'ASC']
         );
-        foreach ($ProjectFinalEnergyDemandSet as $ProjectFinalEnergyDemand) {
+        $kwkProjectFinalEnergyDemands = [];
+        foreach ($projectFinalEnergyDemandSet as $projectFinalEnergyDemand) {
+            if ($projectFinalEnergyDemand->isKwk()) {
+                $kwkProjectFinalEnergyDemands[] = $projectFinalEnergyDemand;
+                continue;
+            }
+
             $overall = 0;
 
-            if ($ProjectFinalEnergyDemand->getIdent() === ElcaProjectFinalEnergyDemand::IDENT_PROCESS_ENERGY) {
+            if ($projectFinalEnergyDemand->getIdent() === ElcaProjectFinalEnergyDemand::IDENT_PROCESS_ENERGY) {
                 $key    = ElcaProjectFinalEnergyDemand::IDENT_PROCESS_ENERGY;
                 $factor = $ngf;
             } else {
-                $key    = $ProjectFinalEnergyDemand->getId();
+                $key    = $projectFinalEnergyDemand->getId();
                 $factor = 1;
             }
 
-            $Data->Demand->processConfigId[$key] = $ProjectFinalEnergyDemand->getProcessConfigId();
-            $overall                             += $Data->Demand->heating[$key] = ($ProjectFinalEnergyDemand->getHeating(
-            ) ? $ProjectFinalEnergyDemand->getHeating() * $factor : null);
-            $overall                             += $Data->Demand->water[$key] = ($ProjectFinalEnergyDemand->getWater()
-                ? $ProjectFinalEnergyDemand->getWater() * $factor : null);
-            $overall                             += $Data->Demand->lighting[$key] = ($ProjectFinalEnergyDemand->getLighting(
-            ) ? $ProjectFinalEnergyDemand->getLighting() * $factor : null);
-            $overall                             += $Data->Demand->ventilation[$key] = ($ProjectFinalEnergyDemand->getVentilation(
-            ) ? $ProjectFinalEnergyDemand->getVentilation() * $factor : null);
-            $overall                             += $Data->Demand->cooling[$key] = ($ProjectFinalEnergyDemand->getCooling(
-            ) ? $ProjectFinalEnergyDemand->getCooling() * $factor : null);
-            $Data->Demand->overall[$key]         = $overall / $factor;
-            $Data->Demand->toggle[$key]          = 0;
+            $data->Demand->processConfigId[$key] = $projectFinalEnergyDemand->getProcessConfigId();
+            $overall                             += $data->Demand->heating[$key] = ($projectFinalEnergyDemand->getHeating(
+            ) ? $projectFinalEnergyDemand->getHeating() * $factor : null);
+            $overall                             += $data->Demand->water[$key] = ($projectFinalEnergyDemand->getWater()
+                ? $projectFinalEnergyDemand->getWater() * $factor : null);
+            $overall                             += $data->Demand->lighting[$key] = ($projectFinalEnergyDemand->getLighting(
+            ) ? $projectFinalEnergyDemand->getLighting() * $factor : null);
+            $overall                             += $data->Demand->ventilation[$key] = ($projectFinalEnergyDemand->getVentilation(
+            ) ? $projectFinalEnergyDemand->getVentilation() * $factor : null);
+            $overall                             += $data->Demand->cooling[$key] = ($projectFinalEnergyDemand->getCooling(
+            ) ? $projectFinalEnergyDemand->getCooling() * $factor : null);
+            $data->Demand->overall[$key]         = $overall / $factor;
+            $data->Demand->toggle[$key]          = 0;
+            $data->Demand->isKwk[$key]           = false;
+        }
+
+        foreach ($kwkProjectFinalEnergyDemands as $kwkProjectFinalEnergyDemand) {
+            $overall = 0;
+
+            $key   = $kwkProjectFinalEnergyDemand->getId();
+            $ratio = $kwkProjectFinalEnergyDemand->getRatio();
+
+            $data->Demand->processConfigId[$key] = $kwkProjectFinalEnergyDemand->getProcessConfigId();
+            $data->Demand->ratio[$key] = $ratio;
+
+            $overall                             += $data->Demand->heating[$key] = $kwkProjectFinalEnergyDemand->getHeating()
+                ? $kwkProjectFinalEnergyDemand->getHeating() * $ratio
+                : 0;
+            $overall                             += $data->Demand->water[$key] = $kwkProjectFinalEnergyDemand->getWater()
+                ? $kwkProjectFinalEnergyDemand->getWater() * $ratio
+                : 0;
+
+            $data->Demand->overall[$key]         = $overall;
+            $data->Demand->toggle[$key]          = 0;
+            $data->Demand->isKwk[$key]           = true;
+
+            $data->Kwk->overall += $data->Demand->overall[$key];
         }
 
         $ProjectFinalEnergySupplySet = ElcaProjectFinalEnergySupplySet::find(
@@ -1768,17 +1950,17 @@ class ProjectDataCtrl extends AppCtrl
         );
         foreach ($ProjectFinalEnergySupplySet as $ProjectFinalEnergySupply) {
             $key                                 = $ProjectFinalEnergySupply->getId();
-            $Data->Supply->processConfigId[$key] = $ProjectFinalEnergySupply->getProcessConfigId();
-            $Data->Supply->description[$key]     = $ProjectFinalEnergySupply->getDescription();
-            $Data->Supply->enEvRatio[$key]       = $ProjectFinalEnergySupply->getEnEvRatio();
-            $Data->Supply->quantity[$key]        = $ProjectFinalEnergySupply->getQuantity();
-            $Data->Supply->toggle[$key]          = 0;
-            $Data->Supply->overall[$key]         = $ProjectFinalEnergySupply->getQuantity(
+            $data->Supply->processConfigId[$key] = $ProjectFinalEnergySupply->getProcessConfigId();
+            $data->Supply->description[$key]     = $ProjectFinalEnergySupply->getDescription();
+            $data->Supply->enEvRatio[$key]       = $ProjectFinalEnergySupply->getEnEvRatio();
+            $data->Supply->quantity[$key]        = $ProjectFinalEnergySupply->getQuantity();
+            $data->Supply->toggle[$key]          = 0;
+            $data->Supply->overall[$key]         = $ProjectFinalEnergySupply->getQuantity(
                 ) * (1 - $ProjectFinalEnergySupply->getEnEvRatio());
         }
 
         if ($addSupply) {
-            $Data->Supply->enEvRatio['newSupply'] = 0;
+            $data->Supply->enEvRatio['newSupply'] = 0;
         }
 
         $Project = ElcaProjectVariant::findById($projectVariantId)->getProject();
@@ -1805,24 +1987,24 @@ class ProjectDataCtrl extends AppCtrl
                 } else {
                     $factor = 1;
                 }
-                $Data->RefModel->processConfigId[$ident] = isset($refProcessConfigs[$ident])
+                $data->RefModel->processConfigId[$ident] = isset($refProcessConfigs[$ident])
                     ? $refProcessConfigs[$ident] : null;
-                $overall                                 += $Data->RefModel->heating[$ident] = $RefModel && $RefModel->getHeating(
+                $overall                                 += $data->RefModel->heating[$ident] = $RefModel && $RefModel->getHeating(
                 ) ? $RefModel->getHeating() * $factor : null;
-                $overall                                 += $Data->RefModel->water[$ident] = $RefModel && $RefModel->getWater(
+                $overall                                 += $data->RefModel->water[$ident] = $RefModel && $RefModel->getWater(
                 ) ? $RefModel->getWater() * $factor : null;
-                $overall                                 += $Data->RefModel->lighting[$ident] = $RefModel && $RefModel->getLighting(
+                $overall                                 += $data->RefModel->lighting[$ident] = $RefModel && $RefModel->getLighting(
                 ) ? $RefModel->getLighting() * $factor : null;
-                $overall                                 += $Data->RefModel->ventilation[$ident] = $RefModel && $RefModel->getVentilation(
+                $overall                                 += $data->RefModel->ventilation[$ident] = $RefModel && $RefModel->getVentilation(
                 ) ? $RefModel->getVentilation() * $factor : null;
-                $overall                                 += $Data->RefModel->cooling[$ident] = $RefModel && $RefModel->getCooling(
+                $overall                                 += $data->RefModel->cooling[$ident] = $RefModel && $RefModel->getCooling(
                 ) ? $RefModel->getCooling() * $factor : null;
-                $Data->RefModel->overall[$ident]         = $overall / $factor;
-                $Data->RefModel->toggle[$ident]          = 0;
+                $data->RefModel->overall[$ident]         = $overall / $factor;
+                $data->RefModel->toggle[$ident]          = 0;
             }
         }
 
-        return $Data;
+        return $data;
     }
     // End saveEnergyDemand
 
@@ -2586,10 +2768,11 @@ class ProjectDataCtrl extends AppCtrl
          * Build data
          */
         if (!is_numeric($relId)) {
-            $View->assign(
-                $relId == 'newDemand' ? 'addNewProjectFinalEnergyDemand' : 'addNewProjectFinalEnergySupply',
-                true
-            );
+            switch ($relId) {
+                case 'newDemand': $View->assign("addNewProjectFinalEnergyDemand", true); break;
+                case 'newSupply': $View->assign("addNewProjectFinalEnergySupply", true); break;
+                case 'newKwkDemand': $View->assign("addNewProjectKwkFinalEnergyDemand", true); break;
+            }
         }
 
         if ($this->Request->id != $this->Request->p) {

@@ -153,23 +153,57 @@ class ElcaReportSet extends DataObjectSet
      */
     public static function findFinalEnergyDemandAssets($projectVariantId, $force = false)
     {
-        $Project = ElcaProjectVariant::findById($projectVariantId)->getProject();
+        $project = ElcaProjectVariant::findById($projectVariantId)->getProject();
 
-        return self::_find(
+        $sql = \sprintf('SELECT * FROM %s 
+                                WHERE project_variant_id = :projectVariantId
+                                AND process_db_id = :processDbId
+                                AND kwk_id IS NULL
+                              ORDER BY id, life_cycle_p_order',
+            self::VIEW_REPORT_FINAL_ENERGY_DEMAND_ASSETS
+        );
+
+        return self::_findBySql(
             get_class(),
-            self::VIEW_REPORT_FINAL_ENERGY_DEMAND_ASSETS,
-            array(
-                'project_variant_id' => $projectVariantId,
-                'process_db_id'      => $Project->getProcessDbId(),
-            ),
-            array(
-                'id'                 => 'ASC',
-                'life_cycle_p_order' => 'ASC',
-            )
+            $sql,
+            [
+                'projectVariantId' => $projectVariantId,
+                'processDbId'      => $project->getProcessDbId(),
+            ],
+            $force
         );
     }
-    // End findFinalEnergyDemandAssets
 
+    /**
+     * Returns a list of final energy demand assets
+     *
+     * @param  int $projectVariantId
+     * @param bool $force
+     *
+     * @return ElcaReportSet
+     */
+    public static function findKwkFinalEnergyDemandAssets($projectVariantId, $force = false)
+    {
+        $project = ElcaProjectVariant::findById($projectVariantId)->getProject();
+
+        $sql = \sprintf('SELECT * FROM %s 
+                                WHERE project_variant_id = :projectVariantId
+                                AND process_db_id = :processDbId
+                                AND kwk_id IS NOT NULL
+                              ORDER BY id, life_cycle_p_order',
+            self::VIEW_REPORT_FINAL_ENERGY_DEMAND_ASSETS
+        );
+
+        return self::_findBySql(
+            get_class(),
+            $sql,
+            [
+                'projectVariantId' => $projectVariantId,
+                'processDbId'      => $project->getProcessDbId(),
+            ],
+            $force
+        );
+    }
     /**
      * Returns a list of final energy supply assets
      *
@@ -391,18 +425,53 @@ class ElcaReportSet extends DataObjectSet
      */
     public static function findFinalEnergyDemandEffects($projectVariantId, $force = false)
     {
-        return self::_find(
+        $sql = \sprintf('SELECT * FROM %s 
+                                WHERE project_variant_id = :projectVariantId
+                                AND is_hidden = :isHidden
+                                AND kwk_id IS NULL
+                              ORDER BY id, indicator_p_order',
+            self::VIEW_REPORT_FINAL_ENERGY_DEMAND_EFFECTS
+        );
+
+        return self::_findBySql(
             get_class(),
-            self::VIEW_REPORT_FINAL_ENERGY_DEMAND_EFFECTS,
-            array('project_variant_id' => $projectVariantId, 'is_hidden' => false),
-            array(
-                'id'                => 'ASC',
-                'indicator_p_order' => 'ASC',
-            )
+            $sql,
+            [
+                'projectVariantId' => $projectVariantId,
+                'isHidden' => false,
+            ],
+            $force
         );
     }
-    // End findFinalEnergyDemandEffects
 
+    /**
+     * Returns a list of final energy demand effects
+     *
+     * @param  int $projectVariantId
+     * @param bool $force
+     *
+     * @return ElcaReportSet
+     */
+    public static function findKwkFinalEnergyDemandEffects($projectVariantId, $force = false)
+    {
+        $sql = \sprintf('SELECT * FROM %s 
+                                WHERE project_variant_id = :projectVariantId
+                                AND is_hidden = :isHidden
+                                AND kwk_id IS NOT NULL
+                              ORDER BY id, indicator_p_order',
+            self::VIEW_REPORT_FINAL_ENERGY_DEMAND_EFFECTS
+        );
+
+        return self::_findBySql(
+            get_class(),
+            $sql,
+            [
+                'projectVariantId' => $projectVariantId,
+                'isHidden' => false,
+            ],
+            $force
+        );
+    }
 
     /**
      * Returns a list of final energy supply effects
@@ -507,7 +576,7 @@ class ElcaReportSet extends DataObjectSet
 		{
 			$sql = sprintf(
 				'INSERT INTO %s (user_id,projects_id,report_name,projects_filename,current_variant_id,pdf_cmd,key)
-				 VALUES  (:user_id, :projects_id, :report_name, :projects_filename, :current_variant_id, :pdf_cmd, :key)'
+				 VALUES  (:user_id, :projects_id, :report_name, :projects_filename, :current_variant_id, :pdf_cmd, (:key)::varchar)'
 				,
 				self::TABLE_REPORT_PDF_QUEUE
 			);
@@ -518,7 +587,7 @@ class ElcaReportSet extends DataObjectSet
 			$initValues['key'] = $infoArrayKey[0];
 			
 			$sql = sprintf(
-				'UPDATE %s set projects_filename=:projects_filename, pdf_cmd=:pdf_cmd, key=:key, ready=NULL, created=NOW()
+				'UPDATE %s set projects_filename=:projects_filename, pdf_cmd=:pdf_cmd, key=(:key)::varchar, ready=NULL, created=NOW()
 				WHERE user_id=:user_id
 				AND	projects_id=:projects_id
 				AND report_name=:report_name

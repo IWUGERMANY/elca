@@ -24,9 +24,9 @@
  */
 namespace Elca\View;
 
+use Beibob\Blibs\Environment;
 use Beibob\Blibs\HtmlView;
 use Beibob\Blibs\UserStore;
-use Beibob\Blibs\Environment;
 use Elca\Elca;
 use Elca\Security\ElcaAccess;
 

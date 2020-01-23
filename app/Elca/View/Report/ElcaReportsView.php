@@ -24,24 +24,21 @@
  */
 namespace Elca\View\Report;
 
+use Beibob\Blibs\BlibsDateTime;
 use Beibob\Blibs\Environment;
 use Beibob\Blibs\FrontController;
 use Beibob\Blibs\HtmlView;
 use Beibob\Blibs\UserStore;
-use Beibob\Blibs\BlibsDateTime;
 use DOMElement;
 use Elca\Db\ElcaLifeCycle;
 use Elca\Db\ElcaProcess;
 use Elca\Db\ElcaProject;
 use Elca\Db\ElcaProjectConstruction;
-use Elca\Db\ElcaProjectLifeCycleUsage;
 use Elca\Db\ElcaProjectVariant;
 use Elca\Db\ElcaReportSet;
 use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Process\Module;
-use Elca\Model\Processing\LifeCycleUsage\LifeCycleUsage;
-use Elca\Model\Processing\LifeCycleUsage\LifeCycleUsages;
 use Elca\Model\Project\ProjectId;
 use Elca\Service\Project\LifeCycleUsageService;
 
@@ -130,7 +127,7 @@ abstract class ElcaReportsView extends HtmlView
 		{
 			// PDF ready?
 			$infoArrayReady = (array)$PDFinfo[0]->ready;
-			if(	!is_null($infoArrayReady[0]) )
+			if (isset($infoArrayReady[0]))
 			{
 				$PDFreadyDate = BlibsDateTime::factory($infoArrayReady[0]);
 				$PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal','title' => t('Erstellt:').$PDFreadyDate->getDateTimeString(t('DATETIME_FORMAT_DMY') . ' ' . t('DATETIME_FORMAT_HI')), 'href' => $modalUrlDownload], t('PDF anzeigen')));	
@@ -140,7 +137,7 @@ abstract class ElcaReportsView extends HtmlView
 				{	
 					
 				}
-			}		
+			}
 			else
 			{
 				$PrintDiv->appendChild($this->getSpan(t('PDF wird erstellt'),['class'=>'pdfcreate']));

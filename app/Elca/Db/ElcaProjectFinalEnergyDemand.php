@@ -24,9 +24,9 @@
  */
 namespace Elca\Db;
 
-use PDO;
-use Exception;
 use Beibob\Blibs\DbObject;
+use PDO;
+
 /**
  *
  * @package elca
@@ -89,6 +89,9 @@ class ElcaProjectFinalEnergyDemand extends DbObject
      */
     private $cooling;
 
+    private $ratio;
+    private $kwkId;
+
     /**
      * Primary key
      */
@@ -105,7 +108,10 @@ class ElcaProjectFinalEnergyDemand extends DbObject
                                         'water'            => PDO::PARAM_STR,
                                         'lighting'         => PDO::PARAM_STR,
                                         'ventilation'      => PDO::PARAM_STR,
-                                        'cooling'          => PDO::PARAM_STR);
+                                        'cooling'          => PDO::PARAM_STR,
+                                        'ratio'            => PDO::PARAM_STR,
+                                        'kwkId'            => PDO::PARAM_INT,
+    );
 
     /**
      * Extended column types
@@ -127,22 +133,24 @@ class ElcaProjectFinalEnergyDemand extends DbObject
      * @param  number  $ventilation     - ventilation in kWh/(m2*a)
      * @param  number  $cooling         - cooling in kWh/(m2*a)
      */
-    public static function create($projectVariantId, $processConfigId, $heating = null, $water = null, $lighting = null, $ventilation = null, $cooling = null, $ident = null)
+    public static function create($projectVariantId, $processConfigId, $heating = null, $water = null, $lighting = null, $ventilation = null, $cooling = null, $ident = null, $ratio = 1, $kwkId = null)
     {
-        $ElcaProjectFinalEnergyDemand = new ElcaProjectFinalEnergyDemand();
-        $ElcaProjectFinalEnergyDemand->setProjectVariantId($projectVariantId);
-        $ElcaProjectFinalEnergyDemand->setProcessConfigId($processConfigId);
-        $ElcaProjectFinalEnergyDemand->setIdent($ident);
-        $ElcaProjectFinalEnergyDemand->setHeating($heating);
-        $ElcaProjectFinalEnergyDemand->setWater($water);
-        $ElcaProjectFinalEnergyDemand->setLighting($lighting);
-        $ElcaProjectFinalEnergyDemand->setVentilation($ventilation);
-        $ElcaProjectFinalEnergyDemand->setCooling($cooling);
+        $finalEnergyDemand = new ElcaProjectFinalEnergyDemand();
+        $finalEnergyDemand->setProjectVariantId($projectVariantId);
+        $finalEnergyDemand->setProcessConfigId($processConfigId);
+        $finalEnergyDemand->setIdent($ident);
+        $finalEnergyDemand->setHeating($heating);
+        $finalEnergyDemand->setWater($water);
+        $finalEnergyDemand->setLighting($lighting);
+        $finalEnergyDemand->setVentilation($ventilation);
+        $finalEnergyDemand->setCooling($cooling);
+        $finalEnergyDemand->setRatio($ratio);
+        $finalEnergyDemand->setKwkId($kwkId);
 
-        if($ElcaProjectFinalEnergyDemand->getValidator()->isValid())
-            $ElcaProjectFinalEnergyDemand->insert();
+        if($finalEnergyDemand->getValidator()->isValid())
+            $finalEnergyDemand->insert();
 
-        return $ElcaProjectFinalEnergyDemand;
+        return $finalEnergyDemand;
     }
     // End create
 
@@ -169,6 +177,8 @@ class ElcaProjectFinalEnergyDemand extends DbObject
                              , lighting
                              , ventilation
                              , cooling
+                             , ratio
+                             , kwk_id
                           FROM %s
                          WHERE id = :id"
                        , self::TABLE_NAME
@@ -198,6 +208,8 @@ class ElcaProjectFinalEnergyDemand extends DbObject
                              , lighting
                              , ventilation
                              , cooling
+                             , ratio
+                             , kwk_id
                           FROM %s
                          WHERE project_variant_id = :projectVariantId
                            AND ident = :ident"
@@ -214,21 +226,24 @@ class ElcaProjectFinalEnergyDemand extends DbObject
      * @param  int $projectVariantId new project variant id
      * @return ElcaProjectFinalEnergyDemand - the new element copy
      */
-    public function copy($projectVariantId)
+    public function copy($projectVariantId, $kwkId = null)
     {
-        if(!$this->isInitialized() || !$projectVariantId)
+        if (!$this->isInitialized() || !$projectVariantId)
             return new ElcaProjectFinalEnergyDemand();
 
-        $Copy = self::create($projectVariantId,
+        $copy = self::create($projectVariantId,
                              $this->processConfigId,
                              $this->heating,
                              $this->water,
                              $this->lighting,
                              $this->ventilation,
                              $this->cooling,
-                             $this->ident
-                             );
-        return $Copy;
+                             $this->ident,
+                             $this->ratio,
+                             $kwkId ?? $this->kwkId
+        );
+
+        return $copy;
     }
     // End copy
 
@@ -349,7 +364,16 @@ class ElcaProjectFinalEnergyDemand extends DbObject
     {
         $this->cooling = $cooling;
     }
-    // End setCooling
+
+    public function setRatio($ratio): void
+    {
+        $this->ratio = $ratio;
+    }
+
+    public function setKwkId($kwkId): void
+    {
+        $this->kwkId = $kwkId;
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////
 
@@ -492,7 +516,26 @@ class ElcaProjectFinalEnergyDemand extends DbObject
     {
         return $this->cooling;
     }
-    // End getCooling
+
+    public function getRatio()
+    {
+        return $this->ratio;
+    }
+
+    public function isKwk()
+    {
+        return null !== $this->kwkId;
+    }
+
+    public function getKwkId()
+    {
+        return $this->kwkId;
+    }
+
+    public static function primaryKey(): array
+    {
+        return self::$primaryKey;
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////
 
@@ -527,6 +570,8 @@ class ElcaProjectFinalEnergyDemand extends DbObject
                              , lighting         = :lighting
                              , ventilation      = :ventilation
                              , cooling          = :cooling
+                             , ratio            = :ratio
+                             , kwk_id           = :kwkId
                          WHERE id = :id"
                        , self::TABLE_NAME
                        );
@@ -540,7 +585,10 @@ class ElcaProjectFinalEnergyDemand extends DbObject
                                         'water'           => $this->water,
                                         'lighting'        => $this->lighting,
                                         'ventilation'     => $this->ventilation,
-                                        'cooling'         => $this->cooling)
+                                        'cooling'         => $this->cooling,
+                                        'ratio'           => $this->ratio,
+                                        'kwkId'           => $this->kwkId,
+                                      )
                                   );
     }
     // End update
@@ -636,8 +684,8 @@ class ElcaProjectFinalEnergyDemand extends DbObject
     {
         $this->id               = $this->getNextSequenceValue();
 
-        $sql = sprintf("INSERT INTO %s (id, project_variant_id, process_config_id, ident, heating, water, lighting, ventilation, cooling)
-                               VALUES  (:id, :projectVariantId, :processConfigId, :ident, :heating, :water, :lighting, :ventilation, :cooling)"
+        $sql = sprintf("INSERT INTO %s (id, project_variant_id, process_config_id, ident, heating, water, lighting, ventilation, cooling, ratio, kwk_id)
+                               VALUES  (:id, :projectVariantId, :processConfigId, :ident, :heating, :water, :lighting, :ventilation, :cooling, :ratio, :kwkId)"
                        , self::TABLE_NAME
                        );
 
@@ -650,7 +698,10 @@ class ElcaProjectFinalEnergyDemand extends DbObject
                                         'water'           => $this->water,
                                         'lighting'        => $this->lighting,
                                         'ventilation'     => $this->ventilation,
-                                        'cooling'         => $this->cooling)
+                                        'cooling'         => $this->cooling,
+                                        'ratio'           => $this->ratio,
+                                        'kwkId'           => $this->kwkId,
+                                  )
                                   );
     }
     // End insert
@@ -674,11 +725,8 @@ class ElcaProjectFinalEnergyDemand extends DbObject
         $this->lighting         = $DO->lighting;
         $this->ventilation      = $DO->ventilation;
         $this->cooling          = $DO->cooling;
-
-        /**
-         * Set extensions
-         */
+        $this->ratio            = $DO->ratio;
+        $this->kwkId            = $DO->kwk_id;
     }
     // End initByDataObject
 }
-// End class ElcaProjectFinalEnergyDemand

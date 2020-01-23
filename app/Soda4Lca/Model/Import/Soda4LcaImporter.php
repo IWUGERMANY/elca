@@ -289,7 +289,7 @@ class Soda4LcaImporter
             $importedCount = 0;
 
             while (null === $totalSize || $startIndex < $totalSize) {
-                $Processes  = $this->Parser->getProcesses($datastockUuid, $startIndex, $pageSize, $totalSize);
+                $processes  = $this->Parser->getProcesses($datastockUuid, $startIndex, $pageSize, $totalSize);
                 $startIndex += $pageSize;
 
                 $this->Log->notice(
@@ -297,13 +297,13 @@ class Soda4LcaImporter
                         ? $datastockUuid : 'default'),
                     __METHOD__
                 );
-                foreach ($Processes as $ProcessInfoDO) {
+                foreach ($processes as $ProcessInfoDO) {
                     $ProcessDO = null;
                     try {
                         /**
                          * Retrieve and parse process information from service interface
                          */
-                        $ProcessDO = $this->Parser->getProcessDataSet($ProcessInfoDO->uuid);
+                        $ProcessDO = $this->Parser->getProcessDataSet($ProcessInfoDO->uuid, $ProcessInfoDO->version);
                         $this->prepareProcessDO($ProcessDO);
                         list($processStatus, $processStatusDetails) = $this->importProcessDataSet($ProcessDO);
 
@@ -327,14 +327,14 @@ class Soda4LcaImporter
                         $Soda4LcaProcess = Soda4LcaProcess::create(
                             $importId,
                             $ProcessInfoDO->uuid,
-                            $ProcessDO->name,
+                            $ProcessDO->name ?? '['.$ProcessInfoDO->uuid.']',
                             (string)$this->getCategoryClassId($ProcessDO->classId),
                             Soda4LcaProcess::STATUS_SKIPPED,
                             null,
                             $Exception->getTranslatedMessage(),
                             isset($ProcessDO->lcIdents) && is_array($ProcessDO->lcIdents) ? implode(
                                 ', ',
-                                is_array($ProcessDO->lcIdents)
+                                $ProcessDO->lcIdents
                             ) : '',
                             $Exception->getCode()
                         );
@@ -637,9 +637,15 @@ class Soda4LcaImporter
                 $processCategoryNode->update();
             }
         } else {
-            $processCategoryNode = $this->createProcessCategory($processDO->classId, $processDO->className);
+            try {
+                $processCategoryNode = $this->createProcessCategory($processDO->classId, $processDO->className);
+            }
+            catch (\Exception $exception) {
+                throw new Soda4LcaException("Could not create new process category", 0, $exception, $processDO);
+            }
+
             $this->Log->notice(
-                'Created new process category `'.$processDO->classId.'\' `'.$processCategoryNode->getName().'\''
+                'Created new process category `' . $processDO->classId . '\' `' . $processCategoryNode->getName() . '\''
             );
         }
 
@@ -1250,8 +1256,8 @@ class Soda4LcaImporter
         /**
          * Try to find by process uuid, then by name
          */
-        $ProcessConfigSet = ElcaProcessConfigSet::findByProcessUuid($ProcessDO->uuid);
-        if (!count($ProcessConfigSet)) {
+        $processConfigSet = ElcaProcessConfigSet::findByProcessUuid($ProcessDO->uuid);
+        if (!count($processConfigSet)) {
             /**
              * Beware of some older single phase processes which have (after name cleanup) the same name
              * like newer multiphase processes!
@@ -1259,7 +1265,7 @@ class Soda4LcaImporter
              * Also include epd type in name search. Some production processes have the same name but different
              * epd types
              */
-            $ProcessConfigSet = ElcaProcessConfigSet::findByProcessName(
+            $processConfigSet = ElcaProcessConfigSet::findByProcessName(
                 $ProcessDO->name,
                 $lcPhase = (count($ProcessDO->lcPhases) > 1 ? null : $ProcessDO->singlePhaseProcessPhase),
                 $ProcessDO->epdSubType ?? null,
@@ -1276,19 +1282,19 @@ class Soda4LcaImporter
 
             $this->Log->notice(
                 'Found '.\count(
-                    $ProcessConfigSet
+                    $processConfigSet
                 ).' process config(s) by process name, '.\implode(' and ', $foundBy).' ['
                 .\implode('],[', $ProcessDO->lcIdents).']',
                 __METHOD__
             );
         } else {
-            $this->Log->notice('Found '.count($ProcessConfigSet).' process config(s) by process uuid', __METHOD__);
+            $this->Log->notice('Found '.count($processConfigSet).' process config(s) by process uuid', __METHOD__);
         }
 
         /**
          * If empty, try to create one
          */
-        if (!$dontCreate && !count($ProcessConfigSet)) {
+        if (!$dontCreate && !count($processConfigSet)) {
             /**
              * Create the config only for production and single operation processes
              */
@@ -1297,8 +1303,8 @@ class Soda4LcaImporter
             ) {
                 $ProcessConfig = $this->createProcessConfig($ProcessDO);
 
-                $ProcessConfigSet = new ElcaProcessConfigSet();
-                $ProcessConfigSet->add($ProcessConfig);
+                $processConfigSet = new ElcaProcessConfigSet();
+                $processConfigSet->add($ProcessConfig);
 
                 /**
                  * Save for reporting
@@ -1312,7 +1318,7 @@ class Soda4LcaImporter
             }
         }
 
-        return $ProcessConfigSet;
+        return $processConfigSet;
     }
     // End getRefUnitByUnit
 

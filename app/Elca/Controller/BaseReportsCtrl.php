@@ -24,6 +24,7 @@
  */
 namespace Elca\Controller;
 
+use Beibob\Blibs\Config;
 use Beibob\Blibs\CssLoader;
 use Beibob\Blibs\Environment;
 use Beibob\Blibs\File;
@@ -35,20 +36,21 @@ use Beibob\Blibs\JsLoader;
 use Beibob\Blibs\Log;
 use Beibob\Blibs\SessionNamespace;
 use Beibob\Blibs\Url;
-use Elca\Service\Messages\ElcaMessages;
+use Elca\Db\ElcaReportSet;
 use Elca\Service\ElcaSessionRecovery;
+use Elca\Service\Messages\ElcaMessages;
 use Elca\Service\ProjectAccess;
 use Elca\View\Report\ElcaReportsHeaderFooterView;
-use Elca\View\ReportsPdfModalView;
 use Elca\View\ReportsPdfModalDownloadView;
-use Elca\Db\ElcaReportSet;
+use Elca\View\ReportsPdfModalView;
 
 /**
  * BaseReportsCtrl
  */
 abstract class BaseReportsCtrl extends AppCtrl
 {
-    const TIMEOUT = '5m';
+    const DEFAULT_PATH_WKHTMLTOPDF = "/usr/bin/wkhtmltopdf";
+    const MODAL_CLOSE_TIMEOUT = 2000;
 
     /**
      * @return SessionNamespace
@@ -62,9 +64,10 @@ abstract class BaseReportsCtrl extends AppCtrl
     {
 		// elca.js Row:2158 preparePdf: function ($context) 
 		// 
-        $V      = $this->addView(new ReportsPdfModalView());
+        $view      = $this->addView(new ReportsPdfModalView());
         $pdfUrl = FrontController::getInstance()->getUrlTo(null, 'pdf', ['a' => $this->Request->a]);
-        $V->assign('action', $pdfUrl);
+        $view->assign('action', $pdfUrl);
+        $view->assign('closeAfterTimeInMs', self::MODAL_CLOSE_TIMEOUT);
     }
 
     /**
@@ -105,14 +108,13 @@ abstract class BaseReportsCtrl extends AppCtrl
         $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('pdfCreateDir', true, 'tmp/pdf-data').$key;	
 		$tempTitle = date('Ymd') . '_' . $this->buildFilename($this->Elca->getProject()->getName()) . '.pdf';		
 		
-		$pdfDir = new File();
-		if(!$pdfDir->isDir($tmpCacheDir))
-		{
-			mkdir($tmpCacheDir,0777);
+		if (!\is_dir($tmpCacheDir)) {
+            if (!mkdir($tmpCacheDir, 0777, true) && !is_dir($tmpCacheDir)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $tmpCacheDir));
+            }
 			chmod($tmpCacheDir,0777);
 		}	
-		$pdfDir->close();
-	
+
 		$pdf = new File($tmpCacheDir.'/tempPDF.pdf');
 
 		// -----------------------------------------
@@ -130,6 +132,7 @@ abstract class BaseReportsCtrl extends AppCtrl
          */
         $SessionRecovery = $this->container->get('Elca\Service\ElcaSessionRecovery');
         $SessionRecovery->storeNamespace($namespace);
+        $SessionRecovery->storeNamespace($this->Session->getNamespace('blibs.userStore'));
         $SessionRecovery->storeNamespace($this->Session->getNamespace('elca'));
         $SessionRecovery->storeNamespace($this->Session->getNamespace('elca.locale'));
         $SessionRecovery->storeNamespace($this->Session->getNamespace(ProjectAccess::NAMESPACE_NAME));
@@ -179,12 +182,12 @@ abstract class BaseReportsCtrl extends AppCtrl
         File::move($tmpFooterFile->getFilepath(), $tmpFooterFile->getFilepath() .'.html');
         $tmpFooterFile = new File($tmpFooterFile->getFilepath() .'.html');
 
-       
-		
-		
+
+        $wkhtmltopdfCmd = $this->resolveWkhtmltopdfCmd($config);
+
         $cmd = sprintf(
-            'timeout %s /usr/local/bin/wkhtmltopdf --quiet --window-status ready_to_print --cache-dir %s --title %s -s A4 --margin-top 55 --margin-bottom 30 --margin-right 10 --margin-left 25 --print-media-type --no-stop-slow-scripts --javascript-delay %d --header-html %s --header-spacing 15 --footer-html %s %s %s',
-            self::TIMEOUT,
+            '%s --quiet --window-status ready_to_print --cache-dir %s --title %s -s A4 --margin-top 55 --margin-bottom 30 --margin-right 10 --margin-left 25 --print-media-type --no-stop-slow-scripts --javascript-delay %d --header-html %s --header-spacing 15 --footer-html %s %s %s',
+            $wkhtmltopdfCmd,
             escapeshellarg($tmpCacheDir),
             escapeshellarg($tempTitle),
             1000, // javascript-delay
@@ -230,6 +233,8 @@ abstract class BaseReportsCtrl extends AppCtrl
             )
         );
         */
+
+		$this->reloadHashUrl();
     }
 
     /**
@@ -394,7 +399,16 @@ abstract class BaseReportsCtrl extends AppCtrl
         $View = $this->setView(new ElcaReportsHeaderFooterView());
         $View->assign('buildMode', ElcaReportsHeaderFooterView::BUILDMODE_FOOTER);
     }
-    // End pdfFooterAction
+
+    private function resolveWkhtmltopdfCmd(Config $config): string
+    {
+        if (!isset($config->elca->wkhtmltopdf)) {
+            $this->Log->warning("Path to wkhtmltopdf is not configured. Assuming the default location is `".
+                                self::DEFAULT_PATH_WKHTMLTOPDF ."'",__FUNCTION__);
+        }
+
+        return $config->elca->wkhtmltopdf ?? self::DEFAULT_PATH_WKHTMLTOPDF;
+    }
 
     /**
      * Execute a command and return it's output. Either wait until the command exits or the timeout has expired.

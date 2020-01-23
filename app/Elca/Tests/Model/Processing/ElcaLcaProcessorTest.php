@@ -855,6 +855,31 @@ class ElcaLcaProcessorTest extends TestCase
                     ],
                 ],
             ],
+            'withRatio'         => [
+                [
+                    'heating' => [100, .5],
+                    'water'   => [50, .5],
+                ],
+                1,
+                [
+                    1 => [
+                        ElcaIndicator::IDENT_GWP   => 5.83,
+                        ElcaIndicator::IDENT_ODP   => -0.0009,
+                        ElcaIndicator::IDENT_PERT  => -950.02,
+                        ElcaIndicator::IDENT_PENRT => 1008.95,
+                    ],
+                ],
+                1,
+                [
+                    ElcaLifeCycle::IDENT_B6 . '_1' => [
+                        9  => 5.83 * 75 * $lifeTime,
+                        13 => -0.0009 * 75 * $lifeTime,
+                        16 => -950.02 * 75 * $lifeTime,
+                        19 => 1008.95 * 75 * $lifeTime,
+                        34 => (-950.02 + 1008.95) * 75 * $lifeTime,
+                    ],
+                ],
+            ],
             'fhsHiIsBeingReflected'   => [
                 [
                     'heating' => 100,
@@ -1379,6 +1404,7 @@ class ElcaLcaProcessorTest extends TestCase
                                       'getId',
                                       'getHeating',
                                       'getWater',
+                                      'getRatio'
                                   ])
                                   ->getMock();
         $finalEnergyDemand->method('getProcessConfigId')
@@ -1386,9 +1412,21 @@ class ElcaLcaProcessorTest extends TestCase
         $finalEnergyDemand->method('getId')
                           ->willReturn(123);
 
-        foreach ($quantities as $ident => $quantity) {
+        foreach ($quantities as $ident => $quantityConf) {
+            if (is_array($quantityConf)) {
+                $quantity = $quantityConf[0];
+                $ratio = $quantityConf[1];
+            }
+            else {
+                $quantity = $quantityConf;
+                $ratio = 1;
+            }
+
             $finalEnergyDemand->method('get' . ucfirst($ident))
                               ->willReturn($quantity);
+
+            $finalEnergyDemand->method('getRatio')
+                              ->willReturn($ratio);
         }
 
         $finalEnergyDemands->add($finalEnergyDemand);

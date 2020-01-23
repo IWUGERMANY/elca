@@ -151,6 +151,7 @@
         background-color:$noResultsColor;
       }
     }
+    .kwk-row,
     .final-energy-row {
       position: relative;
       width: 100%;
@@ -181,17 +182,19 @@
       width: 60px;
       text-align: left;
       right: 115px;
-      top:0px;
+      top:0;
     }
 
     .form-section.description     { right: 410px }
+    .form-section.kwkName         { left: 25px; right:auto}
     .form-section.quantity        { right: 315px }
     .form-section.enEvRatio       { right: 220px }
-
+    .form-section.ratio           { right: 585px }
 
     .form-section.description,
     .form-section.quantity,
     .form-section.enEvRatio,
+    .form-section.ratio,
     .form-section.heating,
     .form-section.water,
     .form-section.lighting,
@@ -206,6 +209,7 @@
 
     .form-section.quantity,
     .form-section.enEvRatio,
+    .form-section.ratio,
     .form-section.heating,
     .form-section.water,
     .form-section.lighting,
@@ -221,6 +225,15 @@
 
     .add-energy-carrier {
       display: inline-block;
+
+      &.kwk {
+        background-color: transparent;
+        border:none;
+        color:$linkFuncColor;
+        margin: 0;
+        margin-right: 25px;
+
+      }
     }
 
     .process-config-selector a,
@@ -337,6 +350,90 @@
 
       &.open {
         background-image: url('/img/elca/ic-arrow-open.png');
+      }
+    }
+
+    &.project-kwks {
+      .hl-row > .hl-heating {
+        right: 499px;
+      }
+      .hl-row > .hl-water {
+        right: 403px;
+      }
+
+      .form-section.kwkName     { width:310px}
+      .form-section.heating       { right: 490px }
+      .form-section.water    { right: 395px }
+    }
+
+    .kwk-row {
+      .kwk-project {
+
+        .HtmlStaticText {
+          font-size: 12px
+        }
+
+        > .hl-row {
+          top:30px;
+          height: 20px;
+
+          h6 {
+            top: auto;
+          }
+
+          .hl-usage {
+            left: 25px
+          }
+
+          .hl-ratio {
+            right: 667px
+          }
+        }
+
+        .final-energy-row {
+          .process-config-selector {
+            left: 10px
+          }
+
+          .form-section.ratio {
+            right: 665px;
+            width: 50px;
+          }
+
+          .form-section.heating {
+            text-align: right;
+          }
+
+          .form-section.water {
+            text-align: right;
+          }
+
+        }
+
+        .kwk-demands {
+          margin-top:34px;
+          li {
+            margin-left: 15px;
+            border-bottom: none;
+          }
+
+          table {
+            width: 95%;
+            padding-top: 10px;
+          }
+        }
+      }
+
+      .chart.pie-chart {
+        position: absolute;
+        top:0;
+        right:230px;
+        width:200px;
+
+        svg {
+          height:100%;
+          width:100%;
+        }
       }
     }
 
