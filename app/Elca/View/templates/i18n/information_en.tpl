@@ -21,6 +21,7 @@
 			
 			<h3>CSV2eLCA</h3>
 			<ul class="downloads">
+
 				<li><a href="/docs/downloads/CSV2eLCA/How-to-do_CSV-Import_2019-10-01.pdf" target="_blank" title="Anleitung: CSV2eLCA Import" class="iconsheet no-xhr">Anleitung: CSV2eLCA Assistent [PDF, DE]</a><br/>
 					<span>Import vorhandener Daten aus einer Tabellenkalkulation /<br/>einer Auswertung aus einem CAD Programm</span>
 				</li>
@@ -52,6 +53,9 @@
 		<div class="infocolumn">
 			<h2>Publications</h2>
 			<ul class="downloads">
+				<li><a href="/docs/publications/bbsr-info-6-2019-dl.pdf" target="_blank" title="" class="iconsheet no-xhr">BBSR INFO 6/2019 [PDF, DE]</a><br/>
+					<span>Ökobilanzierung von Gebäuden: eLCA im Bauprozess (Seite 8)</span>
+				</li>			
 				<li><a href="/docs/publications/Magazin_Zukunft_Bau_2014.pdf" target="_blank" title="" class="iconsheet no-xhr">Magazin Forschungsinitiative Bau [PDF, DE]</a><br/>
 					<span>eLCA – das Gebäude-Ökobilanzierungstool für jeden Planer</span>
 				</li>
