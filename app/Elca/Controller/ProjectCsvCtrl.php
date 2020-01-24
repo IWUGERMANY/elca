@@ -39,6 +39,7 @@ use Elca\Model\Common\Quantity\Quantity;
 use Elca\Model\Common\Unit;
 use Elca\Model\Import\Csv\Project;
 use Elca\Model\Import\Csv\Validator as CsvImportValidator;
+use Elca\Model\Import\Xls\Validator as XlsImportValidator;
 use Elca\Model\Navigation\ElcaOsitItem;
 use Elca\Service\Admin\BenchmarkSystemsService;
 use Elca\Service\Import\CsvProjectElementImporter;
@@ -54,6 +55,8 @@ use Elca\View\Import\Csv\ProjectImportView;
 class ProjectCsvCtrl extends AppCtrl
 {
     const INITIAL_DIN_CODE = 330;
+	
+	const UPLOAD_FIELD_NAME = 'importFile';
 
     /**
      * @var \Beibob\Blibs\SessionNamespace
@@ -79,6 +82,12 @@ class ProjectCsvCtrl extends AppCtrl
      * @var LifeCycleUsageService
      */
     private $lifeCycleUsageService;
+	
+    /**
+     * @var isCsvFile 
+     */
+    private $isCsvFile = 1;	
+	
 
     protected function init(array $args = [])
     {
@@ -107,7 +116,7 @@ class ProjectCsvCtrl extends AppCtrl
 
         $this->addImportView();
 
-        $this->Osit->add(new ElcaOsitItem(t('CSV Import')));
+        $this->Osit->add(new ElcaOsitItem(t('CSV / XLS Import')));
     }
     // End defaultAction
 
@@ -127,9 +136,26 @@ class ProjectCsvCtrl extends AppCtrl
 
         $validator = null;
         if ($this->Request->isPost() && $this->Request->has('upload')) {
-
-            $validator = new CsvImportValidator($this->Request);
-
+          
+        // Check file type and choose validator / default csv	
+		if( File::uploadFileExists(self::UPLOAD_FIELD_NAME) ) {
+			if( preg_match('/\.csv$/iu', (string)$_FILES[self::UPLOAD_FIELD_NAME]['name'] ) ) {
+				$validator = new CsvImportValidator($this->Request);
+			}	
+			elseif( preg_match('/\.(xls|xlsx)$/iu', (string)$_FILES[self::UPLOAD_FIELD_NAME]['name'] ) ) {
+				$validator = new XlsImportValidator($this->Request);  
+				$this->isCsvFile = 0;
+			} 
+			else {
+				// not valid file extension - use standard csv validator
+				$validator = new CsvImportValidator($this->Request);
+			}
+		} 
+		else {
+			$validator = new CsvImportValidator($this->Request);
+		}	
+		
+        	
             // validate project data
             $validator->assertNotEmpty('name', null, t('Bitte wählen Sie einen Projektnamen'));
             $validator->assertNotEmpty('constrMeasure', null, t('Bitte wählen Sie eine Baumaßnahme'));
@@ -156,7 +182,7 @@ class ProjectCsvCtrl extends AppCtrl
                 $validator->assertNumber('grossFloorSpace', null, t('Die BGF ist ungültig'));
             }
 
-            $validator->assertImportFile('importFile');
+            $validator->assertImportFile(self::UPLOAD_FIELD_NAME);
 
             if ($validator->isValid()) {
 
@@ -168,9 +194,16 @@ class ProjectCsvCtrl extends AppCtrl
                 $netFloorSpace      = ElcaNumberFormat::fromString($this->Request->get('netFloorSpace'), 2);
                 $grossFloorSpace    = ElcaNumberFormat::fromString($this->Request->get('grossFloorSpace'), 2);
 
-                $file             = File::fromUpload('importFile', $this->getTempDir());
-                $importedElements = $this->elementImporter->elementsFromCsvFile($file);
-
+                $file             = File::fromUpload(self::UPLOAD_FIELD_NAME, $this->getTempDir());
+				
+				
+				// XLS file to convert
+				if($this->isCsvFile==0) {
+					$importedElements = $this->elementImporter->elementsFromXls2CsvFile($file);
+				} else {
+					$importedElements = $this->elementImporter->elementsFromCsvFile($file);
+				}
+				
                 $project = new Project(
                     $name,
                     $constrMeasure,

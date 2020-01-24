@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Elca\Model\Import\Csv;
+namespace Elca\Model\Import\Xls;
 
 
 use Beibob\Blibs\File;
@@ -11,14 +11,14 @@ class Validator extends ElcaValidator
 {
     public function assertImportFile($property)
     {
-		if (!$this->assertTrue($property, File::uploadFileExists($property), t('Bitte geben Sie eine Importdatei an!'))) {
+        if (!$this->assertTrue($property, File::uploadFileExists($property), t('Bitte geben Sie eine Importdatei (xls/xlsx) an!'))) {
             return false;
         }
 
         if (!$this->assertTrue(
             $property,
-                preg_match('/\.csv$/iu', (string)$_FILES[$property]['name']),
-                t('Bitte nur CSV und XLS/XLS Dateien importieren!')
+                preg_match('/\.(xls|xlsx)$/iu', (string)$_FILES[$property]['name']),
+                t('Bitte nur XLS / XLSX Dateien importieren!')
         )) {
             return false;
         }
@@ -26,21 +26,11 @@ class Validator extends ElcaValidator
         $this->assertTrue(
             $property,
             ((int)$_FILES[$property]['size'] > 0),
-            t('Die hochgeladene CSV Datei ist leer!')
+            t('Die hochgeladene XLS / XLSX Datei ist leer!')
         );
 
         if (!$this->isValid()) {
             return false;
-        }
-
-        $csvString = file_get_contents($_FILES[$property]['tmp_name']);
-
-        if (function_exists('mb_check_encoding')) {
-            $this->assertTrue(
-                $property,
-                mb_check_encoding($csvString, 'UTF-8'),
-                t('Bitte den UTF-8 Zeichensatz in der CSV Datei verwenden!')
-            );
         }
 
         return $this->isValid();
