@@ -628,6 +628,7 @@ class ElcaProjectDataEnEvView extends HtmlView
             is_array($this->Data->Demand->processConfigId) &&
             count($this->Data->Demand->processConfigId)
         ) {
+            $overallRatio = 0;
             foreach ($this->Data->Demand->processConfigId as $key => $foo) {
                 if (!$this->Data->Demand->isKwk[$key]) {
                     continue;
@@ -640,11 +641,16 @@ class ElcaProjectDataEnEvView extends HtmlView
 
                 $processConfigName      = $finalEnergyDemand->getProcessConfig()->getName();
                 $pieData[] = (object)['name' => $processConfigName,
-                                      'tooltip' =>
-                                          $processConfigName
-                                          . ': ' .
-                                          ElcaNumberFormat::toString($this->Data->Demand->ratio[$key],1, true) . '%',
                                       'value' => $this->Data->Demand->ratio[$key]];
+
+                $overallRatio += $this->Data->Demand->ratio[$key];
+            }
+
+            if ($overallRatio < 1) {
+                $pieData[] = (object)['name' => t('Undefiniert'),
+                                      'value' => 1 - $overallRatio,
+                                      'class' => 'undefined'
+                                      ];
             }
         }
 
@@ -662,11 +668,7 @@ class ElcaProjectDataEnEvView extends HtmlView
          */
         $this->appendKwkDemandResults($kwkProjectContainer);
 
-        $kwkProjectContainer->add(new HtmlTag('div', null, [
-            'class' => 'chart pie-chart',
-            'style' => 'height:'. max(100, count($pieData) * 60) .'px',
-            'data-values' => json_encode($pieData)
-        ]));
+        $this->appendKwkChart($kwkProjectContainer, $pieData);
 
         if (!$this->readOnly) {
             $buttonGroup = $kwkContainer->add(new HtmlFormGroup(''));
@@ -915,6 +917,16 @@ class ElcaProjectDataEnEvView extends HtmlView
             $this->appendSupplyResults($Container, $FinalEnergySupply);
     }
     // End appendSupplyRow
+    protected function appendKwkChart(HtmlElement $kwkProjectContainer, array $pieData): void
+    {
+
+
+        $kwkProjectContainer->add(new HtmlTag('div', null, [
+            'class'       => 'chart pie-chart',
+            'style'       => 'height:' . max(100, count($pieData) * 60) . 'px',
+            'data-values' => json_encode($pieData)
+        ]));
+    }
 
 
     /**

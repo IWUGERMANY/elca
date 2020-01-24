@@ -2619,12 +2619,12 @@ $(window).load(function () {
                 views: {
                     '#content.report': 'prepareCharts',
                     '#content.report-summary-benchmarks': 'prepareBenchmarks',
-                    '#content.project-final-energy': 'prepareFinalEnergyKwkPieChart',
+                    '#content.project-final-energy': 'prepareFinalEnergyKwkPieChart'
                 },
 
                 prepareCharts: function ($context) {
                     var self = this,
-                        $charts = $('div.chart[data-url]', $context),
+                        $charts = $('div.chart', $context),
                         chartCount = $charts.length,
                         $progressElt = $('#progress'),
                         $printButton = $('div.print.button a', this);
@@ -2643,10 +2643,6 @@ $(window).load(function () {
                             url = $this.data('url'),
                             load = 0;
 
-                        if (!url) {
-                            console.debug('Chart without data url!');
-                        }
-
                         window.setTimeout(function () {
                             if ($this.hasClass('bar-chart')) {
                                 self.updateBarChart(url, $this);
@@ -2656,6 +2652,9 @@ $(window).load(function () {
                             }
                             else if ($this.hasClass('grouped-stacked-bar-chart')) {
                                 self.updateGroupedStackedBarChart(url, $this);
+                            }
+                            else if ($this.hasClass('pie-chart')) {
+                                self.prepareFinalEnergyKwkPieChart($context);
                             }
                             load = (i + 1) / chartCount;
 
@@ -2858,8 +2857,15 @@ $(window).load(function () {
                         .append("g")
                         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
+                    var charsPerLine = 8;
+                    var textBaseSize = 8;
+
                     data.forEach(function (d) {
                         d.value = +d.value;
+                        d.text = (d.name + ' ' + (Math.round(d.value * 100 * 10) / 10) + "%").replace('.', ',')
+
+                        var newEmSize = charsPerLine / d.text.length;
+                        d.fontSize = newEmSize < 1 ? (newEmSize * textBaseSize) + "px" : "1px";
                     });
 
                     this.tooltip = d3.select($chart[0])
@@ -2875,7 +2881,7 @@ $(window).load(function () {
                     g.append("path")
                         .attr("d", arc)
                         .style("fill", function (d) {
-                            return color(d.data.name);
+                            return d.data.class === 'undefined' ? '#FF0000' : color(d.data.name);
                         })
                         .on("mouseover", function (d) {
                             var coords = d3.mouse($chart[0]);
@@ -2883,7 +2889,7 @@ $(window).load(function () {
                                 .duration(200)
                                 .style("opacity", .9);
 
-                            self.tooltip.text(d.data.name)
+                            self.tooltip.text(d.data.text)
                                 .style("left", coords[0] + "px")
                                 .style("top", (coords[1] - 12) + "px");
                         })
@@ -2899,9 +2905,11 @@ $(window).load(function () {
                         })
                         .attr("dy", ".35em")
                         .style("text-anchor", "middle")
+                        .style("font-size", function(d) {
+                            return d.data.fontSize;
+                        })
                         .text(function (d) {
-                            console.log(d);
-                            return Math.round(d.data.value * 100, 1) + "%" ;
+                            return d.data.text;
                         });
                 },
 

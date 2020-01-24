@@ -2035,6 +2035,8 @@ form.projectForm .column { width: 250px; padding-right: 40px; }
 
 #content.report-assets div.element-image, #content.report-effects-elements div.element-image { float: left; width: 600px; height: 250px; padding-left: 30px; }
 
+#content.report-effects-operation .chart.pie-chart, #content.report-assets-operation .chart.pie-chart { width: 500px; height: 500px; }
+
 /** effects **/
 #content.report table.report-effects { background-color: #f9f9f9; border-collapse: separate; margin-bottom: 20px; padding-bottom: 0; }
 #content.report table.report-effects td, #content.report table.report-effects th { padding: 2px 4px; }

@@ -290,6 +290,14 @@
 
 }
 
+#content.report-effects-operation,
+#content.report-assets-operation {
+  .chart.pie-chart {
+    width:500px;
+    height:500px;
+  }
+}
+
 /** effects **/
 #content.report table.report-effects {
   background-color: #f9f9f9;
