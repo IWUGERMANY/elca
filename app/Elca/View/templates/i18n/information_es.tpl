@@ -52,6 +52,9 @@
 		<div class="infocolumn">
 			<h2>Publicaciones</h2>
 			<ul class="downloads">
+				<li><a href="/docs/publications/bbsr-info-6-2019-dl.pdf" target="_blank" title="" class="iconsheet no-xhr">BBSR INFO 6/2019 [PDF, DE]</a><br/>
+					<span>Ökobilanzierung von Gebäuden: eLCA im Bauprozess (Seite 8)</span>
+				</li>			
 				<li><a href="/docs/publications/Magazin_Zukunft_Bau_2014.pdf" target="_blank" title="" class="iconsheet no-xhr">Magazin Forschungsinitiative Bau [PDF, DE]</a><br/>
 					<span>eLCA – das Gebäude-Ökobilanzierungstool für jeden Planer</span>
 				</li>
