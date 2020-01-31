@@ -2116,6 +2116,7 @@ $(window).load(function () {
                     '#content.report': null,
                     '#elca-modal-content.pdf-gen': 'preparePdf',
                     '#elca-modal-content.project-access': 'prepareProjectAccess',
+					'#content.report': 'checkCreatePdf',
                     '#content.elca-project': null,
                     '#projectProcessConfigSanity': null,
                     '#content.project-import': null,
@@ -2159,7 +2160,7 @@ $(window).load(function () {
                 preparePdf: function ($context) {
                     $('div.spinning-wheel', $context).each(function () {
                         var $container = $(this);
-
+						
                         if ($container.data('action')) {
                             jBlibs.App.query($container.data('action'), null, {
                                 complete: function (xhr, response) {
@@ -2175,13 +2176,26 @@ $(window).load(function () {
                         if ($container.data('close-after-time-in-ms')) {
                             setTimeout(function() {
                                 $('#elca-modal').fadeOut('fast', function () {
-                                    $('#elca-modal-content').empty();
+                                   $('#elca-modal-content').empty();
                                 });
                             }, $container.data('close-after-time-in-ms'));
                         }
                     });
                 },
 
+
+				/**
+				*
+				*/
+				checkCreatePdf: function ($context) {
+					$('span.pdfcreate', $context).each(function () {
+						var $container = $(this);
+						if ($container.data('check')) {
+							console.log($container.data('check') + $container.data('uid') + $container.data('pvid') + $container.data('id') + $container.data('action'));
+						}
+					});	
+				},	
+				
                 /**
                  * Prepare modal content
                  */
