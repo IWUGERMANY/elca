@@ -404,6 +404,36 @@ class ProjectReportsCtrl extends BaseReportsCtrl
     }
     // End compareSummaryElementTypesAction
 
+     public function testpdfvarAction()
+	 {
+		$pdfCreated = false;
+		
+		if (!$this->isAjax() && !$this->Request) {
+            return;
+        }
+		$data = $this->Request;
+		if(isset($data->id))
+		{
+			$reportPDF = ElcaReportSet::findPdfInQueue(
+			$data->id, 
+			$data->pvid,
+			$data->uid, 
+			$data->action
+			);
+			
+			//var_dump($reportPDF);
+			if($reportPDF->ready)
+			{
+				$pdfCreated = true;
+			}
+			else
+			{
+				var_dump( $reportPDF->ready );
+			}		
+		} 
+			
+		$this->getView()->assign('created', $pdfCreated);
+	 }
 
     /**
      * Benchmark chart data

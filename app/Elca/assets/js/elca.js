@@ -2185,15 +2185,58 @@ $(window).load(function () {
 
 
 				/**
-				*
+				* Interval check whether PDF is created
 				*/
 				checkCreatePdf: function ($context) {
 					$('span.pdfcreate', $context).each(function () {
 						var $container = $(this);
-						if ($container.data('check')) {
-							console.log($container.data('check') + $container.data('uid') + $container.data('pvid') + $container.data('id') + $container.data('action'));
-						}
+						var $action = "/project-reports/testpdfvar/";
+						var checktimer;
+						checkPDFReady($container,0,$action);
 					});	
+					
+					function checkPDFReady($container,$counter,$action) 
+					{
+						console.log("checkPDFReady");
+						
+						if ($container.data('check')) 
+						{
+							$.ajax({
+                                global: false,
+                                url: $action,
+                                dataType: 'json',
+                                data: {
+                                    id: $container.data('id'),
+									pvid: $container.data('pvid'),
+									uid: $container.data('uid'),
+									action: $container.data('action')
+									//,_isBaseReq:	false
+                                },
+                                success: function (data, status, xhr) {
+									// console.log(data);
+									if(data['created']==true)
+								  	{	
+										clearTimeout(checktimer);
+										checkPDFReload($container);
+									}   
+                                }
+                            });
+						
+							checktimer = setTimeout(function () {
+								checkPDFReady($container,$counter,$action);
+                            }, 10000);	
+
+						}
+						return true;
+					}
+					
+					function checkPDFReload($container)
+					{
+						// window.location.href = window.location.href;
+						window.location.reload();
+						return true;
+						// jBlibs.App.query(jBlibs.App.getHashUrl());	
+					}
 				},	
 				
                 /**
