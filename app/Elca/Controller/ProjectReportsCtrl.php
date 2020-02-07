@@ -403,7 +403,11 @@ class ProjectReportsCtrl extends BaseReportsCtrl
         }
     }
     // End compareSummaryElementTypesAction
-
+	
+	/*
+	** ajax call from reports pages
+	** check, if pdf is ready
+	*/
      public function testpdfvarAction()
 	 {
 		$pdfCreated = false;
@@ -415,20 +419,19 @@ class ProjectReportsCtrl extends BaseReportsCtrl
 		if(isset($data->id))
 		{
 			$reportPDF = ElcaReportSet::findPdfInQueue(
-			$data->id, 
-			$data->pvid,
-			$data->uid, 
-			$data->action
+				$data->id, 
+				$data->pvid,
+				$data->uid, 
+				$data->action
 			);
 			
-			//var_dump($reportPDF);
-			if($reportPDF->ready)
+			// object - must be a single row only
+			foreach($reportPDF as $reportPDFRow)
 			{
-				$pdfCreated = true;
-			}
-			else
-			{
-				var_dump( $reportPDF->ready );
+				if(!is_null($reportPDFRow->ready))
+				{
+					$pdfCreated = true;
+				}
 			}		
 		} 
 			

@@ -525,7 +525,7 @@ class ElcaReportSet extends DataObjectSet
 	 * @param  $projectId
 	 * @param  $userId
 	 * @param  $report_name
-     * @return array
+     * @return ElcaReportSet
      */
     public static function findPdfInQueue($projectId, $projectVariantId,$userId, $report_name)
     {
