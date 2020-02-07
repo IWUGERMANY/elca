@@ -2185,7 +2185,7 @@ $(window).load(function () {
 
 
 				/**
-				* Interval check whether PDF is created
+				* Interval check whether PDF is created // 2020-02-07
 				*/
 				checkCreatePdf: function ($context) {
 					$('span.pdfcreate', $context).each(function () {
@@ -2197,8 +2197,6 @@ $(window).load(function () {
 					
 					function checkPDFReady($container,$counter,$action) 
 					{
-						console.log("checkPDFReady");
-						
 						if ($container.data('check')) 
 						{
 							$.ajax({
@@ -2210,10 +2208,8 @@ $(window).load(function () {
 									pvid: $container.data('pvid'),
 									uid: $container.data('uid'),
 									action: $container.data('action')
-									//,_isBaseReq:	false
                                 },
                                 success: function (data, status, xhr) {
-									// console.log(data);
 									if(data['created']==true)
 								  	{	
 										clearTimeout(checktimer);
@@ -2235,7 +2231,6 @@ $(window).load(function () {
 						// window.location.href = window.location.href;
 						window.location.reload();
 						return true;
-						// jBlibs.App.query(jBlibs.App.getHashUrl());	
 					}
 				},	
 				

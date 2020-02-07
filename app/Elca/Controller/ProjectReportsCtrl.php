@@ -406,7 +406,7 @@ class ProjectReportsCtrl extends BaseReportsCtrl
 	
 	/*
 	** ajax call from reports pages
-	** check, if pdf is ready
+	** check, if pdf is ready // 2020-02-07
 	*/
      public function testpdfvarAction()
 	 {
