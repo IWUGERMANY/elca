@@ -525,7 +525,7 @@ class ElcaReportSet extends DataObjectSet
 	 * @param  $projectId
 	 * @param  $userId
 	 * @param  $report_name
-     * @return array
+     * @return ElcaReportSet
      */
     public static function findPdfInQueue($projectId, $projectVariantId,$userId, $report_name)
     {
@@ -628,7 +628,7 @@ class ElcaReportSet extends DataObjectSet
 
     /**
      * Create PDF - query Queue in runner.php Task
-     * @return array
+     * @return ElcaReportSet
      */
     public static function createPdfInQueue()
     {
