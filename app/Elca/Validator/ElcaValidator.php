@@ -538,7 +538,9 @@ class ElcaValidator extends HtmlFormValidator
             }
 
             $this->assertProjectKwkFinalEnergyDemand($key);
-            $overallRatio += ElcaNumberFormat::fromString($ratios[$key]);
+            if (isset($ratios[$key])) {
+                $overallRatio += ElcaNumberFormat::fromString($ratios[$key]);
+            }
         }
 
         return $this->assertTrue('ratio['. $key .']', $overallRatio >= 0 && $overallRatio <= 100, t('Der Wert muss zwischen 0 und 100 liegen'));

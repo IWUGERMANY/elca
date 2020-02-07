@@ -203,6 +203,9 @@ class ElcaReportEffectsView extends ElcaReportsView
                     }
                     $this->buildOperationEffects($tdContainer,
                         ElcaReportSet::findKwkFinalEnergyDemandEffects($this->projectVariantId), $m2a, $isEn15804Compliant);
+
+                    $kwkFinalEnergyDemandAssets = ElcaReportSet::findKwkFinalEnergyDemandAssets($this->projectVariantId);
+                    $this->buildKwkPieChart($tdContainer, $kwkFinalEnergyDemandAssets);
                 }
                 break;
 
@@ -747,5 +750,30 @@ class ElcaReportEffectsView extends ElcaReportsView
         return $reports;
     }
     // End appendElementEffectsChart
+
+
+    private function buildKwkPieChart(DOMElement $tdContainer, ElcaReportSet $kwkFinalEnergyDemandAssets)
+    {
+        $pieData = [];
+        $overallRatio = 0;
+        foreach ($kwkFinalEnergyDemandAssets as $kwkFinalEnergyDemandAsset) {
+            $pieData[] = (object)['name' => $kwkFinalEnergyDemandAsset->process_config_name,
+                                  'value' => $kwkFinalEnergyDemandAsset->ratio];
+
+            $overallRatio += $kwkFinalEnergyDemandAsset->ratio;
+        }
+
+        if ($overallRatio < 1) {
+            $pieData[] = (object)['name' => t('Undefiniert'),
+                                  'value' => 1 - $overallRatio,
+                                  'class' => 'undefined'
+            ];
+        }
+
+        $tdContainer->appendChild($this->getDiv([
+            'class' => 'chart pie-chart',
+            'data-values' => json_encode($pieData)
+        ]));
+    }
 }
 // End ElcaReportEffectsView

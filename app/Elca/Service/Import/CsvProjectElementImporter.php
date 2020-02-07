@@ -1,13 +1,15 @@
 <?php
-
-
 namespace Elca\Service\Import;
-
 
 use Beibob\Blibs\File;
 use Elca\Db\ElcaElement;
 use Elca\Model\Import\Csv\ImportElement;
 use Ramsey\Uuid\Uuid;
+
+use PhpOffice\PhpSpreadsheet\IOFactory;
+// use PhpOffice\PhpSpreadsheet\Reader\Exception;
+// use PhpOffice\PhpSpreadsheet\Reader\Xls;
+// use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 class CsvProjectElementImporter
 {
@@ -53,6 +55,70 @@ class CsvProjectElementImporter
 
         return $importedElements;
     }
+
+
+    /**
+     * @param XLS File $file
+     * @return ImportElement[]
+     */
+    public function elementsFromXls2CsvFile(File $file) : array
+    {
+		$inputFileType = 'Xls';
+        
+		if( preg_match('/^xlsx$/i', $file->getExtension()) ) {
+			$inputFileType = 'Xlsx';
+		} 
+		
+		$importedElements = [];
+		
+		try {
+		    // $spreadsheet = IOFactory::load($file->getFilepath());
+			
+			$reader = IOFactory::createReader($inputFileType);
+			$spreadsheet = $reader->load($file->getFilepath());
+
+			$sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+			// $sheetData Array (numbered from 1 to x)	
+			// first line is headline
+			$header = $sheetData[1];
+			$this->guardColumnCount($header);
+			unset($sheetData[1]);
+			
+			foreach($sheetData as $sheetDataRow => $sheetDataRowArray ) 
+			{
+				$name = trim($sheetDataRowArray['A'] ?? '');
+
+				if (empty($name)) {
+					continue;
+				}
+
+				$din276CodeString   = trim($sheetDataRowArray['B'] ?? '');
+				$quantityString     = trim($sheetDataRowArray['C'] ?? '');
+				$unitString         = trim($sheetDataRowArray['D'] ?? '');
+
+				$tplElementUuidOrId = !empty($sheetDataRowArray['E']) ? trim($sheetDataRowArray['E']) : null;
+				$tplElement = $this->findTplElement($tplElementUuidOrId);
+				
+			
+				$importElement = ImportElement::fromCsv(
+					$name,
+					$din276CodeString,
+					$quantityString,
+					$unitString,
+					null !== $tplElement ? $tplElement->getUuid() : null
+				);
+
+				$importedElements[] = $importElement->harmonizeWithTemplateElement($tplElement);
+			
+			}			
+			
+		} catch(InvalidArgumentException $e) {
+			throw new \UnexpectedValueException('Error loading file: '.$e->getMessage());
+		}
+	
+        return $importedElements;
+    }
+
 
     /**
      * @param $header

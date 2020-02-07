@@ -148,13 +148,15 @@ class ElcaReportAssetsView extends ElcaReportsView
                 $projectKwk = ElcaProjectKwk::findByProjectVariantId($this->projectVariantId);
 
                 if ($projectKwk->isInitialized()) {
-                    $h1 = $tdContainer->appendChild($this->getH1(t('KWK / Fernwärme')));
+                    $h1 = $tdContainer->appendChild($this->getH1(t('Fernwärme')));
 
                     if ($projectKwk->getName()) {
                         $h1->appendChild($this->getText(' "'. $projectKwk->getName() .'"'));
                     }
+                    $kwkFinalEnergyDemandAssets = ElcaReportSet::findKwkFinalEnergyDemandAssets($this->projectVariantId);
                     $this->buildOperationAssets($tdContainer,
-                        ElcaReportSet::findKwkFinalEnergyDemandAssets($this->projectVariantId));
+                        $kwkFinalEnergyDemandAssets);
+                    $this->buildKwkPieChart($tdContainer, $kwkFinalEnergyDemandAssets);
                 }
                 break;
 
@@ -578,6 +580,29 @@ class ElcaReportAssetsView extends ElcaReportsView
 
         return $Container;
     }
-    // End appendTopElements
+
+    private function buildKwkPieChart(DOMElement $tdContainer, ElcaReportSet $kwkFinalEnergyDemandAssets)
+    {
+        $pieData = [];
+        $overallRatio = 0;
+        foreach ($kwkFinalEnergyDemandAssets as $kwkFinalEnergyDemandAsset) {
+            $pieData[] = (object)['name' => $kwkFinalEnergyDemandAsset->process_config_name,
+                                  'value' => $kwkFinalEnergyDemandAsset->ratio];
+
+            $overallRatio += $kwkFinalEnergyDemandAsset->ratio;
+        }
+
+        if ($overallRatio < 1) {
+            $pieData[] = (object)['name' => t('Undefiniert'),
+                                  'value' => 1 - $overallRatio,
+                                  'class' => 'undefined'
+            ];
+        }
+
+        $tdContainer->appendChild($this->getDiv([
+            'class' => 'chart pie-chart',
+            'data-values' => json_encode($pieData)
+        ]));
+    }
 }
 // End ElcaReportAssetsView

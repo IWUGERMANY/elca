@@ -8,8 +8,8 @@
     <meta name="keywords" content="_(Ökobilanz, Verwaltungsbau, Ökobilanzdaten, LCA, Life Cycle Assessment, DIN 276, BMVBS, BBSR, Baustoffdatenbank Ökobau.dat, Ökobau.dat, Baustoffdatenbank, Forschungsinitiative Zukunft Bau, Bundesinstitut für Bau- Stadt- und Raumforschung)_"/>
     <meta name="robots" content="index, follow"/>
 
-    <!-- <link rel="stylesheet" type="text/css" href="/css/elca/elca.css" media="all"/>
-    <link rel="stylesheet" type="text/css" href="/css/elca/print.css" media="$$printmedia$$"/> -->
+    <!--<link rel="stylesheet" type="text/css" href="/css/elca/elca.css" media="all"/>
+    <link rel="stylesheet" type="text/css" href="/css/elca/print.css" media="all"/> -->
 
     <script type="text/javascript" src="/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="/js/d3.v3/d3.v3.min.js"></script>

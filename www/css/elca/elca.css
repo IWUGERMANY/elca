@@ -1575,7 +1575,8 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #content.project-benchmarks .form-section .form-elt { display: inline-block; width: 40px; }
 
 #content.project-csv-import .import-group { position: relative; }
-#content.project-csv-import .import-group .download-link { position: absolute; top: 25px; right: 5px; color: #004f80; }
+#content.project-csv-import .import-group .download-link { position: absolute; top: 25px; right: 155px; color: #004f80; }
+#content.project-csv-import .import-group .download-link2 { position: absolute; top: 25px; right: 5px; color: #004f80; }
 #content.project-csv-import form.csvImportForm { width: 525px; }
 #content.project-csv-import form.csvImportForm .form-section { float: left; width: 525px; }
 #content.project-csv-import form.csvImportForm .form-section.name { clear: both; width: 525px; }
@@ -2034,6 +2035,8 @@ form.projectForm .column { width: 250px; padding-right: 40px; }
 #content.report-assets div.element-assets table { float: none; }
 
 #content.report-assets div.element-image, #content.report-effects-elements div.element-image { float: left; width: 600px; height: 250px; padding-left: 30px; }
+
+#content.report-effects-operation .chart.pie-chart, #content.report-assets-operation .chart.pie-chart { width: 500px; height: 500px; }
 
 /** effects **/
 #content.report table.report-effects { background-color: #f9f9f9; border-collapse: separate; margin-bottom: 20px; padding-bottom: 0; }

@@ -6,9 +6,17 @@
   .import-group .download-link {
     position:absolute;
     top:25px;
+    right:155px;
+    color:$linkFuncColor;
+  }
+
+ .import-group .download-link2 {
+    position:absolute;
+    top:25px;
     right:5px;
     color:$linkFuncColor;
   }
+
 
   form.csvImportForm {
     width:525px;
