@@ -25,6 +25,7 @@
 
 namespace Elca\Model\ProcessConfig\Conversion;
 
+use Elca\Model\Common\Optional;
 use Elca\Model\Common\Unit;
 
 class ConversionSet implements \IteratorAggregate
@@ -62,7 +63,7 @@ class ConversionSet implements \IteratorAggregate
 
     public function add(Conversion $conversion)
     {
-        if (null !== $this->find($conversion->fromUnit(), $conversion->toUnit())) {
+        if ($this->find($conversion->fromUnit(), $conversion->toUnit())->isPresent()) {
             return;
         }
 
@@ -86,18 +87,18 @@ class ConversionSet implements \IteratorAggregate
         return isset($this->conversions[(string)$fromUnit][(string)$toUnit]);
     }
 
-    public function find(Unit $fromUnit, Unit $toUnit): ?Conversion
+    public function find(Unit $fromUnit, Unit $toUnit): Optional
     {
         if ($this->hasExact($fromUnit, $toUnit)) {
-            return $this->conversions[(string)$fromUnit][(string)$toUnit];
+            return Optional::of($this->conversions[(string)$fromUnit][(string)$toUnit]);
         }
 
         if ($this->hasExact($toUnit, $fromUnit)) {
-            return $this->conversions[(string)$toUnit][(string)$fromUnit]
-                ->invert();
+            return Optional::of($this->conversions[(string)$toUnit][(string)$fromUnit]
+                ->invert());
         }
 
-        return null;
+        return Optional::ofEmpty();
     }
 
     /**
@@ -161,4 +162,10 @@ class ConversionSet implements \IteratorAggregate
 
         return $unionSet;
     }
+
+    public function mappedIndex(): array
+    {
+        return $this->conversions;
+    }
+
 }

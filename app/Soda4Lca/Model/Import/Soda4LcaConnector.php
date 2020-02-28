@@ -271,16 +271,21 @@ class Soda4LcaConnector
         $info = curl_getinfo($curl);
         curl_close($curl);
 
-        $Doc = new DOMDocument();
-        if(!$Doc->loadXml($xml))
+        $domDocument = new DOMDocument();
+        if(!$domDocument->loadXml($xml))
         {
-            $this->Log->error('Connected to '. $url .' failed: no valid xml', __METHOD__);
-            throw new Soda4LcaException('Xml document could not be loaded for url: '. $url, Soda4LcaException::NO_VALID_XML_DOCUMENT);
+            $this->Log->error('Connected to '. $url .' failed: no valid xml: '. $xml, __METHOD__);
+            $substr = \substr($xml, 0, 500);
+            $message    = 'Xml document could not be loaded for url `' . $url . '\': ' . $substr;
+            if ($substr !== $xml) {
+                $message .= '...';
+            }
+            throw new Soda4LcaException($message, Soda4LcaException::NO_VALID_XML_DOCUMENT);
         }
 
         $this->Log->debug('Connected to '. $url .' succeeded in '. $info['total_time'] .' seconds. Retrieved '.$info['size_download'].' bytes with '.$info['speed_download'].' bytes per second', __METHOD__);
 
-        return $this->cache[$url] = new DOMXPath($Doc);
+        return $this->cache[$url] = new DOMXPath($domDocument);
     }
     // End callApi
 

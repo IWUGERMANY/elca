@@ -57,6 +57,8 @@ class ElcaProcessConversionVersion extends DbObject
         'processDbId'  => PDO::PARAM_INT,
         'factor'       => PDO::PARAM_STR,
         'ident'        => PDO::PARAM_STR,
+        'flowUuid'     => PDO::PARAM_STR,
+        'flowVersion'  => PDO::PARAM_STR,
         'created'      => PDO::PARAM_STR,
         'modified'     => PDO::PARAM_STR,
     ];
@@ -90,6 +92,9 @@ class ElcaProcessConversionVersion extends DbObject
      */
     private $ident;
 
+    private $flowUuid;
+    private $flowVersion;
+
     /**
      * creation time
      */
@@ -119,13 +124,15 @@ class ElcaProcessConversionVersion extends DbObject
     // public
     //////////////////////////////////////////////////////////////////////////////////////
 
-    public static function create($conversionId, $processDbId, $factor, $ident = null): ElcaProcessConversionVersion
+    public static function create($conversionId, $processDbId, $factor, $ident = null, $flowUuid = null, $flowVersion = null): ElcaProcessConversionVersion
     {
         $processConversionVersion = new self();
         $processConversionVersion->setConversionId($conversionId);
         $processConversionVersion->setProcessDbId($processDbId);
         $processConversionVersion->setFactor($factor);
         $processConversionVersion->setIdent($ident);
+        $processConversionVersion->setFlowUuid($flowUuid);
+        $processConversionVersion->setFlowVersion($flowVersion);
 
         if ($processConversionVersion->getValidator()->isValid()) {
             $processConversionVersion->insert();
@@ -145,6 +152,8 @@ class ElcaProcessConversionVersion extends DbObject
                              , process_db_id
                              , factor
                              , ident
+                             , flow_uuid
+                             , flow_version
                              , created
                              , modified
                           FROM %s
@@ -220,7 +229,9 @@ class ElcaProcessConversionVersion extends DbObject
             $this->conversionId,
             $newProcessDbId,
             $this->factor,
-            $this->ident
+            $this->ident,
+            $this->flowUuid,
+            $this->flowVersion
         );
     }
 
@@ -280,6 +291,27 @@ class ElcaProcessConversionVersion extends DbObject
         $this->ident = $ident;
     }
 
+    public function flowUuid()
+    {
+        return $this->flowUuid;
+    }
+
+    public function setFlowUuid($flowUuid): void
+    {
+        $this->flowUuid = $flowUuid;
+    }
+
+    public function flowVersion()
+    {
+        return $this->flowVersion;
+    }
+
+    public function setFlowVersion($flowVersion): void
+    {
+        $this->flowVersion = $flowVersion;
+    }
+
+
     public function getCreated()
     {
         return $this->created;
@@ -325,6 +357,8 @@ class ElcaProcessConversionVersion extends DbObject
             "UPDATE %s
                            SET factor          = :factor
                              , ident           = :ident
+                             , flow_uuid       = :flowUuid
+                             , flow_version    = :flowVersion
                              , created         = :created
                              , modified        = :modified
                          WHERE (conversion_id, process_db_id) = (:conversionId, :processDbId)"
@@ -339,6 +373,8 @@ class ElcaProcessConversionVersion extends DbObject
                 'processDbId'  => $this->processDbId,
                 'factor'       => $this->factor,
                 'ident'        => $this->ident,
+                'flowUuid'     => $this->flowUuid,
+                'flowVersion'  => $this->flowVersion,
                 'created'      => $this->created,
                 'modified'     => $this->modified,
             )
@@ -389,8 +425,8 @@ class ElcaProcessConversionVersion extends DbObject
         $this->modified = null;
 
         $sql = sprintf(
-            "INSERT INTO %s (conversion_id, process_db_id, factor, ident, created, modified)
-                               VALUES  (:conversionId, :processDbId, :factor, :ident, :created, :modified)"
+            "INSERT INTO %s (conversion_id, process_db_id, factor, ident, flow_uuid, flow_version, created, modified)
+                               VALUES  (:conversionId, :processDbId, :factor, :ident, :flowUuid, :flowVersion, :created, :modified)"
             ,
             self::TABLE_NAME
         );
@@ -399,11 +435,13 @@ class ElcaProcessConversionVersion extends DbObject
             $sql,
             array(
                 'conversionId' => $this->conversionId,
-                'processDbId'         => $this->processDbId,
-                'factor'              => $this->factor,
-                'ident'               => $this->ident,
-                'created'             => $this->created,
-                'modified'            => $this->modified,
+                'processDbId'  => $this->processDbId,
+                'factor'       => $this->factor,
+                'ident'        => $this->ident,
+                'flowUuid'     => $this->flowUuid,
+                'flowVersion'  => $this->flowVersion,
+                'created'      => $this->created,
+                'modified'     => $this->modified,
             )
         );
     }
@@ -418,6 +456,8 @@ class ElcaProcessConversionVersion extends DbObject
         $this->processDbId         = (int)$dataObject->process_db_id;
         $this->factor              = null !== $dataObject->factor ? (float)$dataObject->factor : null;
         $this->ident               = $dataObject->ident;
+        $this->flowUuid            = $dataObject->flow_uuid;
+        $this->flowVersion         = $dataObject->flow_version;
         $this->created             = $dataObject->created;
         $this->modified            = $dataObject->modified;
 

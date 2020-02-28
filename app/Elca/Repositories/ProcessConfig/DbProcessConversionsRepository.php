@@ -5,6 +5,7 @@ namespace Elca\Repositories\ProcessConfig;
 
 
 use Beibob\Blibs\DbHandle;
+use Beibob\Blibs\Log;
 use Elca\Db\ElcaProcessConversion;
 use Elca\Db\ElcaProcessConversionVersion;
 use Elca\Db\ElcaProcessConversionVersionSet;
@@ -12,6 +13,7 @@ use Elca\Model\Common\Unit;
 use Elca\Model\Exception\InvalidArgumentException;
 use Elca\Model\Process\ProcessDbId;
 use Elca\Model\ProcessConfig\Conversion\ConversionType;
+use Elca\Model\ProcessConfig\Conversion\FlowReference;
 use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\ProcessConfig\Conversion\ProcessConversionsRepository;
@@ -27,9 +29,15 @@ class DbProcessConversionsRepository implements ProcessConversionsRepository
      */
     private $dbHandle;
 
-    public function __construct(DbHandle $dbHandle)
+    /**
+     * @var Log
+     */
+    private $log;
+
+    public function __construct(DbHandle $dbHandle, Log $log)
     {
         $this->dbHandle = $dbHandle;
+        $this->log = $log;
     }
 
     public function findById(ConversionId $conversionId, ProcessDbId $processDbId): ?ProcessConversion
@@ -140,13 +148,24 @@ class DbProcessConversionsRepository implements ProcessConversionsRepository
                 $elcaProcessConversion->getId(),
                 $processConversion->processDbId()->value(),
                 $linearConversion->factor(),
-                $linearConversion->type()->value()
+                $linearConversion->type()->value(),
+                $processConversion->hasFlowReference()
+                    ? $processConversion->flowReference()->flowUuid() : null,
+                $processConversion->hasFlowReference()
+                    ? $processConversion->flowReference()->flowVersion() : null
             );
 
             $this->dbHandle->commit();
+
+            $this->log->notice(sprintf('New conversion %s of type %s added for processConfigId %s and processDbId %s',
+                $linearConversion, $linearConversion->type(), $processConversion->processConfigId(), $processConversion->processDbId()), __METHOD__);
         }
         catch (\Exception $exception) {
             $this->dbHandle->rollback();
+
+            $this->log->error(sprintf('Adding new conversion %s of type %s added for processConfigId %s and processDbId %s failed: %s',
+                $linearConversion, $linearConversion->type(), $processConversion->processConfigId(), $processConversion->processDbId(), $exception->getMessage()), __METHOD__);
+
             throw $exception;
         }
 
@@ -184,7 +203,16 @@ class DbProcessConversionsRepository implements ProcessConversionsRepository
         $linearConversion = $processConversion->conversion();
         $elcaProcessConversionVersion->setFactor($linearConversion->factor());
         $elcaProcessConversionVersion->setIdent($linearConversion->type()->value());
+        $elcaProcessConversionVersion->setFlowUuid($processConversion->hasFlowReference()
+            ? $processConversion->flowReference()->flowUuid() : null);
+        $elcaProcessConversionVersion->setFlowVersion($processConversion->hasFlowReference()
+            ? $processConversion->flowReference()->flowVersion() : null);
+
         $elcaProcessConversionVersion->update();
+
+        $this->log->notice(sprintf('Conversion %s of type %s was updated for processConfigId %s and processDbId %s',
+            $linearConversion, $linearConversion->type(), $processConversion->processConfigId(), $processConversion->processDbId()), __METHOD__);
+
     }
 
     public function remove(ProcessConversion $processConversion): void
@@ -217,6 +245,9 @@ class DbProcessConversionsRepository implements ProcessConversionsRepository
         $toUnit   = Unit::fromString($processConversion->getOutUnit());
         $factor   = $processConversionVersion->getFactor();
         $ident    = $processConversionVersion->getIdent();
+        $flowReference = $processConversionVersion->flowUuid()
+            ? FlowReference::from($processConversionVersion->flowUuid(), $processConversionVersion->flowVersion())
+            : null;
 
         $conversion = $ident
             ? new ImportedLinearConversion($fromUnit, $toUnit, $factor, new ConversionType($ident))
@@ -231,6 +262,7 @@ class DbProcessConversionsRepository implements ProcessConversionsRepository
                 'processDbId'     => new ProcessDbId($processConversionVersion->getProcessDbId()),
                 'processConfigId' => new ProcessConfigId($processConversion->getProcessConfigId()),
                 'conversion'      => $conversion,
+                'flowReference'   => $flowReference,
             ]
         );
     }

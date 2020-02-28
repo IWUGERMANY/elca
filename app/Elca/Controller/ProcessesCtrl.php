@@ -412,7 +412,7 @@ class ProcessesCtrl extends TabsCtrl
                         }
                         $processConfig->setFHsHi($fHsHi);
 
-                        if ($conversionService->changeProcessConfigDensity($processDbId, $processConfigId, $density)) {
+                        if ($conversionService->changeProcessConfigDensity($processDbId, $processConfigId, $density, null, __METHOD__)) {
                             $newDefaultSize = $conversionService->computeDefaultSizeFromDensity(
                                 $processDbId,
                                 $processConfigId,
@@ -511,23 +511,21 @@ class ProcessesCtrl extends TabsCtrl
                                 continue;
                             }
 
-
-                            $conversion->setInUnit($this->Request->get('inUnit_'.$conversion->getId()));
-                            $conversion->setOutUnit($this->Request->get('outUnit_'.$conversion->getId()));
-
                             $factor = ElcaNumberFormat::fromString(
                                 $this->Request->get('factor_'.$conversion->getId()),
                                 8
                             );
 
-                            if ($factor != $conversionVersion->getFactor()) {
+                            if (!FloatCalc::cmp($factor, $conversionVersion->getFactor())) {
+                                $conversionService->registerConversion($processDbId, $processConfigId,
+                                    new LinearConversion(
+                                        Unit::fromString($this->Request->get('inUnit_'.$conversion->getId())),
+                                        Unit::fromString($this->Request->get('outUnit_'.$conversion->getId())),
+                                        $factor
+                                    ), null, __METHOD__);
+
                                 $needLcaProcessing = true;
                             }
-
-                            $conversionVersion->setFactor($factor);
-                            $conversionVersion->update();
-
-                            $conversion->update();
                         }
 
                         /**
@@ -549,7 +547,7 @@ class ProcessesCtrl extends TabsCtrl
                                     $conversion->fromUnit(),
                                     $conversion->toUnit(),
                                     $factor
-                                ));
+                                ), null,__METHOD__);
                         }
 
                         /**
@@ -566,7 +564,7 @@ class ProcessesCtrl extends TabsCtrl
                                     Unit::fromString($this->Request->inUnit_new),
                                     Unit::fromString($this->Request->outUnit_new),
                                     $factor
-                                ));
+                                ), null,__METHOD__);
                         }
 
                         $Dbh->commit();
@@ -733,7 +731,7 @@ class ProcessesCtrl extends TabsCtrl
         $conversionService = $this->get(Conversions::class);
 
         $density = round($this->Request->density, 2);
-        if ($conversionService->changeProcessConfigDensity($processDbId, $processConfigId, $density)) {
+        if ($conversionService->changeProcessConfigDensity($processDbId, $processConfigId, $density, null, __METHOD__)) {
             $this->initiateRecomputeLcaView($processConfig);
         }
 
@@ -832,7 +830,7 @@ class ProcessesCtrl extends TabsCtrl
          */
         if ($this->Request->has('confirmed')) {
 
-            $conversionsService->unregisterConversion(new ProcessDbId($processDbId), new ConversionId($conversionId));
+            $conversionsService->unregisterConversion(new ProcessDbId($processDbId), new ConversionId($conversionId), __METHOD__);
 
             $view = $this->setView(new ElcaProcessConfigGeneralView());
             $view->assign('buildMode', ElcaProcessConfigGeneralView::BUILDMODE_CONVERSIONS);
@@ -1300,7 +1298,7 @@ class ProcessesCtrl extends TabsCtrl
                                 if (null === $processConversion) {
                                     $this->conversions->registerConversion(
                                         $processDbId, $processConfigId,
-                                        ImportedLinearConversion::forReferenceUnit($procRefUnit)
+                                        ImportedLinearConversion::forReferenceUnit($procRefUnit), null,__METHOD__
                                     );
                                 }
                             }

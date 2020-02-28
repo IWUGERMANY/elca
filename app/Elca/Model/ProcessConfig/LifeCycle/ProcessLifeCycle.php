@@ -153,7 +153,7 @@ class ProcessLifeCycle
 
         $additionalConversions = [];
         foreach ($this->conversions as $conversion) {
-            if (null === $requiredConversions->find($conversion->fromUnit(), $conversion->toUnit())) {
+            if (!$requiredConversions->find($conversion->fromUnit(), $conversion->toUnit())->isPresent()) {
                 $additionalConversions[] = $conversion;
             }
         }

@@ -7,6 +7,7 @@ namespace Elca\Model\ProcessConfig;
 use Elca\Model\Common\Unit;
 use Elca\Model\Process\ProcessDbId;
 use Elca\Model\ProcessConfig\Conversion\ConversionType;
+use Elca\Model\ProcessConfig\Conversion\FlowReference;
 use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 
@@ -32,15 +33,22 @@ class ProcessConversion
      */
     private $conversion;
 
+    /**
+     * @var FlowReference|null
+     */
+    private $flowReference;
+
     public function __construct(
         ProcessDbId $processDbId,
         ProcessConfigId $processConfigId,
-        LinearConversion $conversion
+        LinearConversion $conversion,
+        FlowReference $flowReference = null
     )
     {
         $this->processDbId     = $processDbId;
         $this->conversion      = $conversion;
         $this->processConfigId = $processConfigId;
+        $this->flowReference = $flowReference;
     }
 
     public function conversionId(): ConversionId
@@ -116,4 +124,26 @@ class ProcessConversion
     {
         return $this->conversion->type();
     }
+
+    public function changeFlowReference(FlowReference $flowReference = null)
+    {
+        // Do not remove the flow reference once it was saved
+        if (null === $flowReference) {
+            return;
+        }
+
+        $this->flowReference = $flowReference;
+    }
+
+    public function flowReference(): ?FlowReference
+    {
+        return $this->flowReference;
+    }
+
+    public function hasFlowReference()
+    {
+        return null !== $this->flowReference;
+    }
+
+
 }

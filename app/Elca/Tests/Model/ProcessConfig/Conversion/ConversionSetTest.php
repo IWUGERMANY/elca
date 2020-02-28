@@ -67,7 +67,7 @@ class ConversionSetTest extends TestCase
         /**
          * @var LinearConversion $conversion
          */
-        $conversion = $set->find(Unit::kg(), Unit::m());
+        $conversion = $set->find(Unit::kg(), Unit::m())->get();
 
         $this->assertNotNull($conversion);
         $this->assertSame(2.0, $conversion->factor());
@@ -83,7 +83,7 @@ class ConversionSetTest extends TestCase
         /**
          * @var LinearConversion $conversion
          */
-        $conversion = $set->find(Unit::m(), Unit::kg());
+        $conversion = $set->find(Unit::m(), Unit::kg())->get();
 
         $this->assertNotNull($conversion);
         $this->assertSame(0.5, $conversion->factor());
