@@ -724,6 +724,8 @@ SELECT c.id
      , c.out_unit
      , v.factor
      , v.ident
+     , v.flow_uuid
+     , v.flow_version
      , v.created
      , v.modified
 FROM elca.process_conversions c

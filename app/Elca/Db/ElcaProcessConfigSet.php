@@ -555,10 +555,12 @@ class ElcaProcessConfigSet extends DbObjectSet
      *
      * @return ElcaProcessConfigSet
      */
-    public static function findByProcessUuid($processUuid, array $orderBy = null, $limit = null, $offset = null, $force = false)
+    public static function findByProcessUuid($processUuid, $lcPhase = null, array $orderBy = null, $limit = null, $offset = null, $force = false)
     {
         if (!$processUuid)
             return new ElcaProcessConfigSet();
+
+        $initValues = array('processUuid' => $processUuid);
 
         $sql = sprintf("SELECT DISTINCT pc.id
                              , pc.name
@@ -594,13 +596,62 @@ class ElcaProcessConfigSet extends DbObjectSet
             , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
         );
 
+        if (null !== $lcPhase) {
+            $sql .= ' AND plca.life_cycle_phase = :lcPhase';
+            $initValues['lcPhase'] = $lcPhase;
+        }
+
         if ($orderView = self::buildOrderView($orderBy, $limit, $offset))
             $sql .= ' ' . $orderView;
 
-        return self::_findBySql(get_class(), $sql, array('processUuid' => $processUuid), $force);
-    }
-    // End findByProcessUuid
 
+        return self::_findBySql(get_class(), $sql, $initValues, $force);
+    }
+
+    public static function findByProcessId($processId, array $orderBy = null, $limit = null, $offset = null, $force = false)
+    {
+        if (!$processId)
+            return new ElcaProcessConfigSet();
+
+        $sql = sprintf("SELECT DISTINCT pc.id
+                             , pc.name
+                             , pc.process_category_node_id
+                             , pc.description
+                             , pc.avg_life_time
+                             , pc.min_life_time
+                             , pc.max_life_time
+                             , pc.life_time_info
+                             , pc.avg_life_time_info
+                             , pc.min_life_time_info
+                             , pc.max_life_time_info
+                             , pc.density
+                             , pc.thermal_conductivity
+                             , pc.thermal_resistance
+                             , pc.is_reference
+                             , pc.f_hs_hi
+                             , pc.waste_code
+							 , pc.waste_code_suffix
+							 , pc.lambda_value
+							 , pc.element_group_a
+							 , pc.element_group_b
+                             , pc.default_size
+                             , pc.uuid
+                             , pc.svg_pattern_id
+                             , pc.is_stale
+                             , pc.created
+                             , pc.modified
+                          FROM %s pc
+                          JOIN %s plca ON plca.process_config_id = pc.id
+                         WHERE plca.id = :processId"
+            , ElcaProcessConfig::TABLE_NAME
+            , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
+        );
+
+        if ($orderView = self::buildOrderView($orderBy, $limit, $offset))
+            $sql .= ' ' . $orderView;
+
+        return self::_findBySql(get_class(), $sql, array('processId' => $processId), $force);
+    }
 
     /**
      * Inits a list of ElcaProcessConfigs by a process name

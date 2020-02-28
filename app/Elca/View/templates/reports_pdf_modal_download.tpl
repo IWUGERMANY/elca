@@ -4,5 +4,9 @@
 
     <div class="spinning-wheel" data-action="$$action$$"></div>
 	<p class="pdf-gen"></p>
-    <p class="pdf-gen-done"><strong>_(Ihr Dokument ist verfügbar.)_ <div id="download-pdf"></div></strong></p>
+    <div class="pdf-gen-done pdfdownloadinfo">
+		<p><strong>_(Ihr Dokument ist verfügbar.)_</strong></p>
+		<p>_(Als Download ist das Dokument in der Version vom)_ <strong class="textcolor-red">$$timecreated$$</strong> _(verfügbar. Sollten Sie ergebnissrelevante Änderungen an diesem Projekt vorgenommen haben, muss das PDF aktualisiert werden.)_</p>		
+		<div id="download-pdf"></div>
+	</div>
 </div>

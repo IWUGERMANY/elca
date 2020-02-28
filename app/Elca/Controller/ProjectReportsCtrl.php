@@ -403,7 +403,40 @@ class ProjectReportsCtrl extends BaseReportsCtrl
         }
     }
     // End compareSummaryElementTypesAction
-
+	
+	/*
+	** ajax call from reports pages
+	** check, if pdf is ready // 2020-02-07
+	*/
+     public function testpdfvarAction()
+	 {
+		$pdfCreated = false;
+		
+		if (!$this->isAjax() && !$this->Request) {
+            return;
+        }
+		$data = $this->Request;
+		if(isset($data->id))
+		{
+			$reportPDF = ElcaReportSet::findPdfInQueue(
+				$data->id, 
+				$data->pvid,
+				$data->uid, 
+				$data->action
+			);
+			
+			// object - must be a single row only
+			foreach($reportPDF as $reportPDFRow)
+			{
+				if(!is_null($reportPDFRow->ready))
+				{
+					$pdfCreated = true;
+				}
+			}		
+		} 
+			
+		$this->getView()->assign('created', $pdfCreated);
+	 }
 
     /**
      * Benchmark chart data

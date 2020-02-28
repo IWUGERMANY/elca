@@ -59,7 +59,8 @@
     "ocramius/proxy-manager": "~1.0",
     "ext-pdo": "*",
     "ext-dom": "*",
-    "phpoffice/phpspreadsheet": "dev-master"
+    "phpoffice/phpspreadsheet": "dev-master",
+    "ext-curl": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "6.4.1"

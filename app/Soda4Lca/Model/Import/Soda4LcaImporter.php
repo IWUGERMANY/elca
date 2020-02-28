@@ -53,11 +53,13 @@ use Elca\Model\Common\Unit;
 use Elca\Model\Process\Module;
 use Elca\Model\Process\ProcessDbId;
 use Elca\Model\ProcessConfig\Conversion\ConversionType;
+use Elca\Model\ProcessConfig\Conversion\FlowReference;
 use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\ProcessConfig\ProcessConfigId;
 use Elca\Service\ProcessConfig\Conversions;
 use Exception;
+use Ramsey\Uuid\Uuid;
 use Soda4Lca\Db\Soda4LcaImport;
 use Soda4Lca\Db\Soda4LcaProcess;
 use Soda4Lca\Db\Soda4LcaProcessSet;
@@ -1201,11 +1203,13 @@ class Soda4LcaImporter
             /**
              * Insert or update material properties (But don't delete in case of update)
              */
+            $prodProcessConfigSet = $this->findProcessConfigs($processDO, false, ElcaLifeCycle::PHASE_PROD);
+
             if (isset($processDO->lcPhases[ElcaLifeCycle::PHASE_PROD]) &&
-                $ProcessConfigSet instanceOf ElcaProcessConfigSet &&
-                $ProcessConfigSet->count() == 1
+                $prodProcessConfigSet instanceOf ElcaProcessConfigSet &&
+                $prodProcessConfigSet->count() == 1
             ) {
-                if ($matPropProblems = $this->applyMatPropertiesForProcessConfig($processDO, $ProcessConfigSet[0])) {
+                if ($matPropProblems = $this->applyMatPropertiesForProcessConfig($processDO, $prodProcessConfigSet[0])) {
                     foreach ($matPropProblems as $matPropProblem) {
                         $processStatusDetails[] = $matPropProblem;
                     }
@@ -1251,12 +1255,12 @@ class Soda4LcaImporter
      *
      * @return ElcaProcessConfigSet
      */
-    private function findProcessConfigs($ProcessDO, $dontCreate = false)
+    private function findProcessConfigs($ProcessDO, $dontCreate = false, $phase = null)
     {
         /**
          * Try to find by process uuid, then by name
          */
-        $processConfigSet = ElcaProcessConfigSet::findByProcessUuid($ProcessDO->uuid);
+        $processConfigSet = ElcaProcessConfigSet::findByProcessUuid($ProcessDO->uuid, $phase);
         if (!count($processConfigSet)) {
             /**
              * Beware of some older single phase processes which have (after name cleanup) the same name
@@ -1267,7 +1271,7 @@ class Soda4LcaImporter
              */
             $processConfigSet = ElcaProcessConfigSet::findByProcessName(
                 $ProcessDO->name,
-                $lcPhase = (count($ProcessDO->lcPhases) > 1 ? null : $ProcessDO->singlePhaseProcessPhase),
+                $lcPhase = (count($ProcessDO->lcPhases) > 1 ? $phase : $ProcessDO->singlePhaseProcessPhase),
                 $ProcessDO->epdSubType ?? null,
                 $ProcessDO->geographicalRepresentativeness ?? null
             );
@@ -1329,16 +1333,16 @@ class Soda4LcaImporter
      *
      * @return ElcaProcessConfig
      */
-    private function createProcessConfig($ProcessDO)
+    private function createProcessConfig($processDO)
     {
-        $density     = isset($ProcessDO->MatProperties->density) && $ProcessDO->MatProperties->density
-            ? $ProcessDO->MatProperties->density : null;
-        $minLifeTime = isset($ProcessDO->MatProperties->lifeTime) && $ProcessDO->MatProperties->lifeTime
-            ? $ProcessDO->MatProperties->lifeTime : null;
+        $density     = isset($processDO->MatProperties->density) && $processDO->MatProperties->density
+            ? $processDO->MatProperties->density : null;
+        $minLifeTime = isset($processDO->MatProperties->lifeTime) && $processDO->MatProperties->lifeTime
+            ? $processDO->MatProperties->lifeTime : null;
 
         $processConfig = ElcaProcessConfig::create(
-            $ProcessDO->name,
-            $ProcessDO->processCategoryNodeId,
+            $processDO->name,
+            $processDO->processCategoryNodeId,
             null, // description
             null, // $thermalConductivity
             null, // $thermalResistance
@@ -1352,10 +1356,12 @@ class Soda4LcaImporter
         $processDbId = new ProcessDbId($this->Import->getProcessDbId());
         $processConfigId = new ProcessConfigId($processConfig->getId());
 
+        $flowReference = $this->provideFlowReference($processDO);
+
         /**
          * Set density
          */
-        $this->conversions->changeProcessConfigDensity($processDbId, $processConfigId, $density);
+        $this->conversions->changeProcessConfigDensity($processDbId, $processConfigId, $density, $flowReference, __METHOD__);
 
         /**
          * Add identity conversion
@@ -1363,7 +1369,7 @@ class Soda4LcaImporter
         $this->conversions->registerConversion(
             $processDbId,
             $processConfigId,
-            ImportedLinearConversion::forReferenceUnit(Unit::fromString($ProcessDO->refUnit))
+            ImportedLinearConversion::forReferenceUnit(Unit::fromString($processDO->refUnit)), $flowReference,__METHOD__
         );
 
         return $processConfig;
@@ -1454,6 +1460,7 @@ class Soda4LcaImporter
     {
         $processConfigId   = new ProcessConfigId($processConfig->getId());
         $processDbId       = new ProcessDbId($this->Import->getProcessDbId());
+        $flowReference = $this->provideFlowReference($processDO);
 
         $problems = [];
 
@@ -1571,7 +1578,7 @@ class Soda4LcaImporter
                 $importedLinearConversion = new ImportedLinearConversion($fromUnit, $toUnit, (float)($convDO->factor),
                     new ConversionType($convDO->ident));
 
-                $this->conversions->registerConversion($processDbId, $processConfigId, $importedLinearConversion);
+                $this->conversions->registerConversion($processDbId, $processConfigId, $importedLinearConversion, $flowReference,__METHOD__);
 
                 $this->Log->debug(
                     'Registered ProcessConversion `' . $convDO->ident . '\' for `' . $processConfig->getName() . '\': [in=' . $convDO->inUnit . ',out=' . $convDO->outUnit . ',f=' . $convDO->factor . ']',
@@ -1597,6 +1604,9 @@ class Soda4LcaImporter
          *
          * The ident field is being used to determine whether a conversion has been created manually or was imported via
          * the soda interface
+         *
+         * @Todo: This should be not necessary anymore since we store a FlowReference on each conversion
+         *        Adapt the logic
          */
         if (false === $hasGrossDensity) {
             $densityConversion = $this->conversions->findDensityConversionFor($processDbId, $processConfigId);
@@ -1604,7 +1614,7 @@ class Soda4LcaImporter
             if (null !== $densityConversion && $densityConversion->isImported()) {
                 $this->conversions->registerConversion($processDbId, $processConfigId,
                     new LinearConversion($densityConversion->fromUnit(), $densityConversion->toUnit(),
-                        $densityConversion->factor()));
+                        $densityConversion->factor()), $flowReference,__METHOD__);
 
                 $this->Log->debug('Unset the ident of density process conversion `'.$densityConversion->conversionId().'\'. This conversion has been manually added.', __METHOD__);
             }
@@ -1763,6 +1773,7 @@ class Soda4LcaImporter
     {
         $processConfigId   = new ProcessConfigId($processConfig->getId());
         $processDbId       = new ProcessDbId($this->Import->getProcessDbId());
+        $flowReference     = $this->provideFlowReference($processDO);
 
         $identityConversion = $this->conversions->findIdentityConversionForUnit($processConfigId, $processDbId,
             Unit::fromString($processDO->refUnit));
@@ -1774,8 +1785,19 @@ class Soda4LcaImporter
         $this->conversions->registerConversion(
             $processDbId,
             $processConfigId,
-            ImportedLinearConversion::forReferenceUnit(Unit::fromString($processDO->refUnit))
+            ImportedLinearConversion::forReferenceUnit(Unit::fromString($processDO->refUnit)), $flowReference,__METHOD__
         );
+    }
+
+    private function provideFlowReference($processDO)
+    {
+        $flowReference = null;
+        if ($processDO->MatProperties->flowUuid && Uuid::isValid($processDO->MatProperties->flowUuid)) {
+            $flowReference = FlowReference::from($processDO->MatProperties->flowUuid,
+                $processDO->MatProperties->flowVersion);
+        }
+
+        return $flowReference;
     }
 }
 // End Soda4LcaImporter

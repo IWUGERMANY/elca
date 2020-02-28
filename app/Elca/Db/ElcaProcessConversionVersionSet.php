@@ -92,9 +92,6 @@ class ElcaProcessConversionVersionSet extends DbObjectSet
         );
     }
 
-
-
-
     public static function findIntersectConversionsForMultipleProcessDbs(int $processConfigId, array $processDbIds, bool $force = false)
     {
         $initValues = [
@@ -136,6 +133,8 @@ SELECT c.id AS conversion_id
      , process_config_id
      , factor
      , ident
+     , flow_uuid
+     , flow_version
      , in_unit
      , out_unit
      , created

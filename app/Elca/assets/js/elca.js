@@ -2116,6 +2116,7 @@ $(window).load(function () {
                     '#content.report': null,
                     '#elca-modal-content.pdf-gen': 'preparePdf',
                     '#elca-modal-content.project-access': 'prepareProjectAccess',
+					'#content.report': 'checkCreatePdf',
                     '#content.elca-project': null,
                     '#projectProcessConfigSanity': null,
                     '#content.project-import': null,
@@ -2159,7 +2160,7 @@ $(window).load(function () {
                 preparePdf: function ($context) {
                     $('div.spinning-wheel', $context).each(function () {
                         var $container = $(this);
-
+						
                         if ($container.data('action')) {
                             jBlibs.App.query($container.data('action'), null, {
                                 complete: function (xhr, response) {
@@ -2175,13 +2176,64 @@ $(window).load(function () {
                         if ($container.data('close-after-time-in-ms')) {
                             setTimeout(function() {
                                 $('#elca-modal').fadeOut('fast', function () {
-                                    $('#elca-modal-content').empty();
+                                   $('#elca-modal-content').empty();
                                 });
                             }, $container.data('close-after-time-in-ms'));
                         }
                     });
                 },
 
+
+				/**
+				* Interval check whether PDF is created // 2020-02-07
+				*/
+				checkCreatePdf: function ($context) {
+					$('span.pdfcreate', $context).each(function () {
+						var $container = $(this);
+						var $action = "/project-reports/testpdfvar/";
+						var checktimer;
+						checkPDFReady($container,0,$action);
+					});	
+					
+					function checkPDFReady($container,$counter,$action) 
+					{
+						if ($container.data('check')) 
+						{
+							$.ajax({
+                                global: false,
+                                url: $action,
+                                dataType: 'json',
+                                data: {
+                                    id: $container.data('id'),
+									pvid: $container.data('pvid'),
+									uid: $container.data('uid'),
+									action: $container.data('action')
+                                },
+                                success: function (data, status, xhr) {
+									if(data['created']==true)
+								  	{	
+										clearTimeout(checktimer);
+										checkPDFReload($container);
+									}   
+                                }
+                            });
+						
+							checktimer = setTimeout(function () {
+								checkPDFReady($container,$counter,$action);
+                            }, 10000);	
+
+						}
+						return true;
+					}
+					
+					function checkPDFReload($container)
+					{
+						// window.location.href = window.location.href;
+						window.location.reload();
+						return true;
+					}
+				},	
+				
                 /**
                  * Prepare modal content
                  */

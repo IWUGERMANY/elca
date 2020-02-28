@@ -439,6 +439,8 @@ class Soda4LcaParser
     private function getMatProperties($flowDataSetUuid, $flowVersion, $refUnit = null)
     {
         $matProperties = new \stdClass();
+        $matProperties->flowUuid = $flowDataSetUuid;
+        $matProperties->flowVersion = $flowVersion;
         $matProperties->conversions = [];
 
         /**

@@ -70,11 +70,10 @@ class Converter
             return $quantity;
         }
 
-        $conversion = $this->conversions->find($fromUnit, $toUnit);
-
-        if (null === $conversion) {
+        $conversion = $this->conversions->find($fromUnit, $toUnit)->orElse(function() use ($fromUnit, $toUnit) {
             throw new ConversionException($this->processConfigId, $fromUnit, $toUnit);
-        }
+        });
+
 
         return $conversion->convert($quantity);
     }
@@ -96,7 +95,7 @@ class Converter
 
     public function find(Unit $fromUnit, Unit $toUnit): ?Conversion
     {
-        return $this->conversions->find($fromUnit, $toUnit);
+        return $this->conversions->find($fromUnit, $toUnit)->orElse(null);
     }
 
     public function conversions(): ConversionSet

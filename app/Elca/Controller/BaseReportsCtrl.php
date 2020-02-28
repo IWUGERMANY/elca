@@ -79,7 +79,9 @@ abstract class BaseReportsCtrl extends AppCtrl
 		// 
         $V  = $this->addView(new ReportsPdfModalDownloadView());
         $pdfUrl = FrontController::getInstance()->getUrlTo(null, 'pdfDownload', ['a' => $this->Request->a]);
+		$pdfTimeCreated = $this->Request->t;
         $V->assign('action', $pdfUrl);
+		$V->assign('timecreated', $pdfTimeCreated);
     }
 
     /**
