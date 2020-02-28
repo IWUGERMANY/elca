@@ -170,6 +170,9 @@ CREATE TABLE elca.process_configs
  , "lambda_value"			numeric									-- lambda value
  , "element_group_a"        boolean            						-- element group a
  , "element_group_b"        boolean         			   			-- is reference
+ , "element_district_heating"        boolean            			-- fernwaerme
+ , "element_refrigerant"        boolean         			   		-- kaeltemittel
+ , "element_flammable"        boolean            					-- brennbar
  , "min_life_time"          int                                     -- min life time in years
  , "avg_life_time"          int                                     -- avg life time in years
  , "max_life_time"          int                                     -- max life time in years

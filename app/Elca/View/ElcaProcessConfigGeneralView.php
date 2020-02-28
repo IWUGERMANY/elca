@@ -423,7 +423,13 @@ class ElcaProcessConfigGeneralView extends HtmlView
 
 			$lftGroup->add(new ElcaHtmlFormElementLabel(t('Stoffgruppe A'), new HtmlCheckbox('elementGroupA')));
 			$lftGroup->add(new ElcaHtmlFormElementLabel(t('Stoffgruppe B'), new HtmlCheckbox('elementGroupB')));
+		}
 
+		if(!$this->readOnly) {
+
+			$lftGroup->add(new ElcaHtmlFormElementLabel(t('Fernwärme Datensatz'), new HtmlCheckbox('elementDistrictHeating')));
+			$lftGroup->add(new ElcaHtmlFormElementLabel(t('Kältemittel Datensatz'), new HtmlCheckbox('elementRefrigerant')));
+			$lftGroup->add(new ElcaHtmlFormElementLabel(t('Brennbar'), new HtmlCheckbox('elementFlammable')));
 		}
 
         //$LftGroup->add(new ElcaHtmlFormElementLabel(t('Wärmeleitfähigkeit'), new ElcaHtmlNumericInput('thermalConductivity'), false, 'W / mk'));
