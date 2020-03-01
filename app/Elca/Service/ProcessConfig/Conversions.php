@@ -292,6 +292,14 @@ class Conversions
         return $processLifeCycle->requiredUnits();
     }
 
+    public function findAvailableUnits(ProcessLifeCycleId $processLifeCycleId): array
+    {
+        $processLifeCycle = $this->processLifeCycleRepository->findById($processLifeCycleId);
+
+        return $processLifeCycle->units();
+    }
+
+
     public function isBeingUsed(Conversion $conversion): bool
     {
         if (!$conversion instanceof LinearConversion) {

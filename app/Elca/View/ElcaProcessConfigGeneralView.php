@@ -696,6 +696,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
             $processLifeCycleId     = new ProcessLifeCycleId($this->processDbId, $processConfigId);
             $requiredConversions    = $this->conversionService->findRequiredConversions($processLifeCycleId);
             $requiredUnits          = $this->conversionService->findRequiredUnits($processLifeCycleId);
+            $availableUnits         = $this->conversionService->findAvailableUnits($processLifeCycleId);
             $additionalConversions  = $this->conversionService->findAdditionalConversions($processLifeCycleId);
 
             foreach ($requiredConversions as $requiredConversion) {
@@ -707,11 +708,11 @@ class ElcaProcessConfigGeneralView extends HtmlView
             }
 
             foreach ($additionalConversions as $additionalConversion) {
-                $this->appendConversionRow($rightGroup, $additionalConversion, $requiredUnits, false);
+                $this->appendConversionRow($rightGroup, $additionalConversion, $availableUnits, false);
             }
 
             if ($addNew) {
-                $this->appendConversionRow($rightGroup, null, $requiredUnits);
+                $this->appendConversionRow($rightGroup, null, $availableUnits);
             }
         }
     }
