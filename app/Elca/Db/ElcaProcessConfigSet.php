@@ -491,6 +491,9 @@ class ElcaProcessConfigSet extends DbObjectSet
 							 , pc.lambda_value
 							 , pc.element_group_a
 							 , pc.element_group_b
+                             , pc.element_district_heating
+                             , pc.element_refrigerant
+                             , pc.element_flammable
                                 , pc.default_size
                                       , pc.uuid
                                       , pc.svg_pattern_id
@@ -584,6 +587,9 @@ class ElcaProcessConfigSet extends DbObjectSet
 							 , pc.element_group_a
 							 , pc.element_group_b
                              , pc.default_size
+                             , pc.element_district_heating
+                             , pc.element_refrigerant
+                             , pc.element_flammable
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
@@ -635,6 +641,9 @@ class ElcaProcessConfigSet extends DbObjectSet
 							 , pc.element_group_a
 							 , pc.element_group_b
                              , pc.default_size
+                             , pc.element_district_heating
+                             , pc.element_refrigerant
+                             , pc.element_flammable
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale

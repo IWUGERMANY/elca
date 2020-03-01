@@ -198,6 +198,9 @@ CREATE OR REPLACE VIEW elca.process_config_process_dbs_view AS
         , pc.lambda_value
         , pc.element_group_a
         , pc.element_group_b
+        , pc.element_district_heating
+        , pc.element_refrigerant
+        , pc.element_flammable
         , pc.uuid
         , pc.svg_pattern_id
         , pc.is_stale
@@ -232,7 +235,9 @@ CREATE OR REPLACE VIEW elca.process_config_process_dbs_view AS
             , pc.lambda_value
             , pc.element_group_a
             , pc.element_group_b
-        , pc.uuid
+            , pc.element_district_heating
+            , pc.element_refrigerant
+            , pc.element_flammable        , pc.uuid
         , pc.svg_pattern_id
         , pc.is_stale
         , pc.created
@@ -262,7 +267,11 @@ CREATE OR REPLACE VIEW elca.all_process_config_process_dbs_view AS
             , pc.waste_code_suffix
             , pc.lambda_value
             , pc.element_group_a
-            , pc.element_group_b         , pc.uuid
+            , pc.element_group_b
+            , pc.element_district_heating
+            , pc.element_refrigerant
+            , pc.element_flammable
+           , pc.uuid
          , pc.svg_pattern_id
          , pc.is_stale
          , pc.created
@@ -295,7 +304,10 @@ CREATE OR REPLACE VIEW elca.all_process_config_process_dbs_view AS
             , pc.lambda_value
             , pc.element_group_a
             , pc.element_group_b
-             , pc.uuid
+            , pc.element_district_heating
+            , pc.element_refrigerant
+            , pc.element_flammable
+            , pc.uuid
            , pc.svg_pattern_id
            , pc.is_stale
            , pc.created
@@ -431,7 +443,11 @@ CREATE OR REPLACE VIEW elca.process_configs_extended_search_v AS
             , pc.waste_code_suffix
             , pc.lambda_value
             , pc.element_group_a
-            , pc.element_group_b        , pc.uuid
+            , pc.element_group_b
+            , pc.element_district_heating
+            , pc.element_refrigerant
+            , pc.element_flammable
+           , pc.uuid
         , pc.svg_pattern_id
         , pc.is_stale
         , pc.created
@@ -461,6 +477,9 @@ CREATE OR REPLACE VIEW elca.process_configs_extended_search_v AS
             , pc.lambda_value
             , pc.element_group_a
             , pc.element_group_b
+            , pc.element_district_heating
+            , pc.element_refrigerant
+            , pc.element_flammable
              , pc.uuid
         , pc.is_stale
         , pc.created
