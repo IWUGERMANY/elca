@@ -360,6 +360,9 @@ class ProcessesCtrl extends TabsCtrl
 				$lambdaValue		 = !empty($this->Request->lambdaValue) ? ElcaNumberFormat::fromString($this->Request->lambdaValue, 3) : null;
 				$elementGroupA     	 = !empty($this->Request->elementGroupA) ? (bool)$this->Request->elementGroupA : null;
 				$elementGroupB     	 = !empty($this->Request->elementGroupB) ? (bool)$this->Request->elementGroupB : null;
+				$elementDistrictHeating  = !empty($this->Request->elementDistrictHeating) ? (bool)$this->Request->elementDistrictHeating : null;
+				$elementRefrigerant      = !empty($this->Request->elementRefrigerant) ? (bool)$this->Request->elementRefrigerant : null;
+				$elementFlammable     	 = !empty($this->Request->elementFlammable) ? (bool)$this->Request->elementFlammable : null;
 				$defaultSize         = $this->Request->defaultSize ? ElcaNumberFormat::fromString($this->Request->defaultSize, 2) / 1000 : null;
                 $svgPatternId        = $this->Request->svgPatternId ? $this->Request->svgPatternId : null;
 
@@ -398,6 +401,10 @@ class ProcessesCtrl extends TabsCtrl
 
 						$processConfig->setElementGroupA($elementGroupA);
 						$processConfig->setElementGroupB($elementGroupB);
+						
+						$processConfig->setElementDistrictHeating($elementDistrictHeating);
+						$processConfig->setElementRefrigerant($elementRefrigerant);
+						$processConfig->setElementFlammable($elementFlammable);
 
                         $processConfig->setThermalConductivity($thermalConductivity);
                         $processConfig->setThermalResistance($thermalResistance);
@@ -664,7 +671,10 @@ class ProcessesCtrl extends TabsCtrl
 						$wasteCodeSuffix,
 						$lambdaValue,
 						$elementGroupA,
-						$elementGroupB
+						$elementGroupB,
+						$elementDistrictHeating,
+						$elementRefrigerant,
+						$elementFlammable
                     );
                     /**
                      * Init a redirect to render the default view
