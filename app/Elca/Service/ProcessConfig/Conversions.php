@@ -29,6 +29,7 @@ use Beibob\Blibs\FloatCalc;
 use Elca\Db\ElcaElementComponentSet;
 use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessConversionAudit;
+use Elca\Model\Common\Optional;
 use Elca\Model\Common\Quantity\Quantity;
 use Elca\Model\Common\Unit;
 use Elca\Model\Exception\InvalidArgumentException;
@@ -358,6 +359,12 @@ class Conversions
         }
 
         $this->processConversionsRepository->remove($processConversion);
+    }
+
+    public function findEnergyEquivalentConversionFor(ProcessConfigId $processConfigId, ProcessDbId $processDbId) : Optional
+    {
+        return Optional::ofNullable($this->processConversionsRepository->findByConversion($processConfigId,
+            $processDbId, Unit::kWh(), Unit::MJ()));
     }
 
     protected function findAvgMpuaConversionFor(ProcessDbId $processDbId,

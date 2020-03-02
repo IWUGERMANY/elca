@@ -74,6 +74,8 @@ use Soda4Lca\Db\Soda4LcaProcessSet;
  */
 class Soda4LcaImporter
 {
+    const KWH_TO_MJ_FACTOR = 3.6;
+
     /**
      * Fragments of names which need to be removed
      */
@@ -134,6 +136,8 @@ class Soda4LcaImporter
      */
     private $conversions;
 
+    private $energyEquivalent;
+
 
     /**
      * Constructor
@@ -164,6 +168,9 @@ class Soda4LcaImporter
         $LifeCycleSet                 = ElcaLifeCycleSet::findEn15804Compliant(['p_order' => 'ASC']);
         $this->lifeCycleIdents        = $LifeCycleSet->getArrayBy('ident');
         $this->lifeCycleIdentPhaseMap = $LifeCycleSet->getArrayBy('phase', 'ident');
+
+        $this->energyEquivalent = new LinearConversion(Unit::kWh(), Unit::MJ(),
+            self::KWH_TO_MJ_FACTOR);
     }
     // End __construct
 
@@ -858,7 +865,7 @@ class Soda4LcaImporter
             /**
              * Get matching ProcessConfigs
              */
-            $ProcessConfigSet = $this->findProcessConfigs($processDO);
+            $processConfigSet = $this->findProcessConfigs($processDO);
 
             /**
              * Scenarios
@@ -868,9 +875,9 @@ class Soda4LcaImporter
             $scenarioIdentMap = [];
             if (count($processDO->scenarios)) {
                 if (isset($processDO->lcPhases[ElcaLifeCycle::PHASE_PROD])) {
-                    if ($ProcessConfigSet->count() == 1) {
-                        $ProcessConfig    = $ProcessConfigSet[0];
-                        $scenarioIdentMap = $this->applyScenariosForProcessConfig($processDO, $ProcessConfig);
+                    if ($processConfigSet->count() == 1) {
+                        $processConfig    = $processConfigSet[0];
+                        $scenarioIdentMap = $this->applyScenariosForProcessConfig($processDO, $processConfig);
 
                         if (count($scenarioIdentMap)) {
                             $scenarios = $defaultScenarios = [];
@@ -904,7 +911,7 @@ class Soda4LcaImporter
                         $processStatusDetails[] = t(
                                                       'Mehrere Baustoffkonfigurationen gefunden: %names%.',
                                                       null,
-                                                      ['%names%' => join(', ', $ProcessConfigSet->getArrayBy('name'))]
+                                                      ['%names%' => join(', ', $processConfigSet->getArrayBy('name'))]
                                                   )
                                                   .t(
                                                       'Szenarios können nicht mehreren Baustoffkonfigurationen zugeordnet werden!'
@@ -1036,7 +1043,7 @@ class Soda4LcaImporter
                      * the second time coming through
                      */
                     if ((!$processDO->onlyEolOrRecPhase || $isPhaseTwo) &&
-                        $ProcessConfigSet instanceOf ElcaProcessConfigSet && $ProcessConfigSet->count()
+                        $processConfigSet instanceOf ElcaProcessConfigSet && $processConfigSet->count()
                     ) {
 
                         /**
@@ -1076,13 +1083,13 @@ class Soda4LcaImporter
                         /**
                          * Assign to processConfig
                          */
-                        foreach ($ProcessConfigSet as $ProcessConfig) {
+                        foreach ($processConfigSet as $processConfig) {
 
                             /**
                              * Check if this process config has lcIdent assignment
                              */
                             if (ElcaProcessSet::dbCountByProcessConfigId(
-                                $ProcessConfig->getId(),
+                                $processConfig->getId(),
                                 [
                                     'process_db_id'    => $this->ProcessDb->getId(),
                                     'life_cycle_ident' => $lcIdent,
@@ -1096,7 +1103,7 @@ class Soda4LcaImporter
                                     }
 
                                     $AssignedProcess = ElcaProcessSet::findByProcessConfigId(
-                                        $ProcessConfig->getId(),
+                                        $processConfig->getId(),
                                         [
                                             'process_db_id'    => $this->ProcessDb->getId(),
                                             'life_cycle_ident' => $lcIdent,
@@ -1110,21 +1117,21 @@ class Soda4LcaImporter
                                     }
 
                                     $LifeCycleAssignment = ElcaProcessLifeCycleAssignment::findByProcessConfigIdAndProcessId(
-                                        $ProcessConfig->getId(),
+                                        $processConfig->getId(),
                                         $AssignedProcess->getId()
                                     );
 
                                     if ($LifeCycleAssignment->isInitialized()) {
                                         $LifeCycleAssignment->delete();
                                         $this->Log->notice(
-                                            'Removed assignment: '.$ProcessConfig->getId().' '.$ProcessConfig->getName(
+                                            'Removed assignment: '.$processConfig->getId().' '.$processConfig->getName(
                                             ).' => '.$AssignedProcess->getName()
                                         );
                                     }
 
                                 } else {
                                     $this->Log->debug(
-                                        'Skipping assignment to: '.$ProcessConfig->getId().' '.$ProcessConfig->getName(
+                                        'Skipping assignment to: '.$processConfig->getId().' '.$processConfig->getName(
                                         ).' Another process with lcIdent='.$lcIdent.' is already assigned',
                                         __METHOD__
                                     );
@@ -1142,13 +1149,13 @@ class Soda4LcaImporter
                                  */
                                 if (!ElcaProcessSet::dbCountByProcessDbIdAndProcessConfigIdAndPhases(
                                     $this->ProcessDb->getId(),
-                                    $ProcessConfig->getId(),
+                                    $processConfig->getId(),
                                     [ElcaLifeCycle::PHASE_PROD],
                                     true
                                 )
                                 ) {
                                     $this->Log->debug(
-                                        'Skipping assignment to: '.$ProcessConfig->getId().' '.$ProcessConfig->getName(
+                                        'Skipping assignment to: '.$processConfig->getId().' '.$processConfig->getName(
                                         ).' due to missing PROD phase',
                                         __METHOD__
                                     );
@@ -1160,26 +1167,26 @@ class Soda4LcaImporter
                              *  Assign ProcessDO <=> ProcessConfig
                              */
                             $LifeCycleAssignment = ElcaProcessLifeCycleAssignment::findByProcessConfigIdAndProcessId(
-                                $ProcessConfig->getId(),
+                                $processConfig->getId(),
                                 $Process->getId()
                             );
                             if (!$LifeCycleAssignment->isInitialized()) {
                                 $LifeCycleAssignment = ElcaProcessLifeCycleAssignment::create(
-                                    $ProcessConfig->getId(),
+                                    $processConfig->getId(),
                                     $Process->getId()
                                 );
                                 $this->Log->debug(
-                                    'Assigned to: '.$ProcessConfig->getId().' '.$ProcessConfig->getName(),
+                                    'Assigned to: '.$processConfig->getId().' '.$processConfig->getName(),
                                     __METHOD__
                                 );
                             }
 
                             $numAssignments++;
 
-                            if ($ProcessConfig->getName() === $Process->getName()) {
+                            if ($processConfig->getName() === $Process->getName()) {
                                 $stage = Module::fromValue($Process->getLifeCycleIdent())->stage();
                                 if ($stage->isProduction() || $stage->isUsage()) {
-                                    $this->updateProcessConfigNames($processDO, $ProcessConfig);
+                                    $this->updateProcessConfigNames($processDO, $processConfig);
                                 }
                             }
                         }
@@ -1218,17 +1225,64 @@ class Soda4LcaImporter
                 /**
                  * Insert PROD identity conversion if necessary
                  */
-                $this->addIdentityConversionIfNecessary($processDO, $ProcessConfigSet[0]);
+                $this->addIdentityConversionIfNecessary($processDO, $processConfigSet[0]);
             }
+
+            /**
+             * Check if the process has phase operation and is a 1 kWh process
+             * Then automatically add a MJ -> kWh conversion
+             */
+            if ($this->isMJOperationProcessWhichRequiresConversionToKWh($processDO)) {
+
+                $this->Log->debug(
+                    sprintf(
+                        'Process `%s\' requires kWh to MJ conversion!',
+                        $processDO->name
+                    )
+                );
+
+                foreach ($processConfigSet as $processConfig) {
+                    $processConfigId = new ProcessConfigId($processConfig->getId());
+                    $processDbId     = new ProcessDbId($this->Import->getProcessDbId());
+
+                    $foundConversion = $this->conversions->findEnergyEquivalentConversionFor($processConfigId,
+                        $processDbId);
+
+                    if ($foundConversion->isEmpty()) {
+                        $this->conversions->registerConversion($processDbId, $processConfigId,
+                            $this->energyEquivalent, null, __METHOD__);
+
+                        $this->Log->notice(
+                            sprintf(
+                                'Adding kWh -> MJ conversion to `%s\': %s [in=%s,out=%s,f=%f]',
+                                $processConfig->getName(),
+                                $this->energyEquivalent->type(),
+                                $this->energyEquivalent->fromUnit(),
+                                $this->energyEquivalent->toUnit(),
+                                $this->energyEquivalent->factor()
+                            )
+                        );
+                    } else {
+                        $this->Log->debug(
+                            sprintf(
+                                'Process `%s\' already has kWh to MJ conversion for processConfig %s!',
+                                $processDO->name,
+                                $processConfig->getName()
+                            )
+                        );
+                    }
+                }
+            }
+
 
             /**
              * Create process config variants for all flow descendants
              */
             if (isset($processDO->lcPhases[ElcaLifeCycle::PHASE_PROD]) &&
                 isset($processDO->flowDescendants) &&
-                $ProcessConfigSet instanceOf ElcaProcessConfigSet
+                $processConfigSet instanceOf ElcaProcessConfigSet
             ) {
-                $this->applyFlowDescendantsForProcessConfigs($processDO, $ProcessConfigSet);
+                $this->applyFlowDescendantsForProcessConfigs($processDO, $processConfigSet);
             }
 
             $this->Dbh->commit();
@@ -1789,8 +1843,7 @@ class Soda4LcaImporter
         );
     }
 
-    private function provideFlowReference($processDO)
-    {
+    private function provideFlowReference($processDO){
         $flowReference = null;
         if ($processDO->MatProperties->flowUuid && Uuid::isValid($processDO->MatProperties->flowUuid)) {
             $flowReference = FlowReference::from($processDO->MatProperties->flowUuid,
@@ -1798,6 +1851,26 @@ class Soda4LcaImporter
         }
 
         return $flowReference;
+    }
+
+    private function isMJOperationProcessWhichRequiresConversionToKWh($processDO): bool
+    {
+        if (!isset($processDO->refUnit, $processDO->refValue)) {
+            return false;
+        }
+
+        $this->Log->debug(
+            sprintf(
+                'Check if process `%s\' (%f %s) requires kWh to MJ conversion',
+                $processDO->nameOrig,
+                $processDO->refValue,
+                $processDO->refUnit
+            )
+        );
+
+        return isset($processDO->epdModules[ElcaLifeCycle::IDENT_B6]) &&
+               $processDO->refUnit === Unit::MEGAJOULE &&
+               FloatCalc::cmp($processDO->refValue, self::KWH_TO_MJ_FACTOR, 0.1);
     }
 }
 // End Soda4LcaImporter
