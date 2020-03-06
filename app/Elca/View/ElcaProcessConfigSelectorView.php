@@ -68,6 +68,7 @@ class ElcaProcessConfigSelectorView extends HtmlView
      */
     const BUILDMODE_DEFAULT = 'default';
     const BUILDMODE_OPERATION = 'operation';
+    const BUILDMODE_KWK = 'kwk';
     const BUILDMODE_FINAL_ENERGY_SUPPLY = 'finalEnergySupply';
     const BUILDMODE_TRANSPORTS = 'transports';
     const BUILDMODE_ALL = 'all';
@@ -350,7 +351,8 @@ class ElcaProcessConfigSelectorView extends HtmlView
         HtmlForm $form, ElcaProcessConfig $activeProcessConfig, $activeProcessDbId, $epdSubType, $inUnit
     ) {
         if ($this->buildMode == self::BUILDMODE_OPERATION ||
-            $this->buildMode == self::BUILDMODE_FINAL_ENERGY_SUPPLY
+            $this->buildMode == self::BUILDMODE_FINAL_ENERGY_SUPPLY ||
+            $this->buildMode == self::BUILDMODE_KWK
         ) {
             $form->add(new HtmlHiddenField('relId', $this->get('relId')));
             $form->add(new HtmlHiddenField('projectVariantId', $this->get('v')));
@@ -425,6 +427,13 @@ class ElcaProcessConfigSelectorView extends HtmlView
 
             case self::BUILDMODE_FINAL_ENERGY_SUPPLY:
                 $CategorySet = ElcaProcessCategorySet::findFinalEnergySupplyCategories(
+                    $inUnit,
+                    !$access->hasAdminPrivileges(),
+                    $activeProcessDbId
+                );
+                break;
+            case self::BUILDMODE_KWK:
+                $CategorySet = ElcaProcessCategorySet::findKwkCategories(
                     $inUnit,
                     !$access->hasAdminPrivileges(),
                     $activeProcessDbId
@@ -509,6 +518,7 @@ class ElcaProcessConfigSelectorView extends HtmlView
                 break;
 
             case self::BUILDMODE_OPERATION:
+            case self::BUILDMODE_KWK:
             case self::BUILDMODE_FINAL_ENERGY_SUPPLY:
                 $inUnit = Elca::UNIT_KWH;
                 $Info   = $this->getElementById('layer-info');
@@ -618,6 +628,17 @@ class ElcaProcessConfigSelectorView extends HtmlView
                 );
                 break;
 
+            case  self::BUILDMODE_KWK:
+                $processConfigSet = ElcaProcessConfigSet::findKwkByProcessCategoryNodeId(
+                    $categoryId,
+                    $inUnit,
+                    array('name' => 'ASC'),
+                    !$access->hasAdminPrivileges(),
+                    $activeProcessDbId
+                );
+                break;
+
+
             case  self::BUILDMODE_FINAL_ENERGY_SUPPLY:
                 $processConfigSet = ElcaProcessConfigSet::findFinalEnergySuppliesByProcessCategoryNodeId(
                     $categoryId,
@@ -703,7 +724,7 @@ class ElcaProcessConfigSelectorView extends HtmlView
             /**
              * Build data sheet link if available
              */
-            $lifeCyclePhase = $this->buildMode == ElcaProcessConfigSelectorView::BUILDMODE_OPERATION
+            $lifeCyclePhase = ($this->buildMode == ElcaProcessConfigSelectorView::BUILDMODE_OPERATION || $this->buildMode == self::BUILDMODE_KWK || $this->buildMode == self::BUILDMODE_FINAL_ENERGY_SUPPLY)
                 ? ElcaLifeCycle::PHASE_OP : ElcaLifeCycle::PHASE_PROD;
             $processSet     = $activeProcessConfig->getProcessesByProcessDbId(
                 Elca::getInstance()->getProject()->getProcessDbId()

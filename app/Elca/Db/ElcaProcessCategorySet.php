@@ -280,7 +280,45 @@ class ElcaProcessCategorySet extends DbObjectSet
     }
     // End findFinalEnergySupplyCategories
 
-    //////////////////////////////////////////////////////////////////////////////////////
+
+    public static function findKwkCategories($inUnit, $referenceProcessConfigsOnly = false, $activeProcessesOnly = false, $force = false)
+    {
+        $initValues = [];
+        $initValues['lifeCyclePhase'] = ElcaLifeCycle::PHASE_OP;
+        $initValues['inUnit'] = $inUnit;
+
+        $sql = sprintf("SELECT DISTINCT c.*
+                             , replace(c.ref_num,  '.','')::int AS p_order1
+                             , replace(c2.ref_num, '.','')::int AS p_order2
+                             , c2.ref_num::numeric AS parent_ref_num
+                             , c2.ref_num ||' '|| c2.name AS parent_node_name
+                          FROM %s c
+                          JOIN %s c2 ON c.lft BETWEEN c2.lft AND c2.rgt AND c.level = c2.level + 1
+                          JOIN %s p  ON c.node_id = p.process_category_node_id
+                          JOIN %s pa ON p.id = pa.process_config_id
+                          JOIN %s pc ON p.id = pc.process_config_id AND pc.process_db_id = pa.process_db_id
+                         WHERE pa.life_cycle_phase = :lifeCyclePhase
+                           AND pc.in_unit = :inUnit %s
+                           AND p.element_district_heating"
+            , self::VIEW_ELCA_PROCESS_CATEGORIES
+            , self::VIEW_ELCA_PROCESS_CATEGORIES
+            , ElcaProcessConfig::TABLE_NAME
+            , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
+            , ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS
+            , $referenceProcessConfigsOnly ? ' AND p.is_reference = true' : ''
+        );
+
+        if ($activeProcessesOnly) {
+            $sql .= sprintf(' AND EXISTS (SELECT x.id FROM %s x JOIN %s d ON d.id = x.process_db_id WHERE x.process_config_id = p.id AND d.is_active)'
+                , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
+                , ElcaProcessDb::TABLE_NAME
+            );
+        }
+
+        $sql .= ' ORDER BY p_order2, p_order1';
+
+        return self::_findBySql(get_class(), $sql, $initValues, $force);
+    }
 
 
     /**
@@ -423,5 +461,6 @@ class ElcaProcessCategorySet extends DbObjectSet
         return self::_count(get_class(), ElcaProcessCategory::getTablename(), $initValues, $force);
     }
     // End dbCount
+
 }
 // End class ElcaProcessCategorySet

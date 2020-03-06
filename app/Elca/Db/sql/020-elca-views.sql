@@ -121,6 +121,7 @@ CREATE VIEW elca.process_config_search_v AS
         , p.description
         , p.process_category_node_id
         , p.is_reference
+        , p.element_district_heating
         , p.process_db_ids
         , p.epd_types
         , c.ref_num || ' ' || c.name   AS process_category_node_name
