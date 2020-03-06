@@ -36,6 +36,7 @@ use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\ProcessConfig\Conversion\ProcessConversionsRepository;
 use Elca\Model\ProcessConfig\Conversion\RequiredConversion;
+use Elca\Model\ProcessConfig\ConversionId;
 use Elca\Model\ProcessConfig\LifeCycle\Process;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycle;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycleRepository;
@@ -43,6 +44,7 @@ use Elca\Model\ProcessConfig\ProcessConfigId;
 use Elca\Model\ProcessConfig\ProcessConversion;
 use Elca\Model\ProcessConfig\ProcessLifeCycleId;
 use Elca\Service\ProcessConfig\Conversions;
+use Elca\Service\ProcessConfig\ConversionsAudit;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 
@@ -62,6 +64,11 @@ class ConversionsTest extends TestCase
      * @var ProcessConversionsRepository|PHPUnit_Framework_MockObject_MockObject
      */
     private $processConversionsRepository;
+
+    /**
+     * @var ConversionsAudit|PHPUnit_Framework_MockObject_MockObject
+     */
+    private $conversionsAudit;
 
     public function testFindRequiredConversions()
     {
@@ -144,13 +151,29 @@ class ConversionsTest extends TestCase
         );
     }
 
+    public function test_registerConversion_auditsNewConversion()
+    {
+        $this->processConversionsRepository
+            ->method('findByConversion')
+            ->willReturn(null);
+
+        $this->conversionsAudit->expects($this->once())->method('recordNewConversion');
+
+        $this->conversions->registerConversion(
+            new ProcessDbId(1),
+            new ProcessConfigId(2),
+            new LinearConversion(
+                Unit::piece(), Unit::kg(), 10
+            )
+        );
+    }
+
     public function test_registerConversion_callsRepositorySave_whenAConversionWasFound()
     {
         $processDbId     = new ProcessDbId(1);
         $processConfigId = new ProcessConfigId(2);
         $conversion      = new LinearConversion(Unit::piece(), Unit::kg(), 10);
 
-        $processConversionId = new ProcessLifeCycleId($processDbId, $processConfigId);
         $processConversion   = new ProcessConversion($processDbId, $processConfigId, $conversion);
 
         $this->processConversionsRepository
@@ -158,6 +181,22 @@ class ConversionsTest extends TestCase
             ->willReturn($processConversion);
 
         $this->processConversionsRepository->expects($this->once())->method('save');
+
+        $this->conversions->registerConversion($processDbId, $processConfigId, $conversion);
+    }
+
+    public function test_registerConversion_auditsConversionUpdate()
+    {
+        $processDbId     = new ProcessDbId(1);
+        $processConfigId = new ProcessConfigId(2);
+        $conversion      = new LinearConversion(Unit::piece(), Unit::kg(), 10);
+        $processConversion   = new ProcessConversion($processDbId, $processConfigId, $conversion);
+
+        $this->processConversionsRepository
+            ->method('findByConversion')
+            ->willReturn($processConversion);
+
+        $this->conversionsAudit->expects($this->once())->method('recordUpdatedConversion');
 
         $this->conversions->registerConversion($processDbId, $processConfigId, $conversion);
     }
@@ -235,13 +274,52 @@ class ConversionsTest extends TestCase
 
     }
 
+    public function test_unregisterConversion_callsRepositoryRemove()
+    {
+        $processDbId     = new ProcessDbId(1);
+        $processConfigId = new ProcessConfigId(2);
+        $conversion      = new LinearConversion(Unit::piece(), Unit::kg(), 10);
+        $conversionId = new ConversionId(123);
+
+        $processConversion   = new ProcessConversion($processDbId, $processConfigId, $conversion);
+        $processConversion->setConversionId($conversionId);
+
+        $this->processConversionsRepository
+            ->method('findById')
+            ->willReturn($processConversion);
+
+        $this->processConversionsRepository->expects($this->once())->method('remove');
+
+        $this->conversions->unregisterConversion($processDbId, $conversionId);
+    }
+
+    public function test_unregisterConversion_auditsConversionRemoval()
+    {
+        $processDbId     = new ProcessDbId(1);
+        $processConfigId = new ProcessConfigId(2);
+        $conversion      = new LinearConversion(Unit::piece(), Unit::kg(), 10);
+        $conversionId = new ConversionId(123);
+
+        $processConversion   = new ProcessConversion($processDbId, $processConfigId, $conversion);
+        $processConversion->setConversionId($conversionId);
+
+        $this->processConversionsRepository
+            ->method('findById')
+            ->willReturn($processConversion);
+
+        $this->conversionsAudit->expects($this->once())->method('recordRemovedConversion');
+
+        $this->conversions->unregisterConversion($processDbId, $conversionId);
+    }
 
     protected function setUp()
     {
         $this->processLifeCycleRepository   = $this->createMock(ProcessLifeCycleRepository::class);
         $this->processConversionsRepository = $this->createMock(ProcessConversionsRepository::class);
+        $this->conversionsAudit = $this->createMock(ConversionsAudit::class);
 
-        $this->conversions = new Conversions($this->processLifeCycleRepository, $this->processConversionsRepository);
+        $this->conversions = new Conversions($this->processLifeCycleRepository, $this->processConversionsRepository,
+            $this->conversionsAudit);
     }
 
     private function given_a_process_life_cycle(
