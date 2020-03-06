@@ -106,7 +106,7 @@ class ProjectDataCtrl extends AppCtrl
     const DUMMY_PASSWORD = '*****************';
     const PROJECT_PASSWORD_LENGTH = 6;
     const PROCESS_CATEGORY_DEFAULT_REF = '8.06';
-    const PROCESS_CATEGORY_KWK_DEFAULT_REF = '9.02';
+    const PROCESS_CATEGORY_KWK_DEFAULT_REF = '8.06';
 
 
     /**
@@ -1381,7 +1381,7 @@ class ProjectDataCtrl extends AppCtrl
                 $projectKwk = ElcaProjectKwk::findByProjectVariantId($projectVariantId);
 
                 $modified = $this->saveKwkEnergyDemand($projectKwk, $key);
-                $this->Request->__set('b', ElcaProcessConfigSelectorView::BUILDMODE_OPERATION);
+                $this->Request->__set('b', ElcaProcessConfigSelectorView::BUILDMODE_KWK);
                 $this->Request->__set('processCategoryNodeId',
                     ElcaProcessCategory::findByRefNum(self::PROCESS_CATEGORY_KWK_DEFAULT_REF)->getNodeId());
                 $this->selectProcessConfigAction($key);
@@ -1779,6 +1779,16 @@ class ProjectDataCtrl extends AppCtrl
              * @todo: modify for buildmode operation
              */
             switch ($this->Request->b) {
+                case ElcaProcessConfigSelectorView::BUILDMODE_KWK:
+                    $Results = ElcaProcessConfigSearchSet::findKwkByKeywords(
+                        $keywords,
+                        $this->Elca->getLocale(),
+                        $inUnit,
+                        !$this->Access->hasAdminPrivileges(),
+                        $this->Elca->getProject()->getProcessDbId()
+                    );
+                    break;
+
                 case ElcaProcessConfigSelectorView::BUILDMODE_FINAL_ENERGY_SUPPLY:
                     $Results = ElcaProcessConfigSearchSet::findFinalEnergySuppliesByKeywords(
                         $keywords,
@@ -1827,6 +1837,7 @@ class ProjectDataCtrl extends AppCtrl
             $View->assign('relId', $this->Request->relId ? $this->Request->relId : $key);
 
             if ($this->Request->b == ElcaProcessConfigSelectorView::BUILDMODE_OPERATION ||
+                $this->Request->b == ElcaProcessConfigSelectorView::BUILDMODE_KWK ||
                 $this->Request->b == ElcaProcessConfigSelectorView::BUILDMODE_FINAL_ENERGY_SUPPLY
             ) {
                 if (isset($this->Request->ngf)) {
@@ -1849,6 +1860,7 @@ class ProjectDataCtrl extends AppCtrl
              */
             switch ($this->Request->b) {
                 case ElcaProcessConfigSelectorView::BUILDMODE_OPERATION:
+                case ElcaProcessConfigSelectorView::BUILDMODE_KWK:
                 case ElcaProcessConfigSelectorView::BUILDMODE_FINAL_ENERGY_SUPPLY:
                     $this->selectFinalEnergyProcessConfig();
                     break;

@@ -61,41 +61,46 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
      * @param bool  $referenceOnly
      * @param bool  $force
      *
-     * @throws Exception
      * @return ElcaProcessConfigSearchSet
+     * @throws Exception
      */
-    public static function findByKeywords(array $keywords, $languageIdent, $inUnit = null, $referenceOnly = false, array $processDbIds = null, $filterByProjectVariantId = null, $epdSubType = null, $onlyProdConfigs = true, $force = false)
+    public static function findByKeywords(array $keywords, $languageIdent, $inUnit = null, $referenceOnly = false,
+        array $processDbIds = null, $filterByProjectVariantId = null, $epdSubType = null, $onlyProdConfigs = true,
+        $force = false)
     {
         $initValues = array('locale' => $languageIdent);
 
-        if (!$conditions = self::getSearchConditions($keywords, 'p.name', 'names.name', $initValues))
+        if (!$conditions = self::getSearchConditions($keywords, 'p.name', 'names.name', $initValues)) {
             return new ElcaProcessConfigSearchSet();
+        }
 
         if ($inUnit) {
-            if (\utf8_strpos($inUnit, ',') !== false)
+            if (\utf8_strpos($inUnit, ',') !== false) {
                 $inUnit = explode(',', $inUnit);
+            }
 
             if (is_array($inUnit)) {
                 foreach ($inUnit as $i => $unit) {
                     $initValues['unit' . $i] = $unit;
-                    $parts[] = ':unit' . $i;
+                    $parts[]                 = ':unit' . $i;
                 }
                 $conditions .= ' AND in_unit IN (' . join(', ', $parts) . ')';
             } else {
                 $initValues['inUnit'] = $inUnit;
-                $conditions .= ' AND c.in_unit = :inUnit';
+                $conditions           .= ' AND c.in_unit = :inUnit';
             }
         }
 
-        if ($referenceOnly)
+        if ($referenceOnly) {
             $conditions .= ' AND is_reference = true';
+        }
 
         if ($processDbIds) {
-            $conditions .= ' AND :processDbIds::int[] && p.process_db_ids';
+            $conditions                 .= ' AND :processDbIds::int[] && p.process_db_ids';
             $initValues['processDbIds'] = sprintf('{%s}', implode(',', $processDbIds));
         }
         if ($epdSubType) {
-            $conditions .= ' AND :epdSubType = ANY (p.epd_types)';
+            $conditions               .= ' AND :epdSubType = ANY (p.epd_types)';
             $initValues['epdSubType'] = $epdSubType;
         }
 
@@ -128,9 +133,9 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
     /**
      * Returns the search conditions
      *
-     * @param array   $keywords
-     * @param  string $searchField
-     * @param array   $initValues
+     * @param array  $keywords
+     * @param string $searchField
+     * @param array  $initValues
      *
      * @return string
      */
@@ -142,13 +147,15 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
         foreach ($keywords as $index => $token) {
             $varName = 'token' . $index;
 
-            $queries[] = sprintf("(%s ilike :%s OR %s ilike :%s)", $searchField, $varName, $multiLanguageField, $varName);
+            $queries[]            = sprintf("(%s ilike :%s OR %s ilike :%s)", $searchField, $varName,
+                $multiLanguageField, $varName);
             $initValues[$varName] = $lftBoundary . $token . $rgtBoundary;
         }
 
         $conditions = false;
-        if (count($queries))
+        if (count($queries)) {
             $conditions = '(' . join(' AND ', $queries) . ')';
+        }
 
         return $conditions;
     }
@@ -162,23 +169,26 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
      * @param bool  $referenceOnly
      * @param bool  $force
      *
-     * @throws Exception
      * @return ElcaProcessConfigSearchSet
+     * @throws Exception
      */
-    public static function findFinalEnergySuppliesByKeywords(array $keywords, $languageIdent, $inUnit = null, $referenceOnly = false, $activeProcessesOnly = false, $force = false)
+    public static function findFinalEnergySuppliesByKeywords(array $keywords, $languageIdent, $inUnit = null,
+        $referenceOnly = false, $activeProcessesOnly = false, $force = false)
     {
         $initValues = ['locale' => $languageIdent, 'opAsSupply' => ElcaProcessConfigAttribute::IDENT_OP_AS_SUPPLY];
 
-        if (!$conditions = self::getSearchConditions($keywords, 'p.name', 'names.name',$initValues))
+        if (!$conditions = self::getSearchConditions($keywords, 'p.name', 'names.name', $initValues)) {
             return new ElcaProcessConfigSearchSet();
+        }
 
         if ($inUnit) {
             $initValues['inUnit'] = $inUnit;
-            $conditions .= ' AND c.in_unit = :inUnit';
+            $conditions           .= ' AND c.in_unit = :inUnit';
         }
 
-        if ($referenceOnly)
+        if ($referenceOnly) {
             $conditions .= ' AND is_reference = true';
+        }
 
         if ($activeProcessesOnly) {
             $conditions .= sprintf(' AND EXISTS (SELECT x.id FROM %s x JOIN %s d ON d.id = x.process_db_id WHERE x.process_config_id = p.id AND d.is_active)'
@@ -204,6 +214,58 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
 
         return self::_findBySql(get_class(), $sql, $initValues, $force);
     }
-    // End getSearchConditions
+
+    /**
+     * Returns a list of matching process configs
+     *
+     * @param array $keywords
+     * @param null  $inUnit
+     * @param bool  $referenceOnly
+     * @param bool  $force
+     *
+     * @return ElcaProcessConfigSearchSet
+     */
+    public static function findKwkByKeywords(array $keywords, $languageIdent, $inUnit = null, $referenceOnly = false,
+        $activeProcessesOnly = false, $force = false)
+    {
+        $initValues = ['locale' => $languageIdent];
+
+        if (!$conditions = self::getSearchConditions($keywords, 'p.name', 'names.name', $initValues)) {
+            return new ElcaProcessConfigSearchSet();
+        }
+
+        if ($inUnit) {
+            $initValues['inUnit'] = $inUnit;
+            $conditions           .= ' AND c.in_unit = :inUnit';
+        }
+
+        if ($referenceOnly) {
+            $conditions .= ' AND is_reference = true';
+        }
+
+        if ($activeProcessesOnly) {
+            $conditions .= sprintf(' AND EXISTS (SELECT x.id FROM %s x JOIN %s d ON d.id = x.process_db_id WHERE x.process_config_id = p.id AND d.is_active)'
+                , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
+                , ElcaProcessDb::TABLE_NAME
+            );
+        }
+
+        $conditions .= ' AND p.element_district_heating';
+
+        $sql = sprintf("SELECT DISTINCT p.*
+                          FROM %s p
+                          JOIN %s c ON p.id = c.process_config_id AND c.process_db_id = ANY(p.process_db_ids)
+                          LEFT JOIN %s names ON p.id = names.process_config_id AND names.lang = :locale
+                         WHERE %s
+                      ORDER BY process_category_node_name
+                             , p.name"
+            , self::VIEW_PROCESS_CONFIG_SEARCH
+            , ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS
+            , ElcaProcessConfigName::TABLE_NAME
+            , $conditions
+        );
+
+        return self::_findBySql(get_class(), $sql, $initValues, $force);
+    }
 }
 // End ElcaProcessConfigSearchSet

@@ -702,7 +702,7 @@ class ElcaProjectDataEnEvView extends HtmlView
         $selector->addClass('process-config-selector');
         $selector->setRelId($key);
         $selector->setProjectVariantId($this->projectVariantId);
-        $selector->setBuildMode(ElcaProcessConfigSelectorView::BUILDMODE_OPERATION);
+        $selector->setBuildMode(ElcaProcessConfigSelectorView::BUILDMODE_KWK);
         $selector->setContext(ProjectDataCtrl::CONTEXT);
 
         $this->checkElementChange($selector);
