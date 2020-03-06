@@ -135,6 +135,42 @@ WHERE db.is_active',
         return self::_findBySql(get_class(), $sql, ['elementId' => $element->getId()], $force);
     }
 
+    public static function findForProcessConfigId(int $processConfigId, $force = false): ElcaProcessDbSet
+    {
+        if (!$processConfigId) {
+            return new self();
+        }
+
+        $sql = sprintf("SELECT DISTINCT db.* 
+        FROM %s db
+        JOIN %s pa ON pa.process_db_id = db.id
+        WHERE pa.process_config_id = :processConfigId
+        ORDER BY db.id",
+        ElcaProcessDb::TABLE_NAME,
+        ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
+        );
+
+        return self::_findBySql(get_class(), $sql, ['processConfigId' => $processConfigId], $force);
+    }
+
+    public static function findRecentForProcessConfigId(int $processConfigId, int $limit = 1, $force = false): ElcaProcessDbSet
+    {
+        if (!$processConfigId) {
+            return new self();
+        }
+
+        $sql = sprintf("SELECT DISTINCT db.* 
+        FROM %s db
+        JOIN %s pa ON pa.process_db_id = db.id
+        WHERE pa.process_config_id = :processConfigId ORDER BY db.id DESC LIMIT %s",
+            ElcaProcessDb::TABLE_NAME,
+            ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS,
+            $limit
+        );
+
+        return self::_findBySql(get_class(), $sql, ['processConfigId' => $processConfigId], $force);
+    }
+
     /**
      * Lazy find
      *

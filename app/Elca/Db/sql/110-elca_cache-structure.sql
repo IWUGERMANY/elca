@@ -182,7 +182,6 @@ CREATE TABLE elca_cache.final_energy_supplies
 CREATE TRIGGER trigger_elca_cache_on_delete_cascade AFTER DELETE ON elca_cache.final_energy_supplies
 FOR EACH ROW EXECUTE PROCEDURE elca_cache.on_delete_cascade();
 
-
 ----------------------------------------------------------------------------------------
 
 CREATE TABLE elca_cache.final_energy_ref_models

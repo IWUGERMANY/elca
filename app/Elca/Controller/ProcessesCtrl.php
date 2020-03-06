@@ -40,7 +40,9 @@ use Elca\Db\ElcaProcessCategory;
 use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProcessConfigAttribute;
 use Elca\Db\ElcaProcessConversion;
+use Elca\Db\ElcaProcessConversionVersion;
 use Elca\Db\ElcaProcessDb;
+use Elca\Db\ElcaProcessDbSet;
 use Elca\Db\ElcaProcessLifeCycleAssignment;
 use Elca\Db\ElcaProcessSearchSet;
 use Elca\Db\ElcaProcessSet;
@@ -51,7 +53,12 @@ use Elca\Db\ElcaProjectVariant;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Common\Unit;
 use Elca\Model\Navigation\ElcaOsitItem;
+use Elca\Model\Process\ProcessDbId;
+use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
+use Elca\Model\ProcessConfig\Conversion\LinearConversion;
+use Elca\Model\ProcessConfig\ConversionId;
 use Elca\Model\ProcessConfig\ProcessConfigId;
+use Elca\Model\ProcessConfig\ProcessLifeCycleId;
 use Elca\Model\Processing\ElcaLcaProcessor;
 use Elca\Service\Messages\ElcaMessages;
 use Elca\Service\ProcessConfig\Conversions;
@@ -93,9 +100,12 @@ class ProcessesCtrl extends TabsCtrl
     /**
      * Session namespace
      */
-    private $Namespace;
+    private $namespace;
 
-    //////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * @var Conversions
+     */
+    private $conversions;
 
     /**
      * Will be called on initialization.
@@ -114,7 +124,8 @@ class ProcessesCtrl extends TabsCtrl
         /**
          * Session namespace
          */
-        $this->Namespace = $this->Session->getNamespace('elca.processes', true);
+        $this->namespace = $this->Session->getNamespace('elca.processes', true);
+        $this->conversions = $this->container->get(Conversions::class);
 
         /**
          * In case the default action forwards to the tab controller (which this one also is)
@@ -216,9 +227,13 @@ class ProcessesCtrl extends TabsCtrl
     protected function generalAction()
     {
         $processConfigId = $this->processConfigId ?: $this->Request->processConfigId;
-        $View            = $this->setView(new ElcaProcessConfigGeneralView());
-        $View->assign('processConfigId', $processConfigId);
-        $View->assign('readOnly', !$this->Access->hasAdminPrivileges());
+
+        $this->initProcessDbId($processConfigId);
+
+        $view            = $this->setView(new ElcaProcessConfigGeneralView());
+        $view->assign('processConfigId', $processConfigId);
+        $view->assign('readOnly', !$this->Access->hasAdminPrivileges());
+        $view->assign('processDbId', $this->namespace->processDbId);
     }
     // End generalAction
 
@@ -242,8 +257,9 @@ class ProcessesCtrl extends TabsCtrl
          */
         $this->addTabItem('general', t('Allgemein'), null, 'Elca\Controller\ProcessesCtrl', 'general');
 
-        $View = $this->addView(new ElcaProcessConfigGeneralView());
-        $View->assign('processCategoryNodeId', $this->Request->c);
+        $view = $this->addView(new ElcaProcessConfigGeneralView());
+        $view->assign('processCategoryNodeId', $this->Request->c);
+        $view->assign('processDbId', $this->namespace->processDbId);
 
         $this->Osit->setProcessConfigScenario($this->Request->c);
     }
@@ -265,6 +281,7 @@ class ProcessesCtrl extends TabsCtrl
         }
 
         $processConfig = ElcaProcessConfig::findById($this->Request->processConfigId);
+        $this->initProcessDbId($processConfig->getId());
 
         if (isset($this->Request->saveGeneral)) {
             $validator = new ElcaProcessConfigValidator($this->Request);
@@ -299,15 +316,17 @@ class ProcessesCtrl extends TabsCtrl
              * Validate conversions
              */
 			if ($processConfig->isInitialized()) {
-				
+
 				$processConfigId       = new ProcessConfigId($processConfig->getId());
-				$conversionService     = $this->container->get(Conversions::class);
-				$requiredConversions   = $conversionService->findAllRequiredConversions($processConfigId);
-				$additionalConversions = $conversionService->findAllAdditionalConversions($processConfigId);
-				$recommendedConversions = $conversionService->findRecommendedConversions($processConfigId);
+				$processDbId           = new ProcessDbId($this->Request->processDbId);
+            $processLifeCycleId    = new ProcessLifeCycleId($processDbId, $processConfigId);
+
+            $conversionService     = $this->container->get(Conversions::class);
+				$requiredConversions   = $conversionService->findRequiredConversions($processLifeCycleId);
+				$additionalConversions = $conversionService->findAdditionalConversions($processLifeCycleId);
 
 				foreach ($requiredConversions as $conversion) {
-					if ($conversion->isTrivial()) {
+					if ($conversion->isIdentity()) {
 						continue;
 					}
 
@@ -315,15 +334,7 @@ class ProcessesCtrl extends TabsCtrl
 				}
 
 				foreach ($additionalConversions as $conversion) {
-					if ($conversion->isTrivial()) {
-						continue;
-					}
-
-					$validator->assertConversion($conversion, 'factor_', 'inUnit_', 'outUnit_');
-				}
-
-				foreach ($recommendedConversions as $conversion) {
-					if ($conversion->isTrivial()) {
+					if ($conversion->isIdentity()) {
 						continue;
 					}
 
@@ -349,6 +360,9 @@ class ProcessesCtrl extends TabsCtrl
 				$lambdaValue		 = !empty($this->Request->lambdaValue) ? ElcaNumberFormat::fromString($this->Request->lambdaValue, 3) : null;
 				$elementGroupA     	 = !empty($this->Request->elementGroupA) ? (bool)$this->Request->elementGroupA : null;
 				$elementGroupB     	 = !empty($this->Request->elementGroupB) ? (bool)$this->Request->elementGroupB : null;
+				$elementDistrictHeating  = !empty($this->Request->elementDistrictHeating) ? (bool)$this->Request->elementDistrictHeating : null;
+				$elementRefrigerant      = !empty($this->Request->elementRefrigerant) ? (bool)$this->Request->elementRefrigerant : null;
+				$elementFlammable     	 = !empty($this->Request->elementFlammable) ? (bool)$this->Request->elementFlammable : null;
 				$defaultSize         = $this->Request->defaultSize ? ElcaNumberFormat::fromString($this->Request->defaultSize, 2) / 1000 : null;
                 $svgPatternId        = $this->Request->svgPatternId ? $this->Request->svgPatternId : null;
 
@@ -379,14 +393,18 @@ class ProcessesCtrl extends TabsCtrl
                         $processConfig->setMinLifeTimeInfo($minLifeTimeInfo);
                         $processConfig->setAvgLifeTimeInfo($avgLifeTimeInfo);
                         $processConfig->setMaxLifeTimeInfo($maxLifeTimeInfo);
-						
+
 						// AVV
 						$processConfig->setWasteCode($wasteCode);
 						$processConfig->setWasteCodeSuffix($wasteCodeSuffix);
 						$processConfig->setLambdaValue($lambdaValue);
-						
+
 						$processConfig->setElementGroupA($elementGroupA);
 						$processConfig->setElementGroupB($elementGroupB);
+						
+						$processConfig->setElementDistrictHeating($elementDistrictHeating);
+						$processConfig->setElementRefrigerant($elementRefrigerant);
+						$processConfig->setElementFlammable($elementFlammable);
 
                         $processConfig->setThermalConductivity($thermalConductivity);
                         $processConfig->setThermalResistance($thermalResistance);
@@ -401,9 +419,10 @@ class ProcessesCtrl extends TabsCtrl
                         }
                         $processConfig->setFHsHi($fHsHi);
 
-                        if ($conversionService->changeProcessConfigDensity($processConfig, $density)) {
+                        if ($conversionService->changeProcessConfigDensity($processDbId, $processConfigId, $density, null, __METHOD__)) {
                             $newDefaultSize = $conversionService->computeDefaultSizeFromDensity(
-                                $processConfig,
+                                $processDbId,
+                                $processConfigId,
                                 $density
                             );
 
@@ -419,6 +438,7 @@ class ProcessesCtrl extends TabsCtrl
                                         'updateDefaultSize',
                                         [
                                             'processConfigId' => $processConfig->getId(),
+                                            'processDbId'     => $processDbId->value(),
                                             'size'            => $newDefaultSize,
                                         ]
                                     )
@@ -427,7 +447,7 @@ class ProcessesCtrl extends TabsCtrl
                         }
 
                         if ($conversionService->changeProcessConfigDefaultSize($processConfig, $defaultSize)) {
-                            $newDensity = $conversionService->computeDensityFromMpua($processConfig, $defaultSize);
+                            $newDensity = $conversionService->computeDensityFromMpua($processDbId, $processConfigId, $defaultSize);
 
                             if ($newDensity && !FloatCalc::cmp($density, $newDensity)) {
                                 $this->messages->add(
@@ -441,6 +461,7 @@ class ProcessesCtrl extends TabsCtrl
                                         'updateDensity',
                                         [
                                             'processConfigId' => $processConfig->getId(),
+                                            'processDbId'     => $processDbId->value(),
                                             'density'         => $newDensity,
                                         ]
                                     )
@@ -456,15 +477,15 @@ class ProcessesCtrl extends TabsCtrl
                          */
                         if ($oldDefaultLifeTime != $processConfig->getDefaultLifeTime()) {
                             $newDefaultLifeTime = $processConfig->getDefaultLifeTime();
-                            $TplComponents      = ElcaElementComponentSet::findTemplatesByProcessConfigId(
+                            $tplComponents      = ElcaElementComponentSet::findTemplatesByProcessConfigId(
                                 $processConfig->getId()
                             );
-                            foreach ($TplComponents as $TplComponent) {
+                            foreach ($tplComponents as $TplComponent) {
                                 $TplComponent->setLifeTime($newDefaultLifeTime);
                                 $TplComponent->update();
                             }
 
-                            if ($TplComponents->count()) {
+                            if ($tplComponents->count()) {
                                 $this->messages->add(
                                     t(
                                         'Die Nutzungsdauern der Bauteilvorlagen, die diese Baustoffkonfiguration verwenden, wurden ebenfalls aktualisiert!'
@@ -487,7 +508,9 @@ class ProcessesCtrl extends TabsCtrl
                          * Update existing conversions
                          */
                         foreach ($processConfig->getProcessConversions() as $conversion) {
-                            if ($conversion->getIdent()) {
+                            $conversionVersion = $conversion->getVersionFor($processDbId);
+
+                            if ($conversionVersion->getIdent()) {
                                 continue;
                             }
 
@@ -495,20 +518,21 @@ class ProcessesCtrl extends TabsCtrl
                                 continue;
                             }
 
-                            $conversion->setInUnit($this->Request->get('inUnit_'.$conversion->getId()));
-                            $conversion->setOutUnit($this->Request->get('outUnit_'.$conversion->getId()));
-
                             $factor = ElcaNumberFormat::fromString(
                                 $this->Request->get('factor_'.$conversion->getId()),
                                 8
                             );
 
-                            if ($factor != $conversion->getFactor()) {
+                            if (!FloatCalc::cmp($factor, $conversionVersion->getFactor())) {
+                                $conversionService->registerConversion($processDbId, $processConfigId,
+                                    new LinearConversion(
+                                        Unit::fromString($this->Request->get('inUnit_'.$conversion->getId())),
+                                        Unit::fromString($this->Request->get('outUnit_'.$conversion->getId())),
+                                        $factor
+                                    ), null, __METHOD__);
+
                                 $needLcaProcessing = true;
                             }
-
-                            $conversion->setFactor($factor);
-                            $conversion->update();
                         }
 
                         /**
@@ -525,30 +549,12 @@ class ProcessesCtrl extends TabsCtrl
 
                             $factor = ElcaNumberFormat::fromString($this->Request->get('factor'.$reqId), 8);
 
-                            ElcaProcessConversion::create(
-                                $processConfig->getId(),
-                                $this->Request->get('inUnit'.$reqId),
-                                $this->Request->get('outUnit'.$reqId),
-                                $factor
-                            );
-                        }
-
-                        /**
-                         * Add recommended conversions
-                         */
-                        foreach ($recommendedConversions as $conversion) {
-                            $inUnit  = (string)$conversion->fromUnit();
-                            $outUnit = (string)$conversion->toUnit();
-                            $reqId   = '_new_'.$inUnit.'_'.$outUnit;
-
-                            $factor = ElcaNumberFormat::fromString($this->Request->get('factor'.$reqId), 8);
-
-                            ElcaProcessConversion::create(
-                                $processConfig->getId(),
-                                $this->Request->get('inUnit'.$reqId),
-                                $this->Request->get('outUnit'.$reqId),
-                                $factor
-                            );
+                            $conversionService->registerConversion($processDbId, $processConfigId,
+                                new LinearConversion(
+                                    $conversion->fromUnit(),
+                                    $conversion->toUnit(),
+                                    $factor
+                                ), null,__METHOD__);
                         }
 
                         /**
@@ -559,12 +565,13 @@ class ProcessesCtrl extends TabsCtrl
                             $this->Request->outUnit_new
                         ) {
                             $factor = ElcaNumberFormat::fromString($this->Request->factor_new, 8);
-                            ElcaProcessConversion::create(
-                                $processConfig->getId(),
-                                $this->Request->inUnit_new,
-                                $this->Request->outUnit_new,
-                                $factor
-                            );
+
+                            $conversionService->registerConversion($processDbId, $processConfigId,
+                                new LinearConversion(
+                                    Unit::fromString($this->Request->inUnit_new),
+                                    Unit::fromString($this->Request->outUnit_new),
+                                    $factor
+                                ), null,__METHOD__);
                         }
 
                         $Dbh->commit();
@@ -645,7 +652,6 @@ class ProcessesCtrl extends TabsCtrl
                         $this->Request->name,
                         $this->Request->processCategoryNodeId,
                         $this->Request->description ?: null,
-                        $density,
                         $thermalConductivity,
                         $thermalResistance,
                         $this->Request->has('isReference'),
@@ -665,7 +671,10 @@ class ProcessesCtrl extends TabsCtrl
 						$wasteCodeSuffix,
 						$lambdaValue,
 						$elementGroupA,
-						$elementGroupB
+						$elementGroupB,
+						$elementDistrictHeating,
+						$elementRefrigerant,
+						$elementFlammable
                     );
                     /**
                      * Init a redirect to render the default view
@@ -680,13 +689,14 @@ class ProcessesCtrl extends TabsCtrl
                     $this->messages->add($message, ElcaMessages::TYPE_ERROR);
                 }
 
-                $View = $this->setView(new ElcaProcessConfigGeneralView());
-                $View->assign('processConfigId', $processConfig->getId());
+                $view = $this->setView(new ElcaProcessConfigGeneralView());
+                $view->assign('processConfigId', $processConfig->getId());
+                $view->assign('processDbId', $this->namespace->processDbId);
 
                 /**
                  * Assign Validator to mark error fields
                  */
-                $View->assign('Validator', $validator);
+                $view->assign('Validator', $validator);
             }
         } elseif (isset($this->Request->cancel)) {
             /**
@@ -697,8 +707,9 @@ class ProcessesCtrl extends TabsCtrl
             /**
              * Just render the view
              */
-            $View = $this->setView(new ElcaProcessConfigGeneralView());
-            $View->assign('processConfigId', $processConfig->getId());
+            $view = $this->setView(new ElcaProcessConfigGeneralView());
+            $view->assign('processConfigId', $processConfig->getId());
+            $view->assign('processDbId', $this->namespace->processDbId);
         }
     }
     // End generalAction
@@ -707,7 +718,8 @@ class ProcessesCtrl extends TabsCtrl
 
     protected function updateDensityAction()
     {
-        if (!$this->isAjax() || !$this->Request->processConfigId || !is_numeric($this->Request->density)) {
+        if (!$this->isAjax() || !$this->Request->processConfigId || !$this->Request->processDbId ||
+            !is_numeric($this->Request->density)) {
             return;
         }
 
@@ -720,14 +732,16 @@ class ProcessesCtrl extends TabsCtrl
             return;
         }
 
+        $processDbId = new ProcessDbId($this->Request->processDbId);
+        $processConfigId = new ProcessConfigId($processConfig->getId());
+
         /**
          * @var Conversions $conversionService
          */
         $conversionService = $this->get(Conversions::class);
 
         $density = round($this->Request->density, 2);
-        if ($conversionService->changeProcessConfigDensity($processConfig, $density)) {
-            $processConfig->update();
+        if ($conversionService->changeProcessConfigDensity($processDbId, $processConfigId, $density, null, __METHOD__)) {
             $this->initiateRecomputeLcaView($processConfig);
         }
 
@@ -738,7 +752,8 @@ class ProcessesCtrl extends TabsCtrl
 
     protected function updateDefaultSizeAction()
     {
-        if (!$this->isAjax() || !$this->Request->processConfigId || !is_numeric($this->Request->size)) {
+        if (!$this->isAjax() || !$this->Request->processConfigId || !$this->Request->processDbId ||
+            !is_numeric($this->Request->size)) {
             return;
         }
 
@@ -791,10 +806,11 @@ class ProcessesCtrl extends TabsCtrl
             return;
         }
 
-        $View = $this->setView(new ElcaProcessConfigGeneralView());
-        $View->assign('processConfigId', $this->Request->p);
-        $View->assign('buildMode', ElcaProcessConfigGeneralView::BUILDMODE_CONVERSIONS);
-        $View->assign('addConversion', true);
+        $view = $this->setView(new ElcaProcessConfigGeneralView());
+        $view->assign('processConfigId', $this->Request->p);
+        $view->assign('buildMode', ElcaProcessConfigGeneralView::BUILDMODE_CONVERSIONS);
+        $view->assign('addConversion', true);
+        $view->assign('processDbId', $this->namespace->processDbId);
     }
     // End addConversionAction
 
@@ -809,35 +825,40 @@ class ProcessesCtrl extends TabsCtrl
             return;
         }
 
-        if (!is_numeric($this->Request->id)) {
+        $conversionId = $this->Request->id;
+        $processDbId = $this->Request->db;
+        $processConfigId = $this->Request->processConfigId;
+
+        if (!\is_numeric($conversionId) || !\is_numeric($processDbId)) {
             return;
         }
+
+        $conversionsService = $this->container->get(Conversions::class);
 
         /**
          * If deletion has confirmed, do the action
          */
         if ($this->Request->has('confirmed')) {
-            $Conversion = ElcaProcessConversion::findById($this->Request->id);
 
-            if ($Conversion->isInitialized()) {
-                $Conversion->delete();
+            $conversionsService->unregisterConversion(new ProcessDbId($processDbId), new ConversionId($conversionId), __METHOD__);
 
-                $View = $this->setView(new ElcaProcessConfigGeneralView());
-                $View->assign('processConfigId', $Conversion->getProcessConfigId());
-                $View->assign('buildMode', ElcaProcessConfigGeneralView::BUILDMODE_CONVERSIONS);
-            }
+            $view = $this->setView(new ElcaProcessConfigGeneralView());
+            $view->assign('buildMode', ElcaProcessConfigGeneralView::BUILDMODE_CONVERSIONS);
+            $view->assign('processConfigId', $processConfigId);
+            $view->assign('processDbId', $processDbId);
+
         } else {
-            $Conversion = ElcaProcessConversion::findById($this->Request->id);
+            $conversion = ElcaProcessConversion::findById($conversionId);
 
-            if ($Conversion->isInitialized()) {
+            if ($conversion->isInitialized()) {
                 /**
                  * Check if conversion is used by any element components
                  */
-                $Components = ElcaElementComponentSet::findByProcessConversionId($Conversion->getId(), [], null, 5);
+                $components = ElcaElementComponentSet::findByProcessConversionId($conversion->getId(), [], null, 5);
 
-                if ($cnt = $Components->count()) {
+                if ($cnt = $components->count()) {
                     $cntTxt         = $cnt == 5 ? t('%count% oder mehr', null, ['%count%' => $cnt]) : $cnt;
-                    $componentsText = $Components->join('\', `', 'elementName');
+                    $componentsText = $components->join('\', `', 'elementName');
 
                     if ($cnt == 5) {
                         $msg = t(
@@ -859,8 +880,8 @@ class ProcessesCtrl extends TabsCtrl
                     /**
                      * Build confirm url by adding the confirmed argument to the current request
                      */
-                    $Url = Url::parse($this->Request->getURI());
-                    $Url->addParameter(['confirmed' => null]);
+                    $url = Url::parse($this->Request->getURI());
+                    $url->addParameter(['confirmed' => null]);
 
                     /**
                      * Show confirm message
@@ -868,7 +889,7 @@ class ProcessesCtrl extends TabsCtrl
                     $this->messages->add(
                         t('Soll die Umrechnung wirklich gelöscht werden?'),
                         ElcaMessages::TYPE_CONFIRM,
-                        (string)$Url
+                        (string)$url
                     );
                 }
             }
@@ -885,13 +906,13 @@ class ProcessesCtrl extends TabsCtrl
             return;
         }
 
-        if (!is_numeric($this->Request->id)) {
+        if (!\is_numeric($this->Request->id) || !\is_numeric($this->Request->db)) {
             return;
         }
 
-        $conversion = ElcaProcessConversion::findById($this->Request->id);
+        $conversionVersion = ElcaProcessConversionVersion::findByPK($this->Request->id, $this->Request->db);
 
-        if (!$conversion->getIdent()) {
+        if (!$conversionVersion->getIdent()) {
             return;
         }
 
@@ -900,21 +921,22 @@ class ProcessesCtrl extends TabsCtrl
          */
         if ($this->Request->has('confirmed')) {
 
-            if ($conversion->isInitialized()) {
-                $conversion->setIdent(null);
-                $conversion->update();
+            if ($conversionVersion->isInitialized()) {
+                $conversionVersion->setIdent(null);
+                $conversionVersion->update();
 
                 $view = $this->setView(new ElcaProcessConfigGeneralView());
-                $view->assign('processConfigId', $conversion->getProcessConfigId());
+                $view->assign('processConfigId', $conversionVersion->getProcessConfigId());
                 $view->assign('buildMode', ElcaProcessConfigGeneralView::BUILDMODE_CONVERSIONS);
+                $view->assign('processDbId', $this->namespace->processDbId);
             }
         } else {
-            if ($conversion->isInitialized()) {
+            if ($conversionVersion->isInitialized()) {
                 /**
                  * Build confirm url by adding the confirmed argument to the current request
                  */
-                $Url = Url::parse($this->Request->getURI());
-                $Url->addParameter(['confirmed' => null]);
+                $url = Url::parse($this->Request->getURI());
+                $url->addParameter(['confirmed' => null]);
 
                 /**
                  * Show confirm message
@@ -924,7 +946,7 @@ class ProcessesCtrl extends TabsCtrl
                         'Soll die importierte Umrechnung wirklich bearbeitet werden? Dies ist nachträglich nicht mehr rückgängig zu machen!'
                     ),
                     ElcaMessages::TYPE_CONFIRM,
-                    (string)$Url
+                    (string)$url
                 );
             }
         }
@@ -1028,14 +1050,14 @@ class ProcessesCtrl extends TabsCtrl
         $processDbId     = $processDbId ? $processDbId : $this->Request->processDbId;
 
         if (!$processDbId) {
-            $processDbId = $this->Namespace->processDbId ? $this->Namespace->processDbId
+            $processDbId = $this->namespace->processDbId ? $this->namespace->processDbId
                 : ElcaProcessDb::findMostRecentVersion()->getId();
         }
 
         /**
          * Store processDb in session
          */
-        $this->Namespace->processDbId = $processDbId;
+        $this->namespace->processDbId = $processDbId;
 
         // build data object for either the complete form or just for one life cycle
         $DO                  = new \stdClass();
@@ -1259,34 +1281,34 @@ class ProcessesCtrl extends TabsCtrl
                                 $processIds[$key],
                                 $ratio
                             );
-                            $Process = ElcaProcess::findById($processIds[$key]);
+                            $process = ElcaProcess::findById($processIds[$key]);
                             $this->messages->add(
                                 t(
                                     'Prozess `%name%\' für `%lifeCycle%\' wurde gespeichert',
                                     null,
                                     [
-                                        '%name%'      => $Process->getName(),
-                                        '%lifeCycle%' => $Process->getLifeCycle()->getName(),
+                                        '%name%'      => $process->getName(),
+                                        '%lifeCycle%' => $process->getLifeCycle()->getName(),
                                     ]
                                 )
                             );
 
                             /**
-                             * Add trivial conversion for prod processes
+                             * Add identity conversion for prod processes
                              */
-                            if ($Process->getLifeCyclePhase() == ElcaLifeCycle::PHASE_PROD) {
-                                $Conversion = ElcaProcessConversion::findProductionByProcessConfigIdAndRefUnit(
-                                    $this->Request->processConfigId,
-                                    $procRefUnit = $Process->getRefUnit()
-                                );
+                            if ($process->getLifeCyclePhase() === ElcaLifeCycle::PHASE_PROD) {
 
-                                if (!$Conversion->isInitialized()) {
-                                    ElcaProcessConversion::create(
-                                        $this->Request->processConfigId,
-                                        $procRefUnit,
-                                        $procRefUnit,
-                                        1, // trivial factor
-                                        ElcaProcessConversion::IDENT_PRODUCTION
+                                $procRefUnit = Unit::fromString($process->getRefUnit());
+                                $processConfigId  = new ProcessConfigId($this->Request->processConfigId);
+                                $processDbId      = new ProcessDbId($this->Request->processDbId);
+
+                                $processConversion = $this->conversions->findByConversion($processConfigId,
+                                    $processDbId, $procRefUnit, $procRefUnit);
+
+                                if (null === $processConversion) {
+                                    $this->conversions->registerConversion(
+                                        $processDbId, $processConfigId,
+                                        ImportedLinearConversion::forReferenceUnit($procRefUnit), null,__METHOD__
                                     );
                                 }
                             }
@@ -1342,11 +1364,11 @@ class ProcessesCtrl extends TabsCtrl
 
             if (is_numeric($plcaId)) {
                 $ProcessLifeCycleAssignment = ElcaProcessLifeCycleAssignment::findById($plcaId);
-                $Process                    = $ProcessLifeCycleAssignment->getProcess();
-                $processDbId                = $Process->getProcessDbId();
+                $process                    = $ProcessLifeCycleAssignment->getProcess();
+                $processDbId                = $process->getProcessDbId();
                 $processConfigId            = $ProcessLifeCycleAssignment->getProcessConfigId();
-                $processLcIdent             = $Process->getLifeCycleIdent();
-                $newProcessId               = $newLifeCycleIdent == $processLcIdent ? $Process->getId() : null;
+                $processLcIdent             = $process->getLifeCycleIdent();
+                $newProcessId               = $newLifeCycleIdent == $processLcIdent ? $process->getId() : null;
 
                 if (!$newProcessId) {
                     $changedElts['processId['.$plcaId.']'] = true;
@@ -1475,31 +1497,21 @@ class ProcessesCtrl extends TabsCtrl
          * If deletion has confirmed, do the action
          */
         if ($this->Request->has('confirmed')) {
-            $Assignment = ElcaProcessLifeCycleAssignment::findById($this->Request->plcaId);
+            $assignment = ElcaProcessLifeCycleAssignment::findById($this->Request->plcaId);
 
-            if ($Assignment->isInitialized()) {
-                $processConfigId = $Assignment->getProcessConfigId();
-                $processDbId     = $Assignment->getProcess()->getProcessDbId();
-                $processRefUnit  = $Assignment->getProcess()->getRefUnit();
-                $phase           = $Assignment->getProcess()->getLifeCycle()->getPhase();
+            if ($assignment->isInitialized()) {
+                $processConfigId = $assignment->getProcessConfigId();
+                $processDbId     = $assignment->getProcess()->getProcessDbId();
+                $processRefUnit  = $assignment->getProcess()->getRefUnit();
+                $phase           = $assignment->getProcess()->getLifeCycle()->getPhase();
 
-                $Assignment->delete();
+                $assignment->delete();
 
                 /**
-                 * Remove trivial production conversion for this process
+                 * Remove identity production conversion for this process
                  */
-                $Conversion = ElcaProcessConversion::findProductionByProcessConfigIdAndRefUnit(
-                    $processConfigId,
-                    $processRefUnit
-                );
-
-                if ($Conversion->isInitialized()) {
-
-                    try {
-                        $Conversion->delete();
-                    } catch (Exception $e) {
-                    }
-                }
+                $this->conversions->removeIdentityConversionForUnit(new ProcessConfigId($processConfigId),
+                    new ProcessDbId($processDbId), Unit::fromString($processRefUnit));
 
                 $this->updateLca($processConfigId);
 
@@ -1537,7 +1549,7 @@ class ProcessesCtrl extends TabsCtrl
      */
     protected function getFilterDO($key, array $defaults = [])
     {
-        if (!$filterDOs = $this->Namespace->filterDOs) {
+        if (!$filterDOs = $this->namespace->filterDOs) {
             $filterDOs = [];
         }
 
@@ -1550,7 +1562,7 @@ class ProcessesCtrl extends TabsCtrl
 
         $filterDOs[$key] = $FilterDO;
 
-        $this->Namespace->filterDOs = $filterDOs;
+        $this->namespace->filterDOs = $filterDOs;
 
         return $FilterDO;
     }
@@ -1753,9 +1765,23 @@ class ProcessesCtrl extends TabsCtrl
             }
         }
     }
-    // End setSanityFalsePositiveAction
 
-    //////////////////////////////////////////////////////////////////////////////////////
+    private function initProcessDbId($processConfigId): void
+    {
+        $processDbId = $this->Request->get('processDbId');
 
+        if (!$processDbId) {
+
+            if ($this->namespace->processDbId) {
+                $processDbId = $this->namespace->processDbId;
+            }
+            else {
+                $processDb   = ElcaProcessDbSet::findRecentForProcessConfigId($processConfigId)->current();
+                $processDbId = $processDb->getId();
+            }
+        }
+
+        $this->namespace->processDbId = $processDbId;
+    }
 }
 // End ElcaProcessesCtrl

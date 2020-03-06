@@ -37,19 +37,8 @@ use Beibob\Blibs\DbObjectSet;
  */
 class ElcaProcessConversionSet extends DbObjectSet
 {
+    const VIEW_PROCESS_CONVERSIONS = 'elca.process_conversions_v';
 
-    //////////////////////////////////////////////////////////////////////////////////////
-    // public
-    //////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Find all conversions for the given process config id
-     *
-     * @param  int     $processConfigId
-     * @param  array   $orderBy - array map of columns on to directions array('id' => 'DESC')
-     * @param  boolean $force   - Bypass caching
-     * @return ElcaProcessConversionSet|ElcaProcessConversion[]
-     */
     public static function findByProcessConfigId($processConfigId, array $orderBy = null, $force = false)
     {
         if (!$processConfigId) {
@@ -68,16 +57,13 @@ class ElcaProcessConversionSet extends DbObjectSet
             $force
         );
     }
-    // End findByProcessConfigId
-
-    //////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Find all conversions for the given process config id and inUnit
      *
-     * @param  int     $processConfigId
-     * @param  array   $orderBy - array map of columns on to directions array('id' => 'DESC')
-     * @param  boolean $force   - Bypass caching
+     * @param int     $processConfigId
+     * @param array   $orderBy - array map of columns on to directions array('id' => 'DESC')
+     * @param boolean $force   - Bypass caching
      * @return ElcaProcessConversionSet
      */
     public static function findByProcessConfigIdAndInUnit(
@@ -86,7 +72,8 @@ class ElcaProcessConversionSet extends DbObjectSet
         array $orderBy = null,
         $limit = null,
         $force = false
-    ) {
+    )
+    {
         if (!$processConfigId) {
             return new ElcaProcessConversionSet();
         }
@@ -112,9 +99,9 @@ class ElcaProcessConversionSet extends DbObjectSet
     /**
      * Find all conversions for the given process config id and inUnit
      *
-     * @param  int     $processConfigId
-     * @param  array   $orderBy - array map of columns on to directions array('id' => 'DESC')
-     * @param  boolean $force   - Bypass caching
+     * @param int     $processConfigId
+     * @param array   $orderBy - array map of columns on to directions array('id' => 'DESC')
+     * @param boolean $force   - Bypass caching
      * @return ElcaProcessConversionSet
      */
     public static function findByProcessConfigIdAndUnit(
@@ -123,7 +110,8 @@ class ElcaProcessConversionSet extends DbObjectSet
         $orderBy = null,
         $limit = null,
         $force = false
-    ) {
+    )
+    {
         if (!$processConfigId) {
             return new ElcaProcessConversionSet();
         }
@@ -139,7 +127,7 @@ class ElcaProcessConversionSet extends DbObjectSet
         );
 
         if ($orderSql = self::buildOrderView($orderBy, $limit)) {
-            $sql .= ' '. $orderSql;
+            $sql .= ' ' . $orderSql;
         }
 
         return self::_findBySql(
@@ -155,11 +143,11 @@ class ElcaProcessConversionSet extends DbObjectSet
     /**
      * Lazy find
      *
-     * @param  array   $initValues - key value array
-     * @param  array   $orderBy    - array map of columns on to directions array('id' => 'DESC')
-     * @param  integer $limit      - limit on resultset
-     * @param  integer $offset     - offset on resultset
-     * @param  boolean $force      - Bypass caching
+     * @param array   $initValues - key value array
+     * @param array   $orderBy    - array map of columns on to directions array('id' => 'DESC')
+     * @param integer $limit      - limit on resultset
+     * @param integer $offset     - offset on resultset
+     * @param boolean $force      - Bypass caching
      * @return ElcaProcessConversionSet
      */
     public static function find(
@@ -168,7 +156,8 @@ class ElcaProcessConversionSet extends DbObjectSet
         $limit = null,
         $offset = null,
         $force = false
-    ) {
+    )
+    {
         return self::_find(
             get_class(),
             ElcaProcessConversion::getTablename(),
@@ -186,8 +175,8 @@ class ElcaProcessConversionSet extends DbObjectSet
     /**
      * Lazy count
      *
-     * @param  array   $initValues - key value array
-     * @param  boolean $force      - Bypass caching
+     * @param array   $initValues - key value array
+     * @param boolean $force      - Bypass caching
      * @return int
      */
     public static function dbCount(array $initValues = null, $force = false)

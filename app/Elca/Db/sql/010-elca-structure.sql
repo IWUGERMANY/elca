@@ -170,6 +170,9 @@ CREATE TABLE elca.process_configs
  , "lambda_value"			numeric									-- lambda value
  , "element_group_a"        boolean            						-- element group a
  , "element_group_b"        boolean         			   			-- is reference
+ , "element_district_heating"        boolean            			-- fernwaerme
+ , "element_refrigerant"        boolean         			   		-- kaeltemittel
+ , "element_flammable"        boolean            					-- brennbar
  , "min_life_time"          int                                     -- min life time in years
  , "avg_life_time"          int                                     -- avg life time in years
  , "max_life_time"          int                                     -- max life time in years
@@ -336,16 +339,29 @@ CREATE TABLE elca.process_conversions
  , "process_config_id"      int             NOT NULL                -- processConfigId
  , "in_unit"                varchar(10)     NOT NULL                -- input unit of measure
  , "out_unit"               varchar(10)     NOT NULL                -- output unit of measure
- , "factor"                 numeric         NOT NULL                -- conversion factor
- , "ident"                  varchar(20)                             -- internal ident
  , "created"                timestamptz(0)  NOT NULL DEFAULT now()  -- creation time
  , "modified"               timestamptz(0)           DEFAULT now()  -- modification time
  , PRIMARY KEY ("id")
- , UNIQUE ("process_config_id", "ident")
  , FOREIGN KEY ("process_config_id") REFERENCES elca.process_configs ("id") ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE UNIQUE INDEX IX_elca_process_conversions_in_out ON elca.process_conversions ("process_config_id", "in_unit", "out_unit");
+
+CREATE TABLE elca.process_conversion_versions
+(
+      "conversion_id"          int             NOT NULL                -- conversionId
+    , "process_db_id"          int             NOT NULL                -- processDbId
+    , "factor"                 numeric         NOT NULL                -- conversion factor
+    , "ident"                  varchar(20)                             -- internal ident
+    , "flow_uuid"              uuid                                    -- flowUuid
+    , "flow_version"           varchar(50)                             -- flowVersion
+    , "created"                timestamptz(0)  NOT NULL DEFAULT now()  -- creation time
+    , "modified"               timestamptz(0)           DEFAULT now()  -- modification time
+    , PRIMARY KEY ("conversion_id", "process_db_id")
+    , FOREIGN KEY ("conversion_id") REFERENCES elca.process_conversions ("id") ON UPDATE CASCADE ON DELETE CASCADE
+    , FOREIGN KEY ("process_db_id") REFERENCES elca.process_dbs ("id") ON UPDATE CASCADE ON DELETE CASCADE
+);
+
 -------------------------------------------------------------------------------
 
 CREATE TABLE elca.process_config_sanities
@@ -620,6 +636,19 @@ CREATE TABLE elca.project_constructions
 
 -------------------------------------------------------------------------------
 
+CREATE TABLE elca.project_kwks
+(
+    "id"                      serial          NOT NULL                -- kwks
+  , "project_variant_id"      int             NOT NULL                -- projectVariantId
+  , "name"                    varchar(250)    NOT NULL                -- name
+  , "heating"                 numeric                                 -- heating in kWh/(m2*a)
+  , "water"                   numeric                                 -- water in kWh/(m2*a)
+  , PRIMARY KEY ("id")
+  , FOREIGN KEY ("project_variant_id") REFERENCES elca.project_variants("id") ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-------------------------------------------------------------------------------
+
 CREATE TABLE elca.project_final_energy_demands
 (
    "id"                      serial          NOT NULL                -- projectFinalEnergyDemandId
@@ -633,9 +662,13 @@ CREATE TABLE elca.project_final_energy_demands
  , "ventilation"             numeric                                 -- ventilation in kWh/(m2*a)
  , "cooling"                 numeric                                 -- cooling in kWh/(m2*a)
 
+ , "ratio"                   numeric         NOT NULL DEFAULT 1      -- ratio
+ , "kwk_id"                  int                                     -- kwkId
+
  , PRIMARY KEY ("id")
  , FOREIGN KEY ("project_variant_id") REFERENCES elca.project_variants ("id") ON UPDATE CASCADE ON DELETE CASCADE
  , FOREIGN KEY ("process_config_id") REFERENCES elca.process_configs ("id") ON UPDATE CASCADE ON DELETE CASCADE
+ , FOREIGN KEY ("kwk_id")   REFERENCES elca.project_kwks ("id") ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -------------------------------------------------------------------------------
@@ -954,7 +987,27 @@ CREATE TABLE elca.process_config_names
  , FOREIGN KEY ("process_config_id") REFERENCES elca.process_configs ("id") ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-
+CREATE TABLE elca.process_conversion_audit (
+    "id"                     serial          NOT NULL                -- processConversionAuditId
+    , "process_config_id"      int             NOT NULL                -- processConfigId
+    , "process_db_id"          int             NOT NULL                -- processDbId
+    , "conversion_id"          int             NOT NULL                -- conversionId
+    , "in_unit"                varchar(10)                     -- input unit of measure
+    , "out_unit"               varchar(10)                     -- output unit of measure
+    , "factor"                 numeric                         -- conversion factor
+    , "ident"                  varchar(20)                             -- ident
+    , "flow_uuid"              uuid                                    -- flowUuid
+    , "flow_version"           varchar(50)                             -- flowVersion
+    , "old_in_unit"            varchar(10)                     -- old input unit of measure
+    , "old_out_unit"           varchar(10)                     -- old output unit of measure
+    , "old_factor"             numeric                       -- old conversion factor
+    , "old_ident"              varchar(20)                             -- old ident
+    , "old_flow_uuid"          uuid                                    -- oldFlowUuid
+    , "old_flow_version"       varchar(50)                             -- oldFlowVersion
+    , "modified"               timestamptz(0)           DEFAULT now()  -- modification time
+    , "modified_by"            varchar(200)
+    , PRIMARY KEY ("id")
+);
 
 -------------------------------------------------------------------------------
 COMMIT;

@@ -28,9 +28,6 @@ use Beibob\Blibs\FrontController;
 use Beibob\Blibs\HtmlView;
 use Beibob\Blibs\Url;
 use Beibob\HtmlTools\HtmlCheckbox;
-use Beibob\HtmlTools\HtmlDataElement;
-use Beibob\HtmlTools\HtmlDataElementDiv;
-use Beibob\HtmlTools\HtmlDomElement;
 use Beibob\HtmlTools\HtmlForm;
 use Beibob\HtmlTools\HtmlFormGroup;
 use Beibob\HtmlTools\HtmlHiddenField;
@@ -39,7 +36,6 @@ use Beibob\HtmlTools\HtmlSelectOption;
 use Beibob\HtmlTools\HtmlTable;
 use Beibob\HtmlTools\HtmlTableHeadRow;
 use Beibob\HtmlTools\HtmlTag;
-use Beibob\HtmlTools\HtmlText;
 use Beibob\HtmlTools\HtmlTextInput;
 use DOMElement;
 use DOMNode;
@@ -49,7 +45,6 @@ use Elca\Db\ElcaProjectSet;
 use Elca\Security\ElcaAccess;
 use Elca\View\helpers\ElcaHtmlFormElementLabel;
 use Elca\View\helpers\ElcaHtmlSubmitButton;
-use Elca\View\helpers\ElcaTranslatorConverter;
 use Soda4Lca\Db\Soda4LcaImport;
 use Soda4Lca\Db\Soda4LcaProcess;
 use Soda4Lca\Db\Soda4LcaProcessSet;
@@ -72,6 +67,7 @@ class Soda4LcaDatabaseView extends HtmlView
     const BUILDMODE_DEFAULT = 'default';
     const BUILDMODE_NEW = 'new';
     const BUILDMODE_REPORT = 'report';
+    const LISTED_PROJECT_LIMIT = 10;
 
     /**
      * Buildmode
@@ -257,11 +253,14 @@ class Soda4LcaDatabaseView extends HtmlView
                 $Import = Soda4LcaImport::findById($this->Data->id);
 
                 $Wrapper = $Div->addChild(new HtmlTag('div', null, ['class' => 'projects-using-this-db']));
-                $Wrapper->add(new HtmlTag('h4', t('Mit dieser Datenbank verknüpfte Projekte')));
+                $Wrapper->add(new HtmlTag('h4',
+                    t('Mit dieser Datenbank verknüpfte Projekte') .' ('. t('max :count: werden angezeigt', null,
+                        [':count:' => self::LISTED_PROJECT_LIMIT]) .')' ));
                 $Ol = $Wrapper->addChild(new HtmlTag('ol'));
 
                 /** @var ElcaProject $Project */
-                foreach (ElcaProjectSet::find(['process_db_id' => $Import->getProcessDbId()], ['name' => 'ASC']) as $Project) {
+                foreach (ElcaProjectSet::find(['process_db_id' => $Import->getProcessDbId()], ['name' => 'ASC'],
+                    self::LISTED_PROJECT_LIMIT) as $Project) {
                     $Li = $Ol->add(new HtmlTag('li'));
                     $Li->add(new HtmlTag('a', $Project->getName(), ['href' => '/elca/projects/'. $Project->getId(). '/', 'class' => 'no-xhr']));
                 }
@@ -324,27 +323,14 @@ class Soda4LcaDatabaseView extends HtmlView
                                                       ], t('Nach neuen Versionen suchen')));
 
         if (ElcaAccess::getInstance()->hasAdminPrivileges()) {
-            $url = Url::factory('/soda4Lca/databases/updateEpdType/', ['importId' => $this->Data->id]);
+            $url = Url::factory('/soda4Lca/databases/updateConversions/', ['importId' => $this->Data->id]);
             $ProcessesContainer->appendChild(
                 $this->getA(
                     [
-                        'id'   => 'updateEPDType',
+                        'id'   => 'updateConversions',
                         'href' => (string)$url,
                     ],
-                    'EPD SubTyp aktualisieren'
-                )
-            );
-        }
-
-        if (ElcaAccess::getInstance()->hasAdminPrivileges()) {
-            $url = Url::factory('/soda4Lca/databases/updateGeographicalRepresentativeness/', ['importId' => $this->Data->id]);
-            $ProcessesContainer->appendChild(
-                $this->getA(
-                    [
-                        'id'   => 'updateGeographicalRepresentativeness',
-                        'href' => (string)$url,
-                    ],
-                    'Geographische Repräsentativität aktualisieren'
+                    'Umrechnungsfaktoren aktualisieren'
                 )
             );
         }

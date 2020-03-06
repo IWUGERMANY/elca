@@ -1,4 +1,6 @@
 
+$textColorRed: #ff0000;
+
 #content.websiteinfo .inforow {
 	margin: 30px 0 20px 10px;
 	border-bottom: 1px solid #dedede;
@@ -31,7 +33,7 @@
   display: inline;
   position: relative;
   display: block;
-  padding: 5px 0;
+  padding: 5px 0; 
   /*only for demo*/
 }
 
@@ -44,3 +46,54 @@
   position: absolute;
   background: url(/img/elca/ic-download-sheet.png) no-repeat;
 }
+
+#content.users #elca-users .createdyear {
+	margin: 30px 0 20px 0;
+	text-decoration: underline;
+}
+#content.users #elca-users .createdyear h2 {
+	font-weight:bold;
+	font-size: 20px;
+}
+
+#content .pdfcreate {
+	padding: 0 5px;
+	float:right;
+}
+
+#content .pdfcreate.blink {
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 1s steps(5, start) infinite;
+}
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
+
+/* PDF Download Modal */
+#elca-modal-content .pdf-gen-done.pdfdownloadinfo {
+	margin-left: 70px;
+}
+#elca-modal-content .pdf-gen-done.pdfdownloadinfo #download-pdf p a {
+margin-left: 0;
+}
+
+#content.report-effects .reportForm, #content.report-summary-element-types .reportForm {
+    position: absolute;
+    top: 50px !important;
+    left: 700px !important;
+    width: 100px;
+}
+
+.textcolor-red {
+	color: $textColorRed;
+}
+
+

@@ -34,14 +34,16 @@ use Elca\Db\ElcaProcessConfigSanity;
 use Elca\Db\ElcaProcessConfigSet;
 use Elca\Db\ElcaProcessDb;
 use Elca\Db\ElcaProjectSet;
-use Elca\Service\Messages\ElcaMessages;
 use Elca\Model\Navigation\ElcaOsitItem;
+use Elca\Service\Messages\ElcaMessages;
+use Elca\Service\ProcessConfig\Conversions;
 use Elca\Validator\ElcaValidator;
 use Elca\View\ElcaAdminNavigationLeftView;
 use Elca\View\ElcaModalProcessingView;
 use Exception;
 use Soda4Lca\Db\Soda4LcaImport;
 use Soda4Lca\Db\Soda4LcaProcessSet;
+use Soda4Lca\Model\Import\Soda4LcaConversionsImporter;
 use Soda4Lca\Model\Import\Soda4LcaImporter;
 use Soda4Lca\Model\Import\Soda4LcaParser;
 use Soda4Lca\View\Soda4LcaDatabasesView;
@@ -309,7 +311,7 @@ class DatabasesCtrl extends AppCtrl
         {
             try
             {
-                $Importer = new Soda4LcaImporter($Import);
+                $Importer = new Soda4LcaImporter($Import, $this->get(Conversions::class));
                 $totalSize = null;
 
                 switch($Import->getStatus())
@@ -442,7 +444,7 @@ class DatabasesCtrl extends AppCtrl
 
         try
         {
-            $Importer = new Soda4LcaImporter($Import);
+            $Importer = new Soda4LcaImporter($Import, $this->get(Conversions::class));
             $Importer->updateProcessEpdSubType();
         }
         catch(Exception $Exception)
@@ -469,8 +471,38 @@ class DatabasesCtrl extends AppCtrl
 
         try
         {
-            $Importer = new Soda4LcaImporter($Import);
+            $Importer = new Soda4LcaImporter($Import, $this->get(Conversions::class));
             $Importer->updateProcessGeographicalRepresentativeness();
+        }
+        catch(Exception $Exception)
+        {
+            Log::getInstance()->error($Exception->getMessage(), __METHOD__);
+            throw $Exception;
+        }
+    }
+
+    protected function updateConversionsAction()
+    {
+        if (!is_numeric($this->Request->importId)) {
+            return;
+        }
+
+        /**
+         * Check if user is allowed to import
+         */
+        if (!$this->Access->hasAdminPrivileges()) {
+            return;
+        }
+
+        $import = Soda4LcaImport::findById($this->Request->importId);
+
+        try
+        {
+            /**
+             * @var Soda4LcaConversionsImporter $importer
+             */
+            $importer = $this->get(Soda4LcaConversionsImporter::class);
+            $importer->import($import);
         }
         catch(Exception $Exception)
         {

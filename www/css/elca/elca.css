@@ -648,6 +648,25 @@ h1.projectHeader { float: left; margin-right: 3em; }
 
 #content.websiteinfo .downloads li .iconsheet:before { content: ""; height: 100%; width: 15px; left: -15px; top: 5px; position: absolute; background: url(/img/elca/ic-download-sheet.png) no-repeat; }
 
+#content.users #elca-users .createdyear { margin: 30px 0 20px 0; text-decoration: underline; }
+
+#content.users #elca-users .createdyear h2 { font-weight: bold; font-size: 20px; }
+
+#content .pdfcreate { padding: 0 5px; float: right; }
+
+#content .pdfcreate.blink { animation: blink-animation 1s steps(5, start) infinite; -webkit-animation: blink-animation 1s steps(5, start) infinite; }
+
+@keyframes blink-animation { to { visibility: hidden; } }
+@-webkit-keyframes blink-animation { to { visibility: hidden; } }
+/* PDF Download Modal */
+#elca-modal-content .pdf-gen-done.pdfdownloadinfo { margin-left: 70px; }
+
+#elca-modal-content .pdf-gen-done.pdfdownloadinfo #download-pdf p a { margin-left: 0; }
+
+#content.report-effects .reportForm, #content.report-summary-element-types .reportForm { position: absolute; top: 50px !important; left: 700px !important; width: 100px; }
+
+.textcolor-red { color: #ff0000; }
+
 .toggle { display: none; }
 .toggle, .toggle:after, .toggle:before, .toggle *, .toggle *:after, .toggle *:before, .toggle + .toggle-btn { box-sizing: border-box; }
 .toggle::selection, .toggle:after::selection, .toggle:before::selection, .toggle *::selection, .toggle *:after::selection, .toggle *:before::selection, .toggle + .toggle-btn::selection { background: none; }
@@ -1314,11 +1333,9 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #processConfig .column.properties .form-section.is4108Compat { float: right; }
 
-#processConfig .column.properties .form-section.density, #processConfig .column.properties .form-section.defaultSize, #processConfig .column.properties .form-section.fHsHi { width: 110px; float: left; padding-right: 30px; }
+#processConfig .column.properties .form-section.defaultSize, #processConfig .column.properties .form-section.fHsHi { width: 110px; float: left; padding-right: 30px; }
 
 #processConfig .column.properties .form-section.defaultSize, #processConfig .column.properties .form-section.fHsHi { width: 90px; }
-
-#processConfig .column.properties .form-section.fHsHi { padding-right: 0px; }
 
 #processConfig .column.properties .form-section.transportPayLoad { width: 125px; float: left; padding-right: 30px; }
 
@@ -1343,13 +1360,14 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #processConfig .ElcaHtmlSvgPatternSelect-section select { width: 90%; margin-left: 15px; }
 
 #processConfig table.quantitative-references { width: 100%; }
-#processConfig table.quantitative-references th.quantitative-reference, #processConfig table.quantitative-references td.quantitative-reference { text-align: right; }
+#processConfig table.quantitative-references th.quantitative-reference, #processConfig table.quantitative-references td.quantitative-reference { text-align: right; width: 120px; }
+#processConfig table.quantitative-references th.conversion, #processConfig table.quantitative-references td.conversion { text-align: center; width: 50px; }
 
 #conversions { position: relative; width: 800px; }
 
-#conversions a.function-link.add-conversion { display: block; position: absolute; top: 22px; left: 150px; }
+#conversions a.function-link.add-conversion { display: block; position: absolute; top: 22px; left: 250px; }
 
-#conversions .hl-row, #conversions .elt-row { clear: both; position: relative; height: 20px; }
+#conversions .hl-row, #conversions .elt-row { clear: both; position: relative; height: 50px; }
 
 #conversions .hl-row h5, #conversions .elt-row .form-section, #conversions .elt-row a.delete-link, #conversions .elt-row a.edit-link, #conversions .elt-row a.cancel-link { position: absolute; }
 
@@ -1377,11 +1395,15 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #conversions .elt-row .elt-factor { left: 140px; width: 70px; text-align: right; }
 
-#conversions .elt-row .elt-ident { right: 15px; width: 480px; }
+#conversions .elt-row .elt-ident { right: 75px; width: 420px; }
 
 #conversions .elt-row a.delete-link, #conversions .elt-row a.edit-link, #conversions .elt-row a.cancel-link { right: 15px; margin: 5px 0 10px 20px; line-height: 20px; display: block; color: #004f80; text-decoration: underline; background-color: #f9f9f9; }
 
-#conversions .elt-row .elt-ident .form-elt { font-size: 12px; }
+#conversions .elt-row .elt-ident .form-elt { font-size: 12px; line-height: 1.1; }
+
+#conversions .form-section.processDbId { width: 300px; float: left; }
+
+#conversions .form-section.density { width: 120px; float: left; margin-left: 20px; }
 
 #processConfigVariants { width: 620px; }
 
@@ -1450,7 +1472,7 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #processConfig .column.properties .form-section.elementGroupA, #processConfig .column.properties .form-section.elementGroupB, #processConfig .column.properties .form-section.wasteCode, #processConfig .column.properties .form-section.wasteCodeSuffix { float: left; }
 
-#processConfig .column.properties .form-section.elementGroupA { clear: both; }
+#processConfig .column.properties .form-section.wasteCode, #processConfig .column.properties .form-section.elementGroupA { clear: both; }
 
 #processConfig .column.properties .form-section.elementGroupA, #processConfig .column.properties .form-section.elementGroupB { width: 140px; }
 
@@ -1458,9 +1480,9 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 
 #processConfig .column.properties .form-section.wasteCodeSuffix { width: 105px; padding-left: 15px; }
 
-#processConfig .column.properties .form-section.lambdaValue { clear: both; float: left; width: 125px; }
+#processConfig .column.properties .form-section.lambdaValue { float: left; width: 110px; }
 
-#processConfig .column.properties .form-section.lambdaValue .form-elt { padding-right: 26px; width: 125px; }
+#processConfig .column.properties .form-section.lambdaValue .form-elt { width: 100px; }
 
 /** Process Datenbanken ------------------*/
 #content.process-databases div.button.export { margin: 0 20px 15px 0; float: left; }
@@ -1564,7 +1586,8 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #content.project-benchmarks .form-section .form-elt { display: inline-block; width: 40px; }
 
 #content.project-csv-import .import-group { position: relative; }
-#content.project-csv-import .import-group .download-link { position: absolute; top: 25px; right: 5px; color: #004f80; }
+#content.project-csv-import .import-group .download-link { position: absolute; top: 25px; right: 155px; color: #004f80; }
+#content.project-csv-import .import-group .download-link2 { position: absolute; top: 25px; right: 5px; color: #004f80; }
 #content.project-csv-import form.csvImportForm { width: 525px; }
 #content.project-csv-import form.csvImportForm .form-section { float: left; width: 525px; }
 #content.project-csv-import form.csvImportForm .form-section.name { clear: both; width: 525px; }
@@ -1693,7 +1716,7 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #content.project-final-energy .final-energy-section.energy-supply .hl-overall { width: 80px !important; }
 #content.project-final-energy .final-energy-section li { background-color: #f9f9f9; border-bottom: 1px solid #e5e5e5; margin-bottom: 8px; padding: 3px 0; line-height: 24px; min-height: 24px; }
 #content.project-final-energy .final-energy-section li.no-results { background-color: #FFDCDD; }
-#content.project-final-energy .final-energy-section .final-energy-row { position: relative; width: 100%; }
+#content.project-final-energy .final-energy-section .kwk-row, #content.project-final-energy .final-energy-section .final-energy-row { position: relative; width: 100%; }
 #content.project-final-energy .final-energy-section .toggle-link { left: 10px; width: 20px; }
 #content.project-final-energy .final-energy-section .process-config-selector, #content.project-final-energy .final-energy-section .process-energy-demand { position: relative; left: 25px; width: 370px; max-width: 32%; max-height: 20px; overflow: hidden; }
 #content.project-final-energy .final-energy-section .form-section.heating { right: 585px; }
@@ -1702,14 +1725,17 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #content.project-final-energy .final-energy-section .form-section.ventilation { right: 300px; }
 #content.project-final-energy .final-energy-section .form-section.cooling { right: 210px; }
 #content.project-final-energy .final-energy-section .form-section.overall { right: 20px; text-align: right; }
-#content.project-final-energy .final-energy-section .delete-link, #content.project-final-energy .final-energy-section .cancel-link { width: 60px; text-align: left; right: 115px; top: 0px; }
+#content.project-final-energy .final-energy-section .delete-link, #content.project-final-energy .final-energy-section .cancel-link { width: 60px; text-align: left; right: 115px; top: 0; }
 #content.project-final-energy .final-energy-section .form-section.description { right: 410px; }
+#content.project-final-energy .final-energy-section .form-section.kwkName { left: 25px; right: auto; }
 #content.project-final-energy .final-energy-section .form-section.quantity { right: 315px; }
 #content.project-final-energy .final-energy-section .form-section.enEvRatio { right: 220px; }
-#content.project-final-energy .final-energy-section .form-section.description, #content.project-final-energy .final-energy-section .form-section.quantity, #content.project-final-energy .final-energy-section .form-section.enEvRatio, #content.project-final-energy .final-energy-section .form-section.heating, #content.project-final-energy .final-energy-section .form-section.water, #content.project-final-energy .final-energy-section .form-section.lighting, #content.project-final-energy .final-energy-section .form-section.ventilation, #content.project-final-energy .final-energy-section .form-section.cooling, #content.project-final-energy .final-energy-section .form-section.overall, #content.project-final-energy .final-energy-section .toggle-link { position: absolute; padding: 0; top: 0; }
-#content.project-final-energy .final-energy-section .form-section.quantity, #content.project-final-energy .final-energy-section .form-section.enEvRatio, #content.project-final-energy .final-energy-section .form-section.heating, #content.project-final-energy .final-energy-section .form-section.water, #content.project-final-energy .final-energy-section .form-section.lighting, #content.project-final-energy .final-energy-section .form-section.ventilation, #content.project-final-energy .final-energy-section .form-section.cooling, #content.project-final-energy .final-energy-section .form-section.overall { width: 70px; }
+#content.project-final-energy .final-energy-section .form-section.ratio { right: 585px; }
+#content.project-final-energy .final-energy-section .form-section.description, #content.project-final-energy .final-energy-section .form-section.quantity, #content.project-final-energy .final-energy-section .form-section.enEvRatio, #content.project-final-energy .final-energy-section .form-section.ratio, #content.project-final-energy .final-energy-section .form-section.heating, #content.project-final-energy .final-energy-section .form-section.water, #content.project-final-energy .final-energy-section .form-section.lighting, #content.project-final-energy .final-energy-section .form-section.ventilation, #content.project-final-energy .final-energy-section .form-section.cooling, #content.project-final-energy .final-energy-section .form-section.overall, #content.project-final-energy .final-energy-section .toggle-link { position: absolute; padding: 0; top: 0; }
+#content.project-final-energy .final-energy-section .form-section.quantity, #content.project-final-energy .final-energy-section .form-section.enEvRatio, #content.project-final-energy .final-energy-section .form-section.ratio, #content.project-final-energy .final-energy-section .form-section.heating, #content.project-final-energy .final-energy-section .form-section.water, #content.project-final-energy .final-energy-section .form-section.lighting, #content.project-final-energy .final-energy-section .form-section.ventilation, #content.project-final-energy .final-energy-section .form-section.cooling, #content.project-final-energy .final-energy-section .form-section.overall { width: 70px; }
 #content.project-final-energy .final-energy-section .form-section.description { width: 250px; }
 #content.project-final-energy .final-energy-section .add-energy-carrier { display: inline-block; }
+#content.project-final-energy .final-energy-section .add-energy-carrier.kwk { background-color: transparent; border: none; color: #004f80; margin: 0; margin-right: 25px; }
 #content.project-final-energy .final-energy-section .process-config-selector a, #content.project-final-energy .final-energy-section span.process-energy-demand, #content.project-final-energy .final-energy-section a.delete-link, #content.project-final-energy .final-energy-section a.cancel-link { padding: 0; line-height: 24px; display: block; position: absolute; color: #004f80; }
 #content.project-final-energy .final-energy-section .process-config-selector.changed a { color: #ff0000; }
 #content.project-final-energy .final-energy-section span.process-energy-demand { color: #333; }
@@ -1730,6 +1756,25 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #content.project-final-energy .final-energy-section li, #content.project-final-energy .final-energy-section .final-energy-row { min-height: 24px; }
 #content.project-final-energy .final-energy-section .toggle-link { display: block; padding: 0 5px 0 0; width: 5px; text-indent: -1000px; overflow: hidden; background: transparent url("/img/elca/ic-arrow-closed.png") center no-repeat; }
 #content.project-final-energy .final-energy-section .toggle-link.open { background-image: url("/img/elca/ic-arrow-open.png"); }
+#content.project-final-energy .final-energy-section.project-kwks .hl-row > .hl-heating { right: 499px; }
+#content.project-final-energy .final-energy-section.project-kwks .hl-row > .hl-water { right: 403px; }
+#content.project-final-energy .final-energy-section.project-kwks .form-section.kwkName { width: 310px; }
+#content.project-final-energy .final-energy-section.project-kwks .form-section.heating { right: 490px; }
+#content.project-final-energy .final-energy-section.project-kwks .form-section.water { right: 395px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .HtmlStaticText { font-size: 12px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project > .hl-row { top: 30px; height: 20px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project > .hl-row h6 { top: auto; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project > .hl-row .hl-usage { left: 25px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project > .hl-row .hl-ratio { right: 667px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .final-energy-row .process-config-selector { left: 10px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .final-energy-row .form-section.ratio { right: 665px; width: 50px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .final-energy-row .form-section.heating { text-align: right; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .final-energy-row .form-section.water { text-align: right; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .kwk-demands { margin-top: 34px; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .kwk-demands li { margin-left: 15px; border-bottom: none; }
+#content.project-final-energy .final-energy-section .kwk-row .kwk-project .kwk-demands table { width: 95%; padding-top: 10px; }
+#content.project-final-energy .final-energy-section .kwk-row .chart.pie-chart { position: absolute; top: 0; right: 230px; width: 200px; }
+#content.project-final-energy .final-energy-section .kwk-row .chart.pie-chart svg { height: 100%; width: 100%; }
 
 #content.elca-project-life-cycle-usage { width: 920px; }
 #content.elca-project-life-cycle-usage #nonComplianceNotice { border: 2px solid #ff0000; padding: 10px 15px; margin: 10px 0; font-size: 14px; color: #ff0000; display: inline-block; }
@@ -2001,6 +2046,8 @@ form.projectForm .column { width: 250px; padding-right: 40px; }
 #content.report-assets div.element-assets table { float: none; }
 
 #content.report-assets div.element-image, #content.report-effects-elements div.element-image { float: left; width: 600px; height: 250px; padding-left: 30px; }
+
+#content.report-effects-operation .chart.pie-chart, #content.report-assets-operation .chart.pie-chart { width: 500px; height: 500px; }
 
 /** effects **/
 #content.report table.report-effects { background-color: #f9f9f9; border-collapse: separate; margin-bottom: 20px; padding-bottom: 0; }

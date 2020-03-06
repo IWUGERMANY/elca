@@ -31,14 +31,17 @@ use Elca\Model\Process\Module;
 use Elca\Model\Process\ProcessDbId;
 use Elca\Model\Process\ProcessId;
 use Elca\Model\Process\ProcessName;
-use Elca\Model\ProcessConfig\Conversion\ConversionSet;
+use Elca\Model\ProcessConfig\Conversion\ConversionType;
+use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
-use Elca\Model\ProcessConfig\Conversion\RecommendedConversion;
+use Elca\Model\ProcessConfig\Conversion\ProcessConversionsRepository;
 use Elca\Model\ProcessConfig\Conversion\RequiredConversion;
 use Elca\Model\ProcessConfig\LifeCycle\Process;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycle;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycleRepository;
 use Elca\Model\ProcessConfig\ProcessConfigId;
+use Elca\Model\ProcessConfig\ProcessConversion;
+use Elca\Model\ProcessConfig\ProcessLifeCycleId;
 use Elca\Service\ProcessConfig\Conversions;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -55,67 +58,40 @@ class ConversionsTest extends TestCase
      */
     private $processLifeCycleRepository;
 
-    public function testFindAllRequiredConversions()
+    /**
+     * @var ProcessConversionsRepository|PHPUnit_Framework_MockObject_MockObject
+     */
+    private $processConversionsRepository;
+
+    public function testFindRequiredConversions()
     {
-        $conversions = [
-            new LinearConversion(Unit::piece(), Unit::kg(), 1),
-        ];
         $processConfigId = new ProcessConfigId(1);
+        $processDbId = new ProcessDbId(1);
         $this->processLifeCycleRepository
-            ->method('findAllByProcessConfigId')
+            ->method('findById')
             ->willReturn(
-                [
                     $this->given_a_process_life_cycle(
                         $processConfigId,
-                        new ProcessDbId(1),
-                        [
-                            Module::A13 => Unit::kg(),
-                            Module::C3  => Unit::kg(),
-                        ],
-                        $conversions
-                    ),
-                    $this->given_a_process_life_cycle(
-                        $processConfigId,
-                        new ProcessDbId(2),
-                        [
-                            Module::A13 => Unit::m3(),
-                            Module::C4  => Unit::kg(),
-                        ],
-                        $conversions
-                    ),
-                    $this->given_a_process_life_cycle(
-                        $processConfigId,
-                        new ProcessDbId(3),
-                        [
-                            Module::A13 => Unit::kg(),
-                            Module::C3  => Unit::m3(),
-                        ],
-                        $conversions
-                    ),
-                    $this->given_a_process_life_cycle(
-                        $processConfigId,
-                        new ProcessDbId(4),
+                        $processDbId,
                         [
                             Module::A13 => Unit::piece(),
                             Module::C3  => Unit::kg(),
-                        ],
-                        $conversions
-                    ),
-                ]
+                        ]
+                    )
             );
 
-        $requiredConversions = $this->conversions->findAllRequiredConversions($processConfigId);
+        $requiredConversions = $this->conversions->findRequiredConversions(
+            new ProcessLifeCycleId($processDbId, $processConfigId));
 
         $this->assertEquals(
             [
-                new RequiredConversion(Unit::m3(), Unit::kg()),
-                new LinearConversion(Unit::piece(), Unit::kg(), 1),
+                new RequiredConversion(Unit::piece(), Unit::kg()),
             ],
             $requiredConversions->toArray()
         );
     }
 
-    public function testFindAllAdditionalConversions()
+    public function testFindAdditionalConversions()
     {
         $conversions = [
             new LinearConversion(Unit::piece(), Unit::kg(), 2),
@@ -124,211 +100,159 @@ class ConversionsTest extends TestCase
         ];
 
         $processConfigId = new ProcessConfigId(1);
+        $processDbId = new ProcessDbId(1);
         $this->processLifeCycleRepository
-            ->method('findAllByProcessConfigId')
+            ->method('findById')
             ->willReturn(
-                [
                     $this->given_a_process_life_cycle(
                         $processConfigId,
                         new ProcessDbId(1),
-                        [
-                            Module::A13 => Unit::piece(),
-                            Module::C3  => Unit::kg(),
-                        ],
-                        $conversions
-                    ),
-                    $this->given_a_process_life_cycle(
-                        $processConfigId,
-                        new ProcessDbId(2),
                         [
                             Module::A13 => Unit::m3(),
                             Module::C4  => Unit::kg(),
                         ],
                         $conversions
-                    ),
-                ]
+                    )
             );
 
-        $additionalConversions = $this->conversions->findAllAdditionalConversions($processConfigId);
+        $additionalConversions = $this->conversions->findAdditionalConversions(
+            new ProcessLifeCycleId($processDbId, $processConfigId));
 
         $this->assertEquals(
             [
+                new LinearConversion(Unit::piece(), Unit::kg(), 2),
                 new LinearConversion(Unit::m2(), Unit::kg(), 5),
             ],
             $additionalConversions->toArray()
         );
     }
 
-    public function test_findRecommendedConversions_returns_empty_set()
+    public function test_registerConversion_callsRepositoryAdd_whenNoConversionWasFound()
     {
-        $conversions = [
-            new LinearConversion(Unit::m3(), Unit::kg(), 5),
-            new LinearConversion(Unit::m2(), Unit::kg(), 5),
-        ];
+        $this->processConversionsRepository
+            ->method('findByConversion')
+            ->willReturn(null);
 
-        $processConfigId = new ProcessConfigId(1);
-        $this->processLifeCycleRepository
-            ->method('findAllByProcessConfigId')
-            ->willReturn(
-                [
-                    $this->given_a_process_life_cycle(
-                        $processConfigId,
-                        new ProcessDbId(1),
-                        [
-                            Module::A13 => Unit::kg(),
-                            Module::C3  => Unit::m3(),
-                        ],
-                        $conversions
-                    ),
-                    $this->given_a_process_life_cycle(
-                        $processConfigId,
-                        new ProcessDbId(2),
-                        [
-                            Module::A13 => Unit::kg(),
-                            Module::C4  => Unit::m2(),
-                        ],
-                        $conversions
-                    ),
-                ]
-            );
+        $this->processConversionsRepository->expects($this->once())->method('add');
 
-        $recommendedConversions = $this->conversions->findRecommendedConversions($processConfigId);
-
-        $this->assertEmpty($recommendedConversions->toArray());
-    }
-
-    public function test_findRecommendedConversions_without_additionalConversions()
-    {
-        $conversions = [
-            new LinearConversion(Unit::piece(), Unit::kg(), 5),
-            new LinearConversion(Unit::m3(), Unit::kg(), 3),
-        ];
-
-        $processConfigId = new ProcessConfigId(1);
-        $this->processLifeCycleRepository
-            ->method('findAllByProcessConfigId')
-            ->willReturn(
-                [
-                    $this->given_a_process_life_cycle(
-                        $processConfigId,
-                        new ProcessDbId(1),
-                        [
-                            Module::A13 => Unit::piece(),
-                            Module::C3  => Unit::kg(),
-                        ],
-                        $conversions
-                    ),
-                    $this->given_a_process_life_cycle(
-                        $processConfigId,
-                        new ProcessDbId(2),
-                        [
-                            Module::A13 => Unit::m3(),
-                            Module::C4  => Unit::kg(),
-                        ],
-                        $conversions
-                    ),
-                ]
-            );
-
-        $recommendedConversions = $this->conversions->findRecommendedConversions($processConfigId);
-
-        $this->assertEquals(
-            [
-                new RecommendedConversion(Unit::piece(), Unit::m3()),
-            ],
-            $recommendedConversions->toArray()
+        $this->conversions->registerConversion(
+            new ProcessDbId(1),
+            new ProcessConfigId(2),
+            new LinearConversion(
+                Unit::piece(), Unit::kg(), 10
+            )
         );
     }
 
-    public function test_findRecommendedConversions_with_additionalConversions()
+    public function test_registerConversion_callsRepositorySave_whenAConversionWasFound()
     {
-        $conversions = [
-            new LinearConversion(Unit::piece(), Unit::kg(), 5),
-            new LinearConversion(Unit::m3(), Unit::kg(), 3),
-            new LinearConversion(Unit::piece(), Unit::m3(), 5),
-        ];
+        $processDbId     = new ProcessDbId(1);
+        $processConfigId = new ProcessConfigId(2);
+        $conversion      = new LinearConversion(Unit::piece(), Unit::kg(), 10);
 
-        $processConfigId = new ProcessConfigId(1);
-        $this->processLifeCycleRepository
-            ->method('findAllByProcessConfigId')
-            ->willReturn(
-                [
-                    $this->given_a_process_life_cycle(
-                        $processConfigId,
-                        new ProcessDbId(1),
-                        [
-                            Module::A13 => Unit::piece(),
-                            Module::C3  => Unit::kg(),
-                        ],
-                        $conversions
-                    ),
-                    $this->given_a_process_life_cycle(
-                        $processConfigId,
-                        new ProcessDbId(2),
-                        [
-                            Module::A13 => Unit::m3(),
-                            Module::C4  => Unit::kg(),
-                        ],
-                        $conversions
-                    ),
-                ]
-            );
+        $processConversionId = new ProcessLifeCycleId($processDbId, $processConfigId);
+        $processConversion   = new ProcessConversion($processDbId, $processConfigId, $conversion);
 
-        $recommendedConversions = $this->conversions->findRecommendedConversions($processConfigId);
+        $this->processConversionsRepository
+            ->method('findByConversion')
+            ->willReturn($processConversion);
 
-        $this->assertEmpty($recommendedConversions->toArray());
+        $this->processConversionsRepository->expects($this->once())->method('save');
+
+        $this->conversions->registerConversion($processDbId, $processConfigId, $conversion);
     }
 
-    public function test_findRecommendedConversions_with_inverted_existing_conversion()
+    public function test_findProductionConversions()
     {
         $conversions = [
+            new ImportedLinearConversion(Unit::kg(), Unit::kg(), 1, ConversionType::production()),
             new LinearConversion(Unit::m3(), Unit::kg(), 3),
         ];
 
         $processConfigId = new ProcessConfigId(1);
+        $processDbId = new ProcessDbId(1);
         $this->processLifeCycleRepository
-            ->method('findAllByProcessConfigId')
+            ->method('findById')
             ->willReturn(
-                [
-                    $this->given_a_process_life_cycle(
-                        $processConfigId,
-                        new ProcessDbId(1),
-                        [
-                            Module::A13 => Unit::kg(),
-                            Module::C3  => Unit::kg(),
-                        ],
-                        $conversions
-                    ),
-                    $this->given_a_process_life_cycle(
-                        $processConfigId,
-                        new ProcessDbId(2),
-                        [
-                            Module::A13 => Unit::m3(),
-                            Module::C4  => Unit::kg(),
-                        ],
-                        $conversions
-                    ),
-                ]
+                $this->given_a_process_life_cycle(
+                    $processConfigId,
+                    new ProcessDbId(1),
+                    [
+                        Module::A13 => Unit::kg(),
+                        Module::C4  => Unit::kg(),
+                    ],
+                    $conversions
+                )
             );
 
-        $recommendedConversions = $this->conversions->findRecommendedConversions($processConfigId);
+        $productionConversions = $this->conversions->findProductionConversions(
+            new ProcessLifeCycleId($processDbId, $processConfigId));
 
-        $this->assertEmpty($recommendedConversions->toArray());
+        $this->assertEquals(
+            [
+                new ImportedLinearConversion(Unit::kg(), Unit::kg(), 1, ConversionType::production()),
+                new LinearConversion(Unit::m3(), Unit::kg(), 3),
+            ],
+            $productionConversions->toArray()
+        );
+
     }
+
+    public function test_findProductionConversions_even_when_inversed()
+    {
+        $conversions = [
+            new ImportedLinearConversion(Unit::m3(), Unit::m3(), 1, ConversionType::production()),
+            new LinearConversion(Unit::m3(), Unit::kg(), 3),
+            new LinearConversion(Unit::kg(), Unit::piece(), 1),
+        ];
+
+        $processConfigId = new ProcessConfigId(1);
+        $processDbId = new ProcessDbId(1);
+        $this->processLifeCycleRepository
+            ->method('findById')
+            ->willReturn(
+                $this->given_a_process_life_cycle(
+                    $processConfigId,
+                    new ProcessDbId(1),
+                    [
+                        Module::A13 => Unit::m3(),
+                        Module::C4  => Unit::m3(),
+                    ],
+                    $conversions
+                )
+            );
+
+        $productionConversions = $this->conversions->findProductionConversions(
+            new ProcessLifeCycleId($processDbId, $processConfigId));
+
+        $this->assertEquals(
+            [
+                new ImportedLinearConversion(Unit::m3(), Unit::m3(), 1, ConversionType::production()),
+                new LinearConversion(Unit::m3(), Unit::kg(), 3),
+            ],
+            $productionConversions->toArray()
+        );
+
+    }
+
 
     protected function setUp()
     {
-        $this->processLifeCycleRepository = $this->createMock(ProcessLifeCycleRepository::class);
+        $this->processLifeCycleRepository   = $this->createMock(ProcessLifeCycleRepository::class);
+        $this->processConversionsRepository = $this->createMock(ProcessConversionsRepository::class);
 
-        $this->conversions = new Conversions($this->processLifeCycleRepository);
+        $this->conversions = new Conversions($this->processLifeCycleRepository, $this->processConversionsRepository);
     }
 
     private function given_a_process_life_cycle(
-        ProcessConfigId $processConfigId, ProcessDbId $processDbId, array $processesConf, array $conversions = []
+        ProcessConfigId $processConfigId,
+        ProcessDbId $processDbId,
+        array $processesConf,
+        array $conversions = []
     ) {
         $processes = [];
         foreach ($processesConf as $module => $unit) {
-            $processes[] = $this->given_a_process(new Module($module), new Quantity(1, $unit));
+            $processes[] = $this->given_process(new Module($module), new Quantity(1, $unit));
         }
 
         return new ProcessLifeCycle(
@@ -339,7 +263,7 @@ class ConversionsTest extends TestCase
         );
     }
 
-    private function given_a_process(Module $module, Quantity $quantitativeReference, ProcessId $processId = null)
+    private function given_process(Module $module, Quantity $quantitativeReference, ProcessId $processId = null)
     {
         static $processIdCounter = 0;
 

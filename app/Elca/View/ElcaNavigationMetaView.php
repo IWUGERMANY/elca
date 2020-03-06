@@ -24,6 +24,7 @@
  */
 namespace Elca\View;
 
+use Beibob\Blibs\Environment;
 use Beibob\Blibs\HtmlView;
 use Beibob\Blibs\UserStore;
 use Elca\Elca;
@@ -39,6 +40,11 @@ use Elca\Security\ElcaAccess;
  */
 class ElcaNavigationMetaView extends HtmlView
 {
+	 /**
+     * Session 
+     */
+    private $Session;
+	
     /**
      * Inits the view
      */
@@ -46,7 +52,8 @@ class ElcaNavigationMetaView extends HtmlView
     {
         parent::init($args);
         $this->setTplName('elca_nav_meta');
-    }
+		$this->Session = Environment::getInstance()->getSession();
+	}
     // End beforeRender
 
 

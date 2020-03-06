@@ -165,11 +165,11 @@ class ElcaProcessConfigSet extends DbObjectSet
 
         $sql = sprintf('SELECT DISTINCT p.*
                           FROM %s p
-                          JOIN %s c ON p.id = c.process_config_id
+                          JOIN %s c ON p.id = c.process_config_id AND c.process_db_id = ANY(p.process_db_ids)
                          WHERE p.process_category_node_id = :processCategoryNodeId
                            '
             , $onlyProdConfigs ? self::VIEW_PROCESS_CONFIG_PROCESS_DBS : self::VIEW_ALL_PROCESS_CONFIG_PROCESS_DBS
-            , ElcaProcessConversion::TABLE_NAME
+            , ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS
         );
         
 
@@ -243,7 +243,8 @@ class ElcaProcessConfigSet extends DbObjectSet
         $initValues = array('processCategoryNodeId' => $processCategoryNodeId,
                             'lcPhase'               => ElcaLifeCycle::PHASE_OP);
 
-        $convJoin = $inUnit ? sprintf('JOIN %s c ON p.id = c.process_config_id', ElcaProcessConversion::TABLE_NAME) : null;
+        $convJoin = $inUnit ? sprintf('JOIN %s c ON p.id = c.process_config_id AND c.process_db_id = pa.process_db_id',
+            ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS) : null;
 
         $sql = sprintf('SELECT DISTINCT p.*
                           FROM %s p
@@ -311,7 +312,8 @@ class ElcaProcessConfigSet extends DbObjectSet
                             'opAsSupply'            => ElcaProcessConfigAttribute::IDENT_OP_AS_SUPPLY
         );
 
-        $convJoin = $inUnit ? sprintf('JOIN %s c ON p.id = c.process_config_id', ElcaProcessConversion::TABLE_NAME) : null;
+        $convJoin = $inUnit ? sprintf('JOIN %s c ON p.id = c.process_config_id AND c.process_db_id = pa.process_db_id',
+            ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS) : null;
 
         $sql = sprintf('SELECT DISTINCT p.*
                           FROM %s p
@@ -382,7 +384,8 @@ class ElcaProcessConfigSet extends DbObjectSet
                             'lcIdent2'              => ElcaLifeCycle::PHASE_OP
         );
 
-        $convJoin = $inUnit ? sprintf('JOIN %s c ON p.id = c.process_config_id', ElcaProcessConversion::TABLE_NAME) : null;
+        $convJoin = $inUnit ? sprintf('JOIN %s c ON p.id = c.process_config_id AND c.process_db_id = pa.process_db_id',
+            ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS) : null;
 
         $sql = sprintf('SELECT DISTINCT p.*
                           FROM %s p
@@ -483,7 +486,15 @@ class ElcaProcessConfigSet extends DbObjectSet
                                       , pc.thermal_resistance
                                       , pc.is_reference
                                       , pc.f_hs_hi
-                                      , pc.default_size
+                             , pc.waste_code
+							 , pc.waste_code_suffix
+							 , pc.lambda_value
+							 , pc.element_group_a
+							 , pc.element_group_b
+                             , pc.element_district_heating
+                             , pc.element_refrigerant
+                             , pc.element_flammable
+                                , pc.default_size
                                       , pc.uuid
                                       , pc.svg_pattern_id
                                       , pc.is_stale
@@ -547,9 +558,65 @@ class ElcaProcessConfigSet extends DbObjectSet
      *
      * @return ElcaProcessConfigSet
      */
-    public static function findByProcessUuid($processUuid, array $orderBy = null, $limit = null, $offset = null, $force = false)
+    public static function findByProcessUuid($processUuid, $lcPhase = null, array $orderBy = null, $limit = null, $offset = null, $force = false)
     {
         if (!$processUuid)
+            return new ElcaProcessConfigSet();
+
+        $initValues = array('processUuid' => $processUuid);
+
+        $sql = sprintf("SELECT DISTINCT pc.id
+                             , pc.name
+                             , pc.process_category_node_id
+                             , pc.description
+                             , pc.avg_life_time
+                             , pc.min_life_time
+                             , pc.max_life_time
+                             , pc.life_time_info
+                             , pc.avg_life_time_info
+                             , pc.min_life_time_info
+                             , pc.max_life_time_info
+                             , pc.density
+                             , pc.thermal_conductivity
+                             , pc.thermal_resistance
+                             , pc.is_reference
+                             , pc.f_hs_hi
+                             , pc.waste_code
+							 , pc.waste_code_suffix
+							 , pc.lambda_value
+							 , pc.element_group_a
+							 , pc.element_group_b
+                             , pc.default_size
+                             , pc.element_district_heating
+                             , pc.element_refrigerant
+                             , pc.element_flammable
+                             , pc.uuid
+                             , pc.svg_pattern_id
+                             , pc.is_stale
+                             , pc.created
+                             , pc.modified
+                          FROM %s pc
+                          JOIN %s plca ON plca.process_config_id = pc.id
+                         WHERE plca.uuid = :processUuid"
+            , ElcaProcessConfig::TABLE_NAME
+            , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
+        );
+
+        if (null !== $lcPhase) {
+            $sql .= ' AND plca.life_cycle_phase = :lcPhase';
+            $initValues['lcPhase'] = $lcPhase;
+        }
+
+        if ($orderView = self::buildOrderView($orderBy, $limit, $offset))
+            $sql .= ' ' . $orderView;
+
+
+        return self::_findBySql(get_class(), $sql, $initValues, $force);
+    }
+
+    public static function findByProcessId($processId, array $orderBy = null, $limit = null, $offset = null, $force = false)
+    {
+        if (!$processId)
             return new ElcaProcessConfigSet();
 
         $sql = sprintf("SELECT DISTINCT pc.id
@@ -568,7 +635,15 @@ class ElcaProcessConfigSet extends DbObjectSet
                              , pc.thermal_resistance
                              , pc.is_reference
                              , pc.f_hs_hi
+                             , pc.waste_code
+							 , pc.waste_code_suffix
+							 , pc.lambda_value
+							 , pc.element_group_a
+							 , pc.element_group_b
                              , pc.default_size
+                             , pc.element_district_heating
+                             , pc.element_refrigerant
+                             , pc.element_flammable
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
@@ -576,7 +651,7 @@ class ElcaProcessConfigSet extends DbObjectSet
                              , pc.modified
                           FROM %s pc
                           JOIN %s plca ON plca.process_config_id = pc.id
-                         WHERE plca.uuid = :processUuid"
+                         WHERE plca.id = :processId"
             , ElcaProcessConfig::TABLE_NAME
             , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
         );
@@ -584,10 +659,8 @@ class ElcaProcessConfigSet extends DbObjectSet
         if ($orderView = self::buildOrderView($orderBy, $limit, $offset))
             $sql .= ' ' . $orderView;
 
-        return self::_findBySql(get_class(), $sql, array('processUuid' => $processUuid), $force);
+        return self::_findBySql(get_class(), $sql, array('processId' => $processId), $force);
     }
-    // End findByProcessUuid
-
 
     /**
      * Inits a list of ElcaProcessConfigs by a process name

@@ -485,12 +485,17 @@ class ElcaValidator extends HtmlFormValidator
     public function assertProjectFinalEnergyDemands()
     {
         $processConfigIds = $this->getValue('processConfigId');
+        $isKwk = $this->getValue('isKwk');
         if (!is_array($processConfigIds)) {
-            return;
+            return true;
         }
 
         foreach ($processConfigIds as $key => $processConfigId) {
             if ($key === ElcaProjectFinalEnergyDemand::IDENT_PROCESS_ENERGY) {
+                continue;
+            }
+
+            if (isset($isKwk[$key]) && $isKwk[$key]) {
                 continue;
             }
 
@@ -499,7 +504,47 @@ class ElcaValidator extends HtmlFormValidator
 
         return true;
     }
-    // End assertProjectFinalEnergyDemands
+
+    /**
+     * Asserts project final energy demans
+     *
+     * @return boolean
+     */
+    public function assertProjectKwkFinalEnergyDemands()
+    {
+        $processConfigIds = $this->getValue('processConfigId');
+        $isKwk = $this->getValue('isKwk');
+
+        if (!is_array($processConfigIds)) {
+            return true;
+        }
+
+        $atLeastOneIsset = false;
+        foreach (['kwkHeating', 'kwkWater', ] as $property) {
+            $value = $this->getValue($property);
+            $atLeastOneIsset |= !empty($value);
+        }
+        if (!$this->assertTrue('atleastonereq', $atLeastOneIsset, t('Mindestens ein Wert muss angegeben sein'))) {
+            foreach (['kwkHeating', 'kwkWater'] as $property) {
+                $this->setError($property);
+            }
+        }
+
+        $ratios = $this->getValue('ratio');
+        $overallRatio = 0;
+        foreach ($processConfigIds as $key => $processConfigId) {
+            if (isset($isKwk[$key]) && !$isKwk[$key]) {
+                continue;
+            }
+
+            $this->assertProjectKwkFinalEnergyDemand($key);
+            if (isset($ratios[$key])) {
+                $overallRatio += ElcaNumberFormat::fromString($ratios[$key]);
+            }
+        }
+
+        return $this->assertTrue('ratio['. $key .']', $overallRatio >= 0 && $overallRatio <= 100, t('Der Wert muss zwischen 0 und 100 liegen'));
+    }
 
     /**
      * Asserts a ProjectFinalEnergyDemand row
@@ -526,7 +571,22 @@ class ElcaValidator extends HtmlFormValidator
             }
         }
     }
-    // End assertProjectFinalEnergyDemand
+
+    /**
+     * Asserts a ProjectFinalEnergyDemand row
+     */
+    public function assertProjectKwkFinalEnergyDemand($key)
+    {
+        $processConfigIds = $this->getValue('processConfigId');
+        if (!is_array($processConfigIds) || !isset($processConfigIds[$key])) {
+            return;
+        }
+
+        $suffix = '[' . $key . ']';
+
+        $value = $this->getValue('ratio' . $suffix);
+        $this->assertNotEmpty('ratio'. $suffix, $value, t('Der Wert darf nicht leer sein'));
+    }
 
 
     /**

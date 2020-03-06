@@ -26,8 +26,6 @@ namespace Elca\Db;
 
 use Beibob\Blibs\DbObject;
 use Elca\Elca;
-use Elca\Model\ProcessConfig\Converter;
-use Elca\Model\ProcessConfig\ProcessConfigId;
 use PDO;
 
 /**
@@ -131,7 +129,7 @@ class ElcaProcessConfig extends DbObject
      * @var float
      */
     private $defaultSize;
-	
+
 	/**
 	 * Abfallschluessel gemaess Abfallverzeichnis-Verordnung (AVV)
 	 *
@@ -145,24 +143,42 @@ class ElcaProcessConfig extends DbObject
 	 * @var int
 	 */
 	private $wasteCodeSuffix;
-	
+
 	/**
 	 *
 	 * @var float
-	 */	
+	 */
 	private $lambdaValue;
-	
-	/**
-	 *
-	 * @var boolean
-	 */	
-	private $elementGroupA;	
 
 	/**
 	 *
 	 * @var boolean
-	 */	
-	private $elementGroupB;	
+	 */
+	private $elementGroupA;
+
+	/**
+	 *
+	 * @var boolean
+	 */
+	private $elementGroupB;
+
+	/**
+	 *
+	 * @var boolean
+	 */
+	private $elementDistrictHeating;
+	
+	/**
+	 *
+	 * @var boolean
+	 */
+	private $elementRefrigerant;
+	
+	/**
+	 *
+	 * @var boolean
+	 */
+	private $elementFlammable;	
 
     /**
      * uuid
@@ -225,6 +241,9 @@ class ElcaProcessConfig extends DbObject
 										'lambdaValue'			=> PDO::PARAM_STR,
 										'elementGroupA'			=> PDO::PARAM_BOOL,
 										'elementGroupB'			=> PDO::PARAM_BOOL,
+										'elementDistrictHeating'=> PDO::PARAM_BOOL,
+										'elementRefrigerant'	=> PDO::PARAM_BOOL,
+										'elementFlammable'		=> PDO::PARAM_BOOL,
                                         'uuid'                  => PDO::PARAM_STR,
                                         'svgPatternId'          => PDO::PARAM_INT,
                                         'isStale'               => PDO::PARAM_BOOL,
@@ -264,34 +283,41 @@ class ElcaProcessConfig extends DbObject
      * @param string  $defaultSize
      * @param integer  $wasteCode
      * @param integer  $wasteCodeSuffix
-     * @param string  $lambdaValue	 
+     * @param string  $lambdaValue
+	 * @param bool     $elementGroupA
+	 * @param bool     $elementGroupB
+	 * @param bool     $elementDistrictHeating
+	 * @param bool     $elementRefrigerant
+	 * @param bool     $elementFlammable
      * @return ElcaProcessConfig
      */
     public static function create(
-		$name, 
-		$processCategoryNodeId, 
-		$description = null, 
-		$density = null, 
-		$thermalConductivity = null, 
-		$thermalResistance = null, 
-		$isReference = true, 
-		$fHsHi = null, 
-		$minLifeTime = null, 
-		$avgLifeTime = null, 
-		$maxLifeTime = null, 
-		$lifeTimeInfo = null, 
-		$avgLifeTimeInfo = null, 
-		$minLifeTimeInfo = null, 
-		$maxLifeTimeInfo = null, 
-		$uuid = null, 
-		$svgPatternId = null, 
-		$isStale = false, 
+		$name,
+		$processCategoryNodeId,
+		$description = null,
+		$thermalConductivity = null,
+		$thermalResistance = null,
+		$isReference = true,
+		$fHsHi = null,
+		$minLifeTime = null,
+		$avgLifeTime = null,
+		$maxLifeTime = null,
+		$lifeTimeInfo = null,
+		$avgLifeTimeInfo = null,
+		$minLifeTimeInfo = null,
+		$maxLifeTimeInfo = null,
+		$uuid = null,
+		$svgPatternId = null,
+		$isStale = false,
 		$defaultSize = null,
 		$wasteCode = null,
 		$wasteCodeSuffix = null,
 		$lambdaValue = null,
 		$elementGroupA = null,
-		$elementGroupB = null
+		$elementGroupB = null,
+		$elementDistrictHeating = null,
+		$elementRefrigerant = null,
+		$elementFlammable = null
 	)
     {
         $processConfig = new ElcaProcessConfig();
@@ -299,7 +325,6 @@ class ElcaProcessConfig extends DbObject
         $processConfig->setProcessCategoryNodeId($processCategoryNodeId);
         $processConfig->setAvgLifeTime($avgLifeTime);
         $processConfig->setDescription($description);
-        $processConfig->setDensity($density);
         $processConfig->setThermalConductivity($thermalConductivity);
         $processConfig->setThermalResistance($thermalResistance);
         $processConfig->setIsReference($isReference);
@@ -317,7 +342,10 @@ class ElcaProcessConfig extends DbObject
         $processConfig->setWasteCodeSuffix($wasteCodeSuffix);
         $processConfig->setLambdaValue($lambdaValue);
         $processConfig->setElementGroupA($elementGroupA);
-        $processConfig->setElementGroupB($elementGroupB);				
+        $processConfig->setElementGroupB($elementGroupB);
+		$processConfig->setElementDistrictHeating($elementDistrictHeating);
+		$processConfig->setElementRefrigerant($elementRefrigerant);
+		$processConfig->setElementFlammable($elementFlammable);
 
         if($uuid)
             $processConfig->setUuid($uuid);
@@ -365,6 +393,9 @@ class ElcaProcessConfig extends DbObject
 							 , lambda_value
 							 , element_group_a
 							 , element_group_b
+							 , element_district_heating
+							 , element_refrigerant
+							 , element_flammable
                              , uuid
                              , svg_pattern_id
                              , is_stale
@@ -415,6 +446,9 @@ class ElcaProcessConfig extends DbObject
 							 , lambda_value
 							 , element_group_a
 							 , element_group_b
+							 , element_district_heating
+							 , element_refrigerant
+							 , element_flammable
                              , uuid
                              , svg_pattern_id
                              , is_stale
@@ -480,6 +514,9 @@ class ElcaProcessConfig extends DbObject
 							 , pc.lambda_value
 							 , pc.element_group_a
 							 , pc.element_group_b
+							 , pc.element_district_heating
+							 , pc.element_refrigerant
+							 , pc.element_flammable
                              , pc.uuid
                              , pc.svg_pattern_id
                              , is_stale
@@ -534,6 +571,9 @@ class ElcaProcessConfig extends DbObject
 							 , pc.lambda_value
 							 , pc.element_group_a
 							 , pc.element_group_b
+							 , pc.element_district_heating
+							 , pc.element_refrigerant
+							 , pc.element_flammable
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
@@ -585,7 +625,10 @@ class ElcaProcessConfig extends DbObject
 							 , pc.waste_code_suffix
 							 , pc.lambda_value
 							 , pc.element_group_a
-							 , pc.element_group_b			 
+							 , pc.element_group_b
+							 , pc.element_district_heating
+							 , pc.element_refrigerant
+							 , pc.element_flammable							 
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
@@ -639,7 +682,10 @@ class ElcaProcessConfig extends DbObject
 							 , pc.waste_code_suffix
 							 , pc.lambda_value
 							 , pc.element_group_a
-							 , pc.element_group_b							 
+							 , pc.element_group_b
+							 , pc.element_district_heating
+							 , pc.element_refrigerant
+							 , pc.element_flammable							 
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
@@ -683,7 +729,10 @@ class ElcaProcessConfig extends DbObject
 							 , pc.waste_code_suffix
 							 , pc.lambda_value
 							 , pc.element_group_a
-							 , pc.element_group_b							 
+							 , pc.element_group_b
+							 , pc.element_district_heating
+							 , pc.element_refrigerant
+							 , pc.element_flammable	
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
@@ -727,7 +776,10 @@ class ElcaProcessConfig extends DbObject
 							 , pc.waste_code_suffix
 							 , pc.lambda_value
 							 , pc.element_group_a
-							 , pc.element_group_b							 
+							 , pc.element_group_b
+							 , pc.element_district_heating
+							 , pc.element_refrigerant
+							 , pc.element_flammable	
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
@@ -757,7 +809,6 @@ class ElcaProcessConfig extends DbObject
                 $newName ?? $this->name . ' (Kopie)',
                 $this->processCategoryNodeId,
                 $this->description,
-                $this->density,
                 $this->thermalConductivity,
                 $this->thermalResistance,
                 false,
@@ -777,7 +828,10 @@ class ElcaProcessConfig extends DbObject
 				$this->wasteCodeSuffix,
 				$this->lambdaValue,
 				$this->elementGroupA,
-				$this->elementGroupB
+				$this->elementGroupB,
+				$this->elementDistrictHeating,
+				$this->elementRefrigerant,
+				$this->elementFlammable
             );
 
             foreach (ElcaProcessLifeCycleAssignmentSet::find(['process_config_id' => $this->getId()]) as $assignment) {
@@ -959,14 +1013,13 @@ class ElcaProcessConfig extends DbObject
      *
      * @param  number  $density - density
      * @return
+     * @deprecated
      */
     public function setDensity(float $density = null)
     {
-        $this->density = $density;
+        throw new \InvalidArgumentException("Setting the density in this context is not supported anymore");
     }
     // End setDensity
-
-
 
     /**
      * Sets the property thermalConductivity
@@ -1028,14 +1081,14 @@ class ElcaProcessConfig extends DbObject
     {
         $this->defaultSize = $defaultSize;
     }
-	
+
     /**
      * @param int $wasteCode
      */
     public function setWasteCode(int $wasteCode = null)
     {
         $this->wasteCode = $wasteCode;
-    }	
+    }
     /**
      * @param int $wasteCode
      */
@@ -1066,6 +1119,31 @@ class ElcaProcessConfig extends DbObject
     public function setElementGroupB(bool $elementGroupB = null)
     {
         $this->elementGroupB = $elementGroupB;
+    }
+
+
+    /**
+     * @param bool $elementDistrictHeating
+     */
+    public function setElementDistrictHeating(bool $elementDistrictHeating = null)
+    {
+        $this->elementDistrictHeating = $elementDistrictHeating;
+    }
+	
+    /**
+     * @param bool $elementRefrigerant
+     */
+    public function setElementRefrigerant(bool $elementRefrigerant = null)
+    {
+        $this->elementRefrigerant = $elementRefrigerant;
+    }	
+	
+    /**
+     * @param bool $elementFlammable
+     */
+    public function setElementFlammable(bool $elementFlammable = null)
+    {
+        $this->elementFlammable = $elementFlammable;
     }	
 
     /**
@@ -1303,12 +1381,12 @@ class ElcaProcessConfig extends DbObject
      * Returns the property density
      *
      * @return float|null
+     * @deprecated
      */
     public function getDensity() : ?float
     {
         return $this->density;
     }
-
 
     /**
      * Returns the property thermalConductivity
@@ -1366,7 +1444,7 @@ class ElcaProcessConfig extends DbObject
     {
         return $this->defaultSize;
     }
-	
+
     /**
 	 * Returns the property wasteCode
 	 *
@@ -1375,10 +1453,10 @@ class ElcaProcessConfig extends DbObject
     public function getWasteCode() : ?int
     {
         return $this->wasteCode;
-    }	
+    }
     /**
      * Returns the property wasteCodeSuffix
-	 * 
+	 *
 	 * @param int|null
      */
     public function getWasteCodeSuffix() : ?int
@@ -1414,6 +1492,36 @@ class ElcaProcessConfig extends DbObject
     public function getElementGroupB() : ?bool
     {
         return $this->elementGroupB;
+    }
+
+    /**
+     * Returns the property elementDistrictHeating
+     *
+     * @return bool|null
+     */
+    public function getElementDistrictHeating() : ?bool
+    {
+        return $this->elementDistrictHeating;
+    }
+	
+	/**
+     * Returns the property elementRefrigerant
+     *
+     * @return bool|null
+     */
+    public function getElementRefrigerant() : ?bool
+    {
+        return $this->elementRefrigerant;
+    }
+
+	/**
+     * Returns the property elementFlammable
+     *
+     * @return bool|null
+     */
+    public function getElementFlammable() : ?bool
+    {
+        return $this->elementFlammable;
     }	
 
     /**
@@ -1500,60 +1608,31 @@ class ElcaProcessConfig extends DbObject
     // End getProcessConversionSet
 
     /**
-     * Returns the associated ElcaProcessConversions for this process config
-     *
-     * @param array    $orderBy
-     * @param  boolean $force
-     * @return ElcaProcessConversionSet
-     */
-    public function getProcessConversion($refUnit, $force = false)
-    {
-        return ElcaProcessConversion::findProductionByProcessConfigIdAndRefUnit($this->getId(), $refUnit, $force);
-    }
-    // End getProcessConversion
-
-
-    /**
      * Returns a conversion matrix
      *
      * @param bool $force
      * @return array
      */
-    public function getConversionMatrix($force = false)
+    public function getConversionMatrix($processDbId, $force = false)
     {
         if(!$force && $this->conversionMatrix)
             return $this->conversionMatrix;
 
-        $Conversions = $this->getProcessConversions();
+        $conversions = $this->getProcessConversions();
 
-        foreach($Conversions as $Conversion)
+        /**
+         * @var ElcaProcessConversion $conversion
+         */
+        foreach($conversions as $conversion)
         {
-            if(!$factor = $Conversion->getFactor())
-                continue;
+            $conversionVersion = ElcaProcessConversionVersion::findByPK($conversion->getId(), $processDbId);
+            $factor = $conversionVersion->getFactor();
 
-            $this->conversionMatrix[$Conversion->getInUnit()][$Conversion->getOutUnit()] = $factor;
-            $this->conversionMatrix[$Conversion->getOutUnit()][$Conversion->getInUnit()] = 1 / $factor;
+            $this->conversionMatrix[$conversion->getInUnit()][$conversion->getOutUnit()] = $factor ?? null;
+            $this->conversionMatrix[$conversion->getOutUnit()][$conversion->getInUnit()] = null !== $factor ? 1 / $factor : null;
         }
 
         return $this->conversionMatrix;
-    }
-
-    /**
-     * @param bool $force
-     * @return Converter
-     */
-    public function getConverter($force = false)
-    {
-        $conversions = [];
-
-        /**
-         * @var ElcaProcessConversion $processConversion
-         */
-        foreach ($this->getProcessConversions(null, $force) as $processConversion) {
-            $conversions[] = $processConversion->toConversion();
-        }
-
-        return new Converter(new ProcessConfigId($this->id), $conversions);
     }
 
     /**
@@ -1599,7 +1678,7 @@ class ElcaProcessConfig extends DbObject
         if(!$this->isInitialized())
             return array();
 
-        $requiredUnits = $filter = array();
+        $requiredUnits = array();
 
         /**
          * Find all refUnits of all configured processes
@@ -1633,7 +1712,7 @@ class ElcaProcessConfig extends DbObject
         $matrix = array();
         foreach($requiredUnits as $inUnit => $foo)
         {
-            foreach($requiredUnits as $outUnit => $foo)
+            foreach($requiredUnits as $outUnit => $bar)
             {
                  if(!isset($matrix[$outUnit][$inUnit]))
                     $matrix[$inUnit][$outUnit] = true;
@@ -1646,7 +1725,7 @@ class ElcaProcessConfig extends DbObject
         /**
          * Find direct matches in -> out and vice versa
          */
-        $Conversions = $this->getProcessConversions(array('ident' => 'ASC', 'id' => 'ASC'), true);
+        $Conversions = $this->getProcessConversions(array('id' => 'ASC'), true);
         foreach($Conversions as $Conversion)
         {
             $inUnit  = $Conversion->getInUnit();
@@ -1794,6 +1873,9 @@ class ElcaProcessConfig extends DbObject
 							 , lambda_value			 = :lambdaValue
 							 , element_group_a		 = :elementGroupA
 							 , element_group_b		 = :elementGroupB
+							 , element_district_heating	 = :elementDistrictHeating
+							 , element_refrigerant		 = :elementRefrigerant
+							 , element_flammable		 = :elementFlammable
                              , uuid                  = :uuid
                              , svg_pattern_id        = :svgPatternId
                              , is_stale              = :isStale
@@ -1825,7 +1907,10 @@ class ElcaProcessConfig extends DbObject
 										'wasteCodeSuffix'      => $this->wasteCodeSuffix,
 										'lambdaValue'		   => $this->lambdaValue,
 										'elementGroupA'		   => $this->elementGroupA,
-										'elementGroupB'		   => $this->elementGroupB,										
+										'elementGroupB'		   => $this->elementGroupB,
+										'elementDistrictHeating'	=> $this->elementDistrictHeating,
+										'elementRefrigerant'		=> $this->elementRefrigerant,
+										'elementFlammable'	   => $this->elementFlammable,
                                         'uuid'                 => $this->uuid,
                                         'svgPatternId'         => $this->svgPatternId,
                                         'isStale'              => $this->isStale,
@@ -1953,7 +2038,10 @@ class ElcaProcessConfig extends DbObject
 			waste_code_suffix,
 			lambda_value,
 			element_group_a,
-			element_group_b,		
+			element_group_b,
+			element_district_heating,
+			element_refrigerant,
+			element_flammable, 	
 			uuid, 
 			svg_pattern_id, 
 			is_stale, 
@@ -1981,7 +2069,10 @@ class ElcaProcessConfig extends DbObject
 			:wasteCodeSuffix,
 			:lambdaValue,
 			:elementGroupA,
-			:elementGroupB,		
+			:elementGroupB,
+			:elementDistrictHeating,
+			:elementRefrigerant,
+			:elementFlammable,	
 			:uuid, 
 			:svgPatternId, 
 			:isStale, 
@@ -2014,6 +2105,9 @@ class ElcaProcessConfig extends DbObject
 										'lambdaValue'		   => $this->lambdaValue,
 										'elementGroupA'		   => $this->elementGroupA,
 										'elementGroupB'		   => $this->elementGroupB,
+										'elementDistrictHeating' => $this->elementDistrictHeating,
+										'elementRefrigerant'	 => $this->elementRefrigerant,
+										'elementFlammable'		 => $this->elementFlammable,
                                         'uuid'                 => $this->uuid,
                                         'svgPatternId'         => $this->svgPatternId,
                                         'isStale'              => $this->isStale,
@@ -2058,7 +2152,10 @@ class ElcaProcessConfig extends DbObject
 		$this->lambdaValue       	 = null !== $dataObject->lambda_value ? (float)$dataObject->lambda_value : null;
 		$this->elementGroupA       	 = null !== $dataObject->element_group_a ? (bool)$dataObject->element_group_a : null;
 		$this->elementGroupB       	 = null !== $dataObject->element_group_b ? (bool)$dataObject->element_group_b : null;
-        $this->uuid                  = $dataObject->uuid;
+		$this->elementDistrictHeating    = null !== $dataObject->element_district_heating ? (bool)$dataObject->element_district_heating : null;
+		$this->elementRefrigerant        = null !== $dataObject->element_refrigerant ? (bool)$dataObject->element_refrigerant : null;
+		$this->elementFlammable       	 = null !== $dataObject->element_flammable ? (bool)$dataObject->element_flammable : null;
+		$this->uuid                  = $dataObject->uuid;
         $this->svgPatternId          = $dataObject->svg_pattern_id;
         $this->isStale               = (bool)$dataObject->is_stale;
         $this->created               = $dataObject->created;
@@ -2083,7 +2180,6 @@ class ElcaProcessConfig extends DbObject
             self::UNKNOWN_NAME,
             $othersInternCategory->getNodeId(),
             null,
-            \null,
             null,
             null,
             null,
@@ -2102,11 +2198,18 @@ class ElcaProcessConfig extends DbObject
 			null,
 			null,
 			null,
+			null,
+			null,
+			null,
 			null
         );
 
         foreach (Elca::$units as $unit => $caption) {
-            ElcaProcessConversion::create($unknownProcessConfig->getId(), $unit, $unit, 1);
+            $conversion = ElcaProcessConversion::create($unknownProcessConfig->getId(), $unit, $unit);
+
+            foreach (ElcaProcessDbSet::find() as $processDb) {
+                ElcaProcessConversionVersion::create($conversion->getId(), $processDb->getId(), 1);
+            }
         }
 
         return $unknownProcessConfig;

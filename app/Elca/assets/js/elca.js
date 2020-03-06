@@ -1304,9 +1304,9 @@ $(window).load(function () {
                      */
                     $('.toggle-link', $context).each(function () {
                         $(this).click(function (e) {
+                            console.log('click');
                             var $parent = $(this).parent().attr('id'),
                                 $table = $('#' + $parent + ' .results');
-
                             if ($table.is(':hidden')) {
                                 $('#' + $parent + ' .toggle').val(1);
                                 $(this).addClass('open');
@@ -2116,6 +2116,7 @@ $(window).load(function () {
                     '#content.report': null,
                     '#elca-modal-content.pdf-gen': 'preparePdf',
                     '#elca-modal-content.project-access': 'prepareProjectAccess',
+					'#content.report': 'checkCreatePdf',
                     '#content.elca-project': null,
                     '#projectProcessConfigSanity': null,
                     '#content.project-import': null,
@@ -2159,9 +2160,8 @@ $(window).load(function () {
                 preparePdf: function ($context) {
                     $('div.spinning-wheel', $context).each(function () {
                         var $container = $(this);
-
+						
                         if ($container.data('action')) {
-
                             jBlibs.App.query($container.data('action'), null, {
                                 complete: function (xhr, response) {
                                     $context.removeClass('spin').addClass('done');
@@ -2172,9 +2172,68 @@ $(window).load(function () {
                                 }
                             });
                         }
+
+                        if ($container.data('close-after-time-in-ms')) {
+                            setTimeout(function() {
+                                $('#elca-modal').fadeOut('fast', function () {
+                                   $('#elca-modal-content').empty();
+                                });
+                            }, $container.data('close-after-time-in-ms'));
+                        }
                     });
                 },
 
+
+				/**
+				* Interval check whether PDF is created // 2020-02-07
+				*/
+				checkCreatePdf: function ($context) {
+					$('span.pdfcreate', $context).each(function () {
+						var $container = $(this);
+						var $action = "/project-reports/testpdfvar/";
+						var checktimer;
+						checkPDFReady($container,0,$action);
+					});	
+					
+					function checkPDFReady($container,$counter,$action) 
+					{
+						if ($container.data('check')) 
+						{
+							$.ajax({
+                                global: false,
+                                url: $action,
+                                dataType: 'json',
+                                data: {
+                                    id: $container.data('id'),
+									pvid: $container.data('pvid'),
+									uid: $container.data('uid'),
+									action: $container.data('action')
+                                },
+                                success: function (data, status, xhr) {
+									if(data['created']==true)
+								  	{	
+										clearTimeout(checktimer);
+										checkPDFReload($container);
+									}   
+                                }
+                            });
+						
+							checktimer = setTimeout(function () {
+								checkPDFReady($container,$counter,$action);
+                            }, 10000);	
+
+						}
+						return true;
+					}
+					
+					function checkPDFReload($container)
+					{
+						// window.location.href = window.location.href;
+						window.location.reload();
+						return true;
+					}
+				},	
+				
                 /**
                  * Prepare modal content
                  */
@@ -2611,12 +2670,13 @@ $(window).load(function () {
             'charts': {
                 views: {
                     '#content.report': 'prepareCharts',
-                    '#content.report-summary-benchmarks': 'prepareBenchmarks'
+                    '#content.report-summary-benchmarks': 'prepareBenchmarks',
+                    '#content.project-final-energy': 'prepareFinalEnergyKwkPieChart'
                 },
 
                 prepareCharts: function ($context) {
                     var self = this,
-                        $charts = $('div.chart[data-url]', $context),
+                        $charts = $('div.chart', $context),
                         chartCount = $charts.length,
                         $progressElt = $('#progress'),
                         $printButton = $('div.print.button a', this);
@@ -2635,10 +2695,6 @@ $(window).load(function () {
                             url = $this.data('url'),
                             load = 0;
 
-                        if (!url) {
-                            console.debug('Chart without data url!');
-                        }
-
                         window.setTimeout(function () {
                             if ($this.hasClass('bar-chart')) {
                                 self.updateBarChart(url, $this);
@@ -2648,6 +2704,9 @@ $(window).load(function () {
                             }
                             else if ($this.hasClass('grouped-stacked-bar-chart')) {
                                 self.updateGroupedStackedBarChart(url, $this);
+                            }
+                            else if ($this.hasClass('pie-chart')) {
+                                self.prepareFinalEnergyKwkPieChart($context);
                             }
                             load = (i + 1) / chartCount;
 
@@ -2813,7 +2872,98 @@ $(window).load(function () {
                         pager: '#indicator-charts-pager'
                     });
 
-                }
+                },
+
+                prepareFinalEnergyKwkPieChart: function ($context) {
+                    var $chart = $('.pie-chart', $context);
+
+                    if ($chart.length === 0) {
+                        return;
+                    }
+
+                    var data = $chart.data('values');
+
+                    var self = this;
+
+                    var width = 100,
+                        height = 100,
+                        radius = Math.min(width, height) / 2;
+
+                    var color = d3.scale.ordinal()
+                        .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+                    var arc = d3.svg.arc()
+                        .outerRadius(radius - 10)
+                        .innerRadius(0);
+
+                    var pie = d3.layout.pie()
+                        .sort(null)
+                        .value(function (d) {
+                            return d.value;
+                        });
+
+                    var svg = d3.select($chart[0]).append("svg")
+                        .attr("width", width + '%')
+                        .attr("height", height + '%')
+                        .attr("viewBox", "0 0 100 100")
+                        .append("g")
+                        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+                    var charsPerLine = 8;
+                    var textBaseSize = 8;
+
+                    data.forEach(function (d) {
+                        d.value = +d.value;
+                        d.text = (d.name + ' ' + (Math.round(d.value * 100 * 10) / 10) + "%").replace('.', ',')
+
+                        var newEmSize = charsPerLine / d.text.length;
+                        d.fontSize = newEmSize < 1 ? (newEmSize * textBaseSize) + "px" : "1px";
+                    });
+
+                    this.tooltip = d3.select($chart[0])
+                        .append("div")
+                        .attr("class", "tooltip")
+                        .style("opacity", 0);
+
+                    var g = svg.selectAll(".arc")
+                        .data(pie(data))
+                        .enter().append("g")
+                        .attr("class", "arc");
+
+                    g.append("path")
+                        .attr("d", arc)
+                        .style("fill", function (d) {
+                            return d.data.class === 'undefined' ? '#FF0000' : color(d.data.name);
+                        })
+                        .on("mouseover", function (d) {
+                            var coords = d3.mouse($chart[0]);
+                            self.tooltip.transition()
+                                .duration(200)
+                                .style("opacity", .9);
+
+                            self.tooltip.text(d.data.text)
+                                .style("left", coords[0] + "px")
+                                .style("top", (coords[1] - 12) + "px");
+                        })
+                        .on("mouseout", function (d) {
+                            self.tooltip.transition()
+                                .duration(500)
+                                .style("opacity", 0);
+                        });
+
+                    g.append("text")
+                        .attr("transform", function (d) {
+                            return "translate(" + arc.centroid(d) + ")";
+                        })
+                        .attr("dy", ".35em")
+                        .style("text-anchor", "middle")
+                        .style("font-size", function(d) {
+                            return d.data.fontSize;
+                        })
+                        .text(function (d) {
+                            return d.data.text;
+                        });
+                },
 
             }
         }

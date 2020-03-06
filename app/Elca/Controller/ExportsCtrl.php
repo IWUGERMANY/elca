@@ -30,7 +30,6 @@ use Beibob\Blibs\File;
 use Beibob\Blibs\FileView;
 use Beibob\Blibs\MimeType;
 use Beibob\Blibs\TextView;
-use Elca\Db\ElcaCacheDataObjectSet;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaIndicatorSet;
 use Elca\Db\ElcaLifeCycle;
@@ -110,8 +109,8 @@ class ExportsCtrl extends AjaxController
 
         $filename = \trim($Element->getName() .'-'. date('YmdHis')).".xml";
 
-        $Exporter = Exporter::getInstance();
-        $Xml = $Exporter->exportElement($Element);
+        $exporter = Exporter::getInstance();
+        $Xml = $exporter->exportElement($Element);
 
         $View = new TextView();
         $View->setContent($Xml->saveXml());

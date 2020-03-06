@@ -25,6 +25,30 @@
 
 namespace Elca\Model\ProcessConfig\Conversion;
 
+use Elca\Model\Common\Unit;
+
 class ImportedLinearConversion extends LinearConversion
 {
+    /**
+     * @var ConversionType
+     */
+    private $type;
+
+    public static function forReferenceUnit(Unit $procRefUnit)
+    {
+        return new self($procRefUnit, $procRefUnit, 1, ConversionType::production());
+    }
+
+    public function __construct(Unit $fromUnit, Unit $toUnit, float $factor, ConversionType $conversionType)
+    {
+        parent::__construct($fromUnit, $toUnit, $factor);
+
+        $this->type = $conversionType;
+    }
+
+    public function type(): ConversionType
+    {
+        return $this->type ?? parent::type();
+    }
+
 }

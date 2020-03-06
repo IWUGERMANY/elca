@@ -26,9 +26,7 @@
 namespace Soda4Lca\Model\Import;
 
 use Beibob\Blibs\Log;
-use DOMNode;
 use DOMXPath;
-use Elca\Db\ElcaProcessConversion;
 use Elca\Model\Common\Unit;
 use Elca\Model\ProcessConfig\Conversion\ConversionType;
 
@@ -79,14 +77,14 @@ class Soda4LcaParser
      * MatML Property names
      */
     private static $matMLPropertyNames = [
-        self::MATML_PROP_NAME_AVG_MPUA    => ElcaProcessConversion::IDENT_AVG_MPUA,
-        self:: MATML_PROP_NAME_GRAMMAGE   => ElcaProcessConversion::IDENT_AVG_MPUA,
-        self::MATML_PROP_NAME_RAW_DENSITY      => ElcaProcessConversion::IDENT_GROSS_DENSITY,
-        self:: MATML_PROP_NAME_GROSS_DENSITY   => ElcaProcessConversion::IDENT_GROSS_DENSITY,
-        self:: MATML_PROP_NAME_BULK_DENSITY    => ElcaProcessConversion::IDENT_BULK_DENSITY,
-        self:: MATML_PROP_NAME_LAYER_THICKNESS => ElcaProcessConversion::IDENT_LAYER_THICKNESS,
-        self:: MATML_PROP_NAME_PRODUCTIVENESS  => ElcaProcessConversion::IDENT_PRODUCTIVENESS,
-        self:: MATML_PROP_NAME_LINEAR_DENSITY  => ElcaProcessConversion::IDENT_LINEAR_DENSITY
+        self::MATML_PROP_NAME_AVG_MPUA        => ConversionType::AVG_MPUA,
+        self::MATML_PROP_NAME_GRAMMAGE        => ConversionType::AVG_MPUA,
+        self::MATML_PROP_NAME_RAW_DENSITY     => ConversionType::GROSS_DENSITY,
+        self::MATML_PROP_NAME_GROSS_DENSITY   => ConversionType::GROSS_DENSITY,
+        self::MATML_PROP_NAME_BULK_DENSITY    => ConversionType::BULK_DENSITY,
+        self::MATML_PROP_NAME_LAYER_THICKNESS => ConversionType::LAYER_THICKNESS,
+        self::MATML_PROP_NAME_PRODUCTIVENESS  => ConversionType::PRODUCTIVENESS,
+        self::MATML_PROP_NAME_LINEAR_DENSITY  => ConversionType::LINEAR_DENSITY,
     ];
 
     /**
@@ -227,13 +225,13 @@ class Soda4LcaParser
      * @throws Soda4LcaException
      * @return \stdClass
      */
-    public function getProcessDataSet($uuid)
+    public function getProcessDataSet($uuid, $version = null)
     {
         $DO = new \stdClass();
 
-        $this->Log->debug('Fetching process ['. $uuid. ']', __METHOD__);
+        $this->Log->debug('Fetching process ['. $uuid. '/'. $version .']', __METHOD__);
 
-        $XPath = $this->Connector->getProcess($uuid, Soda4LcaConnector::FORMAT_XML);
+        $XPath = $this->Connector->getProcess($uuid, $version, Soda4LcaConnector::FORMAT_XML);
         $XPath->registerNamespace('p', 'http://lca.jrc.it/ILCD/Process');
         $XPath->registerNamespace('common', 'http://lca.jrc.it/ILCD/Common');
         $XPath->registerNamespace('epd', 'http://www.iai.kit.edu/EPD/2013');
@@ -287,9 +285,15 @@ class Soda4LcaParser
              * Ref unit and value
              */
             $internalDataSetId = $RefToRefFlow->item(0)->textContent;
-            $flowUuid = $XPath->query('//p:processDataSet/p:exchanges/p:exchange[@dataSetInternalID="'. $internalDataSetId .'"]/p:referenceToFlowDataSet')->item(0)->getAttribute('refObjectId');
-            $DO->refValue = $XPath->query('//p:processDataSet/p:exchanges/p:exchange[@dataSetInternalID="'. $internalDataSetId .'"]/p:meanAmount')->item(0)->textContent;
-            $DO->refUnit = $this->getUnit($flowUuid);
+            $refFlowNodeList       = $XPath->query('//p:processDataSet/p:exchanges/p:exchange[@dataSetInternalID="' . $internalDataSetId . '"]/p:referenceToFlowDataSet');
+            if ($refFlowNodeList->length > 0) {
+                $refFlowNode      = $refFlowNodeList->item(0);
+
+                $flowUuid     = $refFlowNode->getAttribute('refObjectId');
+                $flowVersion  = $refFlowNode->getAttribute('version');
+                $DO->refValue = $XPath->query('//p:processDataSet/p:exchanges/p:exchange[@dataSetInternalID="' . $internalDataSetId . '"]/p:meanAmount')->item(0)->textContent;
+                $DO->refUnit  = $this->getUnit($flowUuid, $flowVersion);
+            }
 
             /**
              * Flow descendants
@@ -299,7 +303,7 @@ class Soda4LcaParser
             /**
              * Material Properties
              */
-            $DO->MatProperties = $this->getMatProperties($flowUuid, $DO->refUnit);
+            $DO->MatProperties = $this->getMatProperties($flowUuid, $flowVersion, $DO->refUnit);
         }
 
         /**
@@ -380,37 +384,43 @@ class Soda4LcaParser
         /**
          * Get the flow descendants
          */
-        $XPath = $this->Connector->getFlowDescendants($flowDataSetUuid);
-        $XPath->registerNamespace('f', 'http://lca.jrc.it/ILCD/Flow');
-        $XPath->registerNamespace('sapi', 'http://www.ilcd-network.org/ILCD/ServiceAPI');
+        $xPath = $this->Connector->getFlowDescendants($flowDataSetUuid);
+        $xPath->registerNamespace('f', 'http://lca.jrc.it/ILCD/Flow');
+        $xPath->registerNamespace('sapi', 'http://www.ilcd-network.org/ILCD/ServiceAPI');
 
-        $Descendants = $XPath->query('//sapi:dataSetList/f:flow/sapi:uuid');
-        if($Descendants->length)
+        $descendantsFlows = $xPath->query('//sapi:dataSetList/f:flow');
+        if($descendantsFlows->length)
         {
-            $this->Log->debug('Fetching descendants for flowDataSet ['. $flowDataSetUuid. ']', __METHOD__);
+            $this->Log->debug('Fetching descendants for flowDataSet ['. $flowDataSetUuid.']', __METHOD__);
 
-            foreach($Descendants as $Descendant)
+            foreach($descendantsFlows as $descendantFlow)
             {
-                if(!$descUuid = $Descendant->textContent)
+                $descendantFlowUuid = $xPath->query('.//sapi:uuid', $descendantFlow);
+
+                if (!$descendantFlowUuid->length || !$descendantFlowUuid->item(0)->textContent)
                     continue;
+
+                $descUuid = $descendantFlowUuid->item(0)->textContent;
+                $descVersion = $xPath->query('.//sapi:dataSetVersion', $descendantFlow)->item(0)->textContent;
 
                 $descendants[] = $DO = new \stdClass();
 
-                $DescXPath = $this->Connector->getFlow($descUuid);
+                $DescXPath = $this->Connector->getFlow($descUuid, $descVersion);
                 $DescXPath->registerNamespace('f', 'http://lca.jrc.it/ILCD/Flow');
                 $DescXPath->registerNamespace('common', 'http://lca.jrc.it/ILCD/Common');
 
                 $DO->uuid = $descUuid;
+                $DO->version = $descVersion;
                 $DO->name = $this->getTextContentByPreferredLang(['de', 'en'], $DescXPath, '//f:flowDataSet/f:flowInformation/f:dataSetInformation/f:name/f:baseName');
 
                 $internalFlowDataSetId = $DescXPath->query('//f:flowDataSet/f:flowInformation/f:quantitativeReference/f:referenceToReferenceFlowProperty')->item(0)->textContent;
                 $DO->refValue = $DescXPath->query('//f:flowDataSet/f:flowProperties/f:flowProperty[@dataSetInternalID="'. $internalFlowDataSetId .'"]/f:meanValue')->item(0)->textContent;
-                $DO->refUnit = $this->getUnit($descUuid);
+                $DO->refUnit = $this->getUnit($descUuid, $descVersion);
 
                 $VendorSpecificProducts = $DescXPath->query('//f:flowDataSet/f:modellingAndValidation/f:LCIMethod/common:other/epd:vendorSpecificProduct');
                 $DO->isVendorSpecific = $VendorSpecificProducts->length && $VendorSpecificProducts->item(0)->textContent == 'true';
 
-                $this->Log->debug('Found '. ($DO->isVendorSpecific? 'vendor specific' : '') .' descendant for flowDataSet ['. $flowDataSetUuid. ']: '. $DO->name.' ['. $DO->uuid.']', __METHOD__);
+                $this->Log->debug('Found '. ($DO->isVendorSpecific? 'vendor specific' : '') .' descendant for flowDataSet ['. $flowDataSetUuid. ']: '. $DO->name.' ['. $DO->uuid.'/'.$DO->version.']', __METHOD__);
             }
         }
 
@@ -426,15 +436,17 @@ class Soda4LcaParser
      * @param  string $flowDataSetUuid
      * @return object
      */
-    private function getMatProperties($flowDataSetUuid, $refUnit = null)
+    private function getMatProperties($flowDataSetUuid, $flowVersion, $refUnit = null)
     {
         $matProperties = new \stdClass();
+        $matProperties->flowUuid = $flowDataSetUuid;
+        $matProperties->flowVersion = $flowVersion;
         $matProperties->conversions = [];
 
         /**
          * Get flow
          */
-        $XPath = $this->Connector->getFlow($flowDataSetUuid);
+        $XPath = $this->Connector->getFlow($flowDataSetUuid, $flowVersion);
         $XPath->registerNamespace('f', 'http://lca.jrc.it/ILCD/Flow');
         $XPath->registerNamespace('common', 'http://lca.jrc.it/ILCD/Common');
         $XPath->registerNamespace('matml', 'http://www.matml.org/');
@@ -479,6 +491,8 @@ class Soda4LcaParser
                     break;
 
                 case self::MATML_PROP_NAME_CONVERSION_TO_MASS:
+                    $this->Log->notice('Found material property `'. $name.'\'. Import is currently not enabled', __METHOD__);
+                    break;
                     if (!$refUnit) {
                         $this->Log->warning('Can not apply material property `'. $name .'\': missing the reference quantity.', __METHOD__);
                         break;
@@ -539,14 +553,14 @@ class Soda4LcaParser
      * @param  string $flowDataSetUuid
      * @return string
      */
-    private function getUnit($flowDataSetUuid)
+    private function getUnit($flowDataSetUuid, $flowVersion = null)
     {
-        $this->Log->debug('Fetching unit for flowDataSet ['. $flowDataSetUuid. ']', __METHOD__);
+        $this->Log->debug('Fetching unit for flowDataSet ['. $flowDataSetUuid. '/'. $flowVersion.']', __METHOD__);
 
         /**
          * Get flow
          */
-        $FlowXPath = $this->Connector->getFlow($flowDataSetUuid);
+        $FlowXPath = $this->Connector->getFlow($flowDataSetUuid, $flowVersion);
         $FlowXPath->registerNamespace('f', 'http://lca.jrc.it/ILCD/Flow');
         $FlowXPath->registerNamespace('common', 'http://lca.jrc.it/ILCD/Common');
 
@@ -557,6 +571,7 @@ class Soda4LcaParser
 
         if ($refUnitFlowPropertyUuids->length) {
             $refUnitFlowPropertyUuid = $refUnitFlowPropertyUuids->item(0)->getAttribute('refObjectId');
+            $refUnitFlowPropertyVersion = $refUnitFlowPropertyUuids->item(0)->getAttribute('version');
         } else {
             throw new Soda4LcaException('No refUnit flow property found for flow data set `'. $flowDataSetUuid .'\'', Soda4LcaException::MISSING_REF_UNIT);
         }
@@ -564,15 +579,16 @@ class Soda4LcaParser
         /**
          * Get FlowProperty
          */
-        $FlowPropXPath = $this->Connector->getFlowProperty($refUnitFlowPropertyUuid);
+        $FlowPropXPath = $this->Connector->getFlowProperty($refUnitFlowPropertyUuid, $refUnitFlowPropertyVersion);
         $FlowPropXPath->registerNamespace('fp', 'http://lca.jrc.it/ILCD/FlowProperty');
         $FlowPropXPath->registerNamespace('common', 'http://lca.jrc.it/ILCD/Common');
         $refUnitUnitGroupUuid = $FlowPropXPath->query('//fp:flowPropertyDataSet/fp:flowPropertiesInformation/fp:quantitativeReference/fp:referenceToReferenceUnitGroup')->item(0)->getAttribute('refObjectId');
+        $refUnitUnitGroupVersion = $FlowPropXPath->query('//fp:flowPropertyDataSet/fp:flowPropertiesInformation/fp:quantitativeReference/fp:referenceToReferenceUnitGroup')->item(0)->getAttribute('version');
 
         /**
          * Get UnitGroup
          */
-        $UnitGroupXPath = $this->Connector->getUnitGroup($refUnitUnitGroupUuid);
+        $UnitGroupXPath = $this->Connector->getUnitGroup($refUnitUnitGroupUuid, $refUnitUnitGroupVersion);
         $UnitGroupXPath->registerNamespace('ug', 'http://lca.jrc.it/ILCD/UnitGroup');
         $UnitGroupXPath->registerNamespace('common', 'http://lca.jrc.it/ILCD/Common');
         $internalUnitGroupDataSetId = $UnitGroupXPath->query('//ug:unitGroupDataSet/ug:unitGroupInformation/ug:quantitativeReference/ug:referenceToReferenceUnit')->item(0)->textContent;

@@ -37,6 +37,7 @@ use DOMElement;
 use Elca\Db\ElcaProjectConstruction;
 use Elca\Db\ElcaProjectEnEv;
 use Elca\Db\ElcaProjectFinalEnergyDemand;
+use Elca\Db\ElcaProjectKwk;
 use Elca\Db\ElcaProjectTransportSet;
 use Elca\Db\ElcaProjectVariant;
 use Elca\Db\ElcaReportSet;
@@ -47,7 +48,6 @@ use Elca\View\helpers\ElcaHtmlNumericInput;
 use Elca\View\helpers\ElcaHtmlNumericText;
 use Elca\View\helpers\ElcaReportAssetsConverter;
 use Elca\View\helpers\ElcaTranslatorConverter;
-use Elca\View\Report\ElcaReportsView;
 
 /**
  * Builds the asset report for construction elements
@@ -99,21 +99,21 @@ class ElcaReportAssetsView extends ElcaReportsView
     /**
      * Renders the report
      *
-     * @param DOMElement        $Container
-     * @param DOMElement         $InfoDl
+     * @param DOMElement         $Container
+     * @param DOMElement         $infoDl
      * @param ElcaProjectVariant $ProjectVariant
      * @param int                $lifeTime
      */
-    protected function renderReports(DOMElement $Container, DOMElement $InfoDl, ElcaProjectVariant $ProjectVariant, $lifeTime)
+    protected function renderReports(DOMElement $Container, DOMElement $infoDl, ElcaProjectVariant $ProjectVariant, $lifeTime)
     {
         $this->addClass($Container, 'report-assets report-assets-'.$this->buildMode);
 
         $ProjectConstruction = ElcaProjectConstruction::findByProjectVariantId($this->projectVariantId);
 
-        $InfoDl->appendChild($this->getDt([], t('Bezugsfläche (NGF)') . ': '));
-        $InfoDl->appendChild($this->getDd([], ElcaNumberFormat::toString($ProjectConstruction->getNetFloorSpace()) . ' m²'));
+        $infoDl->appendChild($this->getDt([], t('Bezugsfläche (NGF)') . ': '));
+        $infoDl->appendChild($this->getDd([], ElcaNumberFormat::toString($ProjectConstruction->getNetFloorSpace()) . ' m²'));
 
-        $TdContainer = $this->appendPrintTable($Container);
+        $tdContainer = $this->appendPrintTable($Container);
 
         switch($this->buildMode)
         {
@@ -122,28 +122,42 @@ class ElcaReportAssetsView extends ElcaReportsView
                 break;
 
             case self::BUILDMODE_NON_DEFAULT_LIFE_TIME_ASSETS:
-                $TdContainer->appendChild($this->getP(t('Folgenden Baustoffen wurden eigene Nutzungsdauern zugewiesen.')));
-                $this->buildAssets($TdContainer, ElcaReportSet::findNonDefaultLifeTimeAssets($this->projectVariantId));
+                $tdContainer->appendChild($this->getP(t('Folgenden Baustoffen wurden eigene Nutzungsdauern zugewiesen.')));
+                $this->buildAssets($tdContainer, ElcaReportSet::findNonDefaultLifeTimeAssets($this->projectVariantId));
                 break;
 
             case self::BUILDMODE_NOT_CALCULATED_COMPONENTS:
-                $TdContainer->appendChild($this->getP(t('Folgende Baustoffe werden in der Ökobilanzierung des Projekts nicht berücksichtigt.')));
-                $this->buildAssets($TdContainer, ElcaReportSet::findNotCalculatedComponents($this->projectVariantId));
+                $tdContainer->appendChild($this->getP(t('Folgende Baustoffe werden in der Ökobilanzierung des Projekts nicht berücksichtigt.')));
+                $this->buildAssets($tdContainer, ElcaReportSet::findNotCalculatedComponents($this->projectVariantId));
                 break;
 
             case self::BUILDMODE_SYSTEMS:
-                $this->buildAssets($TdContainer, ElcaReportSet::findSystemAssets($this->projectVariantId));
+                $this->buildAssets($tdContainer, ElcaReportSet::findSystemAssets($this->projectVariantId));
                 break;
 
             case self::BUILDMODE_OPERATION:
-                $ProjectEnEv = ElcaProjectEnEv::findByProjectVariantId($this->projectVariantId);
-                $InfoDl->appendChild($this->getDt([], t('EnEV-Bezugsfläche (NGF)') . ': '));
-                $InfoDl->appendChild($this->getDd([], $ProjectEnEv->getNgf().' m²'));
+                $projectEnEv = ElcaProjectEnEv::findByProjectVariantId($this->projectVariantId);
+                $infoDl->appendChild($this->getDt([], t('EnEV-Bezugsfläche (NGF)') . ': '));
+                $infoDl->appendChild($this->getDd([], $projectEnEv->getNgf() . ' m²'));
 
-                $TdContainer->appendChild($this->getH1(t('Endenergiebereitstellung')));
-                $this->buildOperationAssets($TdContainer, ElcaReportSet::findFinalEnergySupplyAssets($this->projectVariantId));
-                $TdContainer->appendChild($this->getH1(t('Endenergiebedarf')));
-                $this->buildOperationAssets($TdContainer, ElcaReportSet::findFinalEnergyDemandAssets($this->projectVariantId));
+                $tdContainer->appendChild($this->getH1(t('Endenergiebereitstellung')));
+                $this->buildOperationAssets($tdContainer, ElcaReportSet::findFinalEnergySupplyAssets($this->projectVariantId));
+                $tdContainer->appendChild($this->getH1(t('Endenergiebedarf')));
+                $this->buildOperationAssets($tdContainer, ElcaReportSet::findFinalEnergyDemandAssets($this->projectVariantId));
+
+                $projectKwk = ElcaProjectKwk::findByProjectVariantId($this->projectVariantId);
+
+                if ($projectKwk->isInitialized()) {
+                    $h1 = $tdContainer->appendChild($this->getH1(t('Fernwärme')));
+
+                    if ($projectKwk->getName()) {
+                        $h1->appendChild($this->getText(' "'. $projectKwk->getName() .'"'));
+                    }
+                    $kwkFinalEnergyDemandAssets = ElcaReportSet::findKwkFinalEnergyDemandAssets($this->projectVariantId);
+                    $this->buildOperationAssets($tdContainer,
+                        $kwkFinalEnergyDemandAssets);
+                    $this->buildKwkPieChart($tdContainer, $kwkFinalEnergyDemandAssets);
+                }
                 break;
 
             case self::BUILDMODE_TRANSPORTS:
@@ -151,10 +165,10 @@ class ElcaReportAssetsView extends ElcaReportsView
                 if (!$TransportSet->count() || !$TransportSet[0]->getCalcLca())
                     return;
 
-                $this->buildTransportAssets($TdContainer, ElcaReportSet::findTransportAssets($this->projectVariantId));
+                $this->buildTransportAssets($tdContainer, ElcaReportSet::findTransportAssets($this->projectVariantId));
                 break;
             case self::BUILDMODE_TOP_ASSETS:
-                $this->appendTopAssets($TdContainer, $ProjectVariant);
+                $this->appendTopAssets($tdContainer, $ProjectVariant);
                 break;
         }
     }
@@ -271,14 +285,16 @@ class ElcaReportAssetsView extends ElcaReportsView
             $Row = $Body->addTableRow();
             $Row->setAttribute('class', 'component');
 
-            $Row->getColumn('process_config_name')->setOutputElement(new ElcaHtmlComponentAssets('process_config_name'));
+            $Row->getColumn('process_config_name')->setOutputElement(new ElcaHtmlComponentAssets('process_config_name',
+                null, null, $this->Project->getProcessDbId()));
             $Row->getColumn('component_layer_position')->setOutputElement(new HtmlText('component_layer_position', $Converter));
 
             if ($this->buildMode !== self::BUILDMODE_NON_DEFAULT_LIFE_TIME_ASSETS) {
                 $Row = $Body->addTableRow();
                 $Row->setAttribute('class', 'details');
                 $Row->getColumn('component_layer_position')->setColSpan(2);
-                $Row->getColumn('component_layer_position')->setOutputElement(new ElcaHtmlComponentAssets('component_layer_position', $Converter));
+                $Row->getColumn('component_layer_position')->setOutputElement(new ElcaHtmlComponentAssets('component_layer_position', $Converter,
+                     null, $this->Project->getProcessDbId()));
             }
 
             $Body->setDataSet($components[true]);
@@ -293,13 +309,15 @@ class ElcaReportAssetsView extends ElcaReportsView
             $Body = $Table->createTableBody();
             $Row = $Body->addTableRow();
             $Row->setAttribute('class', 'component');
-            $Row->getColumn('process_config_name')->setOutputElement(new ElcaHtmlComponentAssets('process_config_name'));
+            $Row->getColumn('process_config_name')->setOutputElement(new ElcaHtmlComponentAssets('process_config_name',
+                null, null, $this->Project->getProcessDbId()));
 
             if ($this->buildMode !== self::BUILDMODE_NON_DEFAULT_LIFE_TIME_ASSETS) {
                 $Row = $Body->addTableRow();
                 $Row->setAttribute('class', 'details');
                 $Row->getColumn('component_layer_position')->setColSpan(2);
-                $Row->getColumn('component_layer_position')->setOutputElement(new ElcaHtmlComponentAssets('component_layer_position', $Converter));
+                $Row->getColumn('component_layer_position')->setOutputElement(new ElcaHtmlComponentAssets('component_layer_position', $Converter,
+                    null, $this->Project->getProcessDbId()));
             }
 
             $Body->setDataSet($components[false]);
@@ -381,7 +399,7 @@ class ElcaReportAssetsView extends ElcaReportsView
          */
         $DO = $data[0];
 
-        if ($DO->ident === ElcaProjectFinalEnergyDemand::IDENT_PROCESS_ENERGY) {
+        if (isset($DO->ident) && $DO->ident === ElcaProjectFinalEnergyDemand::IDENT_PROCESS_ENERGY) {
             $name = t('Prozessenergie');
         } else {
             $name = $DO->process_config_name;
@@ -390,6 +408,10 @@ class ElcaReportAssetsView extends ElcaReportsView
         $Container->appendChild($this->getH2($name));
 
         $Dl = $Container->appendChild($this->getDl(['class' => 'clearfix']));
+        if (isset($DO->ratio) && $DO->ratio != 1) {
+            $Dl->appendChild($this->getDt([], t('Anteil') . ':'));
+            $Dl->appendChild($this->getDd([], ElcaNumberFormat::formatQuantity($DO->ratio, '%', 2, true)));
+        }
         $Dl->appendChild($this->getDt([], t('Menge') . ':'));
         $Dl->appendChild($this->getDd([], ElcaNumberFormat::toString($DO->total, 2) . ' KWh / m²a'));
 
@@ -558,6 +580,29 @@ class ElcaReportAssetsView extends ElcaReportsView
 
         return $Container;
     }
-    // End appendTopElements
+
+    private function buildKwkPieChart(DOMElement $tdContainer, ElcaReportSet $kwkFinalEnergyDemandAssets)
+    {
+        $pieData = [];
+        $overallRatio = 0;
+        foreach ($kwkFinalEnergyDemandAssets as $kwkFinalEnergyDemandAsset) {
+            $pieData[] = (object)['name' => $kwkFinalEnergyDemandAsset->process_config_name,
+                                  'value' => $kwkFinalEnergyDemandAsset->ratio];
+
+            $overallRatio += $kwkFinalEnergyDemandAsset->ratio;
+        }
+
+        if ($overallRatio < 1) {
+            $pieData[] = (object)['name' => t('Undefiniert'),
+                                  'value' => 1 - $overallRatio,
+                                  'class' => 'undefined'
+            ];
+        }
+
+        $tdContainer->appendChild($this->getDiv([
+            'class' => 'chart pie-chart',
+            'data-values' => json_encode($pieData)
+        ]));
+    }
 }
 // End ElcaReportAssetsView

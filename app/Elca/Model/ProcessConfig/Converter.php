@@ -25,7 +25,6 @@
 
 namespace Elca\Model\ProcessConfig;
 
-use Elca\Db\ElcaProcessConfig;
 use Elca\Model\Common\Unit;
 use Elca\Model\ProcessConfig\Conversion\Conversion;
 use Elca\Model\ProcessConfig\Conversion\ConversionException;
@@ -71,13 +70,17 @@ class Converter
             return $quantity;
         }
 
-        $conversion = $this->conversions->find($fromUnit, $toUnit);
-
-        if (null === $conversion) {
+        $conversion = $this->conversions->find($fromUnit, $toUnit)->orElse(function() use ($fromUnit, $toUnit) {
             throw new ConversionException($this->processConfigId, $fromUnit, $toUnit);
-        }
+        });
+
 
         return $conversion->convert($quantity);
+    }
+
+    public function conversionsToConvertInto(Unit $toUnit)
+    {
+        return $this->conversions->filterByUnit($toUnit);
     }
 
     public function has(Unit $fromUnit, Unit $toUnit): bool
@@ -92,7 +95,7 @@ class Converter
 
     public function find(Unit $fromUnit, Unit $toUnit): ?Conversion
     {
-        return $this->conversions->find($fromUnit, $toUnit);
+        return $this->conversions->find($fromUnit, $toUnit)->orElse(null);
     }
 
     public function conversions(): ConversionSet

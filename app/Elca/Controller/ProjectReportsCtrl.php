@@ -52,6 +52,7 @@ use Elca\View\Report\ElcaReportElementTypeEffectsView;
 use Elca\View\Report\ElcaReportSummaryComparisonView;
 use Elca\View\Report\ElcaReportSummaryPerResidentView;
 use Elca\View\Report\ElcaReportSummaryView;
+use Elca\View\Report\ElcaReportSummaryWasteCodeView;
 
 /**
  * Reports controller
@@ -169,6 +170,25 @@ class ProjectReportsCtrl extends BaseReportsCtrl
         $view->assign('filterDO', $filterDO);
 
         $this->Osit->add(new ElcaOsitItem(t('Gesamtbilanz pro Person und Jahr'), null, t('Auswertung')));
+        $this->addView(new ElcaProjectReportsNavigationLeftView());
+
+        /**
+         * Summary is the default action, highlight current nav item in project navigation view
+         */
+        $view = $this->addView(new ElcaProjectNavigationView());
+        $view->assign('activeCtrlName', get_class());
+    }
+
+/**
+     * waste code action
+     */
+    protected function summaryWasteCodeAction()
+    {
+        $view = $this->setView(new ElcaReportSummaryWasteCodeView());
+        $view->assign('buildMode', ElcaReportSummaryView::BUILDMODE_TOTAL);
+        $view->assign('projectVariantId', $this->Elca->getProjectVariantId());
+
+        $this->Osit->add(new ElcaOsitItem(t('Abfallschlüssel'), null, t('Auswertung')));
         $this->addView(new ElcaProjectReportsNavigationLeftView());
 
         /**
@@ -383,7 +403,40 @@ class ProjectReportsCtrl extends BaseReportsCtrl
         }
     }
     // End compareSummaryElementTypesAction
-
+	
+	/*
+	** ajax call from reports pages
+	** check, if pdf is ready // 2020-02-07
+	*/
+     public function testpdfvarAction()
+	 {
+		$pdfCreated = false;
+		
+		if (!$this->isAjax() && !$this->Request) {
+            return;
+        }
+		$data = $this->Request;
+		if(isset($data->id))
+		{
+			$reportPDF = ElcaReportSet::findPdfInQueue(
+				$data->id, 
+				$data->pvid,
+				$data->uid, 
+				$data->action
+			);
+			
+			// object - must be a single row only
+			foreach($reportPDF as $reportPDFRow)
+			{
+				if(!is_null($reportPDFRow->ready))
+				{
+					$pdfCreated = true;
+				}
+			}		
+		} 
+			
+		$this->getView()->assign('created', $pdfCreated);
+	 }
 
     /**
      * Benchmark chart data

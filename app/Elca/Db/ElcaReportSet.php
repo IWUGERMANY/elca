@@ -75,6 +75,8 @@ class ElcaReportSet extends DataObjectSet
     const VIEW_REPORT_FINAL_ENERGY_REF_MODEL_EFFECTS = 'elca_cache.report_final_energy_ref_model_effects_v';
     const VIEW_REPORT_TOTAL_CONSTRUCTION_RECYCLING_EFFECTS = 'elca_cache.report_total_construction_recycling_effects_v';
     const VIEW_REPORT_TOTAL_ENERGY_RECYCLING_EFFECTS = 'elca_cache.report_total_energy_recycling_potential';
+	
+	const TABLE_REPORT_PDF_QUEUE = 'elca.reports_pdf_queue';
 
 
     /**
@@ -151,23 +153,57 @@ class ElcaReportSet extends DataObjectSet
      */
     public static function findFinalEnergyDemandAssets($projectVariantId, $force = false)
     {
-        $Project = ElcaProjectVariant::findById($projectVariantId)->getProject();
+        $project = ElcaProjectVariant::findById($projectVariantId)->getProject();
 
-        return self::_find(
+        $sql = \sprintf('SELECT * FROM %s 
+                                WHERE project_variant_id = :projectVariantId
+                                AND process_db_id = :processDbId
+                                AND kwk_id IS NULL
+                              ORDER BY id, life_cycle_p_order',
+            self::VIEW_REPORT_FINAL_ENERGY_DEMAND_ASSETS
+        );
+
+        return self::_findBySql(
             get_class(),
-            self::VIEW_REPORT_FINAL_ENERGY_DEMAND_ASSETS,
-            array(
-                'project_variant_id' => $projectVariantId,
-                'process_db_id'      => $Project->getProcessDbId(),
-            ),
-            array(
-                'id'                 => 'ASC',
-                'life_cycle_p_order' => 'ASC',
-            )
+            $sql,
+            [
+                'projectVariantId' => $projectVariantId,
+                'processDbId'      => $project->getProcessDbId(),
+            ],
+            $force
         );
     }
-    // End findFinalEnergyDemandAssets
 
+    /**
+     * Returns a list of final energy demand assets
+     *
+     * @param  int $projectVariantId
+     * @param bool $force
+     *
+     * @return ElcaReportSet
+     */
+    public static function findKwkFinalEnergyDemandAssets($projectVariantId, $force = false)
+    {
+        $project = ElcaProjectVariant::findById($projectVariantId)->getProject();
+
+        $sql = \sprintf('SELECT * FROM %s 
+                                WHERE project_variant_id = :projectVariantId
+                                AND process_db_id = :processDbId
+                                AND kwk_id IS NOT NULL
+                              ORDER BY id, life_cycle_p_order',
+            self::VIEW_REPORT_FINAL_ENERGY_DEMAND_ASSETS
+        );
+
+        return self::_findBySql(
+            get_class(),
+            $sql,
+            [
+                'projectVariantId' => $projectVariantId,
+                'processDbId'      => $project->getProcessDbId(),
+            ],
+            $force
+        );
+    }
     /**
      * Returns a list of final energy supply assets
      *
@@ -389,18 +425,53 @@ class ElcaReportSet extends DataObjectSet
      */
     public static function findFinalEnergyDemandEffects($projectVariantId, $force = false)
     {
-        return self::_find(
+        $sql = \sprintf('SELECT * FROM %s 
+                                WHERE project_variant_id = :projectVariantId
+                                AND is_hidden = :isHidden
+                                AND kwk_id IS NULL
+                              ORDER BY id, indicator_p_order',
+            self::VIEW_REPORT_FINAL_ENERGY_DEMAND_EFFECTS
+        );
+
+        return self::_findBySql(
             get_class(),
-            self::VIEW_REPORT_FINAL_ENERGY_DEMAND_EFFECTS,
-            array('project_variant_id' => $projectVariantId, 'is_hidden' => false),
-            array(
-                'id'                => 'ASC',
-                'indicator_p_order' => 'ASC',
-            )
+            $sql,
+            [
+                'projectVariantId' => $projectVariantId,
+                'isHidden' => false,
+            ],
+            $force
         );
     }
-    // End findFinalEnergyDemandEffects
 
+    /**
+     * Returns a list of final energy demand effects
+     *
+     * @param  int $projectVariantId
+     * @param bool $force
+     *
+     * @return ElcaReportSet
+     */
+    public static function findKwkFinalEnergyDemandEffects($projectVariantId, $force = false)
+    {
+        $sql = \sprintf('SELECT * FROM %s 
+                                WHERE project_variant_id = :projectVariantId
+                                AND is_hidden = :isHidden
+                                AND kwk_id IS NOT NULL
+                              ORDER BY id, indicator_p_order',
+            self::VIEW_REPORT_FINAL_ENERGY_DEMAND_EFFECTS
+        );
+
+        return self::_findBySql(
+            get_class(),
+            $sql,
+            [
+                'projectVariantId' => $projectVariantId,
+                'isHidden' => false,
+            ],
+            $force
+        );
+    }
 
     /**
      * Returns a list of final energy supply effects
@@ -446,6 +517,129 @@ class ElcaReportSet extends DataObjectSet
         );
     }
     // End findTransportEffects
+
+
+    /**
+     * Find data in PDF Queue
+	 * @param  $projectVariantId
+	 * @param  $projectId
+	 * @param  $userId
+	 * @param  $report_name
+     * @return ElcaReportSet
+     */
+    public static function findPdfInQueue($projectId, $projectVariantId,$userId, $report_name)
+    {
+		$initValues = array('project_variant_id' => $projectVariantId, 'project_id' => $projectId, 'user_id' => $userId, 'report_name' => $report_name);
+        $sql = sprintf(
+            'SELECT * FROM %s 
+                    WHERE user_id = :user_id 
+					AND	current_variant_id = :project_variant_id
+					AND projects_id = :project_id
+					AND report_name = :report_name'
+            , self::TABLE_REPORT_PDF_QUEUE
+        );
+		// 	AND ready IS NOT NULL
+        return self::_findBySql(get_class(), $sql, $initValues);		
+    }	
+
+    /**
+     * Find data in PDF Queue
+	 * @param  $projectVariantId
+	 * @param  $projectId
+	 * @param  $userId
+	 * @param  $key
+     * @return array
+     */
+    public static function findPdfInQueueByHash($projectId, $projectVariantId,$userId, $key_hash)
+    {
+		$initValues = array('project_variant_id' => $projectVariantId, 'project_id' => $projectId, 'user_id' => $userId, 'key' => $key_hash);
+        $sql = sprintf(
+            'SELECT * FROM %s 
+                    WHERE user_id = :user_id 
+					AND	current_variant_id = :project_variant_id
+					AND projects_id = :project_id
+					AND key = :key'
+            , self::TABLE_REPORT_PDF_QUEUE
+        );
+		// 	AND ready IS NOT NULL
+        return self::_findBySql(get_class(), $sql, $initValues);		
+    }	
+
+	/**
+     * Save data in PDF queue
+     */
+    public static function setPdfInQueue(array $initValues)
+    {
+		$PDFinfo = self::findPdfInQueue($initValues['projects_id'], $initValues['current_variant_id'],$initValues['user_id'], $initValues['report_name']);
+		
+		if( $PDFinfo->isEmpty() )
+		{
+			$sql = sprintf(
+				'INSERT INTO %s (user_id,projects_id,report_name,projects_filename,current_variant_id,pdf_cmd,key)
+				 VALUES  (:user_id, :projects_id, :report_name, :projects_filename, :current_variant_id, :pdf_cmd, (:key)::varchar)'
+				,
+				self::TABLE_REPORT_PDF_QUEUE
+			);
+		}	
+		else
+		{
+			$infoArrayKey = (array)$PDFinfo[0]->key;
+			$initValues['key'] = $infoArrayKey[0];
+			
+			$sql = sprintf(
+				'UPDATE %s set projects_filename=:projects_filename, pdf_cmd=:pdf_cmd, key=(:key)::varchar, ready=NULL, created=NOW()
+				WHERE user_id=:user_id
+				AND	projects_id=:projects_id
+				AND report_name=:report_name
+				AND current_variant_id=:current_variant_id
+				AND key=:key',
+				self::TABLE_REPORT_PDF_QUEUE
+			);
+		}	
+	
+		$Stmt = self::prepareStatement($sql,$initValues ); 
+		if (!$Stmt->execute()) {
+			throw new \Exception(self::getSqlErrorMessage($sql, $initValues));
+        }
+        return true;
+    }
+	
+	
+	/**
+     * Save data in PDF queue
+     */
+    public static function setPdfReadyInQueue($initValues)
+    {
+		$sql = sprintf(
+				'UPDATE %s set ready=NOW()
+				WHERE user_id=:user_id
+				AND	projects_id=:projects_id
+				AND report_name=:report_name
+				AND current_variant_id=:current_variant_id',
+				self::TABLE_REPORT_PDF_QUEUE
+		);
+
+		$Stmt = self::prepareStatement($sql,$initValues ); 
+		if (!$Stmt->execute()) {
+			throw new \Exception(self::getSqlErrorMessage($sql, $initValues));
+        }
+        return true;
+    }	
+
+    /**
+     * Create PDF - query Queue in runner.php Task
+     * @return ElcaReportSet
+     */
+    public static function createPdfInQueue()
+    {
+		$sql = sprintf(
+            'SELECT * FROM %s 
+                    WHERE ready IS NULL' 
+            , self::TABLE_REPORT_PDF_QUEUE
+        );
+		// 	AND ready IS NOT NULL
+        return self::_findBySql(get_class(), $sql, null);		
+    }	
 
 
     /**
@@ -1594,5 +1788,6 @@ class ElcaReportSet extends DataObjectSet
 
         return [$initValues, $filterSql];
     }
+	
 }
 // End ElcaReportSet

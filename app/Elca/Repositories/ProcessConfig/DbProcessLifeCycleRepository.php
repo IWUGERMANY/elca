@@ -26,8 +26,8 @@
 namespace Elca\Repositories\ProcessConfig;
 
 use Elca\Db\ElcaProcess;
-use Elca\Db\ElcaProcessConversion;
-use Elca\Db\ElcaProcessConversionSet;
+use Elca\Db\ElcaProcessConversionVersion;
+use Elca\Db\ElcaProcessConversionVersionSet;
 use Elca\Db\ElcaProcessIndicator;
 use Elca\Db\ElcaProcessIndicatorSet;
 use Elca\Db\ElcaProcessSet;
@@ -41,28 +41,26 @@ use Elca\Model\Process\ProcessId;
 use Elca\Model\Process\ProcessName;
 use Elca\Model\Process\Scenario;
 use Elca\Model\Process\Stage;
+use Elca\Model\ProcessConfig\Conversion\ConversionType;
 use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\ProcessConfig\LifeCycle\Process;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycle;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycleRepository;
 use Elca\Model\ProcessConfig\ProcessConfigId;
+use Elca\Model\ProcessConfig\ProcessLifeCycleId;
 use Utils\Model\FactoryHelper;
 
 class DbProcessLifeCycleRepository implements ProcessLifeCycleRepository
 {
-    public function findById(ProcessConfigId $processConfigId, ProcessDbId $processDbId): ProcessLifeCycle
+    public function findById(ProcessLifeCycleId $processLifeCycleId): ProcessLifeCycle
     {
         $processSet         = ElcaProcessSet::findByProcessConfigId(
-            $processConfigId->value(),
-            ['process_db_id' => $processDbId->value()]
-        );
-        $conversionSet      = ElcaProcessConversionSet::findByProcessConfigId($processConfigId->value());
-        $indicatorValuesSet = ElcaProcessIndicatorSet::findByProcessIds(
-            $processSet->getArrayBy()
+            $processLifeCycleId->processConfigId()->value(),
+            ['process_db_id' => $processLifeCycleId->processDbId()->value()]
         );
 
-        return $this->build($processConfigId, $processDbId, $processSet, $conversionSet, $indicatorValuesSet);
+        return $this->build($processLifeCycleId->processConfigId(), $processLifeCycleId->processDbId(), $processSet);
     }
 
     public function findByIdAndStage(
@@ -75,17 +73,10 @@ class DbProcessLifeCycleRepository implements ProcessLifeCycleRepository
             $processConfigId->value(),
             ['process_db_id' => $processDbId->value(), 'life_cycle_phase' => $stage->value()]
         );
-        $conversionSet      = ElcaProcessConversionSet::findByProcessConfigId($processConfigId->value());
-        $indicatorValuesSet = ElcaProcessIndicatorSet::findByProcessIds(
-            $processSet->getArrayBy()
-        );
 
-        return $this->build($processConfigId, $processDbId, $processSet, $conversionSet, $indicatorValuesSet);
+        return $this->build($processConfigId, $processDbId, $processSet);
     }
 
-    /**
-     * @return ProcessLifeCycle[]
-     */
     public function findAllByProcessConfigId(ProcessConfigId $processConfigId): array
     {
         $groupedProcesses = [];
@@ -101,92 +92,52 @@ class DbProcessLifeCycleRepository implements ProcessLifeCycleRepository
 
         $result = [];
         foreach ($groupedProcesses as $processDbId => $processSet) {
-            $conversionSet      = ElcaProcessConversionSet::findByProcessConfigId($processConfigId->value(), ['id' => 'ASC']);
-            $indicatorValuesSet = ElcaProcessIndicatorSet::findByProcessIds(
-                $processSet->getArrayBy()
-            );
-
             $result[] = $this->build(
                 $processConfigId,
                 new ProcessDbId($processDbId),
-                $processSet,
-                $conversionSet,
-                $indicatorValuesSet
+                $processSet
             );
         }
 
         return $result;
     }
 
-    private function build(
-        ProcessConfigId $processConfigId, ProcessDbId $processDbId, ElcaProcessSet $processSet,
-        ElcaProcessConversionSet $conversionSet, ElcaProcessIndicatorSet $indicatorValuesSet
+    private function build(ProcessConfigId $processConfigId, ProcessDbId $processDbId, ElcaProcessSet $processSet
     ) {
+        $indicatorValuesSet = ElcaProcessIndicatorSet::findByProcessIds(
+            $processSet->getArrayBy()
+        );
+
         $processes = $conversions = [];
 
         /**
          * @var ElcaProcess $dbProcess
          */
         foreach ($processSet as $dbProcess) {
-            $dbProcessId = $dbProcess->getId();
-
-            $indicatorValues = $indicatorValuesSet
-                ->filter(
-                    function (ElcaProcessIndicator $processIndicator) use ($dbProcessId) {
-                        return $processIndicator->getProcessId() === $dbProcessId;
-                    }
-                )->map(
-                    function (ElcaProcessIndicator $processIndicator) {
-                        return new IndicatorValue(
-                            new IndicatorIdent($processIndicator->getIndicatorIdent()),
-                            (float)$processIndicator->getValue()
-                        );
-                    }
-                );
-
-            $dbScenario = null !== $dbProcess->getScenarioId()
-                ? $dbProcess->getScenario()
-                : null;
-
-            $scenario = null;
-            if (null !== $dbScenario) {
-                $scenario = new Scenario(
-                    $dbScenario->getIdent(),
-                    $dbScenario->isDefault(),
-                    $dbScenario->getDescription(),
-                    $dbScenario->getGroupIdent()
-                );
-
-                $scenario->setSurrogateId($dbScenario->getId());
-            }
-
-            $processes[$dbProcessId] = new Process(
-                new ProcessId(
-                    $dbProcessId,
-                    $dbProcess->getUuid()
-                ),
-                new Module($dbProcess->getLifeCycleIdent()),
-                new Quantity($dbProcess->getRefValue(), new Unit($dbProcess->getRefUnit())),
-                new ProcessName($dbProcess->getName(), $dbProcess->getNameOrig()),
-                (float)$dbProcess->getRatio(),
-                $indicatorValues
-            );
+            $processes[$dbProcess->getId()] = $this->buildProcess($indicatorValuesSet, $dbProcess);
         }
+
         /**
-         * @var ElcaProcessConversion $dbProcessConversion
+         * @var ElcaProcessConversionVersion[] $processConversionVersions
          */
-        foreach ($conversionSet as $dbProcessConversion) {
-            $conversionClass = $dbProcessConversion->getIdent()
-                ? ImportedLinearConversion::class
-                : LinearConversion::class;
+        $processConversionVersions = ElcaProcessConversionVersionSet::findExtendedByProcessConfigIdAndProcessDbId(
+            $processConfigId->value(), $processDbId->value(), ['id' => 'ASC']
+        );
 
-            $conversions[] = $conversion = new $conversionClass(
-                new Unit($dbProcessConversion->getInUnit()),
-                new Unit($dbProcessConversion->getOutUnit()),
-                $dbProcessConversion->getFactor()
-            );
+        foreach ($processConversionVersions as $dbProcessConversionVersion) {
+            $fromUnit = new Unit($dbProcessConversionVersion->getInUnit());
+            $toUnit   = new Unit($dbProcessConversionVersion->getOutUnit());
 
-            $conversion->setSurrogateId($dbProcessConversion->getId());
+            $factor = $dbProcessConversionVersion->getFactor();
+            $ident = $dbProcessConversionVersion->getIdent();
+
+            $conversion = $ident
+                ? new ImportedLinearConversion($fromUnit, $toUnit, $factor, new ConversionType($ident))
+                : new LinearConversion($fromUnit, $toUnit, $factor);
+
+            $conversion->setSurrogateId($dbProcessConversionVersion->getConversionId());
+
+            $conversions[] = $conversion;
         }
 
         return FactoryHelper::createInstanceWithoutConstructor(
@@ -198,5 +149,56 @@ class DbProcessLifeCycleRepository implements ProcessLifeCycleRepository
                 'conversions'     => $conversions,
             ]
         );
+    }
+
+    private function buildProcess(
+        ElcaProcessIndicatorSet $indicatorValuesSet,
+        ElcaProcess $dbProcess
+    ): Process {
+        $dbProcessId = $dbProcess->getId();
+
+        $indicatorValues = $indicatorValuesSet
+            ->filter(
+                function (ElcaProcessIndicator $processIndicator) use ($dbProcessId) {
+                    return $processIndicator->getProcessId() === $dbProcessId;
+                }
+            )->map(
+                function (ElcaProcessIndicator $processIndicator) {
+                    return new IndicatorValue(
+                        new IndicatorIdent($processIndicator->getIndicatorIdent()),
+                        (float)$processIndicator->getValue()
+                    );
+                }
+            );
+
+        $dbScenario = null !== $dbProcess->getScenarioId()
+            ? $dbProcess->getScenario()
+            : null;
+
+        $scenario = null;
+        if (null !== $dbScenario) {
+            $scenario = new Scenario(
+                $dbScenario->getIdent(),
+                $dbScenario->isDefault(),
+                $dbScenario->getDescription(),
+                $dbScenario->getGroupIdent()
+            );
+
+            $scenario->setSurrogateId($dbScenario->getId());
+        }
+
+        $process = new Process(
+            new ProcessId(
+                $dbProcessId,
+                $dbProcess->getUuid()
+            ),
+            new Module($dbProcess->getLifeCycleIdent()),
+            new Quantity($dbProcess->getRefValue(), new Unit($dbProcess->getRefUnit())),
+            new ProcessName($dbProcess->getName(), $dbProcess->getNameOrig()),
+            (float)$dbProcess->getRatio(),
+            $indicatorValues
+        );
+
+        return $process;
     }
 }

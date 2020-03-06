@@ -24,6 +24,7 @@
  */
 namespace Elca\View\Report;
 
+use Beibob\Blibs\BlibsDateTime;
 use Beibob\Blibs\Environment;
 use Beibob\Blibs\FrontController;
 use Beibob\Blibs\HtmlView;
@@ -33,14 +34,11 @@ use Elca\Db\ElcaLifeCycle;
 use Elca\Db\ElcaProcess;
 use Elca\Db\ElcaProject;
 use Elca\Db\ElcaProjectConstruction;
-use Elca\Db\ElcaProjectLifeCycleUsage;
 use Elca\Db\ElcaProjectVariant;
 use Elca\Db\ElcaReportSet;
 use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Process\Module;
-use Elca\Model\Processing\LifeCycleUsage\LifeCycleUsage;
-use Elca\Model\Processing\LifeCycleUsage\LifeCycleUsages;
 use Elca\Model\Project\ProjectId;
 use Elca\Service\Project\LifeCycleUsageService;
 
@@ -119,8 +117,45 @@ abstract class ElcaReportsView extends HtmlView
 
         $pdfUrl = FrontController::getInstance()->getUrlTo(null, 'pdf', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default']);
         $modalUrl = FrontController::getInstance()->getUrlTo(null, 'pdfModal', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default']);
-        $PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal', 'href' => $modalUrl], t('PDF')));
+		// $modalUrlDownload = FrontController::getInstance()->getUrlTo(null, 'pdfModalDownload', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default']);
+		
+		$PrintDiv->appendChild($this->getA([
+			'class' => 'no-xhr', 
+			'rel' => 'open-modal', 
+			'href' => $modalUrl
+		], t('PDF erstellen')));
 
+		// PDF in work / already exists - project_variant, project_id, user_id
+		$PDFinfo = ElcaReportSet::findPdfInQueue($this->Project->getId(),$this->projectVariantId, UserStore::getInstance()->getUserId(),FrontController::getInstance()->getUrlTo().(FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default').'/');
+		if(!$PDFinfo->isEmpty())
+		{
+			// PDF ready?
+			$infoArrayReady = (array)$PDFinfo[0]->ready;
+			if (isset($infoArrayReady[0]))
+			{
+				$PDFreadyDate = BlibsDateTime::factory($infoArrayReady[0]);
+				$modalUrlDownload = FrontController::getInstance()->getUrlTo(null, 'pdfModalDownload', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default', 't' => $PDFreadyDate->getDateTimeString(t('DATETIME_FORMAT_DMY'))]);
+				$PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal','title' => t('Erstellt:').$PDFreadyDate->getDateTimeString(t('DATETIME_FORMAT_DMY') . ' ' . t('DATETIME_FORMAT_HI')), 'href' => $modalUrlDownload], t('PDF anzeigen')));	
+				
+				$infoArrayKey = (array)$PDFinfo[0]->key;
+				if($infoArrayKey[0])
+				{	
+					
+				}
+			}
+			else
+			{
+				$PrintDiv->appendChild($this->getSpan(t('PDF wird erstellt'),
+				[	'class'=>'pdfcreate blink',
+					'data-check'=>'true',
+					'data-id' => $this->Project->getId(),
+					'data-pvid' => $this->projectVariantId, 
+					'data-uid' => UserStore::getInstance()->getUserId(),
+					'data-action' => FrontController::getInstance()->getUrlTo().(FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : 'default').'/'	
+				]));
+			}	
+		}	
+		
         $ProjectVariant = ElcaProjectVariant::findById($this->projectVariantId);
         $ProjectConstruction = ElcaProjectConstruction::findByProjectVariantId($this->projectVariantId);
 
@@ -263,24 +298,36 @@ abstract class ElcaReportsView extends HtmlView
                                ->findLifeCycleUsagesForProject(new ProjectId($this->Project->getId()));
 
         $parts = [];
-
+		// var_dump($lcUsages);
         foreach ($lcUsages->modulesAppliedInTotal() as $module) {
-            if ($en15804Compliant && $module->isLegacy()) {
-                continue;
-            }
-
-            if (!$en15804Compliant && !$module->isLegacy()) {
-                continue;
-            }
-
             $parts[$module->value()] = t($module->name());
         }
 
-        $parts = $this->cleanupLifeCycleIdents($parts);
+		
 
+        $parts = $this->cleanupLifeCycleIdents($parts);
+		
         sort($parts);
-        return implode(', ', $parts);
+		return implode(', ', $parts);
     }
+
+    /**
+     * @return string
+     */
+    protected function getTotalLifeCycleIdentsReal($reports,$excludesArray)
+    {
+        $parts = [];
+		foreach ($reports as $datasetObj) 
+		{
+			$dataset = (array)$datasetObj;
+			if(!in_array($dataset['category'],$excludesArray) && trim($dataset['category'])!="" )  
+			{
+				$parts[$dataset['category']] = $dataset['category'];
+			}	
+		}
+		return implode(', ', $parts);
+    }
+
 
     /**
      * @return string

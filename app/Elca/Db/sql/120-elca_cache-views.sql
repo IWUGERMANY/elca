@@ -379,7 +379,7 @@ CREATE VIEW elca_cache.report_top_assets_v AS
 
 DROP VIEW IF EXISTS elca_cache.report_final_energy_demand_assets_v;
 CREATE VIEW elca_cache.report_final_energy_demand_assets_v AS
-   SELECT f.id
+SELECT f.id
         , f.project_variant_id
         , pc.name AS process_config_name
         , p.id AS process_id
@@ -399,12 +399,14 @@ CREATE VIEW elca_cache.report_final_energy_demand_assets_v AS
         , f.lighting
         , f.ventilation
         , f.cooling
+        , f.ratio
+        , f.kwk_id
         , cf.quantity AS total
         , cf.ref_unit AS total_unit
-     FROM elca.project_final_energy_demands f
-     JOIN elca_cache.final_energy_demands cf ON f.id = cf.final_energy_demand_id
-     JOIN elca.process_configs pc ON pc.id = f.process_config_id
-     JOIN elca.process_assignments_v p ON p.process_config_id = f.process_config_id AND p.life_cycle_phase = 'op';
+FROM elca.project_final_energy_demands f
+         JOIN elca_cache.final_energy_demands cf ON f.id = cf.final_energy_demand_id
+         JOIN elca.process_configs pc ON pc.id = f.process_config_id
+         JOIN elca.process_assignments_v p ON p.process_config_id = f.process_config_id AND p.life_cycle_phase = 'op';
 
 DROP VIEW IF EXISTS elca_cache.report_final_energy_supply_assets_v;
 CREATE VIEW elca_cache.report_final_energy_supply_assets_v AS
@@ -655,25 +657,27 @@ CREATE VIEW elca_cache.report_effects_v AS
 
 --------------------------------------------------------------------------------
 
-DROP VIEW IF EXISTS elca_cache.report_final_energy_demand_effects_v CASCADE;
 CREATE VIEW elca_cache.report_final_energy_demand_effects_v AS
-    SELECT f.id
-         , f.project_variant_id
-         , f.ident
-         , cf.quantity AS element_quantity
-         , cf.ref_unit AS element_ref_unit
-         , pc.name AS element_name
-         , ci.indicator_id AS indicator_id
-         , ci.value AS indicator_value
-         , i.name AS indicator_name
-         , i.unit AS indicator_unit
-         , i.is_hidden
-         , i.p_order AS indicator_p_order
-      FROM elca.project_final_energy_demands f
-      JOIN elca.process_configs              pc ON pc.id = f.process_config_id
-      JOIN elca_cache.final_energy_demands_v cf ON f.id = cf.final_energy_demand_id
-      JOIN elca_cache.indicators             ci ON cf.item_id = ci.item_id AND ci.life_cycle_ident = 'total'
-      JOIN elca.indicators                    i ON i.id = ci.indicator_id;
+SELECT f.id
+        , f.project_variant_id
+        , f.ident
+        , f.ratio
+        , f.kwk_id
+        , cf.quantity AS element_quantity
+        , cf.ref_unit AS element_ref_unit
+        , pc.name AS element_name
+        , ci.indicator_id AS indicator_id
+        , ci.value AS indicator_value
+        , i.name AS indicator_name
+        , i.unit AS indicator_unit
+        , i.is_hidden
+        , i.p_order AS indicator_p_order
+FROM elca.project_final_energy_demands f
+         JOIN elca.process_configs              pc ON pc.id = f.process_config_id
+         JOIN elca_cache.final_energy_demands_v cf ON f.id = cf.final_energy_demand_id
+         JOIN elca_cache.indicators             ci ON cf.item_id = ci.item_id AND ci.life_cycle_ident = 'total'
+         JOIN elca.indicators                    i ON i.id = ci.indicator_id;
+
 
 DROP VIEW IF EXISTS elca_cache.report_final_energy_supply_effects_v CASCADE;
 CREATE VIEW elca_cache.report_final_energy_supply_effects_v AS
@@ -855,7 +859,11 @@ FROM elca_cache.element_components cec
          JOIN elca.element_components c ON c.id = cec.element_component_id
          JOIN elca.elements e ON e.id = c.element_id
          JOIN elca.process_configs p ON p.id = c.process_config_id
-         LEFT JOIN elca.process_conversions pc ON p.id = pc.process_config_id AND (pc.in_unit, pc.out_unit) = ('m3', 'kg')
+         JOIN elca.project_variants pv ON pv.id = e.project_variant_id
+         JOIN elca.projects proj ON proj.id = pv.project_id
+         LEFT JOIN elca.process_conversions_v pc ON p.id = pc.process_config_id
+                                                AND (pc.in_unit, pc.out_unit) = ('m3', 'kg')
+                                                AND (pc.process_db_id = proj.process_db_id)
 GROUP BY e.project_variant_id
        , c.process_config_id
        , p.name;

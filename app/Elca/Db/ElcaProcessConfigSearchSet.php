@@ -110,13 +110,13 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
 
         $sql = sprintf("SELECT DISTINCT p.*
                           FROM %s p
-                          JOIN %s c ON p.id = c.process_config_id
+                          JOIN %s c ON p.id = c.process_config_id AND c.process_db_id = ANY(p.process_db_ids)
                           LEFT JOIN %s names ON p.id = names.process_config_id AND names.lang = :locale
                          WHERE %s
                       ORDER BY process_category_node_name
                              , p.name"
             , $onlyProdConfigs ? self::VIEW_PROCESS_CONFIG_SEARCH : self::VIEW_PROCESS_CONFIG_SEARCH_ALL
-            , ElcaProcessConversion::TABLE_NAME
+            , ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS
             , ElcaProcessConfigName::TABLE_NAME
             , $conditions
         );
@@ -190,14 +190,14 @@ class ElcaProcessConfigSearchSet extends DataObjectSet
         $sql = sprintf("SELECT DISTINCT p.*
                           FROM %s p
                           JOIN %s pca ON p.id = pca.process_config_id AND pca.ident = :opAsSupply AND pca.numeric_value = 1
-                          JOIN %s c ON p.id = c.process_config_id
+                          JOIN %s c ON p.id = c.process_config_id AND c.process_db_id = ANY(p.process_db_ids)
                           LEFT JOIN %s names ON p.id = names.process_config_id AND names.lang = :locale
                          WHERE %s
                       ORDER BY process_category_node_name
                              , p.name"
             , self::VIEW_PROCESS_CONFIG_SEARCH
             , ElcaProcessConfigAttribute::TABLE_NAME
-            , ElcaProcessConversion::TABLE_NAME
+            , ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS
             , ElcaProcessConfigName::TABLE_NAME
             , $conditions
         );

@@ -30,4 +30,6 @@ interface ProcessConfigRepository
     public function findById(ProcessConfigId $id) : ?ProcessConfig;
 
     public function findAttributeForId(ProcessConfigId $processConfigId, string $attributeIdent): ProcessConfigAttribute;
+
+    public function save(ProcessConfig $processConfig);
 }

@@ -108,7 +108,7 @@ class ProcessLcaCalculatorTest extends TestCase
     public function computationsProvider()
     {
         return [
-            'trivial_conversion_results_are_identical' => [
+            'identity_conversion_results_are_identical' => [
                 new Quantity(1, Unit::m2()),
                 new Quantity(1, Unit::m2()),
                 [],
@@ -125,7 +125,7 @@ class ProcessLcaCalculatorTest extends TestCase
                     19 => 100817.944141264,
                 ],
             ],
-            'trivial_conversion_pet_adds_up'           => [
+            'identity_conversion_pet_adds_up'           => [
                 new Quantity(1, Unit::m2()),
                 new Quantity(1, Unit::m2()),
                 [],

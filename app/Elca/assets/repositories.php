@@ -25,6 +25,7 @@
 
 use Elca\Model\Indicator\IndicatorRepository;
 use Elca\Model\Process\ProcessDbRepository;
+use Elca\Model\ProcessConfig\Conversion\ProcessConversionsRepository;
 use Elca\Model\ProcessConfig\LifeCycle\ProcessLifeCycleRepository;
 use Elca\Model\ProcessConfig\ProcessConfigRepository;
 use Elca\Model\Processing\LifeCycleUsage\LifeCycleUsageRepository;
@@ -32,6 +33,7 @@ use Elca\Model\Project\ProjectAccessTokenRepository;
 use Elca\Repositories\Indicator\DbIndicatorRepository;
 use Elca\Repositories\Process\DbProcessDbRepository;
 use Elca\Repositories\ProcessConfig\DbProcessConfigRepository;
+use Elca\Repositories\ProcessConfig\DbProcessConversionsRepository;
 use Elca\Repositories\ProcessConfig\DbProcessLifeCycleRepository;
 use Elca\Repositories\Processing\DbLifeCycleUsageRepository;
 use Elca\Repositories\Project\DbProjectAccessTokenRepository;
@@ -43,5 +45,6 @@ return [
     ProcessLifeCycleRepository::class   => DI\get(DbProcessLifeCycleRepository::class),
     ProcessDbRepository::class          => DI\get(DbProcessDbRepository::class),
     LifeCycleUsageRepository::class     => DI\get(DbLifeCycleUsageRepository::class),
+    ProcessConversionsRepository::class => DI\get(DbProcessConversionsRepository::class),
 ];
 

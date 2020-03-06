@@ -136,9 +136,15 @@ class Soda4LcaConnector
      * @param  string $format
      * @return DOMXPath
      */
-    public function getProcess($uuid, $format = self::FORMAT_XML)
+    public function getProcess($uuid, $version = null, $format = self::FORMAT_XML)
     {
-        return $this->callApi($this->baseUrl . self::PROCESSES .'/'. $uuid, ['format' => $format], true);
+        $query = ['format' => $format];
+
+        if ($version) {
+            $query['version'] = $version;
+        }
+
+        return $this->callApi($this->baseUrl . self::PROCESSES . '/' . $uuid, $query, true);
     }
     // End getProcess
 
@@ -148,11 +154,17 @@ class Soda4LcaConnector
      *
      * @param  string $uuid
      * @param  string $format
-     * @return \stdClass
+     * @return DOMXPath
      */
-    public function getFlow($uuid, $format = self::FORMAT_XML)
+    public function getFlow($uuid, $version = null, $format = self::FORMAT_XML)
     {
-        return $this->callApi($this->baseUrl . self::FLOWS .'/'. $uuid, ['format' => $format]);
+        $query = ['format' => $format];
+
+        if ($version) {
+            $query['version'] = $version;
+        }
+
+        return $this->callApi($this->baseUrl . self::FLOWS . '/' . $uuid, $query);
     }
     // End getFlow
 
@@ -162,11 +174,19 @@ class Soda4LcaConnector
      *
      * @param  string $uuid
      * @param  string $format
-     * @return \stdClass
+     * @return DOMXPath
      */
-    public function getFlowProperty($uuid, $format = self::FORMAT_XML)
+    public function getFlowProperty($uuid, $version = null, $format = self::FORMAT_XML)
     {
-        return $this->callApi($this->baseUrl . self::FLOWPROPERTIES .'/'. $uuid, ['format' => $format]);
+        $query = ['format' => $format];
+
+        // 04.12.19 Disabled. Retrieving a flow property with version leads to this messge:
+        // "A flow property data set with the uuid xxxx cannot be found in the database
+//        if ($version) {
+//            $query['version'] = $version;
+//        }
+
+        return $this->callApi($this->baseUrl . self::FLOWPROPERTIES . '/' . $uuid, $query);
     }
     // End getFlowProperty
 
@@ -176,7 +196,7 @@ class Soda4LcaConnector
      *
      * @param  string $uuid
      * @param  string $format
-     * @return \stdClass
+     * @return DOMXPath
      */
     public function getFlowDescendants($uuid, $format = self::FORMAT_XML)
     {
@@ -190,11 +210,17 @@ class Soda4LcaConnector
      *
      * @param  string $uuid
      * @param  string $format
-     * @return \stdClass
+     * @return DOMXPath
      */
-    public function getUnitGroup($uuid, $format = self::FORMAT_XML)
+    public function getUnitGroup($uuid, $version, $format = self::FORMAT_XML)
     {
-        return $this->callApi($this->baseUrl . self::UNITGROUPS .'/'. $uuid, ['format' => $format]);
+        $query = ['format' => $format];
+
+        if ($version) {
+            $query['version'] = $version;
+        }
+
+        return $this->callApi($this->baseUrl . self::UNITGROUPS . '/' . $uuid, $query);
     }
     // End getUnitGroup
 
@@ -215,8 +241,9 @@ class Soda4LcaConnector
      * API call
      *
      * @param string $url
-     * @param array $data
+     * @param array  $data
      * @return DOMXPath
+     * @throws Soda4LcaException
      */
     private function callApi($url, array $data = null, $force = false)
     {
@@ -244,16 +271,21 @@ class Soda4LcaConnector
         $info = curl_getinfo($curl);
         curl_close($curl);
 
-        $Doc = new DOMDocument();
-        if(!$Doc->loadXml($xml))
+        $domDocument = new DOMDocument();
+        if(!$domDocument->loadXml($xml))
         {
-            $this->Log->error('Connected to '. $url .' failed: no valid xml', __METHOD__);
-            throw new Soda4LcaException('Xml document could not be loaded for url: '. $url, Soda4LcaException::NO_VALID_XML_DOCUMENT);
+            $this->Log->error('Connected to '. $url .' failed: no valid xml: '. $xml, __METHOD__);
+            $substr = \substr($xml, 0, 500);
+            $message    = 'Xml document could not be loaded for url `' . $url . '\': ' . $substr;
+            if ($substr !== $xml) {
+                $message .= '...';
+            }
+            throw new Soda4LcaException($message, Soda4LcaException::NO_VALID_XML_DOCUMENT);
         }
 
         $this->Log->debug('Connected to '. $url .' succeeded in '. $info['total_time'] .' seconds. Retrieved '.$info['size_download'].' bytes with '.$info['speed_download'].' bytes per second', __METHOD__);
 
-        return $this->cache[$url] = new DOMXPath($Doc);
+        return $this->cache[$url] = new DOMXPath($domDocument);
     }
     // End callApi
 

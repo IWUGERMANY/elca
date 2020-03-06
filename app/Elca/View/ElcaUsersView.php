@@ -42,9 +42,18 @@ class ElcaUsersView extends HtmlView
     /**
      * Lädt ein Template
      */
+	
+	//	array where clause Table Users
+	private $showStatus = null;
+	private $initValues = null;
+	 
     public function __construct(array $args = [])
     {
-        parent::__construct('elca_users');
+		parent::__construct('elca_users');
+		
+		if(!is_null($args) && isset($args['status'])) {
+			$this->showStatus = $args['status'];
+		}
     }
     // End __construct
 
@@ -55,7 +64,15 @@ class ElcaUsersView extends HtmlView
      */
     protected function beforeRender()
     {
-        $Users = UserSet::find(null, ['CASE WHEN lastname <> \'\' THEN lower(lastname) ELSE lower(auth_name) END' => 'ASC']);
+		switch ($this->showStatus) {
+			case 'requested': 	$this->initValues['status'] = User::STATUS_REQUESTED; break;
+			case 'confirmed': 	$this->initValues['status'] = User::STATUS_CONFIRMED; break;
+			case 'legacy': 		$this->initValues['status'] = User::STATUS_LEGACY; break;
+			case 'locked':		$this->initValues['is_locked'] = true; break;
+			case 'nologin': 	$this->initValues['login_time'] = NULL; break;
+        }
+		
+        $Users = UserSet::find($this->initValues, ['CASE WHEN lastname <> \'\' THEN lower(lastname) ELSE lower(auth_name) END' => 'ASC']);
 
         if(!count($Users))
             return;

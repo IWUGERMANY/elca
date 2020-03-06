@@ -25,8 +25,8 @@
 
 namespace Elca\Model\ProcessConfig\Conversion;
 
+use Elca\Model\Common\Optional;
 use Elca\Model\Common\Unit;
-use phpDocumentor\Reflection\Types\Void_;
 
 class ConversionSet implements \IteratorAggregate
 {
@@ -34,6 +34,11 @@ class ConversionSet implements \IteratorAggregate
      * @var Conversion[][]
      */
     private $conversions;
+
+    public static function fromArray(array $conversions): ConversionSet
+    {
+        return new self($conversions);
+    }
 
     /**
      * Converter constructor.
@@ -58,11 +63,18 @@ class ConversionSet implements \IteratorAggregate
 
     public function add(Conversion $conversion)
     {
-        if (null !== $this->find($conversion->fromUnit(), $conversion->toUnit())) {
+        if ($this->find($conversion->fromUnit(), $conversion->toUnit())->isPresent()) {
             return;
         }
 
         $this->conversions[(string)$conversion->fromUnit()][(string)$conversion->toUnit()] = $conversion;
+    }
+
+    public function addSet(ConversionSet $conversionSet)
+    {
+        foreach ($conversionSet as $conversion) {
+            $this->add($conversion);
+        }
     }
 
     public function has(Unit $fromUnit, Unit $toUnit): bool
@@ -75,20 +87,23 @@ class ConversionSet implements \IteratorAggregate
         return isset($this->conversions[(string)$fromUnit][(string)$toUnit]);
     }
 
-    public function find(Unit $fromUnit, Unit $toUnit): ?Conversion
+    public function find(Unit $fromUnit, Unit $toUnit): Optional
     {
         if ($this->hasExact($fromUnit, $toUnit)) {
-            return $this->conversions[(string)$fromUnit][(string)$toUnit];
+            return Optional::of($this->conversions[(string)$fromUnit][(string)$toUnit]);
         }
 
         if ($this->hasExact($toUnit, $fromUnit)) {
-            return $this->conversions[(string)$toUnit][(string)$fromUnit]
-                ->invert();
+            return Optional::of($this->conversions[(string)$toUnit][(string)$fromUnit]
+                ->invert());
         }
 
-        return null;
+        return Optional::ofEmpty();
     }
 
+    /**
+     * @return Conversion[]
+     */
     public function toArray(): array
     {
         $list = [[]];
@@ -111,10 +126,10 @@ class ConversionSet implements \IteratorAggregate
     {
         $units = [];
         foreach ($this->toArray() as $conversion) {
-            $fromUnit             = $conversion->fromUnit();
+            $fromUnit                 = $conversion->fromUnit();
             $units[(string)$fromUnit] = $fromUnit;
-            $toUnit             = $conversion->toUnit();
-            $units[(string)$toUnit] = $toUnit;
+            $toUnit                   = $conversion->toUnit();
+            $units[(string)$toUnit]   = $toUnit;
         }
 
         return $units;
@@ -124,4 +139,33 @@ class ConversionSet implements \IteratorAggregate
     {
         return empty($this->conversions);
     }
+
+    /**
+     * @param Unit $unit
+     *
+     * @return Conversion[]
+     */
+    public function filterByUnit(Unit $unit): array
+    {
+        return \array_filter($this->toArray(), function (Conversion $conversion) use ($unit) {
+            return $conversion->fromUnit()->equals($unit) || $conversion->toUnit()->equals($unit);
+        });
+    }
+
+    public function union(ConversionSet $availableConversions): ConversionSet
+    {
+        $unionSet = clone $this;
+
+        foreach ($availableConversions as $conversion) {
+            $unionSet->add($conversion);
+        }
+
+        return $unionSet;
+    }
+
+    public function mappedIndex(): array
+    {
+        return $this->conversions;
+    }
+
 }

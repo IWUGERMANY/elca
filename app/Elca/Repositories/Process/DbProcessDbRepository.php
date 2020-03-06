@@ -37,10 +37,10 @@ class DbProcessDbRepository implements ProcessDbRepository
     /**
      * @return ProcessDb[]
      */
-    public function findAll(): array
+    public function findAll(array $orderBy = null): array
     {
         $result = [];
-        foreach (ElcaProcessDbSet::find() as $elcaProcessDb) {
+        foreach (ElcaProcessDbSet::find(null, $orderBy) as $elcaProcessDb) {
             $result[] = $this->build($elcaProcessDb);
         }
 

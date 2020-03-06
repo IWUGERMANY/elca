@@ -11,14 +11,14 @@ class Validator extends ElcaValidator
 {
     public function assertImportFile($property)
     {
-        if (!$this->assertTrue($property, File::uploadFileExists($property), t('Bitte geben Sie eine Importdatei an!'))) {
+		if (!$this->assertTrue($property, File::uploadFileExists($property), t('Bitte geben Sie eine Importdatei an!'))) {
             return false;
         }
 
         if (!$this->assertTrue(
             $property,
                 preg_match('/\.csv$/iu', (string)$_FILES[$property]['name']),
-                t('Bitte nur CSV Dateien importieren!')
+                t('Bitte nur CSV und XLS/XLS Dateien importieren!')
         )) {
             return false;
         }
