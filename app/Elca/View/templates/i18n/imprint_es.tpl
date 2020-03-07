@@ -24,15 +24,13 @@ Reichsstraße 100<br/>
   </p>
 
 
-  <h2>Desarrollo (2012-2018)</h2>
   <p>BEIBOB Medienfreunde<br/>
     Tobias Lode und Fabian Möller GbR<br/>
-    Stefan-George-Weg 44A<br/>
-    64285 Darmstadt<br/>
+    Pragelatostraße 108<br/>
+    64372 Ober-Ramstadt<br/>
     <a class="no-xhr" href="mailto:sayhello@beibob.de">sayhello@beibob.de</a><br/>
     <a class="no-xhr" target="_blank" href="http://www.beibob.de">http://www.beibob.de</a>
   </p>
-
 
   <h2>Responsabilidad por el contenido</h2>
   <p>Bundesinstitut für Bau-, Stadt-und Raumforschung<br/>

@@ -56,8 +56,8 @@ class Elca
     /**
      * Version
      */
-    const VERSION = '1.7.0';
-    const VERSION_BBSR = '0.9.6';
+    const VERSION = '1.8.0';
+    const VERSION_BBSR = '0.9.7';
 
     /**
      * Default ini path

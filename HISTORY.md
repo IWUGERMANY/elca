@@ -1,3 +1,19 @@
+# 1.8.0 (0.9.7)
++ Ergänzt Optimierungen an der Navigation
++ Ergänzt Optimierungen in der Darstellung im Bereich Auswertungen
++ Ergänzt Optimierungen im Administrationsbereich
++ Ergänzt Optimierungen bei der Pflege und Importierung von Umrechnungsfaktoren
++ Ergänzt Erweiterungen im Bereich der Baustoffkonfigurationen
++ Ergänzt das Deaktivieren alter Nutzerzugänge
++ Ergänzt Auswertungen für AVV
++ Ergänzt Optimierungen bei der Erstellung von PDF Dokumenten
++ Ergänzt das Dateiformat MS Excel für den Import von Projekten
++ Ergänzt einen Assistenten zur Eingabe von Fermwärmedatensätzen im Bereich Endenergiebilanz
++ Ergänzt allgemeine Fehlerbehebungen 
+ 
+# 1.7.1
++ Ergänzt Dokumente und Links auf der Seite Informationen
+
 # 1.7.0 (0.9.6)
 + Ergänzt eine zeitliche Begrenzung von Projekt-Passwörtern für Hochschulaccounts
 + Ergänzt in der LCC die Angabe von Energieträgern mit unterschiedlichen Kosten
