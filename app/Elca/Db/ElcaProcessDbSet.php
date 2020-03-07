@@ -145,7 +145,7 @@ WHERE db.is_active',
         FROM %s db
         JOIN %s pa ON pa.process_db_id = db.id
         WHERE pa.process_config_id = :processConfigId
-        ORDER BY db.id",
+        ORDER BY db.version, db.id",
         ElcaProcessDb::TABLE_NAME,
         ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
         );
