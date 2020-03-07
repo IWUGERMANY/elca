@@ -1771,14 +1771,21 @@ class ProcessesCtrl extends TabsCtrl
         $processDbId = $this->Request->get('processDbId');
 
         if (!$processDbId) {
+            $processDbIds = ElcaProcessDbSet::findForProcessConfigId($processConfigId)->getArrayBy('id', 'id');
 
             if ($this->namespace->processDbId) {
                 $processDbId = $this->namespace->processDbId;
+
+                if (isset($processDbIds[$processDbId])) {
+                    return;
+                }
             }
-            else {
-                $processDb   = ElcaProcessDbSet::findRecentForProcessConfigId($processConfigId)->current();
-                $processDbId = $processDb->getId();
+
+            if (!count($processDbIds)) {
+                return;
             }
+
+            $processDbId = \array_pop($processDbIds);
         }
 
         $this->namespace->processDbId = $processDbId;

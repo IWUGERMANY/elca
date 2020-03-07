@@ -245,11 +245,12 @@ class DbProcessConversionsRepository implements ProcessConversionsRepository
         $toUnit   = Unit::fromString($processConversion->getOutUnit());
         $factor   = $processConversionVersion->getFactor();
         $ident    = $processConversionVersion->getIdent();
+        $conversionType = new ConversionType((string)$ident);
         $flowReference = $processConversionVersion->flowUuid()
             ? FlowReference::from($processConversionVersion->flowUuid(), $processConversionVersion->flowVersion())
             : null;
 
-        $conversion = $ident
+        $conversion =  $conversionType->isInitial() || null !== $flowReference
             ? new ImportedLinearConversion($fromUnit, $toUnit, $factor, new ConversionType($ident))
             : new LinearConversion($fromUnit, $toUnit, $factor);
 
@@ -274,9 +275,14 @@ class DbProcessConversionsRepository implements ProcessConversionsRepository
         $toUnit   = Unit::fromString($processConversionVersion->getOutUnit());
         $factor   = $processConversionVersion->getFactor();
         $ident    = $processConversionVersion->getIdent();
+        $conversionType = new ConversionType((string)$ident);
 
-        $conversion = $ident
-            ? new ImportedLinearConversion($fromUnit, $toUnit, $factor, new ConversionType($ident))
+        $flowReference = $processConversionVersion->flowUuid()
+            ? FlowReference::from($processConversionVersion->flowUuid(), $processConversionVersion->flowVersion())
+            : null;
+
+        $conversion     = $conversionType->isInitial() || null !== $flowReference
+            ? new ImportedLinearConversion($fromUnit, $toUnit, $factor, $conversionType)
             : new LinearConversion($fromUnit, $toUnit, $factor);
 
         $conversion->setSurrogateId($processConversionVersion->getConversionId());
@@ -288,6 +294,7 @@ class DbProcessConversionsRepository implements ProcessConversionsRepository
                 'processDbId'     => new ProcessDbId($processConversionVersion->getProcessDbId()),
                 'processConfigId' => new ProcessConfigId($processConversionVersion->getProcessConfigId()),
                 'conversion'      => $conversion,
+                'flowReference'   => $flowReference,
             ]
         );
     }
