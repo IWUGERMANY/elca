@@ -609,7 +609,7 @@ class DormerAssembler
             sprintf(self::NAME_SILL, $this->window->getName(), $indoor? self::NAME_INDOOR : self::NAME_OUTDOOR),
             '', // description
             false,
-            Elca::getInstance()->getProject()->getAccessGroupId(),
+            $windowElement->getAccessGroupId(),
             $this->projectVariantId,
             $windowElement->getQuantity(),
             Elca::UNIT_STK,
@@ -727,7 +727,7 @@ class DormerAssembler
             sprintf(self::NAME_SOFFIT, $this->window->getName(), $indoor? self::NAME_INDOOR : self::NAME_OUTDOOR),
             '', // description
             false,
-            Elca::getInstance()->getProject()->getAccessGroupId(),
+            $windowElement->getAccessGroupId(),
             $this->projectVariantId,
             $windowElement->getQuantity(),
             Elca::UNIT_STK,
@@ -838,7 +838,7 @@ class DormerAssembler
      * @param bool $indoor
      * @return ElcaElement
      */
-    public function createSunScreenElement($windowElement, $indoor = true)
+    public function createSunScreenElement(ElcaElement $windowElement, $indoor = true)
     {
         $element = ElcaElement::create(
             ElcaElementType::findByIdent(self::DIN_SUNSCREEN)
@@ -846,7 +846,7 @@ class DormerAssembler
             sprintf($indoor? self::NAME_INDOOR_SUNSCREEN : self::NAME_OUTDOOR_SUNSCREEN, $this->window->getName()),
             '', // description
             false,
-            Elca::getInstance()->getProject()->getAccessGroupId(),
+            $windowElement->getAccessGroupId(),
             $this->projectVariantId,
             $windowElement->getQuantity(),
             Elca::UNIT_STK,
