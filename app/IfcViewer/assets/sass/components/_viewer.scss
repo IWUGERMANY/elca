@@ -1,0 +1,43 @@
+#viewerContent.ifc-viewer {
+
+  position:relative;
+  padding:25px;
+  max-width:1200px;
+
+  #viewerContainer {
+    overflow:hidden;
+    line-height: 150%;
+    border: 1px solid #ccc;
+
+    canvas {
+      display: block;
+      width:  1148px;
+      height: 600px;
+      cursor: default;
+    }
+  }
+
+  #dataContainer {
+    margin:25px 0;
+    table {
+      width: 100%;
+      max-width: 1000px;
+      margin-bottom: 25px;
+
+      th {
+        text-align: left;
+        width:50%;
+      }
+
+      td:last-child, th:last-child {
+        border-right:none;
+      }
+    }
+
+    h3 {
+      margin: 15px 0 5px 0;
+    }
+  }
+
+}
+

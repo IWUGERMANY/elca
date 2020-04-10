@@ -66,8 +66,9 @@
             /**
              * Call initialize function
              */
-            if($.isFunction(opts.initialize))
-                opts.initialize();
+            if($.isFunction(opts.initialize)) {
+                opts.initialize(this);
+            }
 
             /**
              * Initialize all new controllers
@@ -102,6 +103,10 @@
              * Init rootUrl
              */
             this.rootUrl = window.location.protocol + '//' + window.location.hostname;
+
+            if (window.location.port !== 80 || window.location.port !== 443) {
+                this.rootUrl += ':'+ window.location.port;
+            }
 
             /**
              * Bind hashchange event
@@ -142,7 +147,7 @@
                     window.console.log('Initialize '+ this._ctrlName);
 
                 if($.isFunction(this.initialize)) {
-                    this.initialize();
+                    this.initialize.apply(this);
                 }
 
                 this._isInitialized = true;

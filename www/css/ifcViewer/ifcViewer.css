@@ -1,0 +1,8 @@
+#viewerContent.ifc-viewer { position: relative; padding: 25px; max-width: 1200px; }
+#viewerContent.ifc-viewer #viewerContainer { overflow: hidden; line-height: 150%; border: 1px solid #ccc; }
+#viewerContent.ifc-viewer #viewerContainer canvas { display: block; width: 1148px; height: 600px; cursor: default; }
+#viewerContent.ifc-viewer #dataContainer { margin: 25px 0; }
+#viewerContent.ifc-viewer #dataContainer table { width: 100%; max-width: 1000px; margin-bottom: 25px; }
+#viewerContent.ifc-viewer #dataContainer table th { text-align: left; width: 50%; }
+#viewerContent.ifc-viewer #dataContainer table td:last-child, #viewerContent.ifc-viewer #dataContainer table th:last-child { border-right: none; }
+#viewerContent.ifc-viewer #dataContainer h3 { margin: 15px 0 5px 0; }

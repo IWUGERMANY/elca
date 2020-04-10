@@ -34,6 +34,10 @@ $(window).load(function () {
          */
         updateHashUrlCssClass: 'page',
 
+        /**
+         * elca controller self reference
+         */
+        elca: null,
 
         /**
          * Global initialize method. Will be called once per http request
@@ -191,7 +195,6 @@ $(window).load(function () {
                     }, t);
                 });
             };
-
         },
 
 
@@ -212,6 +215,8 @@ $(window).load(function () {
                  * Per controller initialization method. Will be called once per http request
                  */
                 initialize: function () {
+                    jBlibs.App.elca = this;
+
                     /**
                      * load the main content from hash url
                      * or from the currenturl, except for login
@@ -225,7 +230,6 @@ $(window).load(function () {
                             var regex = /\_\_\*\*(.+?)\*\*\_\_/m;
                             return this.nodeType === 3 && regex.test(this.textContent);
                         }).highlightMissingTranslation();
-
                 },
 
                 onLoad: function (e, xhr, ajaxOpts) {

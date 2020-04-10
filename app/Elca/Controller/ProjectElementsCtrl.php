@@ -102,8 +102,7 @@ class ProjectElementsCtrl extends ElementsCtrl
             /**
              * If not list action, then re-route to list
              */
-            if($this->getAction() != 'list')
-            {
+            if($this->getAction() != 'list') {
                 $Element = ElcaElement::findById($this->getAction());
 
                 if ($Element->isInitialized()) {
@@ -123,7 +122,13 @@ class ProjectElementsCtrl extends ElementsCtrl
         $this->readOnly = !$this->Access->canEditProject($this->Elca->getProject());
     }
     // End init
+    protected function defaultAction($elementId = null)
+    {
+        parent::defaultAction($elementId);
 
+        $this->handleIfcViewerSelectionRequest($elementId);
+
+    }
 
     /**
      * Sets the osit scenario
@@ -1176,6 +1181,37 @@ class ProjectElementsCtrl extends ElementsCtrl
     {
         if ($this->Namespace->compareWithReferenceProjects->compare ?? false) {
             $this->addNavigationView($elementTypeNodeId);
+        }
+    }
+
+    private function handleIfcViewerSelectionRequest($elementId): void
+    {
+        /**
+         * Prevent sending an event if this element was loaded by the viewer
+         */
+        if ($this->Request->has('via') && $this->Request->get('via') === 'ifcViewer') {
+            return;
+        }
+
+
+        // TODO resolve
+        $someGuids = [
+            '2O2Fr$t4X7Zf8NOew3FNhv',
+            '3ThA22djr8AQQ9eQMA5s7I',
+            '1CZILmCaHETO8tf3SgGEWh',
+            '1hOSvn6df7F8_7GcBWlSXO',
+            '1hOSvn6df7F8_7GcBWlR72',
+        ];
+
+        $elementId = $elementId ? $elementId : $this->getAction();
+
+        if (\is_numeric($elementId)) {
+            $msg = [
+                'guid'      => $someGuids[random_int(0, count($someGuids) - 1)],
+                'elementId' => $elementId,
+            ];
+
+            $this->runJs(sprintf('elca.msgBus.submit(\'elca.element-loaded\', %s);', \json_encode($msg)));
         }
     }
 }
