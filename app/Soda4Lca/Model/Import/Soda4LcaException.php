@@ -49,6 +49,7 @@ class Soda4LcaException extends Exception
     const INVALID_PROCESS_AFTER_CREATE_OR_UPDATE = 6;
     const MISSING_PROCESS_CATEGORY = 7;
     const MISSING_REF_UNIT = 8;
+    const CONNECTION_ERROR = 9;
 
     /**
      * Translated messages
@@ -57,6 +58,7 @@ class Soda4LcaException extends Exception
      */
     public static $translatedMessages = [self::UNKNOWN_ERROR                          => 'Unbekannter Fehler: %s',
                                          self::CONNECTION_TIMEOUT                     => 'Zeitüberschreitung bei der Verbindung zu Soda4LCA',
+                                         self::CONNECTION_ERROR                       => 'Problem bei der Verbindung zu Soda4LCA',
                                          self::MISSING_REFERENCE_FLOW                 => 'Im Quelldatensatz fehlt die Referenz auf den Produktfluss',
                                          self::MISSING_EPD_MODULES                    => 'Im Quelldatensatz sind keine EPD Module definiert',
                                          self::PROCESS_CATEGORY_NOT_FOUND             => 'Die Baustoffkategorie "%s" kann nicht in eLCA gefunden werden',
