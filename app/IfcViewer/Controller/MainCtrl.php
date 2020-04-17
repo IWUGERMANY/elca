@@ -12,6 +12,15 @@ use Elca\Controller\ProjectElementsCtrl;
 
 class MainCtrl extends AjaxController
 {
+    /**
+     * @return bool
+     */
+    public static function isPublic()
+    {
+        return false;
+    }
+
+
     protected function init(array $args = [])
     {
         parent::init($args);

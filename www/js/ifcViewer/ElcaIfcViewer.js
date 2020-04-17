@@ -79,7 +79,6 @@ define([
 
                     self.bimSurfer.viewer.scene.canvas.canvas.style.display = 'block';
                 });
-                console.log(model);
 
                 onLoadedCallback.apply(self, [self.bimSurfer, model]);
             });
