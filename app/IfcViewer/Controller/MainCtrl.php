@@ -35,8 +35,10 @@ class MainCtrl extends AjaxController
             return;
         }
 
+        // TODO associate project ifc file
         $view = $this->setView(new HtmlView("ifc_viewer_index", "ifcViewer"));
-        $view->assign('srcFile', '/testdata/Duplex_A_20110907_optimized');
+        //$view->assign('srcFile', '/testdata/Duplex_A_20110907_optimized');
+        $view->assign('srcFile', '/testdata/Beispielwand_IFC4_ReferenceView');
     }
 
     protected function elementsAction()

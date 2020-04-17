@@ -2,6 +2,9 @@
 
     <h1>IFC Viewer</h1>
 
-    <div id="viewerContainer"></div>
+    <div id="viewerWrapper">
+        <div id="treeContainer" class="bimsurfer-static-tree"></div>
+        <div id="viewerContainer" class="ifc-viewer-surfer"></div>
+    </div>
     <div id="dataContainer"></div>
 </div>

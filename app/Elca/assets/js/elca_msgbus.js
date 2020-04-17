@@ -63,7 +63,7 @@
 
                 var handlers = self.handlers[eventType] || [];
 
-                console.debug('Found '+ handlers.length + ' handlers for this event');
+                console.debug('Found '+ handlers.length + ' handler for this event');
 
                 handlers.forEach(function (handler) {
                     handler(data);
