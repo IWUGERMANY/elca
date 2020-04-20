@@ -184,15 +184,6 @@ class ElcaProjectDataEnEvView extends HtmlView
         $form->appendTo($Container);
 
         /**
-         * Append KWK final energy demand form
-         */
-//        $form = $this->getSectionForm('projectKwkFinalEnergyDemandForm', $this->Data->KwkDemand);
-//        $form->add(new HtmlHiddenField('addKwkDemand', $this->addNewProjectKwkFinalEnergyDemand));
-//
-//        $this->appendKwkEnergyDemandSection($form);
-//        $form->appendTo($Container);
-
-        /**
          * Append final energy supply form
          */
         if ($ProjectVariant->getPhase()->getStep() > 0 && ElcaAccess::getInstance()->canEditFinalEnergySupplies()) {
@@ -376,19 +367,25 @@ class ElcaProjectDataEnEvView extends HtmlView
             $this->appendDemandRow($Li, 'newDemand');
         }
 
-        if ($this->Data->Kwk->id) {
-            $this->appendKwkEnergyDemands($container);
+        $kwkEnabled = Environment::getInstance()->getConfig()->elca->kwk->toBoolean('enabled');
+        if ($kwkEnabled) {
+            if ($this->Data->Kwk->id) {
+                $this->appendKwkEnergyDemands($container);
+            }
         }
 
         if (!$this->readOnly) {
             $buttonGroup = $container->add(new HtmlFormGroup(''));
             $buttonGroup->addClass('buttons');
 
-            if (!$this->Data->Kwk->id) {
-                $buttonGroup->add(new ElcaHtmlSubmitButton('addKwk', t('Fernwärme spezifizieren')))->addClass(
-                    'add-energy-carrier'
-                );
+            if ($kwkEnabled) {
+                if (!$this->Data->Kwk->id) {
+                    $buttonGroup->add(new ElcaHtmlSubmitButton('addKwk', t('Fernwärme spezifizieren')))->addClass(
+                        'add-energy-carrier'
+                    );
+                }
             }
+
             $buttonGroup->add(new ElcaHtmlSubmitButton('addEnergyDemand', t('Bedarf hinzufügen')))->addClass(
                 'add-energy-carrier'
             );
@@ -705,7 +702,7 @@ class ElcaProjectDataEnEvView extends HtmlView
         $selector->addClass('process-config-selector');
         $selector->setRelId($key);
         $selector->setProjectVariantId($this->projectVariantId);
-        $selector->setBuildMode(ElcaProcessConfigSelectorView::BUILDMODE_OPERATION);
+        $selector->setBuildMode(ElcaProcessConfigSelectorView::BUILDMODE_KWK);
         $selector->setContext(ProjectDataCtrl::CONTEXT);
 
         $this->checkElementChange($selector);

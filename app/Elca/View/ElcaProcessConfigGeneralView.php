@@ -423,9 +423,14 @@ class ElcaProcessConfigGeneralView extends HtmlView
 
 			$lftGroup->add(new ElcaHtmlFormElementLabel(t('Stoffgruppe A'), new HtmlCheckbox('elementGroupA')));
 			$lftGroup->add(new ElcaHtmlFormElementLabel(t('Stoffgruppe B'), new HtmlCheckbox('elementGroupB')));
-
 		}
 
+		if(!$this->readOnly) {
+
+			$lftGroup->add(new ElcaHtmlFormElementLabel(t('Fernwärme Datensatz'), new HtmlCheckbox('elementDistrictHeating')));
+			$lftGroup->add(new ElcaHtmlFormElementLabel(t('Kältemittel Datensatz'), new HtmlCheckbox('elementRefrigerant')));
+			$lftGroup->add(new ElcaHtmlFormElementLabel(t('Brennbar'), new HtmlCheckbox('elementFlammable')));
+		}
         //$LftGroup->add(new ElcaHtmlFormElementLabel(t('Wärmeleitfähigkeit'), new ElcaHtmlNumericInput('thermalConductivity'), false, 'W / mk'));
         //$LftGroup->add(new ElcaHtmlFormElementLabel(t('Wärmedurchgangswiderstand'), new ElcaHtmlNumericInput('thermalResistance'), false, 'Km² / W'));
 
@@ -696,6 +701,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
             $processLifeCycleId     = new ProcessLifeCycleId($this->processDbId, $processConfigId);
             $requiredConversions    = $this->conversionService->findRequiredConversions($processLifeCycleId);
             $requiredUnits          = $this->conversionService->findRequiredUnits($processLifeCycleId);
+            $availableUnits         = $this->conversionService->findAvailableUnits($processLifeCycleId);
             $additionalConversions  = $this->conversionService->findAdditionalConversions($processLifeCycleId);
 
             foreach ($requiredConversions as $requiredConversion) {
@@ -707,11 +713,11 @@ class ElcaProcessConfigGeneralView extends HtmlView
             }
 
             foreach ($additionalConversions as $additionalConversion) {
-                $this->appendConversionRow($rightGroup, $additionalConversion, $requiredUnits, false);
+                $this->appendConversionRow($rightGroup, $additionalConversion, $availableUnits, false);
             }
 
             if ($addNew) {
-                $this->appendConversionRow($rightGroup, null, $requiredUnits);
+                $this->appendConversionRow($rightGroup, null, $availableUnits);
             }
         }
     }

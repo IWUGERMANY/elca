@@ -67,12 +67,12 @@ final class Optional
 
     public function orElse($value)
     {
-        if (\is_callable($value)) {
-            $value = $value();
+        if (null !== $this->value) {
+            return $this->value;
         }
 
-        return null !== $this->value
-            ? $this->value
+        return \is_callable($value)
+            ? $value()
             : $value;
     }
 

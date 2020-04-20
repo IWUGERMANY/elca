@@ -130,9 +130,10 @@ class DbProcessLifeCycleRepository implements ProcessLifeCycleRepository
 
             $factor = $dbProcessConversionVersion->getFactor();
             $ident = $dbProcessConversionVersion->getIdent();
+            $conversionType = new ConversionType((string)$ident);
 
-            $conversion = $ident
-                ? new ImportedLinearConversion($fromUnit, $toUnit, $factor, new ConversionType($ident))
+            $conversion     =  $conversionType->isInitial() || $dbProcessConversionVersion->flowUuid()
+                ? new ImportedLinearConversion($fromUnit, $toUnit, $factor, $conversionType)
                 : new LinearConversion($fromUnit, $toUnit, $factor);
 
             $conversion->setSurrogateId($dbProcessConversionVersion->getConversionId());

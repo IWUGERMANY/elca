@@ -118,4 +118,9 @@ final class ConversionType
     {
         return self::GROSS_DENSITY === $this->value;
     }
+
+    public function isInitial()
+    {
+        return self::INITIAL === $this->value;
+    }
 }

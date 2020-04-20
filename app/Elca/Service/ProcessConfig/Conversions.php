@@ -28,7 +28,7 @@ namespace Elca\Service\ProcessConfig;
 use Beibob\Blibs\FloatCalc;
 use Elca\Db\ElcaElementComponentSet;
 use Elca\Db\ElcaProcessConfig;
-use Elca\Db\ElcaProcessConversionAudit;
+use Elca\Model\Common\Optional;
 use Elca\Model\Common\Quantity\Quantity;
 use Elca\Model\Common\Unit;
 use Elca\Model\Exception\InvalidArgumentException;
@@ -61,13 +61,20 @@ class Conversions
      */
     private $processConversionsRepository;
 
+    /**
+     * @var ConversionsAudit
+     */
+    private $conversionsAudit;
+
     public function __construct(
         ProcessLifeCycleRepository $processLifeCycleRepository,
-        ProcessConversionsRepository $processConversionsRepository
+        ProcessConversionsRepository $processConversionsRepository,
+        ConversionsAudit $conversionsAudit
     )
     {
         $this->processLifeCycleRepository   = $processLifeCycleRepository;
         $this->processConversionsRepository = $processConversionsRepository;
+        $this->conversionsAudit = $conversionsAudit;
     }
 
     /**
@@ -95,8 +102,7 @@ class Conversions
 
             $this->processConversionsRepository->add($processConversion);
 
-            ElcaProcessConversionAudit::recordNew($processConversion, $callee ?? __METHOD__);
-
+            $this->conversionsAudit->recordNewConversion($processConversion, $callee ?? __METHOD__);
             return;
         }
 
@@ -107,7 +113,7 @@ class Conversions
 
         $this->processConversionsRepository->save($foundProcessConversion);
 
-        ElcaProcessConversionAudit::recordUpdate($foundProcessConversion, $oldConversion, $oldFlowReference, $callee ?? __METHOD__);
+        $this->conversionsAudit->recordUpdatedConversion($foundProcessConversion, $oldConversion, $oldFlowReference, $callee ?? __METHOD__);
     }
 
     public function unregisterConversion(ProcessDbId $processDbId, ConversionId $conversionId, $callee = null)
@@ -120,7 +126,7 @@ class Conversions
 
         $this->processConversionsRepository->remove($foundProcessConversion);
 
-        ElcaProcessConversionAudit::recordRemoval($foundProcessConversion, $callee ?? __METHOD__);
+        $this->conversionsAudit->recordRemovedConversion($foundProcessConversion, $callee ?? __METHOD__);
     }
 
     /**
@@ -144,7 +150,7 @@ class Conversions
         if ($density === null) {
             if (null !== $densityProcessConversion) {
                 $this->processConversionsRepository->remove($densityProcessConversion);
-                ElcaProcessConversionAudit::recordRemoval($densityProcessConversion, $callee ?? __METHOD__);
+                $this->conversionsAudit->recordRemovedConversion($densityProcessConversion, $callee ?? __METHOD__);
             }
 
             return $hasChanged;
@@ -159,7 +165,7 @@ class Conversions
                 $densityProcessConversion->changeFlowReference($flowReference);
 
                 $this->processConversionsRepository->save($densityProcessConversion);
-                ElcaProcessConversionAudit::recordUpdate($densityProcessConversion, $linearConversion,
+                $this->conversionsAudit->recordUpdatedConversion($densityProcessConversion, $linearConversion,
                     $oldFlowReference, $callee ?? __METHOD__);
             }
 
@@ -169,7 +175,7 @@ class Conversions
         $densityProcessConversion = new ProcessConversion($processDbId, $processConfigId,
             new LinearConversion(Unit::m3(), Unit::kg(), $density), $flowReference);
         $this->processConversionsRepository->add($densityProcessConversion);
-        ElcaProcessConversionAudit::recordNew($densityProcessConversion, $callee ?? __METHOD__);
+        $this->conversionsAudit->recordNewConversion($densityProcessConversion, $callee ?? __METHOD__);
 
         return $hasChanged;
     }
@@ -292,6 +298,14 @@ class Conversions
         return $processLifeCycle->requiredUnits();
     }
 
+    public function findAvailableUnits(ProcessLifeCycleId $processLifeCycleId): array
+    {
+        $processLifeCycle = $this->processLifeCycleRepository->findById($processLifeCycleId);
+
+        return $processLifeCycle->units();
+    }
+
+
     public function isBeingUsed(Conversion $conversion): bool
     {
         if (!$conversion instanceof LinearConversion) {
@@ -350,6 +364,12 @@ class Conversions
         }
 
         $this->processConversionsRepository->remove($processConversion);
+    }
+
+    public function findEnergyEquivalentConversionFor(ProcessConfigId $processConfigId, ProcessDbId $processDbId) : Optional
+    {
+        return Optional::ofNullable($this->processConversionsRepository->findByConversion($processConfigId,
+            $processDbId, Unit::kWh(), Unit::MJ()));
     }
 
     protected function findAvgMpuaConversionFor(ProcessDbId $processDbId,

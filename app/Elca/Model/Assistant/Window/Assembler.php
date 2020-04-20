@@ -609,7 +609,7 @@ class Assembler
             sprintf(self::NAME_SILL, $this->window->getName(), $indoor? self::NAME_INDOOR : self::NAME_OUTDOOR),
             '', // description
             false,
-            Elca::getInstance()->getProject()->getAccessGroupId(),
+            $windowElement->getAccessGroupId(),
             $this->projectVariantId,
             $windowElement->getQuantity(),
             Elca::UNIT_STK,
@@ -727,7 +727,7 @@ class Assembler
             sprintf(self::NAME_SOFFIT, $this->window->getName(), $indoor? self::NAME_INDOOR : self::NAME_OUTDOOR),
             '', // description
             false,
-            Elca::getInstance()->getProject()->getAccessGroupId(),
+            $windowElement->getAccessGroupId(),
             $this->projectVariantId,
             $windowElement->getQuantity(),
             Elca::UNIT_STK,
@@ -846,7 +846,7 @@ class Assembler
             sprintf($indoor? self::NAME_INDOOR_SUNSCREEN : self::NAME_OUTDOOR_SUNSCREEN, $this->window->getName()),
             '', // description
             false,
-            Elca::getInstance()->getProject()->getAccessGroupId(),
+            $windowElement->getAccessGroupId(),
             $this->projectVariantId,
             $windowElement->getQuantity(),
             Elca::UNIT_STK,

@@ -26,6 +26,8 @@ use Soda4Lca\Db\Soda4LcaProcessSet;
 
 class Soda4LcaConversionsImporter
 {
+    const KWH_TO_MJ_FACTOR = 3.6;
+
     /**
      * @var Log
      */
@@ -46,12 +48,17 @@ class Soda4LcaConversionsImporter
      */
     private $conversions;
 
+    private $energyEquivalent;
+
     public function __construct(Log $log, DbHandle $dbh, Conversions $conversions)
     {
         $this->log = $log;
         $this->dbh = $dbh;
         $this->parser = Soda4LcaParser::getInstance();
         $this->conversions = $conversions;
+
+        $this->energyEquivalent = new LinearConversion(Unit::kWh(), Unit::MJ(),
+            self::KWH_TO_MJ_FACTOR);
     }
 
     public function import(Soda4LcaImport $import)
@@ -69,26 +76,70 @@ class Soda4LcaConversionsImporter
         foreach ($sodaProcesses as $process) {
             try {
                 $processDO = $this->parser->getProcessDataSet($process->getUuid(), $process->getVersion());
+                $this->log->debug(
+                    sprintf("Processing %s `%s' %f %s [uuid=%s/%s] [lcIdents=%s]",
+                    $processDO->classId,
+                    $processDO->nameOrig,
+                    $processDO->refValue,
+                    $processDO->refUnit,
+                    $processDO->uuid,
+                    $processDO->version,
+                    implode(',', array_keys($processDO->epdModules))
+                    )
+                );
 
                 $this->dbh->begin();
 
-                $updateProcesses = ElcaProcessSet::findExtended([
+                $updateProdProcesses = ElcaProcessSet::findExtended([
                     'uuid'          => $process->getUuid(),
                     'version'       => $process->getVersion(),
                     'process_db_id' => $import->getProcessDbId(),
                     'life_cycle_phase' => ElcaLifeCycle::PHASE_PROD
                 ]);
-                /**
-                 * @var ElcaProcess $updateProcess
-                 */
-                foreach ($updateProcesses as $updateProcess) {
 
-                    $processConfigs = ElcaProcessConfigSet::findByProcessId($updateProcess->getId());
+                $this->log->debug(sprintf('Checking %d production processes', $updateProdProcesses->count()));
 
-                    foreach ($processConfigs as $processConfig) {
-                        $updatedProcessConfigs += (int)$this->updateConversions($processConfig, $processDbId, $processDO,
-                            $updateProcess);
+                if ($updateProdProcesses->count()) {
+                    /**
+                     * @var ElcaProcess $updateProdProcess
+                     */
+                    foreach ($updateProdProcesses as $updateProdProcess) {
+
+                        $processConfigs = ElcaProcessConfigSet::findByProcessId($updateProdProcess->getId());
+
+                        foreach ($processConfigs as $processConfig) {
+                            $updatedProcessConfigs += (int)$this->updateConversions($processConfig, $processDbId,
+                                $processDO,
+                                $updateProdProcess);
+                        }
                     }
+
+                    $this->log->debug('Checking production processes DONE');
+                }
+
+                $updateOpProcesses = ElcaProcessSet::findExtended([
+                    'uuid'          => $process->getUuid(),
+                    'version'       => $process->getVersion(),
+                    'process_db_id' => $import->getProcessDbId(),
+                    'life_cycle_phase' => ElcaLifeCycle::PHASE_OP
+                ]);
+
+                $this->log->debug(sprintf('Checking %d operation processes', $updateOpProcesses->count()));
+
+                if ($updateOpProcesses->count()) {
+                    /**
+                     * @var ElcaProcess $updateOpProcess
+                     */
+                    foreach ($updateOpProcesses as $updateOpProcess) {
+
+                        $processConfigs = ElcaProcessConfigSet::findByProcessId($updateOpProcess->getId());
+
+                        foreach ($processConfigs as $processConfig) {
+                            $this->checkIfProcessRequiresKWhToMJConversion($import, $processDO, $processConfig);
+                        }
+                    }
+
+                    $this->log->debug('Checking operation processes DONE');
                 }
 
                 $this->dbh->commit();
@@ -250,5 +301,69 @@ class Soda4LcaConversionsImporter
         }
 
         return $flowReference;
+    }
+
+    private function isMJOperationProcessWhichRequiresConversionToKWh($processDO): bool
+    {
+        if (!isset($processDO->refUnit, $processDO->refValue)) {
+            return false;
+        }
+
+        $this->log->debug(
+            sprintf(
+                'Check if process `%s\' (%f %s) requires kWh to MJ conversion',
+                $processDO->nameOrig,
+                $processDO->refValue,
+                $processDO->refUnit
+            )
+        );
+
+        return isset($processDO->epdModules[ElcaLifeCycle::IDENT_B6]) &&
+               $processDO->refUnit === Unit::MEGAJOULE &&
+               FloatCalc::cmp($processDO->refValue, self::KWH_TO_MJ_FACTOR, 0.1);
+    }
+
+    private function checkIfProcessRequiresKWhToMJConversion(Soda4LcaImport $import, $processDO, ElcaProcessConfig $processConfig)
+    {
+        if (!$this->isMJOperationProcessWhichRequiresConversionToKWh($processDO)) {
+            return;
+        }
+
+        $this->log->debug(
+            sprintf(
+                'Process `%s\' requires kWh to MJ conversion!',
+                $processDO->nameOrig
+            )
+        );
+
+        $processConfigId   = new ProcessConfigId($processConfig->getId());
+        $processDbId       = new ProcessDbId($import->getProcessDbId());
+
+        $foundConversion = $this->conversions->findEnergyEquivalentConversionFor($processConfigId, $processDbId);
+
+        if ($foundConversion->isPresent()) {
+            $this->log->debug(
+                sprintf(
+                    'Process `%s\' already has kWh to MJ conversion!',
+                    $processDO->nameOrig
+                )
+            );
+            return;
+        }
+
+        $this->conversions->registerConversion($processDbId, $processConfigId,
+            $this->energyEquivalent, null,__METHOD__);
+
+        $this->log->notice(
+            sprintf(
+                'Adding kWh to MJ conversion to `%s\': %s [in=%s,out=%s,f=%f]',
+                $processConfig->getName(),
+                $this->energyEquivalent->type(),
+                $this->energyEquivalent->fromUnit(),
+                $this->energyEquivalent->toUnit(),
+                $this->energyEquivalent->factor()
+            )
+        );
+
     }
 }

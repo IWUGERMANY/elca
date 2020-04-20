@@ -289,6 +289,60 @@ class ElcaProcessConfigSet extends DbObjectSet
     }
     // End findOperationsByProcessCategoryNodeId
 
+    public static function findKwkByProcessCategoryNodeId($processCategoryNodeId, $inUnit = null, array $orderBy = null, $referenceOnly = false, $activeProcessesOnly = false, $includeStale = false, $force = false)
+    {
+        if (!$processCategoryNodeId)
+            return new ElcaProcessConfigSet();
+
+        $initValues = array('processCategoryNodeId' => $processCategoryNodeId,
+                            'lcPhase'               => ElcaLifeCycle::PHASE_OP);
+
+        $convJoin = $inUnit ? sprintf('JOIN %s c ON p.id = c.process_config_id AND c.process_db_id = pa.process_db_id',
+            ElcaProcessConversionSet::VIEW_PROCESS_CONVERSIONS) : null;
+
+        $sql = sprintf('SELECT DISTINCT p.*
+                          FROM %s p
+                          JOIN %s pa ON p.id = pa.process_config_id
+                          %s
+                         WHERE p.process_category_node_id = :processCategoryNodeId
+                           AND pa.life_cycle_phase = :lcPhase
+                           AND p.element_district_heating'
+            , ElcaProcessConfig::TABLE_NAME
+            , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
+            , $convJoin
+        );
+
+        if ($inUnit) {
+            $initValues['inUnit'] = $inUnit;
+            $sql .= ' AND in_unit = :inUnit';
+        }
+
+        if ($referenceOnly)
+            $sql .= ' AND p.is_reference = true';
+
+        if ($activeProcessesOnly) {
+            $sql .= sprintf(' AND EXISTS (SELECT x.id FROM %s x JOIN %s d ON d.id = x.process_db_id WHERE x.process_config_id = p.id AND d.is_active'
+                , ElcaProcessSet::VIEW_ELCA_PROCESS_ASSIGNMENTS
+                , ElcaProcessDb::TABLE_NAME
+            );
+
+            if (is_numeric($activeProcessesOnly)) {
+                $sql .= ' AND x.process_db_id = :processDbId)';
+                $initValues['processDbId'] = $activeProcessesOnly;
+            } else {
+                $sql .= ')';
+            }
+        }
+        if (!$includeStale) {
+            $sql .= ' AND p.is_stale = false';
+        }
+
+        if ($orderSql = self::buildOrderView($orderBy))
+            $sql .= ' ' . $orderSql;
+
+        return self::_findBySql(get_class(), $sql, $initValues, $force);
+    }
+
 
     /**
      * Find all operational process configs for a certain category
@@ -491,6 +545,9 @@ class ElcaProcessConfigSet extends DbObjectSet
 							 , pc.lambda_value
 							 , pc.element_group_a
 							 , pc.element_group_b
+                             , pc.element_district_heating
+                             , pc.element_refrigerant
+                             , pc.element_flammable
                                 , pc.default_size
                                       , pc.uuid
                                       , pc.svg_pattern_id
@@ -584,6 +641,9 @@ class ElcaProcessConfigSet extends DbObjectSet
 							 , pc.element_group_a
 							 , pc.element_group_b
                              , pc.default_size
+                             , pc.element_district_heating
+                             , pc.element_refrigerant
+                             , pc.element_flammable
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
@@ -635,6 +695,9 @@ class ElcaProcessConfigSet extends DbObjectSet
 							 , pc.element_group_a
 							 , pc.element_group_b
                              , pc.default_size
+                             , pc.element_district_heating
+                             , pc.element_refrigerant
+                             , pc.element_flammable
                              , pc.uuid
                              , pc.svg_pattern_id
                              , pc.is_stale
