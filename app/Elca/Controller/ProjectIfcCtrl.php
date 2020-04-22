@@ -29,6 +29,8 @@ use Beibob\Blibs\Environment;
 use Beibob\Blibs\File;
 use Beibob\Blibs\Session;
 use Beibob\Blibs\Validator;
+use Beibob\Blibs\IdFactory;
+use Beibob\Blibs\Log;
 use Elca\Db\ElcaBenchmarkVersion;
 use Elca\Db\ElcaConstrClass;
 use Elca\Db\ElcaElement;
@@ -37,7 +39,7 @@ use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Common\Quantity\Quantity;
 use Elca\Model\Common\Unit;
-use Elca\Model\Import\Csv\Project;
+use Elca\Model\Import\Ifc\Project;
 use Elca\Model\Import\Ifc\Validator as IfcImportValidator;
 use Elca\Model\Navigation\ElcaOsitItem;
 use Elca\Service\Admin\BenchmarkSystemsService;
@@ -147,7 +149,7 @@ class ProjectIfcCtrl extends AppCtrl
 				$validator = new IfcImportValidator($this->Request);
 			}
 		} 
-		else {
+		else { // validator or error message?
 			$validator = new IfcImportValidator($this->Request);
 		}	
 		
@@ -195,12 +197,70 @@ class ProjectIfcCtrl extends AppCtrl
 				
 				// Ifc file to convert
 				if($this->isIfcFile==1) {
-					$importedElements = $this->elementImporter->elementsFromIfcFile($file);
+					// unique key for project
+					$key = IdFactory::getUniqueId();
+					
+					$environment = Environment::getInstance();
+					$config = $environment->getConfig();
+					
+					$tmpCacheIFCDir = $config->toDir('baseDir') . $config->toDir('IfcCreateDir', true, 'tmp/ifc-data/');
+					$tmpCacheUserDir = $tmpCacheIFCDir . $key;
+					
+					if (!\is_dir($tmpCacheUserDir)) 
+					{
+						if (!mkdir($tmpCacheUserDir, 0777, true) && !is_dir($tmpCacheUserDir)) {
+							throw new \RuntimeException(sprintf('Directory "%s" was not created', $tmpCacheUserDir));
+						}
+						chmod($tmpCacheUserDir,0777);
+					}	
+					
+					$tmpCsvFilename =  $tmpCacheUserDir . '/'.$config->ifcCsvFilename;	
+					
+					$cmdPython = $config->pythonexecute;
+					$cmdPythonScript = $tmpCacheIFCDir . $config->ifcParserScript;
+
+					$cmd = sprintf(
+						'%s %s %s %s',
+						$cmdPython,
+						$cmdPythonScript,
+						$file->getFilepath(),
+						$tmpCsvFilename
+					);
+					
+					try {
+						
+						if( !empty( $cmd ))
+						{
+							
+							exec( $cmd, $output, $returnvar );
+						}	
+						
+					}
+					catch (\Exception $Exception)
+					{
+						Log::getInstance()->debug($cmd);
+						Log::getInstance()->debug($Exception->getMessage());
+					}					
+					
+
+					
+					// import of genereated csv file
+					try {
+						 $fileCSV = File::fromUpload($tmpCsvFilename);
+						 $importedElements = $this->elementImporter->elementsFromIfcFile($fileCSV);
+					}
+					catch {
+						Log::getInstance()->debug($cmd);
+						Log::getInstance()->debug($Exception->getMessage());
+					}
+					
 				} else {
 					// ToDo - error message
 					// $importedElements = $this->elementImporter->elementsFromIfcFile($file);
 				}
 				
+				
+				die();
                 $project = new Project(
                     $name,
                     $constrMeasure,

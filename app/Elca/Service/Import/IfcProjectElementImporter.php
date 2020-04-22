@@ -10,7 +10,7 @@ use Ramsey\Uuid\Uuid;
 class IfcProjectElementImporter
 {
     const DELIMITER = ';';
-    const COLUMN_COUNT = 5;
+    const COLUMN_COUNT = 8;
 
     /**
      * @param File $file
