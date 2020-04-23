@@ -231,7 +231,7 @@ class ProjectIfcCtrl extends AppCtrl
 						
 						if( !empty( $cmd ))
 						{
-							
+							// parse if by python script
 							exec( $cmd, $output, $returnvar );
 						}	
 						
@@ -246,21 +246,22 @@ class ProjectIfcCtrl extends AppCtrl
 					
 					// import of genereated csv file
 					try {
-						 $fileCSV = File::fromUpload($tmpCsvFilename);
+						 $fileCSV = new File($tmpCsvFilename);
 						 $importedElements = $this->elementImporter->elementsFromIfcFile($fileCSV);
 					}
-					catch {
+					catch (\Exception $Exception)
+					{
 						Log::getInstance()->debug($cmd);
 						Log::getInstance()->debug($Exception->getMessage());
 					}
+					
 					
 				} else {
 					// ToDo - error message
 					// $importedElements = $this->elementImporter->elementsFromIfcFile($file);
 				}
 				
-				
-				die();
+			
                 $project = new Project(
                     $name,
                     $constrMeasure,
@@ -270,8 +271,10 @@ class ProjectIfcCtrl extends AppCtrl
                     $netFloorSpace,
                     $grossFloorSpace
                 );
-                $project->setImportElements($importedElements);
+				
 
+                $project->setImportElements($importedElements);
+				
                 $this->sessionNamespace->project = $project;
 
                 $this->loadHashUrl($this->getActionLink('preview'));

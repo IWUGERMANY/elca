@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Elca\Model\Import\Csv;
+namespace Elca\Model\Import\Ifc;
 
 
 class Project

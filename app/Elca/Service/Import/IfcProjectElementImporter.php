@@ -16,7 +16,7 @@ class IfcProjectElementImporter
      * @param File $file
      * @return ImportElement[]
      */
-    public function elementsFromCsvFile(File $file) : array
+    public function elementsFromIfcFile(File $file) : array
     {
         // first line is headline
         $header = $file->getCsv(self::DELIMITER);
@@ -35,9 +35,13 @@ class IfcProjectElementImporter
             $quantityString     = trim($csv[2] ?? '');
             $unitString         = trim($csv[3] ?? '');
 
-            $tplElementUuidOrId = !empty($csv[4]) ? trim($csv[4]) : null;
+            /*
+			$tplElementUuidOrId = !empty($csv[4]) ? trim($csv[4]) : null;
             $tplElement = $this->findTplElement($tplElementUuidOrId);
-
+			*/
+			$tplElementUuidOrId = null;
+            $tplElement = $this->findTplElement($tplElementUuidOrId);
+			
             $importElement = ImportElement::fromCsv(
                 $name,
                 $din276CodeString,

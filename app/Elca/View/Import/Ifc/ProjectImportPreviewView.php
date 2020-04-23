@@ -35,12 +35,12 @@ use Beibob\HtmlTools\HtmlSelectOption;
 use Beibob\HtmlTools\HtmlStaticText;
 use Beibob\HtmlTools\HtmlTag;
 use Elca\Controller\ElementImageCtrl;
-use Elca\Controller\ProjectCsvCtrl;
+use Elca\Controller\ProjectIfcCtrl;
 use Elca\Db\ElcaBenchmarkVersion;
 use Elca\Db\ElcaElementType;
 use Elca\Db\ElcaElementTypeSet;
 use Elca\Elca;
-use Elca\Model\Import\Csv\ImportElement;
+use Elca\Model\Import\Ifc\ImportElement;
 use Elca\Model\Import\Ifc\Project;
 use Elca\View\helpers\ElcaHtmlFormElementLabel;
 use Elca\View\helpers\ElcaHtmlNumericInput;
@@ -91,7 +91,7 @@ class ProjectImportPreviewView extends HtmlView
             $this->getDiv(['id' => 'content', 'class' => 'project project-csv-import preview'])
         );
 
-        $form = new HtmlForm('projectImportPreviewForm', '/project-csv/preview/');
+        $form = new HtmlForm('projectImportPreviewForm', '/project-ifc/preview/');
         $form->addClass('clearfix highlight-changes');
 
         $form->setDataObject($this->data);
@@ -256,7 +256,7 @@ class ProjectImportPreviewView extends HtmlView
             )->addClass('column tpl-element');
 
             $selector->addClass('element-selector');
-            $selector->setUrl(FrontController::getInstance()->getUrlTo(ProjectCsvCtrl::class, 'selectElement'));
+            $selector->setUrl(FrontController::getInstance()->getUrlTo(ProjectIfcCtrl::class, 'selectElement'));
             $selector->setElementTypeNodeId($elementType->getNodeId());
             $selector->setRelId($key);
         }
