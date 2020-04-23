@@ -330,7 +330,8 @@ $(window).load(function () {
                     'body.projects': 'prepareContent',
                     '#projectProcessConfigSanity': 'prepareContent',
                     '#content.replace-components, #content.replace-elements': ['prepareReplaceElementComponents', 'prepareElementImages'],
-                    '#content.project-csv-import.preview': 'prepareElementImages'
+                    '#content.project-csv-import.preview': 'prepareElementImages',
+					'#content.project-csv-import.preview.ifc': 'prepareContent'
                 },
 
                 prepareSearchAndReplace: function ($context) {
@@ -555,6 +556,15 @@ $(window).load(function () {
                     this.prepareSheets($context);
                     this.highlightMissingTranslations($context);
 
+
+					/**
+					*   IFC Import - delete data row
+					*/
+					$('#content.project-csv-import.preview.ifc .ifcdatadelete').on('click',function(){
+						$(this).parent('.element').fadeOut('slow', this.remove);
+
+					});
+										
                     $('#languageChooser li a').off('click').on('click', function (e) {
 
                         var url = $.url(this);

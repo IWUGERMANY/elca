@@ -88,7 +88,7 @@ class ProjectImportPreviewView extends HtmlView
     protected function beforeRender()
     {
         $container = $this->appendChild(
-            $this->getDiv(['id' => 'content', 'class' => 'project project-csv-import preview'])
+            $this->getDiv(['id' => 'content', 'class' => 'project project-csv-import preview ifc'])
         );
 
         $form = new HtmlForm('projectImportPreviewForm', '/project-ifc/preview/');
@@ -170,7 +170,17 @@ class ProjectImportPreviewView extends HtmlView
         $key              = $element->uuid();
         $levelTwoDinCodes = $this->findLevelTwoDinCodes();
 
-        $li->add(
+		// delete button
+		$li->add(
+			new HtmlTag(
+                'span',
+                t('[x] löschen'),
+                [
+                    'title' => t('Importdatensatz löschen'),
+                ]
+           ))->addClass('ifcdatadelete');
+	    
+		$li->add(
             new ElcaHtmlFormElementLabel(
                 '',
                 $dinCodeSelect = new HtmlSelectbox('dinCode2[' . $key . ']')
@@ -210,7 +220,47 @@ class ProjectImportPreviewView extends HtmlView
                 ['class' => 'modified-din-code']));
         }
 
-        $li->add(
+
+		$nameDiv = $li->add(new HtmlTag('div'));
+		$nameDiv->addClass('column name ifc');
+		$nameDiv->add(
+            new HtmlTag(
+                'span',
+                $element->name(),
+                [
+                    'title' => $element->name(),
+                ]
+            ))->addClass('block ifcinfo preview');
+		
+		$nameDiv->add(
+            new HtmlTag(
+                'span',
+                $element->ifcType(),
+                [
+                    'title' => $element->ifcType(),
+                ]
+            ))->addClass('block ifcinfo preview');
+			
+		$nameDiv->add(
+            new HtmlTag(
+                'span',
+                $element->ifcFloor(),
+                [
+                    'title' => $element->ifcFloor(),
+                ]
+            ))->addClass('block ifcinfo preview');	
+		
+		$nameDiv->add(
+            new HtmlTag(
+                'span',
+                t('GUID: ') . $element->ifcGUID(),
+                [
+                    'title' => $element->ifcGUID(),
+                ]
+            ))->addClass('block');
+       
+		/*
+		 $li->add(
             new HtmlTag(
                 'span',
                 $element->name(),
@@ -218,8 +268,10 @@ class ProjectImportPreviewView extends HtmlView
                     'title' => $element->name(),
                 ]
             )
+			
         )->addClass('column name');
-
+         */
+		 
         $li->add(
             new ElcaHtmlFormElementLabel('', new ElcaHtmlNumericInput('quantity[' . $key . ']'))
         )->addClass('column quantity');
@@ -261,6 +313,7 @@ class ProjectImportPreviewView extends HtmlView
             $selector->setRelId($key);
         }
 
+		#content.project-csv-import.preview li.element .column.tpl-element
         if (!$element->isValid()) {
             $li->addClass('warning');
         }

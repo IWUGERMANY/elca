@@ -30,39 +30,58 @@ final class ImportElement
      * @var Quantity
      */
     private $quantity;
-
-    private $tplElementUuid;
+	
+	private $tplElementUuid;
 
     private $isModified;
 
     private $modificationReason;
 
-    public static function fromCsv(
+    private $ifcType;
+	private	$ifcFloor;
+	private	$ifcMaterial;
+	private	$ifcGUID;
+	
+	public static function fromCsv(
         string $name,
         string $din276CodeString,
         string $quantityString,
         string $unitString,
-        ?string $tplElementUuidString = null
+        string $ifcTypeString,
+		string $ifcFloorString,
+		string $ifcMaterialString,
+		string $ifcGUIDString,
+		?string $tplElementUuidString = null
     ): ImportElement
     {
         $name           = trim($name);
         $din276Code     = (int)$din276CodeString;
         $quantity       = self::parseQuantity($quantityString, $unitString);
-        $tplElementUuid = null !== $tplElementUuidString ? Uuid::fromString($tplElementUuidString) : null;
-
-        return new self($name, $din276Code, $quantity, $tplElementUuid);
+		$ifcType	    = trim($ifcTypeString);
+		$ifcFloor	    = trim($ifcFloorString);
+		$ifcMaterial    = trim($ifcMaterialString);
+		$ifcGUID	    = trim($ifcGUIDString);
+		$tplElementUuid = null !== $tplElementUuidString ? Uuid::fromString($tplElementUuidString) : null;
+        
+		return new self($name, $din276Code, $quantity, $ifcType, $ifcFloor,	$ifcMaterial,	$ifcGUID, $tplElementUuid);
     }
 
     public function __construct(string $name, int $din276Code = null, Quantity $quantity = null,
-        Uuid $tplElementUuid = null, bool $isModified = false, int $modificationReason = 0)
+		string $ifcType, string $ifcFloor, string $ifcMaterial, string $ifcGUID,
+		Uuid $tplElementUuid = null, bool $isModified = false, int $modificationReason = 0)
     {
         $this->uuid               = (string)Uuid::uuid4();
         $this->name               = $name;
         $this->dinCode            = $din276Code;
         $this->quantity           = $quantity;
-        $this->tplElementUuid     = $tplElementUuid;
         $this->isModified         = $isModified;
         $this->modificationReason = $modificationReason;
+		$this->ifcType            = $ifcType;
+		$this->ifcFloor           = $ifcFloor;
+		$this->ifcMaterial        = $ifcMaterial;
+		$this->ifcGUID            = $ifcGUID;
+		$this->tplElementUuid     = $tplElementUuid;
+	
     }
 
     public function uuid(): string
@@ -74,6 +93,25 @@ final class ImportElement
     {
         return $this->name;
     }
+	
+	
+    public function ifcType(): string
+    {
+        return $this->ifcType;
+    }
+    public function ifcFloor(): string
+    {
+        return $this->ifcFloor;
+    }
+    public function ifcMaterial(): string
+    {
+        return $this->ifcMaterial;
+    }
+    public function ifcGUID(): string
+    {
+        return $this->ifcGUID;
+    }
+	
 
     public function dinCode(): ?int
     {

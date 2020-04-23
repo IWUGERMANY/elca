@@ -271,10 +271,9 @@ class ProjectIfcCtrl extends AppCtrl
                     $netFloorSpace,
                     $grossFloorSpace
                 );
-				
 
                 $project->setImportElements($importedElements);
-				
+								
                 $this->sessionNamespace->project = $project;
 
                 $this->loadHashUrl($this->getActionLink('preview'));
@@ -493,6 +492,11 @@ class ProjectIfcCtrl extends AppCtrl
             else {
                 $element->changeTplElementUuid(null);
             }
+
+			$data->ifcType[$id] = $element->ifcType();
+			$data->ifcFloor[$id] = $element->ifcFloor();
+			$data->ifcMaterial[$id] = $element->ifcMaterial();
+			$data->ifcGUID[$id] = $element->ifcGUID();			
 
             $data->isModified[$id] = $element->isModified();
             $data->modificationReason[$id] = $element->modificationReason();

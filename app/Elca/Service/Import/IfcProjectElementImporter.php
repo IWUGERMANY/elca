@@ -35,19 +35,25 @@ class IfcProjectElementImporter
             $quantityString     = trim($csv[2] ?? '');
             $unitString         = trim($csv[3] ?? '');
 
-            /*
-			$tplElementUuidOrId = !empty($csv[4]) ? trim($csv[4]) : null;
-            $tplElement = $this->findTplElement($tplElementUuidOrId);
-			*/
+			$ifcTypeString      = trim($csv[4] ?? '');
+			$ifcFloorString     = trim($csv[5] ?? '');
+			$ifcMaterialString  = trim($csv[6] ?? '');
+			$ifcGUIDString     	= trim($csv[7] ?? '');
+			
+			// Trick
 			$tplElementUuidOrId = null;
             $tplElement = $this->findTplElement($tplElementUuidOrId);
 			
-            $importElement = ImportElement::fromCsv(
+			$importElement = ImportElement::fromCsv(
                 $name,
                 $din276CodeString,
                 $quantityString,
                 $unitString,
-                null !== $tplElement ? $tplElement->getUuid() : null
+                $ifcTypeString,
+				$ifcFloorString,
+				$ifcMaterialString,
+				$ifcGUIDString,
+				$tplElement
             );
 
             $importedElements[] = $importElement->harmonizeWithTemplateElement($tplElement);
