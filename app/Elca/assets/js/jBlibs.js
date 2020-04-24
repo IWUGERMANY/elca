@@ -104,7 +104,7 @@
              */
             this.rootUrl = window.location.protocol + '//' + window.location.hostname;
 
-            if (window.location.port !== 80 || window.location.port !== 443) {
+            if (window.location.port !== '' && window.location.port !== 80 && window.location.port !== 443) {
                 this.rootUrl += ':'+ window.location.port;
             }
 
