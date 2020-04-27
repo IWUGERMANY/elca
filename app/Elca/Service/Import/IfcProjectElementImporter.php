@@ -46,7 +46,7 @@ class IfcProjectElementImporter
             $tplElement = $this->findTplElement($tplElementUuidOrId);
 			
 			$importElement = ImportElement::fromCsv(
-                $name,
+                $name, 
                 $din276CodeString,
                 $quantityString,
                 $unitString,
