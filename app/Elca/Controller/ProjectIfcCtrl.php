@@ -227,8 +227,6 @@ class ProjectIfcCtrl extends AppCtrl
 						$tmpCsvFilename
 					);
 					
-					var_dump($cmd);
-					die();
 					try {
 						
 						if( !empty( $cmd ))
