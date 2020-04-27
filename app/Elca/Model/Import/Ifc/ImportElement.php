@@ -51,7 +51,10 @@ final class ImportElement
 		string $ifcFloorString,
 		string $ifcMaterialString,
 		string $ifcGUIDString,
+		string $ifcPredefinedTypeString,
 		?string $tplElementUuidString = null
+		
+		
     ): ImportElement
     {
         $name           = trim($name);
@@ -61,13 +64,14 @@ final class ImportElement
 		$ifcFloor	    = trim($ifcFloorString);
 		$ifcMaterial    = trim($ifcMaterialString);
 		$ifcGUID	    = trim($ifcGUIDString);
+		$ifcPredefinedType  = trim($ifcPredefinedTypeString);
 		$tplElementUuid = null !== $tplElementUuidString ? Uuid::fromString($tplElementUuidString) : null;
         
-		return new self($name, $din276Code, $quantity, $ifcType, $ifcFloor,	$ifcMaterial,	$ifcGUID, $tplElementUuid);
+		return new self($name, $din276Code, $quantity, $ifcType, $ifcFloor,	$ifcMaterial,$ifcGUID, $ifcPredefinedType, $tplElementUuid);
     }
 
     public function __construct(string $name, int $din276Code = null, Quantity $quantity = null,
-		string $ifcType, string $ifcFloor, string $ifcMaterial, string $ifcGUID,
+		string $ifcType, string $ifcFloor, string $ifcMaterial, string $ifcGUID, string $ifcPredefinedType,
 		Uuid $tplElementUuid = null, bool $isModified = false, int $modificationReason = 0)
     {
         $this->uuid               = (string)Uuid::uuid4();
@@ -80,6 +84,7 @@ final class ImportElement
 		$this->ifcFloor           = $ifcFloor;
 		$this->ifcMaterial        = $ifcMaterial;
 		$this->ifcGUID            = $ifcGUID;
+		$this->ifcPredefinedType  = $ifcPredefinedType;
 		$this->tplElementUuid     = $tplElementUuid;
 	
     }
@@ -112,6 +117,10 @@ final class ImportElement
         return $this->ifcGUID;
     }
 	
+	public function ifcPredefinedType(): string
+    {
+        return $this->ifcPredefinedType;
+    }
 
     public function dinCode(): ?int
     {

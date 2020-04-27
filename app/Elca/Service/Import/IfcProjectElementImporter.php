@@ -10,7 +10,7 @@ use Ramsey\Uuid\Uuid;
 class IfcProjectElementImporter
 {
     const DELIMITER = ';';
-    const COLUMN_COUNT = 8;
+    const COLUMN_COUNT = 9;
 
     /**
      * @param File $file
@@ -39,6 +39,7 @@ class IfcProjectElementImporter
 			$ifcFloorString     = trim($csv[5] ?? '');
 			$ifcMaterialString  = trim($csv[6] ?? '');
 			$ifcGUIDString     	= trim($csv[7] ?? '');
+			$ifcPredefinedTypeString = trim($csv[8] ?? '');
 			
 			// Trick
 			$tplElementUuidOrId = null;
@@ -53,6 +54,7 @@ class IfcProjectElementImporter
 				$ifcFloorString,
 				$ifcMaterialString,
 				$ifcGUIDString,
+				$ifcPredefinedTypeString,
 				$tplElement
             );
 
