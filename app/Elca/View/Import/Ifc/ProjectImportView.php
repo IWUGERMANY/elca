@@ -48,6 +48,7 @@ use Elca\View\helpers\ElcaHtmlSubmitButton;
  * @package elca
  * @author  Tobias Lode <tobias@beibob.de>
  * @author  Fabian Moeller <fab@beibob.de>
+ * @author  Michael Boeneke <boeneke@online-now.de>
  *
  */
 class ProjectImportView extends HtmlView

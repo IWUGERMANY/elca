@@ -180,7 +180,14 @@ final class ImportElement
 
         $dinCode = $this->dinCode;
         $quantity = $this->quantity;
-        $reason = 0;
+		$reason = 0;
+		
+		$ifcType = $this->ifcType;
+		$ifcFloor = $this->ifcFloor;
+		$ifcMaterial = $this->ifcMaterial;
+		$ifcGUID = $this->ifcGUID;
+		$ifcPredefinedType = $this->ifcPredefinedType;
+        
 
         $tplElementDinCode = $tplElement->getElementTypeNode()->getDinCode();
         if ($tplElementDinCode !== $this->dinCode) {
@@ -194,7 +201,7 @@ final class ImportElement
         }
 
         if ($reason > 0) {
-            return new ImportElement($this->name, $dinCode, $quantity, $this->tplElementUuid, !empty($reason), $reason);
+            return new ImportElement($this->name, $dinCode, $quantity, $ifcType, $ifcFloor, $ifcMaterial, $ifcGUID, $ifcPredefinedTyp,  $this->tplElementUuid, !empty($reason), $reason);
         }
 
         return $this;

@@ -66,7 +66,7 @@ class ProjectImportPreviewView extends HtmlView
      * @var \stdClass
      */
     private $data;
-
+	
     /**
      * Inits the view
      *
@@ -79,7 +79,7 @@ class ProjectImportPreviewView extends HtmlView
         $this->readOnly = $this->get('readOnly');
 
         $this->project = $this->get('project');
-        $this->data    = $this->get('data');
+		$this->data    = $this->get('data');
     }
 
     /**

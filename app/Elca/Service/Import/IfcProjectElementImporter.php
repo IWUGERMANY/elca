@@ -33,7 +33,11 @@ class IfcProjectElementImporter
 
             $din276CodeString   = trim($csv[1] ?? '');
             $quantityString     = trim($csv[2] ?? '');
-            $unitString         = trim($csv[3] ?? '');
+            
+			// $unitString         = trim($csv[3] ?? '');
+			$unitString = '';
+			if($quantityString!='') $unitString = '0.0';
+			
 
 			$ifcTypeString      = trim($csv[4] ?? '');
 			$ifcFloorString     = trim($csv[5] ?? '');

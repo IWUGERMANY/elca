@@ -87,7 +87,7 @@ class ProjectIfcCtrl extends AppCtrl
     /**
      * @var isIfcFile 
      */
-    private $isIfcFile = 1;	
+    private $isIfcFile = 0;	
 	
 
     protected function init(array $args = [])
@@ -138,20 +138,21 @@ class ProjectIfcCtrl extends AppCtrl
         $validator = null;
         if ($this->Request->isPost() && $this->Request->has('upload')) {
           
-        // Check file type and use validator 	
-		if( File::uploadFileExists(self::UPLOAD_FIELD_NAME) ) 
-		{
-			if( preg_match('/\.ifc$/iu', (string)$_FILES[self::UPLOAD_FIELD_NAME]['name'] ) ) {
+			// Check file type and use validator 	
+			if( File::uploadFileExists(self::UPLOAD_FIELD_NAME) ) 
+			{
+				if( preg_match('/\.ifc$/iu', (string)$_FILES[self::UPLOAD_FIELD_NAME]['name'] ) ) {
+					$validator = new IfcImportValidator($this->Request);
+					$this->isIfcFile = 1;
+				}	
+				else {
+					// not valid file extension - use standard validator
+					$validator = new IfcImportValidator($this->Request);
+				}
+			} 
+			else { // validator or error message?
 				$validator = new IfcImportValidator($this->Request);
 			}	
-			else {
-				// not valid file extension - use standard csv validator
-				$validator = new IfcImportValidator($this->Request);
-			}
-		} 
-		else { // validator or error message?
-			$validator = new IfcImportValidator($this->Request);
-		}	
 		
         	
             // validate project data
@@ -192,9 +193,7 @@ class ProjectIfcCtrl extends AppCtrl
                 $netFloorSpace      = ElcaNumberFormat::fromString($this->Request->get('netFloorSpace'), 2);
                 $grossFloorSpace    = ElcaNumberFormat::fromString($this->Request->get('grossFloorSpace'), 2);
 
-                $file             = File::fromUpload(self::UPLOAD_FIELD_NAME, $this->getTempDir());
-				
-				
+                
 				// Ifc file to convert
 				if($this->isIfcFile==1) {
 					// unique key for project
@@ -216,6 +215,9 @@ class ProjectIfcCtrl extends AppCtrl
 					
 					$tmpCsvFilename =  $tmpCacheUserDir . '/'.$config->ifcCsvFilename;	
 					
+					// $file   = File::fromUpload(self::UPLOAD_FIELD_NAME, $this->getTempDir());
+					$file   = File::fromUpload(self::UPLOAD_FIELD_NAME, $tmpCacheUserDir);
+					
 					$cmdPython = $config->pythonexecute;
 					$cmdPythonScript = $tmpCacheIFCDir . $config->ifcParserScript;
 
@@ -226,7 +228,7 @@ class ProjectIfcCtrl extends AppCtrl
 						$file->getFilepath(),
 						$tmpCsvFilename
 					);
-					
+
 					try {
 						
 						if( !empty( $cmd ))
@@ -272,9 +274,24 @@ class ProjectIfcCtrl extends AppCtrl
                     $grossFloorSpace
                 );
 
-                $project->setImportElements($importedElements);
-								
+				try {
+					$project->setImportElements($importedElements);
+				}
+				catch (\Exception $Exception)
+				{
+					Log::getInstance()->debug($cmd);
+					Log::getInstance()->debug($Exception->getMessage());
+				}
+                
                 $this->sessionNamespace->project = $project;
+				
+				// session tmp dir, $key, filename ifc, filename csv
+				$this->sessionNamespace->ifcData = [
+						'tmpPath' => $tmpCacheUserDir,
+						'key' => $key,
+						'ifcFilename' => $file->getFilename(),
+						'ifcCsvFilename' => $config->ifcCsvFilename
+					];		
 
                 $this->loadHashUrl($this->getActionLink('preview'));
 
@@ -301,7 +318,7 @@ class ProjectIfcCtrl extends AppCtrl
          * @var Project $project
          */
         $project = $this->sessionNamespace->project;
-
+		
         if (null === $project) {
             $this->importAction();
             return;
@@ -313,9 +330,59 @@ class ProjectIfcCtrl extends AppCtrl
             $validator->assertValidProject($project);
 
             if ($validator->isValid()) {
-                $elcaProject = $this->projectGenerator->generate($project);
+                
+				$elcaProject = $this->projectGenerator->generate($project);
                 $this->lifeCycleUsageService->updateForProject($elcaProject);
 
+				// ifc data
+				// -----------------------------------------------------------
+				// create user directory / move ifc / csv files
+				
+				
+				$environment = Environment::getInstance();
+				$config = $environment->getConfig();
+				
+				// create new directory with userId and prjectId storing ifc files	
+				$ifcSaveDir = sprintf(
+						"%s%d/%d",
+						$config->toDir('baseDir') . $config->toDir('ifcSaveDir', true, 'www/ifc-data/'),
+						$this->Access->getUserId(),
+						$elcaProject->getId()
+					);
+				
+				if (!\is_dir($ifcSaveDir)) 
+				{
+					if (!mkdir($ifcSaveDir, 0777, true) && !is_dir($ifcSaveDir)) {
+						throw new \RuntimeException(sprintf('Directory "%s" was not created', $ifcSaveDir));
+					}
+					chmod($ifcSaveDir,0777);
+				}	
+				
+				// move files
+				$ifcData = $this->sessionNamespace->ifcData;
+				var_dump($ifcData);
+				if(is_array($ifcData))
+				{
+					$csvFile =  File::move($ifcData['tmpPath']. '/'.$ifcData['ifcCsvFilename'], 
+											$ifcSaveDir. '/'.$ifcData['ifcCsvFilename']
+								);
+					$ifcFile =  File::move($ifcData['tmpPath']. '/'.$ifcData['ifcFilename'], 
+											$ifcSaveDir. '/'.$ifcData['ifcFilename']
+								);	
+					var_dump($csvFile);		
+					var_dump($ifcFile);					
+				}	
+				else
+				{
+					$this->messages->add(                    
+						t('Projekt %name%: importiert - IFC Dateien nicht kopiert.', null, ['%name%' => $elcaProject->getName()])
+					) ;
+                
+				}	
+				die();
+				// -----------------------------------------------------------
+
+				
                 $this->messages->add(
                     t('Projekt %name% wurde erfolgreich importiert', null, ['%name%' => $elcaProject->getName()])
                 );
