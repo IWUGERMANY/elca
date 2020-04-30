@@ -368,14 +368,16 @@ class ElcaElementView extends HtmlView
         $attrGroup = $AttrContainer->add(new HtmlFormGroup(t('Attribute')));
         $attrGroup->addClass('clearfix clear column');
 
+		
         foreach (Elca::$elementAttributes as $ident => $caption) {
             $Attr = ElcaElementAttribute::findByElementIdAndIdent($this->element->getId(), $ident);
-
+			
             switch ($ident) {
                 /**
                  * Skip OZ
                  */
                 case Elca::ELEMENT_ATTR_OZ:
+				case Elca::ELEMENT_ATTR_IFCGUID:
                     break;
                 default:
                     $attrGroup->add(
@@ -399,11 +401,24 @@ class ElcaElementView extends HtmlView
                 $attrGroup->add(
                     new ElcaHtmlFormElementLabel(
                         t($caption),
-                        new ElcaHtmlNumericInput('attr['.$ident.']', $Attr->getNumericValue(), $readOnly)
+                        new HtmlTextInput('attr['.$ident.']', $Attr->getNumericValue(), $readOnly)
                     )
                 );
             }
         }
+		
+        // Attribute elca.ifcguid only
+		$Attr = ElcaElementAttribute::findByElementIdAndIdent($this->element->getId(), Elca::ELEMENT_ATTR_IFCGUID);
+
+			$attrGroup = $AttrContainer->add(new HtmlTag('div', null, ['class' => 'clearfix column'] ));
+			$attrGroup->add(
+                        new ElcaHtmlFormElementLabel(
+                            t(Elca::$elementAttributes[Elca::ELEMENT_ATTR_IFCGUID]),
+                            new HtmlTextInput('attr['.$ident.']', $Attr->getTextValue())
+                        )
+                    );
+  
+   	
         /**
          * Buttons
          */

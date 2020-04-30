@@ -244,7 +244,6 @@ class ProjectIfcCtrl extends AppCtrl
 						Log::getInstance()->debug($Exception->getMessage());
 					}					
 					
-
 					
 					// import of genereated csv file
 					try {
@@ -282,8 +281,8 @@ class ProjectIfcCtrl extends AppCtrl
 					Log::getInstance()->debug($cmd);
 					Log::getInstance()->debug($Exception->getMessage());
 				}
-                
-                $this->sessionNamespace->project = $project;
+
+				$this->sessionNamespace->project = $project;
 				
 				// session tmp dir, $key, filename ifc, filename csv
 				$this->sessionNamespace->ifcData = [
@@ -293,6 +292,7 @@ class ProjectIfcCtrl extends AppCtrl
 						'ifcCsvFilename' => $config->ifcCsvFilename
 					];		
 
+				
                 $this->loadHashUrl($this->getActionLink('preview'));
 
                 return;
@@ -360,7 +360,7 @@ class ProjectIfcCtrl extends AppCtrl
 				
 				// move files
 				$ifcData = $this->sessionNamespace->ifcData;
-				var_dump($ifcData);
+
 				if(is_array($ifcData))
 				{
 					$csvFile =  File::move($ifcData['tmpPath']. '/'.$ifcData['ifcCsvFilename'], 
@@ -369,8 +369,7 @@ class ProjectIfcCtrl extends AppCtrl
 					$ifcFile =  File::move($ifcData['tmpPath']. '/'.$ifcData['ifcFilename'], 
 											$ifcSaveDir. '/'.$ifcData['ifcFilename']
 								);	
-					var_dump($csvFile);		
-					var_dump($ifcFile);					
+				
 				}	
 				else
 				{
@@ -379,7 +378,7 @@ class ProjectIfcCtrl extends AppCtrl
 					) ;
                 
 				}	
-				die();
+
 				// -----------------------------------------------------------
 
 				

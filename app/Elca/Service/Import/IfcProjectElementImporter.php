@@ -10,7 +10,7 @@ use Ramsey\Uuid\Uuid;
 class IfcProjectElementImporter
 {
     const DELIMITER = ';';
-    const COLUMN_COUNT = 9;
+    const COLUMN_COUNT = 10;
 
     /**
      * @param File $file
@@ -32,23 +32,34 @@ class IfcProjectElementImporter
             }
 
             $din276CodeString   = trim($csv[1] ?? '');
-            $quantityString     = trim($csv[2] ?? '');
-            
-			// $unitString         = trim($csv[3] ?? '');
-			$unitString = '';
-			if($quantityString!='') $unitString = '0.0';
-			
 
 			$ifcTypeString      = trim($csv[4] ?? '');
 			$ifcFloorString     = trim($csv[5] ?? '');
 			$ifcMaterialString  = trim($csv[6] ?? '');
 			$ifcGUIDString     	= trim($csv[7] ?? '');
 			$ifcPredefinedTypeString = trim($csv[8] ?? '');
+
+			// 30.04.2020 - no unit available  
+            $unitString         = trim($csv[9] ?? 'Stück'); // default in python-script = Stück
 			
-			// Trick
+			$quantityString = trim($csv[2] ?? '');
+			if(!empty($quantityString))
+			{
+				$unitString = "m²";
+			}
+			
+			$massString 	= trim($csv[3] ?? '');
+			if(!empty($massString) && $massString!='0.0')
+			{
+				$quantityString = $massString;
+				$unitString = "m³";
+			}	
+			
+			
+			// Trick - no Bauteil-ID in ifc-file
 			$tplElementUuidOrId = null;
             $tplElement = $this->findTplElement($tplElementUuidOrId);
-			
+
 			$importElement = ImportElement::fromCsv(
                 $name, 
                 $din276CodeString,
@@ -61,10 +72,10 @@ class IfcProjectElementImporter
 				$ifcPredefinedTypeString,
 				$tplElement
             );
-
+			
             $importedElements[] = $importElement->harmonizeWithTemplateElement($tplElement);
         }
-
+		
         return $importedElements;
     }
 
