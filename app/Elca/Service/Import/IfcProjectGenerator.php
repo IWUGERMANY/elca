@@ -7,6 +7,7 @@ namespace Elca\Service\Import;
 use Beibob\Blibs\DbHandle;
 use Elca\Db\ElcaBenchmarkVersion;
 use Elca\Db\ElcaElement;
+use Elca\Db\ElcaElementAttribute;
 use Elca\Db\ElcaProject;
 use Elca\Db\ElcaProjectConstruction;
 use Elca\Db\ElcaProjectLocation;
@@ -134,15 +135,25 @@ class IfcProjectGenerator
             if (null === $newElement) {
                 throw new \RuntimeException('Copy from template element failed');
             }
+			
+			$oldQuantity = $newElement->getQuantity();
 
-            $oldQuantity = $newElement->getQuantity();
-
+			// var_dump($importElement);
             $newElement->setName($importElement->name());
             $newElement->setQuantity($importElement->quantity()->value());
             $newElement->setRefUnit($importElement->quantity()->unit()->value());
             $newElement->update();
 
+			// var_dump($newElement);
+        
+
             $this->projectElementService->updateQuantityOfAffectedElements($newElement, $oldQuantity);
-        }
+			
+			// var_dump($newElement->getId(),Elca::ELEMENT_ATTR_IFCGUID, Elca::$elementAttributes[Elca::ELEMENT_ATTR_IFCGUID],null,$importElement->ifcGUID());
+			// Add ifc element attribute(s)
+			$AttrIFC = ElcaElementAttribute::create($newElement->getId(),Elca::ELEMENT_ATTR_IFCGUID, Elca::$elementAttributes[Elca::ELEMENT_ATTR_IFCGUID],null,$importElement->ifcGUID());
+		}
+	
+		
     }
 }
