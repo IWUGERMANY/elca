@@ -43,4 +43,8 @@
     </div>
 
 
+    <p>
+        <a class="no-xhr page" href="/ifcViewer/main/" target="_blank">IFC Viewer</a>
+    </p>
+
 </div>

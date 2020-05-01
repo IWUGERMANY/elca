@@ -1,0 +1,16 @@
+#viewerContent.ifc-viewer { position: relative; padding: 25px; max-width: 1500px; }
+#viewerContent.ifc-viewer #viewerContainer { overflow: hidden; line-height: 150%; border: 1px solid #ccc; margin-right: 300px; }
+#viewerContent.ifc-viewer #viewerContainer canvas { display: block; width: 1148px; height: 600px; cursor: default; }
+#viewerContent.ifc-viewer #dataContainer { margin: 25px 0; }
+#viewerContent.ifc-viewer #dataContainer table { width: 100%; max-width: 1000px; margin-bottom: 25px; }
+#viewerContent.ifc-viewer #dataContainer table th { text-align: left; width: 50%; }
+#viewerContent.ifc-viewer #dataContainer table td:last-child, #viewerContent.ifc-viewer #dataContainer table th:last-child { border-right: none; }
+#viewerContent.ifc-viewer #dataContainer h3 { margin: 15px 0 5px 0; }
+#viewerContent.ifc-viewer #treeContainer { float: right; width: 280px; overflow: scroll; height: 600px; font-size: 11px; }
+#viewerContent.ifc-viewer .bimsurfer-static-tree, #viewerContent.ifc-viewer .bimsurfer-static-tree * { user-select: none; -ms-user-select: none; -moz-user-select: none; -webkit-user-select: none; z-index: 1; }
+#viewerContent.ifc-viewer .bimsurfer-static-tree div.item { border-top: solid 1px #eee; }
+#viewerContent.ifc-viewer .bimsurfer-static-tree > div.item { border: none; }
+#viewerContent.ifc-viewer .bimsurfer-static-tree div.label { margin-left: -100px; padding-left: 100px; width: 1000px; cursor: pointer; }
+#viewerContent.ifc-viewer .bimsurfer-static-tree div.children { padding-left: 10px; }
+#viewerContent.ifc-viewer .bimsurfer-static-tree div.selected { background: #6ae; color: white; }
+#viewerContent.ifc-viewer .bimsurfer-static-tree div.bimsurfer-tree-label:before { content: "\21b3  "; }
