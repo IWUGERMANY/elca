@@ -410,7 +410,7 @@ class ElcaElementView extends HtmlView
         // Attribute elca.ifcguid only
 		$Attr = ElcaElementAttribute::findByElementIdAndIdent($this->element->getId(), Elca::ELEMENT_ATTR_IFCGUID);
 
-			$attrGroup = $AttrContainer->add(new HtmlTag('div', null, ['class' => 'clearfix column'] ));
+			$attrGroup = $AttrContainer->add(new HtmlTag('div', null, ['class' => 'clearfix column ifcguid'] ));
 			$attrGroup->add(
                         new ElcaHtmlFormElementLabel(
                             t(Elca::$elementAttributes[Elca::ELEMENT_ATTR_IFCGUID]),
