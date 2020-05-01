@@ -220,7 +220,7 @@ class ProjectImportPreviewView extends HtmlView
                 ['class' => 'modified-din-code']));
         }
 
-
+		// IFC info / hidden field guid
 		$nameDiv = $li->add(new HtmlTag('div'));
 		$nameDiv->addClass('column name ifc');
 		$nameDiv->add(
@@ -259,19 +259,7 @@ class ProjectImportPreviewView extends HtmlView
                 ]
             ))->addClass('block');
        
-		/*
-		 $li->add(
-            new HtmlTag(
-                'span',
-                $element->name(),
-                [
-                    'title' => $element->name(),
-                ]
-            )
-			
-        )->addClass('column name');
-         */
-		 
+		
         $li->add(
             new ElcaHtmlFormElementLabel('', new ElcaHtmlNumericInput('quantity[' . $key . ']'))
         )->addClass('column quantity');

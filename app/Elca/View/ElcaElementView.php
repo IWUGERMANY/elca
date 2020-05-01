@@ -408,17 +408,19 @@ class ElcaElementView extends HtmlView
         }
 		
         // Attribute elca.ifcguid only
-		$Attr = ElcaElementAttribute::findByElementIdAndIdent($this->element->getId(), Elca::ELEMENT_ATTR_IFCGUID);
+		if( $this->element->isComposite() )
+		{	
+			$Attr = ElcaElementAttribute::findByElementIdAndIdent($this->element->getId(), Elca::ELEMENT_ATTR_IFCGUID);
 
-			$attrGroup = $AttrContainer->add(new HtmlTag('div', null, ['class' => 'clearfix column ifcguid'] ));
+			$attrGroup = $AttrContainer->add(new HtmlTag('div', null, ['class' => 'clearfix column  fieldset ifcguid'] ));
 			$attrGroup->add(
-                        new ElcaHtmlFormElementLabel(
-                            t(Elca::$elementAttributes[Elca::ELEMENT_ATTR_IFCGUID]),
-                            new HtmlTextInput('attr['.$ident.']', $Attr->getTextValue())
-                        )
-                    );
-  
-   	
+				new ElcaHtmlFormElementLabel(
+					t(Elca::$elementAttributes[Elca::ELEMENT_ATTR_IFCGUID]),
+					new HtmlTextInput('attr['.Elca::ELEMENT_ATTR_IFCGUID.']', $Attr->getTextValue())
+				) 
+			);
+			$attrGroup->add(new HtmlTag('span', t('Viewer'), ['title'=>t('Bauteil im IFC-Viewer anzeigen'),'id' => 'viewerbtn', 'data-user'=>ElcaAccess::getInstance()->getUserId(), 'data-guid'=> $Attr->getTextValue(), 'data-project'=>Elca::getInstance()->getProjectId()] ));
+   	    }
         /**
          * Buttons
          */

@@ -113,6 +113,7 @@ class IfcProjectGenerator
 
     private function generateElements(Project $importProject, int $projectVariantId)
     {
+
         foreach ($importProject->importElements() as $importElement) {
 
             $tplElement = ElcaElement::findByUuid($importElement->tplElementUuid());
