@@ -262,7 +262,47 @@ class ElcaElement extends DbObject
     }
     // End findById
 
+    /**
+     * Inits a `ElcaElement' by its primary key
+     *
+     * @param  integer  $id    - elementId
+     * @param  boolean  $force - Bypass caching
+     * @return ElcaElement
+     */
+    public static function findByAttributeIdentAndTextValue($attributeIdent, $textValue, $force = false)
+    {
+        if (!$attributeIdent || !$textValue) {
+            return new ElcaElement();
+        }
 
+        $sql = sprintf("SELECT e.id
+                             , e.element_type_node_id
+                             , e.name
+                             , e.description
+                             , e.is_reference
+                             , e.is_public
+                             , e.access_group_id
+                             , e.project_variant_id
+                             , e.quantity
+                             , e.ref_unit
+                             , e.copy_of_element_id
+                             , e.owner_id
+                             , e.is_composite
+                             , e.uuid
+                             , e.created
+                             , e.modified
+                          FROM %s e
+                          JOIN %s a ON e.id = a.element_id
+                         WHERE a.ident = :ident AND a.text_value = :textValue"
+            , self::TABLE_NAME
+            , ElcaElementAttribute::TABLE_NAME
+        );
+
+        return self::findBySql(get_class(), $sql, [
+            'ident' => $attributeIdent,
+            'textValue' => $textValue,
+            ], $force);
+    }
 
     /**
      * Inits a `ElcaElement' by its uuid

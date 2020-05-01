@@ -1,0 +1,7 @@
+<phpunit bootstrap="bootstrap_tests.php">
+    <testsuites>
+        <testsuite name="elca">
+            <directory>app/Elca/Tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
