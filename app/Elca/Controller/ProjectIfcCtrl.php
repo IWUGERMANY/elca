@@ -59,7 +59,7 @@ class ProjectIfcCtrl extends AppCtrl
     const INITIAL_DIN_CODE = 330;
 	
 	const UPLOAD_FIELD_NAME = 'importFile';
-
+	
     /**
      * @var \Beibob\Blibs\SessionNamespace
      */
@@ -220,7 +220,7 @@ class ProjectIfcCtrl extends AppCtrl
 					$file   = File::fromUpload(self::UPLOAD_FIELD_NAME, $tmpCacheUserDir);
 					
 					$cmdPython = $config->pythonexecute;
-					$cmdPythonScript = $tmpCacheIFCDir . $config->ifcParserScript;
+					$cmdPythonScript = $config->toDir('baseDir') . $config->ifcParserScript;
 
 					$cmd = sprintf(
 						'%s %s %s %s',
@@ -311,6 +311,8 @@ class ProjectIfcCtrl extends AppCtrl
 
     protected function previewAction()
     {
+		$ifcFile = null;
+		
         if (!$this->isAjax()) {
             return;
         }
@@ -335,7 +337,6 @@ class ProjectIfcCtrl extends AppCtrl
 				$elcaProject = $this->projectGenerator->generate($project);
                 $this->lifeCycleUsageService->updateForProject($elcaProject);
 
-							
                 $this->messages->add(
                     t('Projekt %name% wurde erfolgreich importiert', null, ['%name%' => $elcaProject->getName()])
                 );
@@ -377,7 +378,7 @@ class ProjectIfcCtrl extends AppCtrl
 											$ifcSaveDir. '/'.$ifcData['ifcCsvFilename']
 								);
 						$ifcFile =  File::move($ifcData['tmpPath']. '/'.$ifcData['ifcFilename'], 
-											$ifcSaveDir. '/'.($config->ifcViewerFilename ?? 'ifc-viewer')
+											$ifcSaveDir. '/'.($config->ifcViewerFilename ?? 'ifc-viewer').'.'.$config->fileExtLabelIFC
 								);	
 					}
 					catch (\Exception $Exception)
@@ -389,8 +390,6 @@ class ProjectIfcCtrl extends AppCtrl
 						Log::getInstance()->debug($Exception->getMessage());
 						throw new \RuntimeException(sprintf('IFC files not moved: "%s" - Project: "%d"', $ifcSaveDir,$elcaProject->getId()));
 					}	
-
-				
 				}	
 				else
 				{
@@ -398,13 +397,103 @@ class ProjectIfcCtrl extends AppCtrl
 						t('Warnung Projekt %name%: IFC Dateien nicht kopiert. Verzeichnis nicht gefunden', null, ['%name%' => $elcaProject->getName()])
 					) ;
 					throw new \RuntimeException(sprintf('IFC files not moved: "%s" - Project: "%d"', $ifcSaveDir,$elcaProject->getId()));
-                
 				}	
 
+				// ------------------
 				
+				// xml / dae
+				
+				if(!is_null($ifcFile))
+				{	
+			
+					// convert ifc -> xml 
+					$cmdIfcconvert = $config->toDir('baseDir') . $config->ifcconvertexecute. " ". $ifcFile;
+					$cmdIfcconvertOutput = $ifcSaveDir.'/'.$config->ifcViewerFilename;
 
+					$cmdXML = sprintf(
+						'%s %s.%s',
+						$cmdIfcconvert,
+						$cmdIfcconvertOutput,
+						$config->fileExtLabelXML
+					);
+
+					try {
+						
+						if( !empty( $cmdXML ))
+						{
+							exec( $cmdXML, $output, $returnvar );
+						}	
+						
+					}
+					catch (\Exception $Exception)
+					{
+						Log::getInstance()->debug($cmdXML);
+						Log::getInstance()->debug($Exception->getMessage());
+						throw new \RuntimeException(sprintf('XML file not created: "%s" - Project: "%d"', $cmdXML,$elcaProject->getId()));
+					}					
+					
+					
+					$cmdDAE = sprintf(
+						'%s %s.%s',
+						$cmdIfcconvert,
+						$cmdIfcconvertOutput,
+						$config->fileExtLabelDAE
+					);
+					
+					
+					try {
+						
+						if( !empty( $cmdDAE ))
+						{
+							exec( $cmdDAE, $output, $returnvar );
+						}	
+						
+					}
+					catch (\Exception $Exception)
+					{
+						Log::getInstance()->debug($cmdDAE);
+						Log::getInstance()->debug($Exception->getMessage());
+						throw new \RuntimeException(sprintf('IFC file not created: "%s" - Project: "%d"', $cmdDAE,$elcaProject->getId()));
+					}		
+					
+					
+					
+					// convert dae -> gltf
+					$cmdCollada = $config->toDir('baseDir') . $config->colladagltfexecute;
+					$cmdColladaInput = $ifcSaveDir.'/'.$config->ifcViewerFilename.'.'.$config->fileExtLabelDAE;
+					$cmdColladaOutput = $ifcSaveDir.'/'.$config->ifcViewerFilename.'.'.$config->fileExtLabelGLTF;
+
+					$cmdGLTF = sprintf(
+						'%s -i %s -o %s',
+						$cmdCollada,
+						$cmdColladaInput,
+						$cmdColladaOutput
+					);
+
+					try {
+						
+						if( !empty( $cmdGLTF ))
+						{
+							exec( $cmdGLTF, $output, $returnvar );
+						}	
+						
+					}
+					catch (\Exception $Exception)
+					{
+						Log::getInstance()->debug($cmdGLTF);
+						Log::getInstance()->debug($Exception->getMessage());
+						throw new \RuntimeException(sprintf('GLTF file not created: "%s" - Project: "%d"', $cmdGLTF,$elcaProject->getId()));
+					}					
+										
+					
+					
+					
+				}
+				
+				
+				
+				
 				// -----------------------------------------------------------
-
 
                 $modalView = $this->addView(new ElcaModalProcessingView());
                 $modalView->assign(

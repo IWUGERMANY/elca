@@ -419,8 +419,9 @@ class ElcaElementView extends HtmlView
 					new HtmlTextInput('attr['.Elca::ELEMENT_ATTR_IFCGUID.']', $Attr->getTextValue())
 				) 
 			);
-			$attrGroup->add(new HtmlTag('span', t('Viewer'), ['title'=>t('Bauteil im IFC-Viewer anzeigen'),'id' => 'viewerbtn', 'data-user'=>ElcaAccess::getInstance()->getUserId(), 'data-guid'=> $Attr->getTextValue(), 'data-project'=>Elca::getInstance()->getProjectId()] ));
-   	    }
+			$attrGroup->add(new HtmlTag('span', t('Bauteil'), ['title'=>t('Bauteil im IFC-Viewer anzeigen'),'id' => 'viewerbtn', 'data-user'=>ElcaAccess::getInstance()->getUserId(), 'data-guid'=> $Attr->getTextValue(), 'data-project'=>Elca::getInstance()->getProjectId()] ));
+			$attrGroup->add(new HtmlTag('a', t('Starte Viewer'),['class'=>'no-xhr page', 'href'=>'/ifcViewer/main/','target'=>'_blank']));
+		}
         /**
          * Buttons
          */

@@ -11,6 +11,8 @@ use Beibob\Blibs\JsonView;
 use Beibob\Blibs\Session;
 use Beibob\Blibs\Environment;
 use Elca\Controller\ProjectElementsCtrl;
+use Elca\Elca;
+use Elca\Db\ElcaElement;
 
 class MainCtrl extends AjaxController
 {
@@ -40,13 +42,14 @@ class MainCtrl extends AjaxController
 		$environment = Environment::getInstance();
 		$config = $environment->getConfig();
 		
+		// Example: "www/ifc-data/1961/10345/ifc-viewer" 
 		$this->srcFileDir = sprintf("%s%s/%s/%s", 
 									'/ifc-data/',
 									$this->sessionUser->__get('userId'),
 									$this->sessionElca->__get('projectId'),
 									($config->ifcViewerFilename ?? 'ifc-viewer')
 								);
-		// "www/ifc-data/1961/10345/ifc-viewer" 
+		
 		
 		if ($this->isAjax()) {
             $this->Response->setHeader('Content-Type: application/json');
@@ -83,9 +86,13 @@ class MainCtrl extends AjaxController
         }
 
         // TODO translate between ifc model guid and elca elementId
-        $elementId = 231357;
-
-        $this->redirect(ProjectElementsCtrl::class, $elementId, ['via' => 'ifcViewer']);
+        $elementData = ElcaElement::findByAttributeIdentAndTextValue(Elca::ELEMENT_ATTR_IFCGUID, $ifcGuid);
+		$elementId = $elementData->getId();
+		//$elementId = 231357;
+		if((int)$elementId>0) {
+			$this->redirect(ProjectElementsCtrl::class, $elementId, ['via' => 'ifcViewer']);
+		}	
+		return;
     }
 
     /**
