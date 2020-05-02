@@ -335,15 +335,23 @@ class ProjectIfcCtrl extends AppCtrl
 				$elcaProject = $this->projectGenerator->generate($project);
                 $this->lifeCycleUsageService->updateForProject($elcaProject);
 
+							
+                $this->messages->add(
+                    t('Projekt %name% wurde erfolgreich importiert', null, ['%name%' => $elcaProject->getName()])
+                );
+
+
 				// ifc data
 				// -----------------------------------------------------------
-				// create user directory / move ifc / csv files
+				// create user directory 
+				// move ifc / csv files
+				// generate xml, dae, obj files
 				
 				
 				$environment = Environment::getInstance();
 				$config = $environment->getConfig();
 				
-				// create new directory with userId and prjectId storing ifc files	
+				// create new directory with userId and projectId storing ifc files	
 				$ifcSaveDir = sprintf(
 						"%s%d/%d",
 						$config->toDir('baseDir') . $config->toDir('ifcSaveDir', true, 'www/ifc-data/'),
@@ -364,28 +372,39 @@ class ProjectIfcCtrl extends AppCtrl
 
 				if(is_array($ifcData))
 				{
-					$csvFile =  File::move($ifcData['tmpPath']. '/'.$ifcData['ifcCsvFilename'], 
+					try {
+						$csvFile =  File::move($ifcData['tmpPath']. '/'.$ifcData['ifcCsvFilename'], 
 											$ifcSaveDir. '/'.$ifcData['ifcCsvFilename']
 								);
-					$ifcFile =  File::move($ifcData['tmpPath']. '/'.$ifcData['ifcFilename'], 
-											$ifcSaveDir. '/'.$ifcData['ifcFilename']
+						$ifcFile =  File::move($ifcData['tmpPath']. '/'.$ifcData['ifcFilename'], 
+											$ifcSaveDir. '/'.($config->ifcViewerFilename ?? 'ifc-viewer')
 								);	
+					}
+					catch (\Exception $Exception)
+					{
+						$this->messages->add(                    
+							t('Warnung Projekt %name%: IFC Dateien nicht kopiert.', null, ['%name%' => $elcaProject->getName()])
+						) ;
+						Log::getInstance()->debug($ifcSaveDir);
+						Log::getInstance()->debug($Exception->getMessage());
+						throw new \RuntimeException(sprintf('IFC files not moved: "%s" - Project: "%d"', $ifcSaveDir,$elcaProject->getId()));
+					}	
+
 				
 				}	
 				else
 				{
 					$this->messages->add(                    
-						t('Projekt %name%: importiert - IFC Dateien nicht kopiert.', null, ['%name%' => $elcaProject->getName()])
+						t('Warnung Projekt %name%: IFC Dateien nicht kopiert. Verzeichnis nicht gefunden', null, ['%name%' => $elcaProject->getName()])
 					) ;
+					throw new \RuntimeException(sprintf('IFC files not moved: "%s" - Project: "%d"', $ifcSaveDir,$elcaProject->getId()));
                 
 				}	
 
+				
+
 				// -----------------------------------------------------------
 
-				
-                $this->messages->add(
-                    t('Projekt %name% wurde erfolgreich importiert', null, ['%name%' => $elcaProject->getName()])
-                );
 
                 $modalView = $this->addView(new ElcaModalProcessingView());
                 $modalView->assign(
@@ -400,6 +419,11 @@ class ProjectIfcCtrl extends AppCtrl
                     )
                 );
                 $modalView->assign('headline', t('Neuberechnung nach Import erforderlich'));
+				
+				
+				
+				
+				
 
                 $this->sessionNamespace->freeData();
 
