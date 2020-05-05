@@ -1,6 +1,6 @@
 import sys
 import ifcopenshell
-import pandas as pd
+import csv
 
 
 class eLCA_Produkt:
@@ -356,23 +356,13 @@ for p in model.by_type("IfcProduct"):
 
     Produkte.append(o)
 
-output = []
-na_rep = ''
-for P in Produkte:
-    if P.KG is None: P.KG = na_rep
-    output.append({
-        'Name': P.name,
-        'Kostengruppe': str(P.KG),
-        'Flaeche': P.area,
-        'Masse': P.primary_mass,
-        'Typ': P.type,
-        'Stockwerk': P.storey,
-        'Material': P.material,
-        'GUID': P.guid,
-        'PredefinedType': 'Standard',
-        'Unit': 'Stück'
-        
-    })
-df = pd.DataFrame(output)
-df = df[['Name','Kostengruppe','Flaeche','Masse','Typ','Stockwerk','Material','GUID','PredefinedType','Unit']]
-df.to_csv(sys.argv[2], index=False, na_rep=na_rep, sep=';')
+
+with open(sys.argv[2], mode='w') as file:
+    writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    #writer.writerow(['GUID', 'Name', 'Stockwerk', 'Klasse', 'Flaeche', 'Flaecheneinheit', 'Kostengruppe', 'Masse', 'Material', 'Art'])
+    writer.writerow(['Name','Kostengruppe','Flaeche','Masse','Typ','Stockwerk','Material','GUID','PredefinedType','Unit'])
+    for P in Produkte:
+        # writer.writerow([P.guid, P.name, P.storey, P.type, P.area, P.area_unit, P.KG, P.primary_mass, P.material, P.enum])
+        writer.writerow([P.name, str(P.KG), P.area, P.primary_mass, P.type, P.storey, P.material, P.guid, 'Standard','Stück'])
+
+
