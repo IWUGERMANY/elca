@@ -43,13 +43,19 @@ class MainCtrl extends AjaxController
 		$config = $environment->getConfig();
 		
 		// Example: "www/ifc-data/1961/10345/ifc-viewer" 
-		$this->srcFileDir = sprintf("%s%s/%s/%s", 
+		/*$this->srcFileDir = sprintf("%s%s/%s/%s", 
 									'/ifc-data/',
 									$this->sessionUser->__get('userId'),
 									$this->sessionElca->__get('projectId'),
 									($config->ifcViewerFilename ?? 'ifc-viewer')
 								);
-		
+		*/
+		// Example: "www/ifc-data/10345/ifc-viewer" 
+		$this->srcFileDir = sprintf("%s%d/%s", 
+									'/ifc-data/',
+									$this->sessionElca->__get('projectId'),
+									($config->ifcViewerFilename ?? 'ifc-viewer')
+								);
 		
 		if ($this->isAjax()) {
             $this->Response->setHeader('Content-Type: application/json');

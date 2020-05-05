@@ -353,12 +353,20 @@ class ProjectIfcCtrl extends AppCtrl
 				$config = $environment->getConfig();
 				
 				// create new directory with userId and projectId storing ifc files	
-				$ifcSaveDir = sprintf(
+				/*$ifcSaveDir = sprintf(
 						"%s%d/%d",
 						$config->toDir('baseDir') . $config->toDir('ifcSaveDir', true, 'www/ifc-data/'),
 						$this->Access->getUserId(),
 						$elcaProject->getId()
 					);
+				*/
+				
+				// create new directory with projectId storing ifc files	
+				$ifcSaveDir = sprintf(
+						"%s%d",
+						$config->toDir('baseDir') . $config->toDir('ifcSaveDir', true, 'www/ifc-data/'),
+						$elcaProject->getId()
+					);	
 				
 				if (!\is_dir($ifcSaveDir)) 
 				{
@@ -407,7 +415,7 @@ class ProjectIfcCtrl extends AppCtrl
 				{	
 			
 					// convert ifc -> xml 
-					$cmdIfcconvert = $config->toDir('baseDir') . $config->ifcconvertexecute. " ". $ifcFile;
+					$cmdIfcconvert = $config->ifcconvertexecute. " ". $ifcFile;
 					$cmdIfcconvertOutput = $ifcSaveDir.'/'.$config->ifcViewerFilename;
 
 					$cmdXML = sprintf(
@@ -459,17 +467,18 @@ class ProjectIfcCtrl extends AppCtrl
 					
 					
 					// convert dae -> gltf
-					$cmdCollada = $config->toDir('baseDir') . $config->colladagltfexecute;
+					$cmdCollada = $config->colladagltfexecute;
 					$cmdColladaInput = $ifcSaveDir.'/'.$config->ifcViewerFilename.'.'.$config->fileExtLabelDAE;
 					$cmdColladaOutput = $ifcSaveDir.'/'.$config->ifcViewerFilename.'.'.$config->fileExtLabelGLTF;
 
 					$cmdGLTF = sprintf(
-						'%s -i %s -o %s',
+						'%s -i %s -o %s %s',
 						$cmdCollada,
 						$cmdColladaInput,
-						$cmdColladaOutput
+						$cmdColladaOutput,
+						($config->colladagltfexecuteOptions ?? '-V 1.0')
 					);
-
+					
 					try {
 						
 						if( !empty( $cmdGLTF ))
@@ -490,9 +499,7 @@ class ProjectIfcCtrl extends AppCtrl
 					
 				}
 				
-				
-				
-				
+
 				// -----------------------------------------------------------
 
                 $modalView = $this->addView(new ElcaModalProcessingView());

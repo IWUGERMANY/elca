@@ -36,6 +36,7 @@ use Elca\Db\ElcaElement;
 use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaElementType;
 use Elca\Db\ElcaProjectVariant;
+use Elca\Db\ElcaElementAttribute;
 use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Element\ElementObserver;
@@ -1193,26 +1194,28 @@ class ProjectElementsCtrl extends ElementsCtrl
             return;
         }
 
-
+		
+		
         // TODO resolve
         $someGuids = [
-            '2O2Fr$t4X7Zf8NOew3FNhv',
-            '3ThA22djr8AQQ9eQMA5s7I',
-            '1CZILmCaHETO8tf3SgGEWh',
-            '1hOSvn6df7F8_7GcBWlSXO',
-            '1hOSvn6df7F8_7GcBWlR72',
+            '3pnh0Rj0z0ThJfMPQPBMli',
+            '2DyZ1NSNL06PvtjXEJTyy4',
         ];
 
         $elementId = $elementId ? $elementId : $this->getAction();
+		
+		$AttrIFC = ElcaElementAttribute::findByElementIdAndIdent($elementId, Elca::ELEMENT_ATTR_IFCGUID);
 
-        if (\is_numeric($elementId)) {
-            $msg = [
-                'guid'      => $someGuids[random_int(0, count($someGuids) - 1)],
-                'elementId' => $elementId,
-            ];
-
-            $this->runJs(sprintf('elca.msgBus.submit(\'elca.element-loaded\', %s);', \json_encode($msg)));
-        }
+		if( !is_null( $AttrIFC->getId() ) ) 
+		{
+			if (\is_numeric($elementId)) {
+				$msg = [
+					'guid'      => $AttrIFC->getTextValue(),
+					'elementId' => $elementId,
+				];
+				$this->runJs(sprintf('elca.msgBus.submit(\'elca.element-loaded\', %s);', \json_encode($msg)));
+			}
+		}	
     }
 }
 // End ProjectElementsCtrl
