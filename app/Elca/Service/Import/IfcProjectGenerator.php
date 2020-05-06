@@ -138,18 +138,13 @@ class IfcProjectGenerator
 			
 			$oldQuantity = $newElement->getQuantity();
 
-			// var_dump($importElement);
             $newElement->setName($importElement->name());
             $newElement->setQuantity($importElement->quantity()->value());
             $newElement->setRefUnit($importElement->quantity()->unit()->value());
             $newElement->update();
 
-			// var_dump($newElement);
-        
-
             $this->projectElementService->updateQuantityOfAffectedElements($newElement, $oldQuantity);
 			
-			// var_dump($newElement->getId(),Elca::ELEMENT_ATTR_IFCGUID, Elca::$elementAttributes[Elca::ELEMENT_ATTR_IFCGUID],null,$importElement->ifcGUID());
 			// Add ifc element attribute(s)
 			$AttrIFC = ElcaElementAttribute::create($newElement->getId(),Elca::ELEMENT_ATTR_IFCGUID, Elca::$elementAttributes[Elca::ELEMENT_ATTR_IFCGUID],null,$importElement->ifcGUID());
 		}

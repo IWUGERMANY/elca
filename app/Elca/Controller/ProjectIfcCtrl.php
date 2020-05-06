@@ -59,7 +59,7 @@ class ProjectIfcCtrl extends AppCtrl
     const INITIAL_DIN_CODE = 330;
 	
 	const UPLOAD_FIELD_NAME = 'importFile';
-
+	
     /**
      * @var \Beibob\Blibs\SessionNamespace
      */
@@ -220,7 +220,7 @@ class ProjectIfcCtrl extends AppCtrl
 					$file   = File::fromUpload(self::UPLOAD_FIELD_NAME, $tmpCacheUserDir);
 					
 					$cmdPython = $config->pythonexecute;
-					$cmdPythonScript = $tmpCacheIFCDir . $config->ifcParserScript;
+					$cmdPythonScript = $config->toDir('baseDir') . $config->ifcParserScript;
 
 					$cmd = sprintf(
 						'%s %s %s %s',
@@ -311,6 +311,8 @@ class ProjectIfcCtrl extends AppCtrl
 
     protected function previewAction()
     {
+		$ifcFile = null;
+		
         if (!$this->isAjax()) {
             return;
         }
@@ -335,21 +337,36 @@ class ProjectIfcCtrl extends AppCtrl
 				$elcaProject = $this->projectGenerator->generate($project);
                 $this->lifeCycleUsageService->updateForProject($elcaProject);
 
+                $this->messages->add(
+                    t('Projekt %name% wurde erfolgreich importiert', null, ['%name%' => $elcaProject->getName()])
+                );
+
+
 				// ifc data
 				// -----------------------------------------------------------
-				// create user directory / move ifc / csv files
+				// create user directory 
+				// move ifc / csv files
+				// generate xml, dae, obj files
 				
 				
 				$environment = Environment::getInstance();
 				$config = $environment->getConfig();
 				
-				// create new directory with userId and prjectId storing ifc files	
-				$ifcSaveDir = sprintf(
+				// create new directory with userId and projectId storing ifc files	
+				/*$ifcSaveDir = sprintf(
 						"%s%d/%d",
 						$config->toDir('baseDir') . $config->toDir('ifcSaveDir', true, 'www/ifc-data/'),
 						$this->Access->getUserId(),
 						$elcaProject->getId()
 					);
+				*/
+				
+				// create new directory with projectId storing ifc files	
+				$ifcSaveDir = sprintf(
+						"%s%d",
+						$config->toDir('baseDir') . $config->toDir('ifcSaveDir', true, 'www/ifc-data/'),
+						$elcaProject->getId()
+					);	
 				
 				if (!\is_dir($ifcSaveDir)) 
 				{
@@ -364,28 +381,126 @@ class ProjectIfcCtrl extends AppCtrl
 
 				if(is_array($ifcData))
 				{
-					$csvFile =  File::move($ifcData['tmpPath']. '/'.$ifcData['ifcCsvFilename'], 
+					try {
+						$csvFile =  File::move($ifcData['tmpPath']. '/'.$ifcData['ifcCsvFilename'], 
 											$ifcSaveDir. '/'.$ifcData['ifcCsvFilename']
 								);
-					$ifcFile =  File::move($ifcData['tmpPath']. '/'.$ifcData['ifcFilename'], 
-											$ifcSaveDir. '/'.$ifcData['ifcFilename']
+						$ifcFile =  File::move($ifcData['tmpPath']. '/'.$ifcData['ifcFilename'], 
+											$ifcSaveDir. '/'.($config->ifcViewerFilename ?? 'ifc-viewer').'.'.$config->fileExtLabelIFC
 								);	
-				
+					}
+					catch (\Exception $Exception)
+					{
+						$this->messages->add(                    
+							t('Warnung Projekt %name%: IFC Dateien nicht kopiert.', null, ['%name%' => $elcaProject->getName()])
+						) ;
+						Log::getInstance()->debug($ifcSaveDir);
+						Log::getInstance()->debug($Exception->getMessage());
+						throw new \RuntimeException(sprintf('IFC files not moved: "%s" - Project: "%d"', $ifcSaveDir,$elcaProject->getId()));
+					}	
 				}	
 				else
 				{
 					$this->messages->add(                    
-						t('Projekt %name%: importiert - IFC Dateien nicht kopiert.', null, ['%name%' => $elcaProject->getName()])
+						t('Warnung Projekt %name%: IFC Dateien nicht kopiert. Verzeichnis nicht gefunden', null, ['%name%' => $elcaProject->getName()])
 					) ;
-                
+					throw new \RuntimeException(sprintf('IFC files not moved: "%s" - Project: "%d"', $ifcSaveDir,$elcaProject->getId()));
 				}	
 
-				// -----------------------------------------------------------
-
+				// ------------------
 				
-                $this->messages->add(
-                    t('Projekt %name% wurde erfolgreich importiert', null, ['%name%' => $elcaProject->getName()])
-                );
+				// xml / dae
+				
+				if(!is_null($ifcFile))
+				{	
+			
+					// convert ifc -> xml 
+					$cmdIfcconvert = $config->ifcconvertexecute. " ". $ifcFile;
+					$cmdIfcconvertOutput = $ifcSaveDir.'/'.$config->ifcViewerFilename;
+
+					$cmdXML = sprintf(
+						'%s %s.%s',
+						$cmdIfcconvert,
+						$cmdIfcconvertOutput,
+						$config->fileExtLabelXML
+					);
+
+					try {
+						
+						if( !empty( $cmdXML ))
+						{
+							exec( $cmdXML, $output, $returnvar );
+						}	
+						
+					}
+					catch (\Exception $Exception)
+					{
+						Log::getInstance()->debug($cmdXML);
+						Log::getInstance()->debug($Exception->getMessage());
+						throw new \RuntimeException(sprintf('XML file not created: "%s" - Project: "%d"', $cmdXML,$elcaProject->getId()));
+					}					
+					
+					
+					$cmdDAE = sprintf(
+						'%s %s.%s',
+						$cmdIfcconvert,
+						$cmdIfcconvertOutput,
+						$config->fileExtLabelDAE
+					);
+					
+					
+					try {
+						
+						if( !empty( $cmdDAE ))
+						{
+							exec( $cmdDAE, $output, $returnvar );
+						}	
+						
+					}
+					catch (\Exception $Exception)
+					{
+						Log::getInstance()->debug($cmdDAE);
+						Log::getInstance()->debug($Exception->getMessage());
+						throw new \RuntimeException(sprintf('IFC file not created: "%s" - Project: "%d"', $cmdDAE,$elcaProject->getId()));
+					}		
+					
+					
+					
+					// convert dae -> gltf
+					$cmdCollada = $config->colladagltfexecute;
+					$cmdColladaInput = $ifcSaveDir.'/'.$config->ifcViewerFilename.'.'.$config->fileExtLabelDAE;
+					$cmdColladaOutput = $ifcSaveDir.'/'.$config->ifcViewerFilename.'.'.$config->fileExtLabelGLTF;
+
+					$cmdGLTF = sprintf(
+						'%s -i %s -o %s %s',
+						$cmdCollada,
+						$cmdColladaInput,
+						$cmdColladaOutput,
+						($config->colladagltfexecuteOptions ?? '-V 1.0')
+					);
+					
+					try {
+						
+						if( !empty( $cmdGLTF ))
+						{
+							exec( $cmdGLTF, $output, $returnvar );
+						}	
+						
+					}
+					catch (\Exception $Exception)
+					{
+						Log::getInstance()->debug($cmdGLTF);
+						Log::getInstance()->debug($Exception->getMessage());
+						throw new \RuntimeException(sprintf('GLTF file not created: "%s" - Project: "%d"', $cmdGLTF,$elcaProject->getId()));
+					}					
+										
+					
+					
+					
+				}
+				
+
+				// -----------------------------------------------------------
 
                 $modalView = $this->addView(new ElcaModalProcessingView());
                 $modalView->assign(
@@ -400,6 +515,11 @@ class ProjectIfcCtrl extends AppCtrl
                     )
                 );
                 $modalView->assign('headline', t('Neuberechnung nach Import erforderlich'));
+				
+				
+				
+				
+				
 
                 $this->sessionNamespace->freeData();
 
