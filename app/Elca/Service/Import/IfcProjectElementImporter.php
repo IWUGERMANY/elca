@@ -18,15 +18,18 @@ class IfcProjectElementImporter
      */
     public function elementsFromIfcFile(File $file) : array
     {
-        // first line is headline
+		// first line is headline
         $header = $file->getCsv(self::DELIMITER);
 
         $this->guardColumnCount($header);
 
         $importedElements = [];
-        while ($csv = $file->getCsv(self::DELIMITER)) {
-            $name               = trim($csv[0] ?? '');
+		
+        while ($csv = $file->getCsv(self::DELIMITER)) 
+		{
 
+            $name               = trim($csv[0] ?? '');
+			
             if (empty($name)) {
                 continue;
             }
@@ -73,9 +76,10 @@ class IfcProjectElementImporter
 				$tplElement
             );
 			
-            $importedElements[] = $importElement->harmonizeWithTemplateElement($tplElement);
+           $importedElements[] = $importElement->harmonizeWithTemplateElement($tplElement);
+		   
         }
-		
+
         return $importedElements;
     }
 

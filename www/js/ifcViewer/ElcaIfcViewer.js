@@ -72,12 +72,17 @@ define([
                     scene.camera.project.near = modelExtent / 1000.;
                     scene.camera.project.far = modelExtent * 100.;
 
-                    scene.camera.view.eye = [-1, -1, 5];
-                    scene.camera.view.up = [0, 0, 1];
+                    //scene.camera.view.eye = [-1, -1, 5];
+                    //scene.camera.view.up = [0, 0, 1];
+					
                     // scene.camera.up = [0,0,1];
                     self.bimSurfer.viewFit({centerModel: true});
-
                     self.bimSurfer.viewer.scene.canvas.canvas.style.display = 'block';
+					
+					self.bimSurfer.setCamera({  
+						type:"persp"
+					});
+					
                 });
 
                 onLoadedCallback.apply(self, [self.bimSurfer, model]);
