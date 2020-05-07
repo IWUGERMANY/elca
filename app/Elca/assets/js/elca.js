@@ -27,7 +27,7 @@ $(window).load(function () {
         /**
          * Debug output through console.log
          */
-        debug: false,
+        debug: true,
 
         /**
          * Update the hash url, if an action element has this css class
@@ -564,13 +564,18 @@ $(window).load(function () {
 					/**
 					*   IFC Import - delete data row
 					*/
-					$('#content.project-csv-import.preview.ifc .ifcdatadelete').on('click',function(){
-						$(this).parent('.element').fadeOut('slow', this.remove);
-
+					$('#content.project-csv-import.preview.ifc .ifcdatadelete').on('click',function(e){
+						e.preventDefault();
+						var previewform = $(this).parents('form');
+						var urlKey = $(this).attr('href');
+						$(this).parent('.element').fadeOut('slow');
+						previewform.attr('action', urlKey );
+						previewform.submit();
+						
 					});
 										
                     $('#languageChooser li a').off('click').on('click', function (e) {
-
+						
                         var url = $.url(this);
                         var extendedUrl;
                         if (url.param('origin')) {

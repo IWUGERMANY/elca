@@ -90,6 +90,10 @@ class ProjectIfcCtrl extends AppCtrl
      */
     private $isIfcFile = 0;	
 	
+	/**
+     * @var deleteKey 
+     */
+    private $deleteKey;
 
     protected function init(array $args = [])
     {
@@ -324,6 +328,13 @@ class ProjectIfcCtrl extends AppCtrl
          * @var Project $project
          */
         $project = $this->sessionNamespace->project;
+
+		// delete importElement - ToDo: read GET param without $_GET
+		if(isset($_GET['delkey'])) {
+			$this->deleteKey = $_GET['delkey'];
+			$boolwert = $project->removeElementByUuid($this->deleteKey);
+		}	
+		
 		
         if (null === $project) {
             $this->importAction();
@@ -540,12 +551,12 @@ class ProjectIfcCtrl extends AppCtrl
             return;
         }
 
+		
         $view = $this->setView(new ProjectImportPreviewView());
         $view->assign('data', $this->buildPreviewFormData($project));
         $view->assign('project', $project);
         $view->assign('validator', $validator);
-
-        $this->Osit->add(
+		$this->Osit->add(
             new ElcaOsitItem(
                 $project->name(),
                 null,

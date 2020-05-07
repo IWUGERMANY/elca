@@ -145,4 +145,24 @@ class Project
 
         return false;
     }
+	
+    public function removeElementByUuid(string $uuid)
+    {
+		$reindexNeeded = false;
+		
+		$uuidToDelete = $this->findElementByUuid($uuid);
+        if($uuidToDelete) {
+			foreach ($this->importElements as $index => $importElement) {
+				if ($importElement->uuid() === $uuid) {
+					unset($this->importElements[$index]);
+					$reindexNeeded = true;
+					break;
+				}
+			}
+			if($reindexNeeded === true) {
+				$this->importElements = array_values($this->importElements);
+			}
+		}
+		return false;
+    }	
 }

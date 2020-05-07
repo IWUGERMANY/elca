@@ -13,6 +13,7 @@ use Elca\Db\ElcaProjectConstruction;
 use Elca\Db\ElcaProjectLocation;
 use Elca\Db\ElcaProjectPhase;
 use Elca\Db\ElcaProjectVariant;
+use Elca\Db\ElcaProjectIFCSet;
 use Elca\Elca;
 use Elca\Model\Import\Ifc\Project;
 use Elca\Security\ElcaAccess;
@@ -52,6 +53,8 @@ class IfcProjectGenerator
             $this->dbHandle->begin();
 
             $elcaProject = $this->generateProject($importProject);
+			
+			ElcaProjectIFCSet::createIFCproject($elcaProject->getId());
 
             $this->generateElements($importProject, $elcaProject->getCurrentVariantId());
 
