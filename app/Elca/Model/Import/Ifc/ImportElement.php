@@ -71,7 +71,7 @@ final class ImportElement
     }
 
     public function __construct(string $name, int $din276Code = null, Quantity $quantity = null,
-		string $ifcType, string $ifcFloor, string $ifcMaterial, string $ifcGUID, string $ifcPredefinedType,
+		string $ifcType = null, string $ifcFloor = null, string $ifcMaterial = null, string $ifcGUID = null, string $ifcPredefinedType = null,
 		Uuid $tplElementUuid = null, bool $isModified = false, int $modificationReason = 0)
     {
         $this->uuid               = (string)Uuid::uuid4();
@@ -201,7 +201,7 @@ final class ImportElement
         }
 
         if ($reason > 0) {
-            return new ImportElement($this->name, $dinCode, $quantity, $ifcType, $ifcFloor, $ifcMaterial, $ifcGUID, $ifcPredefinedTyp,  $this->tplElementUuid, !empty($reason), $reason);
+            return new ImportElement($this->name, $dinCode, $quantity, $ifcType, $ifcFloor, $ifcMaterial, $ifcGUID, $ifcPredefinedType,  $this->tplElementUuid, !empty($reason), $reason);
         }
 
         return $this;
@@ -209,8 +209,8 @@ final class ImportElement
 
     private static function parseQuantity(string $quantityString = null, string $unit = null)
     {
-        if (empty($quantityString) || empty($unit)) {
-            return null;
+        if (null === $quantityString || $quantityString === '') {
+            $quantityString = '0';
         }
 
         return new Quantity(

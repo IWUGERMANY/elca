@@ -42,9 +42,4 @@
         <div class="button"><a href="/project-reports/lcaProcessing/">Komplettes Projekt neu berechnen</a></div>
     </div>
 
-
-    <p>
-        <a class="no-xhr page" href="/ifcViewer/main/" target="_blank">IFC Viewer</a>
-    </p>
-
 </div>

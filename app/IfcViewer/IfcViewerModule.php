@@ -29,7 +29,6 @@ use Beibob\Blibs\CssLoader;
 use Beibob\Blibs\JsLoader;
 use Elca\Elca;
 use Elca\Model\ElcaModuleInterface;
-use IfcViewer\Model\IfcViewerProjectNavigation;
 
 /**
  * IfcViewerModule
@@ -53,7 +52,7 @@ class IfcViewerModule implements ElcaModuleInterface
         /**
          * Register additional navigations
          */
-        Elca::getInstance()->registerAdditionalNavigation(new IfcViewerProjectNavigation());
+        //Elca::getInstance()->registerAdditionalNavigation(new IfcViewerProjectNavigation());
 
         /**
          * Load additional css and js files

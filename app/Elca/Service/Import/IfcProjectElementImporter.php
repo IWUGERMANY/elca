@@ -3,6 +3,7 @@ namespace Elca\Service\Import;
 
 use Beibob\Blibs\File;
 use Elca\Db\ElcaElement;
+use Elca\Model\Common\Unit;
 use Elca\Model\Import\Ifc\ImportElement;
 use Ramsey\Uuid\Uuid;
 
@@ -40,22 +41,24 @@ class IfcProjectElementImporter
 			$ifcFloorString     = trim($csv[5] ?? '');
 			$ifcMaterialString  = trim($csv[6] ?? '');
 			$ifcGUIDString     	= trim($csv[7] ?? '');
-			$ifcPredefinedTypeString = trim($csv[8] ?? '');
+
+            // There is a bug in the parser script. col 8 and 9 are exchanged.
+			$ifcPredefinedTypeString = trim($csv[9] ?? '');
 
 			// 30.04.2020 - no unit available  
-            $unitString         = trim($csv[9] ?? 'Stück'); // default in python-script = Stück
+            $unitString         = trim($csv[8] ?? ''); // default in python-script = Stück
 			
 			$quantityString = trim($csv[2] ?? '');
 			if(!empty($quantityString))
 			{
-				$unitString = "m²";
+				$unitString = Unit::SQUARE_METER;
 			}
 			
 			$massString 	= trim($csv[3] ?? '');
 			if(!empty($massString) && $massString!='0.0')
 			{
 				$quantityString = $massString;
-				$unitString = "m³";
+				$unitString = Unit::CUBIC_METER;
 			}	
 			
 			
@@ -67,7 +70,7 @@ class IfcProjectElementImporter
                 $name, 
                 $din276CodeString,
                 $quantityString,
-                $unitString,
+                $unitString ?: Unit::PIECE,
                 $ifcTypeString,
 				$ifcFloorString,
 				$ifcMaterialString,
