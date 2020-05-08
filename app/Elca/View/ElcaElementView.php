@@ -28,7 +28,6 @@ namespace Elca\View;
 use Beibob\Blibs\FrontController;
 use Beibob\Blibs\HtmlView;
 use Beibob\Blibs\StringFactory;
-use Beibob\Blibs\Session;
 use Beibob\HtmlTools\HtmlCheckbox;
 use Beibob\HtmlTools\HtmlDOMImportElement;
 use Beibob\HtmlTools\HtmlElement;
@@ -56,6 +55,7 @@ use Elca\Db\ElcaElementAttribute;
 use Elca\Db\ElcaElementType;
 use Elca\Db\ElcaProcessDbSet;
 use Elca\Db\ElcaProcessViewSet;
+use Elca\Db\ElcaProjectIFCSet;
 use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Process\Module;
@@ -407,26 +407,29 @@ class ElcaElementView extends HtmlView
                 );
             }
         }
-		
-        // Attribute elca.ifcguid only
-		// $this->element->isComposite() )
-		//	
-				
-			$AttrIFC = ElcaElementAttribute::findByElementIdAndIdent($this->element->getId(), Elca::ELEMENT_ATTR_IFCGUID);
-		
-			//if( !is_null( $AttrIFC->getId() ) ) 
-			//{
-				$attrGroup = $AttrContainer->add(new HtmlTag('div', null, ['class' => 'clearfix column  fieldset ifcguid'] ));
-				$attrGroup->add(
-					new ElcaHtmlFormElementLabel(
-						t(Elca::$elementAttributes[Elca::ELEMENT_ATTR_IFCGUID]),
-						new HtmlTextInput('attr['.Elca::ELEMENT_ATTR_IFCGUID.']', $AttrIFC->getTextValue())
-					) 
-				);
-				// $attrGroup->add(new HtmlTag('span', t('Bauteil'), ['title'=>t('Bauteil im IFC-Viewer anzeigen'),'id' => 'viewerbtn', 'data-user'=>ElcaAccess::getInstance()->getUserId(), 'data-guid'=> $Attr->getTextValue(), 'data-project'=>Elca::getInstance()->getProjectId()] ));
-				$attrGroup->add(new HtmlTag('a', t('Starte Viewer'),['class'=>'no-xhr page', 'href'=>'/ifcViewer/main/?','target'=>'viewer-'.Elca::getInstance()->getProjectId()]));
-			// }
-		
+
+        $projectId = Elca::getInstance()->getProjectId();
+        if (ElcaProjectIFCSet::exists($projectId)) {
+            $attrIFC = ElcaElementAttribute::findByElementIdAndIdent($this->element->getId(),
+                Elca::ELEMENT_ATTR_IFCGUID);
+
+            $attrGroup = $AttrContainer->add(new HtmlTag('div', null,
+                ['class' => 'clearfix column  fieldset ifcguid']));
+            $attrGroup->add(
+                new ElcaHtmlFormElementLabel(
+                    t(Elca::$elementAttributes[Elca::ELEMENT_ATTR_IFCGUID]),
+                    new HtmlTextInput('attr[' . Elca::ELEMENT_ATTR_IFCGUID . ']', $attrIFC->getTextValue())
+                )
+            );
+
+            $attrGroup->add(new HtmlTag('a', t('Starte Viewer'), [
+                'class'  => 'no-xhr page',
+                'href'   => '/ifcViewer/main/?',
+                'target' => 'viewer-' . $projectId,
+            ]));
+        }
+
+
         /**
          * Buttons
          */
