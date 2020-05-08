@@ -1197,10 +1197,11 @@ class ProjectElementsCtrl extends ElementsCtrl
 		
 		
         // TODO resolve
-        $someGuids = [
+        /*$someGuids = [
             '3pnh0Rj0z0ThJfMPQPBMli',
             '2DyZ1NSNL06PvtjXEJTyy4',
         ];
+		*/
 
         $elementId = $elementId ? $elementId : $this->getAction();
 		

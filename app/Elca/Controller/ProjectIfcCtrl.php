@@ -90,6 +90,10 @@ class ProjectIfcCtrl extends AppCtrl
      */
     private $isIfcFile = 0;	
 	
+	/**
+     * @var deleteKey 
+     */
+    private $deleteKey;
 
     protected function init(array $args = [])
     {
@@ -230,12 +234,13 @@ class ProjectIfcCtrl extends AppCtrl
 						$tmpCsvFilename
 					);
 
+					
 					try {
 						
 						if( !empty( $cmd ))
 						{
 							// parse if by python script
-							exec( $cmd, $output, $returnvar );
+						 exec( $cmd, $output, $returnvar );
 						}	
 						
 					}
@@ -245,26 +250,26 @@ class ProjectIfcCtrl extends AppCtrl
 						Log::getInstance()->debug($Exception->getMessage());
 					}					
 					
-					
-					// import of genereated csv file
+
+					// import of generated csv file
 					try {
 						 $fileCSV = new File($tmpCsvFilename);
 						 $importedElements = $this->elementImporter->elementsFromIfcFile($fileCSV);
 					}
 					catch (\Exception $Exception)
 					{
-						Log::getInstance()->debug($cmd);
+						// Log::getInstance()->debug($cmd);
 						Log::getInstance()->debug($Exception->getMessage());
+						throw new \RuntimeException(sprintf('No "%s" file', $tmpCsvFilename));
 					}
 					
 					
 				} else {
 					// ToDo - error message
-					// $importedElements = $this->elementImporter->elementsFromIfcFile($file);
+					//$importedElements = $this->elementImporter->elementsFromIfcFile($file);
 				}
 				
-			
-                $project = new Project(
+				$project = new Project(
                     $name,
                     $constrMeasure,
                     $postcode,
@@ -274,6 +279,7 @@ class ProjectIfcCtrl extends AppCtrl
                     $grossFloorSpace
                 );
 
+				
 				try {
 					$project->setImportElements($importedElements);
 				}
@@ -283,6 +289,7 @@ class ProjectIfcCtrl extends AppCtrl
 					Log::getInstance()->debug($Exception->getMessage());
 				}
 
+				
 				$this->sessionNamespace->project = $project;
 				
 				// session tmp dir, $key, filename ifc, filename csv
@@ -321,6 +328,13 @@ class ProjectIfcCtrl extends AppCtrl
          * @var Project $project
          */
         $project = $this->sessionNamespace->project;
+
+		// delete importElement - ToDo: read GET param without $_GET
+		if(isset($_GET['delkey'])) {
+			$this->deleteKey = $_GET['delkey'];
+			$boolwert = $project->removeElementByUuid($this->deleteKey);
+		}	
+		
 		
         if (null === $project) {
             $this->importAction();
@@ -476,7 +490,7 @@ class ProjectIfcCtrl extends AppCtrl
 						$cmdCollada,
 						$cmdColladaInput,
 						$cmdColladaOutput,
-						($config->colladagltfexecuteOptions ?? '-V 1.0')
+						($config->colladagltfexecuteOptions ?? '-v 1.0')
 					);
 					
 					try {
@@ -537,12 +551,12 @@ class ProjectIfcCtrl extends AppCtrl
             return;
         }
 
+		
         $view = $this->setView(new ProjectImportPreviewView());
         $view->assign('data', $this->buildPreviewFormData($project));
         $view->assign('project', $project);
         $view->assign('validator', $validator);
-
-        $this->Osit->add(
+		$this->Osit->add(
             new ElcaOsitItem(
                 $project->name(),
                 null,

@@ -1,8 +1,6 @@
 import sys
 import ifcopenshell
-import csv
-
-sys.stderr = sys.stdout
+import pandas as pd
 
 
 class eLCA_Produkt:
@@ -356,17 +354,25 @@ for p in model.by_type("IfcProduct"):
     # Kostengruppe
     o.KG = KG(p)
 
-    o.area_unit = "Stück"
-    o.enum = "STANDARD"
-    
     Produkte.append(o)
 
-
-
-with open(sys.argv[2], 'w', encoding='utf-8') as file:
-    writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    writer.writerow(['Name1','Kostengruppe','Flaeche','Masse','Typ','Stockwerk','Material','GUID','PredefinedType','Unit'])
-    for P in Produkte:
-        writer.writerow([P.name, str(P.KG), P.area, P.primary_mass, P.type, P.storey, P.material, P.guid, P.area_unit, P.enum])
-
-
+output = []
+na_rep = ''
+for P in Produkte:
+    if P.KG is None: P.KG = na_rep
+    output.append({
+        'Name': P.name,
+        'Kostengruppe': str(P.KG),
+        'Flaeche': P.area,
+        'Masse': P.primary_mass,
+        'Typ': P.type,
+        'Stockwerk': P.storey,
+        'Material': P.material,
+        'GUID': P.guid,
+        'PredefinedType': 'Standard',
+        'Unit': 'Stück'
+        
+    })
+df = pd.DataFrame(output)
+df = df[['Name','Kostengruppe','Flaeche','Masse','Typ','Stockwerk','Material','GUID','PredefinedType','Unit']]
+df.to_csv(sys.argv[2], index=False, na_rep=na_rep, sep=';')

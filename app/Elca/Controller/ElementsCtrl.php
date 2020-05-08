@@ -2615,14 +2615,14 @@ class ElementsCtrl extends TabsCtrl
 
             if(!isset($attributes[$ident]))
                 continue;
-
+			
             $value = \trim($attributes[$ident]);
-            if($ident != Elca::ELEMENT_ATTR_OZ && preg_match('/^\d+[,.]?\d{0,}$/', $value))
+            if($ident != Elca::ELEMENT_ATTR_OZ && $ident != Elca::ELEMENT_ATTR_IFCGUID && preg_match('/^\d+[,.]?\d{0,}$/', $value))
                 $numValue = ElcaNumberFormat::fromString($value);
             else
                 $txtValue = $value;
 
-            $Attr = ElcaElementAttribute::findByElementIdAndIdent($elementId, $ident);
+		    $Attr = ElcaElementAttribute::findByElementIdAndIdent($elementId, $ident);
             if($Attr->isInitialized())
             {
                 $Attr->setNumericValue($numValue);

@@ -34,6 +34,11 @@ use Beibob\HtmlTools\HtmlSelectbox;
 use Beibob\HtmlTools\HtmlSelectOption;
 use Beibob\HtmlTools\HtmlStaticText;
 use Beibob\HtmlTools\HtmlTag;
+
+use Beibob\HtmlTools\HtmlTextInput;
+use Beibob\HtmlTools\HtmlHiddenField;
+use Beibob\HtmlTools\HtmlInputElement;
+
 use Elca\Controller\ElementImageCtrl;
 use Elca\Controller\ProjectIfcCtrl;
 use Elca\Db\ElcaBenchmarkVersion;
@@ -67,6 +72,11 @@ class ProjectImportPreviewView extends HtmlView
      */
     private $data;
 	
+	 /**
+     * @var string
+     */
+    private $keyDelete;
+	
     /**
      * Inits the view
      *
@@ -80,6 +90,7 @@ class ProjectImportPreviewView extends HtmlView
 
         $this->project = $this->get('project');
 		$this->data    = $this->get('data');
+		$this->keyDelete  = $this->get('delkey');
     }
 
     /**
@@ -87,6 +98,7 @@ class ProjectImportPreviewView extends HtmlView
      */
     protected function beforeRender()
     {
+
         $container = $this->appendChild(
             $this->getDiv(['id' => 'content', 'class' => 'project project-csv-import preview ifc'])
         );
@@ -109,8 +121,14 @@ class ProjectImportPreviewView extends HtmlView
      */
     private function appendProject(HtmlForm $form)
     {
+
         $group = $form->add(new HtmlFormGroup('Projektdaten'));
         $group->addClass('project-info');
+		
+		
+		
+		$group->add(new ElcaHtmlFormElementLabel(t('KeyDel'), new HtmlStaticText($this->keyDelete)));
+		
         $group->add(new ElcaHtmlFormElementLabel(t('Name'), new HtmlStaticText($this->project->name())));
 
         $benchmarkVersion = ElcaBenchmarkVersion::findById($this->project->benchmarkVersionId());
@@ -171,21 +189,35 @@ class ProjectImportPreviewView extends HtmlView
         $levelTwoDinCodes = $this->findLevelTwoDinCodes();
 
 		// delete button
-		$li->add(
+		
+		 $li->add(
 			new HtmlTag(
                 'span',
                 t('[x] löschen'),
                 [
-                    'title' => t('Importdatensatz löschen'),
+				    'href' => '/project-ifc/preview/?delkey='.$key ,
+					'title' => t('Importdatensatz löschen')
                 ]
            ))->addClass('ifcdatadelete');
-	    
+		
+		
+		/* 
+		$li->add(
+			new ElcaHtmlFormElementLabel(
+                t('[x] löschen'), 
+                $keyDelete = new HtmlTextInput('delkey['.$key.']', '1')
+            )
+		)->addClass('ifcdatadelete');	
+		$keyDelete->setType('hidden');
+		*/
+		
 		$li->add(
             new ElcaHtmlFormElementLabel(
                 '',
                 $dinCodeSelect = new HtmlSelectbox('dinCode2[' . $key . ']')
             )
         )->addClass('column din-code');
+		
         $dinCodeSelect->setAttribute('onchange', '$(this.form).submit();');
         $dinCodeSelect->add(new HtmlSelectOption(t('-- Bitte wählen --'), null));
 
@@ -220,7 +252,7 @@ class ProjectImportPreviewView extends HtmlView
                 ['class' => 'modified-din-code']));
         }
 
-		// IFC info / hidden field guid
+		// IFC info 
 		$nameDiv = $li->add(new HtmlTag('div'));
 		$nameDiv->addClass('column name ifc');
 		$nameDiv->add(
