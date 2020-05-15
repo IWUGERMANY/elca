@@ -362,11 +362,10 @@ for p in model.by_type("IfcProduct"):
     Produkte.append(o)
 
 
-
 with open(sys.argv[2], 'w', encoding='utf-8') as file:
     writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    writer.writerow(['Name1','Kostengruppe','Flaeche','Masse','Typ','Stockwerk','Material','GUID','PredefinedType','Unit'])
+    writer.writerow(['Name','Kostengruppe','Flaeche','Masse','Typ','Stockwerk','Material','GUID','PredefinedType','Unit'])
     for P in Produkte:
-        writer.writerow([P.name, str(P.KG), P.area, P.primary_mass, P.type, P.storey, P.material, P.guid, P.area_unit, P.enum])
+        writer.writerow([P.name, str(P.KG), P.area, P.primary_mass, P.type, P.storey, P.material, P.guid, P.enum, P.area_unit])
 
 

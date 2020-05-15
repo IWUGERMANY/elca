@@ -30,23 +30,22 @@ class IfcProjectElementImporter
 		{
 
             $name               = trim($csv[0] ?? '');
-			
+
             if (empty($name)) {
                 continue;
             }
 
             $din276CodeString   = trim($csv[1] ?? '');
 
-			$ifcTypeString      = trim($csv[4] ?? '');
-			$ifcFloorString     = trim($csv[5] ?? '');
-			$ifcMaterialString  = trim($csv[6] ?? '');
-			$ifcGUIDString     	= trim($csv[7] ?? '');
+            $ifcTypeString      = trim($csv[4] ?? '');
+            $ifcFloorString     = trim($csv[5] ?? '');
+            $ifcMaterialString  = trim($csv[6] ?? '');
+            $ifcGUIDString     	= trim($csv[7] ?? '');
 
-            // There is a bug in the parser script. col 8 and 9 are exchanged.
-			$ifcPredefinedTypeString = trim($csv[9] ?? '');
+            $ifcPredefinedTypeString = trim($csv[8] ?? '');
 
-			// 30.04.2020 - no unit available  
-            $unitString         = trim($csv[8] ?? ''); // default in python-script = Stück
+            // 30.04.2020 - no unit available
+            $unitString         = trim($csv[9] ?? ''); // default in python-script = Stück
 			
 			$quantityString = trim($csv[2] ?? '');
 			if(!empty($quantityString))
