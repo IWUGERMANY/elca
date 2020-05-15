@@ -29,9 +29,11 @@ use Beibob\Blibs\DbHandle;
 use Elca\Db\ElcaElementSet;
 use Elca\Db\ElcaProjectConstruction;
 use Elca\Db\ElcaProjectEnEv;
+use Elca\Db\ElcaProjectFinalEnergyDemand;
 use Elca\Db\ElcaProjectFinalEnergyDemandSet;
 use Elca\Db\ElcaProjectFinalEnergySupplySet;
 use Elca\Db\ElcaProjectIndicatorBenchmarkSet;
+use Elca\Db\ElcaProjectKwk;
 use Elca\Db\ElcaProjectLocation;
 use Elca\Db\ElcaProjectTransportSet;
 use Elca\Db\ElcaProjectVariant;
@@ -114,10 +116,22 @@ class ProjectVariantService
 
             /**
              * Final energy demands
+             * @var ElcaProjectFinalEnergyDemand $finalEnergyDemand
              */
-            $FinalEnergyDemandSet = ElcaProjectFinalEnergyDemandSet::findByProjectVariantId($projectVariant->getId());
-            foreach ($FinalEnergyDemandSet as $FinalEnergyDemand)
-                $FinalEnergyDemand->copy($copy->getId());
+            $finalEnergyDemandSet = ElcaProjectFinalEnergyDemandSet::findByProjectVariantId($projectVariant->getId());
+            foreach ($finalEnergyDemandSet as $finalEnergyDemand) {
+                if ($finalEnergyDemand->isKwk()) {
+                    continue;
+                }
+
+                $finalEnergyDemand->copy($copy->getId());
+            }
+
+            // copy kwk and kwk demands
+            $projectKwk = ElcaProjectKwk::findByProjectVariantId($projectVariant->getId());
+            if ($projectKwk->isInitialized()) {
+                $projectKwk->copy($copy->getId());
+            }
 
             /**
              * Final energy supplies
@@ -130,7 +144,7 @@ class ProjectVariantService
             if ($ProjectEnEv->isInitialized())
                 $ProjectEnEv->copy($copy->getId());
 
-            if ($FinalEnergyDemandSet->count() || $FinalEnergySupplySet->count())
+            if ($finalEnergyDemandSet->count() || $FinalEnergySupplySet->count())
                 $this->lcaProcessor->computeFinalEnergy($copy);
 
             /**
@@ -185,7 +199,7 @@ class ProjectVariantService
                 $observer->onProjectVariantCopy($projectVariant, $copy);
             }
 
-            if ($ElementSet->count() || $FinalEnergyDemandSet->count()) {
+            if ($ElementSet->count() || $finalEnergyDemandSet->count()) {
                 $this->lcaProcessor->updateCache($copy->getProjectId(), $copy->getId());
             }
 
