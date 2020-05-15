@@ -33,10 +33,10 @@ use Elca\Db\ElcaCacheElement;
 use Elca\Db\ElcaCacheElementType;
 use Elca\Db\ElcaCompositeElement;
 use Elca\Db\ElcaElement;
+use Elca\Db\ElcaElementAttribute;
 use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaElementType;
 use Elca\Db\ElcaProjectVariant;
-use Elca\Db\ElcaElementAttribute;
 use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Element\ElementObserver;
@@ -1194,24 +1194,15 @@ class ProjectElementsCtrl extends ElementsCtrl
             return;
         }
 
-		
-		
-        // TODO resolve
-        /*$someGuids = [
-            '3pnh0Rj0z0ThJfMPQPBMli',
-            '2DyZ1NSNL06PvtjXEJTyy4',
-        ];
-		*/
-
         $elementId = $elementId ? $elementId : $this->getAction();
 		
-		$AttrIFC = ElcaElementAttribute::findByElementIdAndIdent($elementId, Elca::ELEMENT_ATTR_IFCGUID);
+		$attrIFC = ElcaElementAttribute::findByElementIdAndIdent($elementId, Elca::ELEMENT_ATTR_IFCGUID);
 
-		if( !is_null( $AttrIFC->getId() ) ) 
+		if (null !== $attrIFC->getId())
 		{
 			if (\is_numeric($elementId)) {
 				$msg = [
-					'guid'      => $AttrIFC->getTextValue(),
+					'guid'      => $attrIFC->getTextValue(),
 					'elementId' => $elementId,
 				];
 				$this->runJs(sprintf('elca.msgBus.submit(\'elca.element-loaded\', %s);', \json_encode($msg)));
