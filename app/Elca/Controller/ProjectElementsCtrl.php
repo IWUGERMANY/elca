@@ -341,18 +341,22 @@ class ProjectElementsCtrl extends ElementsCtrl
             if(ElcaProjectVariant::findById($this->Request->projectVariantId)->getProjectId() != Elca::getInstance()->getProjectId())
                 return;
 
-            $Validator = new ElcaValidator($this->Request);
-            $Validator->assertNotEmpty('name', null, 'Bitte geben Sie einen Namen ein');
+            $elementAttributes = $this->Request->get('attr');
+
+            $validator = new ElcaValidator($this->Request);
+            $validator->assertNotEmpty('name', null, 'Bitte geben Sie einen Namen ein');
 
             if($this->Request->has('refUnit'))
-                $Validator->assertNotEmpty('refUnit', null, 'Bitte wählen Sie eine Bezugsgröße');
+                $validator->assertNotEmpty('refUnit', null, 'Bitte wählen Sie eine Bezugsgröße');
 
-            $Validator->assertNumber('quantity', null, 'Es sind nur numerische Werte erlaubt');
-            $Validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_EOL.']', 0, 5, 'Der Wert für Rückbau ist ungültig und muss zwischen 0 und 5 liegen');
-            $Validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_SEPARATION.']', 0, 5, 'Der Wert für Trennung ist ungültig und muss zwischen 0 und 5 liegen');
-            $Validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_RECYCLING.']', 0, 5, 'Der Wert für Verwerung ist ungültig und muss zwischen 0 und 5 liegen');
+            $validator->assertNumber('quantity', null, 'Es sind nur numerische Werte erlaubt');
+            $validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_EOL.']', 0, 5, 'Der Wert für Rückbau ist ungültig und muss zwischen 0 und 5 liegen');
+            $validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_SEPARATION.']', 0, 5, 'Der Wert für Trennung ist ungültig und muss zwischen 0 und 5 liegen');
+            $validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_RECYCLING.']', 0, 5, 'Der Wert für Verwerung ist ungültig und muss zwischen 0 und 5 liegen');
 
-            if($Validator->isValid())
+            $validator->assertUniqueIfcGuidWithinProjectVariant($elementAttributes, $this->Elca->getProjectVariantId(), $element->getId(), "Diese IFCGuid wird bereits in der Projektvariante verwendet. Eine Zuordnung ist nur einmal möglich");
+
+            if($validator->isValid())
             {
                 $quantity = ElcaNumberFormat::fromString($this->Request->quantity, 3);
                 $oldQuantity = null;
@@ -463,8 +467,6 @@ class ProjectElementsCtrl extends ElementsCtrl
                      */
                     if($this->Request->has('attr'))
                     {
-                        $elementAttributes = $this->Request->get('attr');
-
                         if(is_array($elementAttributes))
                             $this->saveElementAttributes($element, $elementAttributes);
                     }
@@ -490,9 +492,7 @@ class ProjectElementsCtrl extends ElementsCtrl
                      */
                     if($this->Request->has('attr'))
                     {
-                        $elementAttributes = $this->Request->get('attr');
-
-                        if(is_array($elementAttributes))
+                        if (is_array($elementAttributes))
                             $this->saveElementAttributes($element, $elementAttributes);
                     }
 
@@ -514,15 +514,15 @@ class ProjectElementsCtrl extends ElementsCtrl
                     $this->setOsitElementScenario($ElementType->getNodeId(), $element->getId());
                 }
 
-                $Validator = null;
+                $validator = null;
             }
             else
             {
-                foreach($Validator->getErrors() as $property => $message)
+                foreach($validator->getErrors() as $property => $message)
                     $this->messages->add($message, ElcaMessages::TYPE_ERROR);
             }
 
-            $this->generalAction($element->getId(), $Validator);
+            $this->generalAction($element->getId(), $validator);
             $this->addNavigationViewOnCompareWithReferenceProject($ElementType->getNodeId());
         }
         elseif(isset($this->Request->cancel))
