@@ -38,6 +38,10 @@ class Validator extends ElcaValidator
 
     public function assertValidProject(Project $project)
     {
+        $counterNotValid = 0;
+        $numberOfItems = count($project->importElements()); 
+        
+        // count invalid items 
         foreach ($project->importElements() as $index => $importElement) {
             $key = $importElement->uuid();
             $this->assertTrue('quantity['.$key.']', null !== $importElement->quantity(), t('Legen Sie bitte eine Menge für das  :index:. Bauteil fest', null, [':index:' => $index + 1]));
@@ -45,9 +49,30 @@ class Validator extends ElcaValidator
             $this->assertTrue('tplElementId['.$key.']', null !== $importElement->tplElementUuid(), t('Wählen Sie bitte eine Bauteilvorlage für das  :index:. Bauteil', null, [':index:' => $index + 1]));
 
            if (!$this->isValid()) {
-               return false;
+               $counterNotValid += 1;
+           }
+           $this->clearErrors();
+        }
+
+        // minimum one element
+        if ($counterNotValid == $numberOfItems) {
+            return false;
+        }
+        
+        // check for valid elements - remove not valid elements
+        foreach ($project->importElements() as $index => $importElement) {
+            $key = $importElement->uuid();
+            $this->assertTrue('quantity['.$key.']', null !== $importElement->quantity(), t('Legen Sie bitte eine Menge für das  :index:. Bauteil fest', null, [':index:' => $index + 1]));
+            $this->assertTrue('dinCode['.$key.']', (bool)$importElement->dinCode(), t('Wählen Sie bitte die DIN 276 für das  :index:. Bauteil', null, [':index:' => $index + 1]));
+            $this->assertTrue('tplElementId['.$key.']', null !== $importElement->tplElementUuid(), t('Wählen Sie bitte eine Bauteilvorlage für das  :index:. Bauteil', null, [':index:' => $index + 1]));
+
+           if (!$this->isValid()) {
+               $this->clearErrors();
+               $boolwert = $project->removeElementByUuid($key);
            }
         }
+        
+        $this->clearErrors();
 
         return true;
     }

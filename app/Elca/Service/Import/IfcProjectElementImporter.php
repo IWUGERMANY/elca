@@ -30,21 +30,21 @@ class IfcProjectElementImporter
 		{
 
             $name               = trim($csv[0] ?? '');
-			
+
             if (empty($name)) {
                 continue;
             }
 
             $din276CodeString   = trim($csv[1] ?? '');
 
-			$ifcTypeString      = trim($csv[4] ?? '');
-			$ifcFloorString     = trim($csv[5] ?? '');
-			$ifcMaterialString  = trim($csv[6] ?? '');
-			$ifcGUIDString     	= trim($csv[7] ?? '');
+            $ifcTypeString      = trim($csv[4] ?? '');
+            $ifcFloorString     = trim($csv[5] ?? '');
+            $ifcMaterialString  = trim($csv[6] ?? '');
+            $ifcGUIDString     	= trim($csv[7] ?? '');
 
             $ifcPredefinedTypeString = trim($csv[8] ?? '');
 
-			// 30.04.2020 - no unit available  
+            // 30.04.2020 - no unit available
             $unitString         = trim($csv[9] ?? ''); // default in python-script = Stück
 			
 			$quantityString = trim($csv[2] ?? '');

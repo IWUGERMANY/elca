@@ -269,9 +269,9 @@ class ElcaElement extends DbObject
      * @param  boolean  $force - Bypass caching
      * @return ElcaElement
      */
-    public static function findByAttributeIdentAndTextValue($attributeIdent, $textValue, $force = false)
+    public static function findForIfcGuid($ifcGuid, $projectVariantId, $force = false)
     {
-        if (!$attributeIdent || !$textValue) {
+        if (!$ifcGuid || !$projectVariantId) {
             return new ElcaElement();
         }
 
@@ -293,14 +293,18 @@ class ElcaElement extends DbObject
                              , e.modified
                           FROM %s e
                           JOIN %s a ON e.id = a.element_id
-                         WHERE a.ident = :ident AND a.text_value = :textValue"
+                         WHERE a.ident = :ident
+                           AND a.text_value = :textValue
+                           AND e.project_variant_id = :projectVariantId
+                         LIMIT 1"
             , self::TABLE_NAME
             , ElcaElementAttribute::TABLE_NAME
         );
 
         return self::findBySql(get_class(), $sql, [
-            'ident' => $attributeIdent,
-            'textValue' => $textValue,
+            'ident' => Elca::ELEMENT_ATTR_IFCGUID,
+            'projectVariantId' => $projectVariantId,
+            'textValue' => $ifcGuid,
             ], $force);
     }
 

@@ -34,11 +34,6 @@ use Beibob\HtmlTools\HtmlSelectbox;
 use Beibob\HtmlTools\HtmlSelectOption;
 use Beibob\HtmlTools\HtmlStaticText;
 use Beibob\HtmlTools\HtmlTag;
-
-use Beibob\HtmlTools\HtmlTextInput;
-use Beibob\HtmlTools\HtmlHiddenField;
-use Beibob\HtmlTools\HtmlInputElement;
-
 use Elca\Controller\ElementImageCtrl;
 use Elca\Controller\ProjectIfcCtrl;
 use Elca\Db\ElcaBenchmarkVersion;
@@ -331,6 +326,7 @@ class ProjectImportPreviewView extends HtmlView
             $selector->setUrl(FrontController::getInstance()->getUrlTo(ProjectIfcCtrl::class, 'selectElement'));
             $selector->setElementTypeNodeId($elementType->getNodeId());
             $selector->setRelId($key);
+            $selector->setAttribute("onclick", "$(this).parents('form').submit()");
         }
 
 		#content.project-csv-import.preview li.element .column.tpl-element
@@ -348,6 +344,7 @@ class ProjectImportPreviewView extends HtmlView
         $buttonGroup->addClass('buttons');
         $buttonGroup->add(new ElcaHtmlSubmitButton('cancel', t('Abbrechen'), false));
         $buttonGroup->add(new ElcaHtmlSubmitButton('createProject', t('Projekt erstellen')));
+        $buttonGroup->add(new HTMLTag('div', t('Mind. einem Bauteil eine Bauteilvorlage zuweisen. Bauteile ohne Zuweisung werden gelöscht.'), ['class' => 'legendProject']));
     }
 
     private function addElementImage(HtmlElement $container, $tplElementId)

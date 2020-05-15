@@ -5,14 +5,13 @@ namespace IfcViewer\Controller;
 
 
 use Beibob\Blibs\AjaxController;
+use Beibob\Blibs\Environment;
 use Beibob\Blibs\HtmlView;
 use Beibob\Blibs\Interfaces\Viewable;
 use Beibob\Blibs\JsonView;
-use Beibob\Blibs\Session;
-use Beibob\Blibs\Environment;
 use Elca\Controller\ProjectElementsCtrl;
-use Elca\Elca;
 use Elca\Db\ElcaElement;
+use Elca\Elca;
 
 class MainCtrl extends AjaxController
 {
@@ -92,7 +91,7 @@ class MainCtrl extends AjaxController
         }
 
         // TODO translate between ifc model guid and elca elementId
-        $elementData = ElcaElement::findByAttributeIdentAndTextValue(Elca::ELEMENT_ATTR_IFCGUID, $ifcGuid);
+        $elementData = ElcaElement::findForIfcGuid($ifcGuid, Elca::getInstance()->getProjectVariantId());
 		$elementId = $elementData->getId();
 		//$elementId = 231357;
 		if((int)$elementId>0) {
