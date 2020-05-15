@@ -25,6 +25,7 @@
 namespace Elca\Db;
 
 use Beibob\Blibs\DbObjectSet;
+
 /**
  * Handles a set of ElcaProjectFinalEnergyDemand
  *
@@ -80,7 +81,6 @@ class ElcaProjectFinalEnergyDemandSet extends DbObjectSet
     // End findByProcessConfigId
 
 
-
     /**
      * Find by projectVariantId
      *
@@ -101,6 +101,14 @@ class ElcaProjectFinalEnergyDemandSet extends DbObjectSet
     }
     // End findByProjectVariantId
 
+    public static function findByKwkId(int $kwkId, array $orderBy = null, $limit = null, $offset = null, $force = false)
+    {
+        if(!$kwkId)
+            return new ElcaProjectFinalEnergyDemandSet();
+
+        $initValues = array('kwk_id' => $kwkId);
+        return self::_find(get_class(), ElcaProjectFinalEnergyDemand::getTablename(), $initValues, $orderBy, $limit, $offset, $force);
+    }
 
 
     /**
@@ -133,5 +141,6 @@ class ElcaProjectFinalEnergyDemandSet extends DbObjectSet
         return self::_count(get_class(), ElcaProjectFinalEnergyDemand::getTablename(), $initValues, $force);
     }
     // End dbCount
+
 }
 // End class ElcaProjectFinalEnergyDemandSet
