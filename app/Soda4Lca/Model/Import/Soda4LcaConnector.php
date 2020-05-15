@@ -262,28 +262,27 @@ class Soda4LcaConnector
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
-        if(!$xml = curl_exec($curl))
-        {
-            $this->Log->error('Connected to '. $url .' failed: '. curl_error($curl), __METHOD__);
-            throw new Soda4LcaException('Could not connect to '. $url .': '. curl_error($curl), Soda4LcaException::CONNECTION_TIMEOUT);
+        if(!$xml = curl_exec($curl)) {
+            $this->handleError($url, $curl);
         }
 
-        $info = curl_getinfo($curl);
+        $curlInfo = curl_getinfo($curl);
         curl_close($curl);
 
         $domDocument = new DOMDocument();
         if(!$domDocument->loadXml($xml))
         {
-            $this->Log->error('Connected to '. $url .' failed: no valid xml: '. $xml, __METHOD__);
+            $this->Log->error('Connection to '. $url .' failed with status '. $curlInfo['http_code'].': no valid xml: '. $xml, __METHOD__);
             $substr = \substr($xml, 0, 500);
-            $message    = 'Xml document could not be loaded for url `' . $url . '\': ' . $substr;
+            $message   = 'Xml document could not be loaded for url `' . $url . '\' (status='.$curlInfo['http_code'].'): ' . $substr;
             if ($substr !== $xml) {
                 $message .= '...';
             }
+
             throw new Soda4LcaException($message, Soda4LcaException::NO_VALID_XML_DOCUMENT);
         }
 
-        $this->Log->debug('Connected to '. $url .' succeeded in '. $info['total_time'] .' seconds. Retrieved '.$info['size_download'].' bytes with '.$info['speed_download'].' bytes per second', __METHOD__);
+        $this->Log->debug('Connection to '. $url .' succeeded in '. $curlInfo['total_time'] .' seconds. Retrieved '.$curlInfo['size_download'].' bytes with '.$curlInfo['speed_download'].' bytes per second', __METHOD__);
 
         return $this->cache[$url] = new DOMXPath($domDocument);
     }
@@ -314,7 +313,20 @@ class Soda4LcaConnector
         list($usec, $sec) = explode(' ', microtime());
         return ((float)$usec + (float)$sec);
     }
-    // End getMicrotime
+
+
+    private function handleError($url, $curl): void
+    {
+        $httpCode  = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $curlInfo  = curl_getinfo($curl);
+
+        $curlError = curl_error($curl);
+
+        $errorMessage = 'Got ' . $httpCode . ' requesting ' . $url . ': ' . $curlError;
+
+        $this->Log->error($errorMessage, __METHOD__);
+        throw new Soda4LcaException($errorMessage,Soda4LcaException::CONNECTION_ERROR, null, $curlInfo);
+    }
 
 }
 // End Soda4LcaConnector

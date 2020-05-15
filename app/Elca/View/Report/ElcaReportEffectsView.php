@@ -201,11 +201,12 @@ class ElcaReportEffectsView extends ElcaReportsView
                     if ($projectKwk->getName()) {
                         $h1->appendChild($this->getText(' "'. $projectKwk->getName() .'"'));
                     }
-                    $this->buildOperationEffects($tdContainer,
-                        ElcaReportSet::findKwkFinalEnergyDemandEffects($this->projectVariantId), $m2a, $isEn15804Compliant);
 
                     $kwkFinalEnergyDemandAssets = ElcaReportSet::findKwkFinalEnergyDemandAssets($this->projectVariantId);
                     $this->buildKwkPieChart($tdContainer, $kwkFinalEnergyDemandAssets);
+
+                    $this->buildOperationEffects($tdContainer,
+                        ElcaReportSet::findKwkFinalEnergyDemandEffects($this->projectVariantId), $m2a, $isEn15804Compliant);
                 }
                 break;
 
