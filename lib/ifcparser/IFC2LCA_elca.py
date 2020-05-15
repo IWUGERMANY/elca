@@ -165,8 +165,10 @@ def Area(p):
     def Wall():
         area = property_finder(p, "QTo_WallBaseQuantities", "NetSideArea")
         if area is None:
+            print('1', area,property_finder(p, "BaseQuantities", "NetSideArea")) 
             return property_finder(p, "BaseQuantities", "NetSideArea")
         else:
+            print('2', area) 
             return area
 
     def Window_Door():
@@ -367,6 +369,6 @@ with open(sys.argv[2], 'w', encoding='utf-8') as file:
     writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     writer.writerow(['Name1','Kostengruppe','Flaeche','Masse','Typ','Stockwerk','Material','GUID','PredefinedType','Unit'])
     for P in Produkte:
-        writer.writerow([P.name, str(P.KG), P.area, P.primary_mass, P.type, P.storey, P.material, P.guid, P.area_unit, P.enum])
+        writer.writerow([P.name, str(P.KG), P.area, P.primary_mass, P.type, P.storey, P.material, P.guid, P.enum, P.area_unit])
 
 

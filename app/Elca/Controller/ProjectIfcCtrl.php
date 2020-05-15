@@ -490,7 +490,7 @@ class ProjectIfcCtrl extends AppCtrl
 						$cmdCollada,
 						$cmdColladaInput,
 						$cmdColladaOutput,
-						($config->colladagltfexecuteOptions ?? '-v 1.0')
+						($config->colladagltfexecuteOptions ?? '-V 1.0')
 					);
 					
 					try {
