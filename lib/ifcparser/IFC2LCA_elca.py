@@ -165,8 +165,10 @@ def Area(p):
     def Wall():
         area = property_finder(p, "QTo_WallBaseQuantities", "NetSideArea")
         if area is None:
+            print('1', area,property_finder(p, "BaseQuantities", "NetSideArea")) 
             return property_finder(p, "BaseQuantities", "NetSideArea")
         else:
+            print('2', area) 
             return area
 
     def Window_Door():

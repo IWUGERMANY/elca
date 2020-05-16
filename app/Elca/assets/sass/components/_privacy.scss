@@ -61,6 +61,13 @@ $textColorRed: #ff0000;
 	float:right;
 }
 
+#content .legendProject {
+font-size: 14px;
+font-style: italic;
+color: #666;
+padding-top: 20px;
+}
+
 #content .pdfcreate.blink {
   animation: blink-animation 1s steps(5, start) infinite;
   -webkit-animation: blink-animation 1s steps(5, start) infinite;

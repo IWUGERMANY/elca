@@ -654,6 +654,8 @@ h1.projectHeader { float: left; margin-right: 3em; }
 
 #content .pdfcreate { padding: 0 5px; float: right; }
 
+#content .legendProject { font-size: 14px; font-style: italic; color: #666; padding-top: 20px; }
+
 #content .pdfcreate.blink { animation: blink-animation 1s steps(5, start) infinite; -webkit-animation: blink-animation 1s steps(5, start) infinite; }
 
 @keyframes blink-animation { to { visibility: hidden; } }

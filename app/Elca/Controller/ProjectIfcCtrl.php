@@ -346,9 +346,9 @@ class ProjectIfcCtrl extends AppCtrl
 
             $validator->assertValidProject($project);
 
-            if ($validator->isValid()) {
-                
-				$elcaProject = $this->projectGenerator->generate($project);
+            if ($validator->isValid()) 
+            {
+                $elcaProject = $this->projectGenerator->generate($project);
                 $this->lifeCycleUsageService->updateForProject($elcaProject);
 
                 $this->messages->add(
@@ -486,11 +486,11 @@ class ProjectIfcCtrl extends AppCtrl
 					$cmdColladaOutput = $ifcSaveDir.'/'.$config->ifcViewerFilename.'.'.$config->fileExtLabelGLTF;
 
 					$cmdGLTF = sprintf(
-						'%s -i %s -o %s %s',
+                    '%s -i %s -o %s %s',
 						$cmdCollada,
 						$cmdColladaInput,
 						$cmdColladaOutput,
-						($config->colladagltfexecuteOptions ?? '-v 1.0')
+						($config->colladagltfexecuteOptions ?? '-V 1.0')
 					);
 					
 					try {
@@ -540,10 +540,11 @@ class ProjectIfcCtrl extends AppCtrl
                 return;
             }
             else {
-                foreach ($validator->getErrors() as $property => $message) {
+                    $this->messages->add(t('Bitte mindestens ein Bauteil zuweisen.'), ElcaMessages::TYPE_ERROR);
+                }   
+                /* foreach ($validator->getErrors() as $property => $message) {
                     $this->messages->add($message, ElcaMessages::TYPE_ERROR);
-                }
-            }
+                } */
         }
         elseif ($this->Request->has('cancel')) {
             $this->sessionNamespace->freeData();

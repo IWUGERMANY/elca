@@ -344,6 +344,7 @@ class ProjectImportPreviewView extends HtmlView
         $buttonGroup->addClass('buttons');
         $buttonGroup->add(new ElcaHtmlSubmitButton('cancel', t('Abbrechen'), false));
         $buttonGroup->add(new ElcaHtmlSubmitButton('createProject', t('Projekt erstellen')));
+        $buttonGroup->add(new HTMLTag('div', t('Mind. einem Bauteil eine Bauteilvorlage zuweisen. Bauteile ohne Zuweisung werden gelöscht.'), ['class' => 'legendProject']));
     }
 
     private function addElementImage(HtmlElement $container, $tplElementId)
