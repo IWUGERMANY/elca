@@ -10,6 +10,7 @@ define([
 
         this.bimSurfer = null;
         this.dataRenderer = null;
+        this.treeRenderer = null;
         this.modelId = null;
         this.debug = args.debug || false;
         this.srcFile = args.src;
@@ -17,26 +18,27 @@ define([
         this.initViewer = function (onLoadedCallback) {
             var self = this;
 
-            var tree = new StaticTreeRenderer({
+            this.treeRenderer = new StaticTreeRenderer({
                 domNode: "treeContainer",
                 withVisibilityToggle: true
             });
-            tree.addModel({
+            this.treeRenderer.addModel({
                 id: 1,
                 src: this.srcFile + ".xml"
             });
-            tree.build();
+            this.treeRenderer.build();
 
-            tree.on("click", function (oid, selected) {
+            this.treeRenderer.on("click", function (oid, selected) {
                 // Clicking an explorer node fits the view to its object and selects
                 self.bimSurfer.setSelection({
                     ids: selected,
                     clear: true,
                     selected: true
                 });
-                self.onSelectionChanged(selected);
+
+                self.updateIfcInfo(selected[0]);
             });
-            tree.on("visibility-changed", function (params) {
+            this.treeRenderer.on("visibility-changed", function (params) {
                 self.bimSurfer.setVisibility(params);
             });
 
@@ -82,14 +84,16 @@ define([
                 onLoadedCallback.apply(self, [self.bimSurfer, model]);
             });
 
-            this.bimSurfer.on('selection-changed', this.onSelectionChanged);
-        };
+            this.bimSurfer.on('selection-changed', function (selected) {
+                if (selected.objects) {
+                    selected = selected.objects;
+                }
 
-        this.onSelectionChanged = function (selected) {
-            if (selected.length > 0) {
-                this.updateIfcInfo(selected[0]);
-            }
-        }
+                if (selected.length > 0) {
+                    self.updateIfcInfo(self.convertOidToGuid(selected[0]));
+                }
+            });
+        };
 
         this.convertOidToGuid = function (oid) {
             // So, there are several options here, id can either be a glTF identifier,
@@ -128,6 +132,10 @@ define([
                 selected: true,
                 clear: true
             });
+
+            this.updateIfcInfo(guid);
+
+            this.treeRenderer.setSelected([guid])
         };
 
         this.updateIfcInfo = function (oid) {
