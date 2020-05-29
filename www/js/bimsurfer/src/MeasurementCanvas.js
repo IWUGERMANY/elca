@@ -47,8 +47,9 @@ define(function() {
         
         logMatrix: function(n, m) {
             if (m.elements) {
-                m = m.elements;
+                m = m.elements;;
             }
+            console.log(n, ...m);
         },
         
         pdiv: use_xeogl ? function(v) {

@@ -93,7 +93,7 @@ if (typeof jQuery != 'undefined') {
 
                         require(['ElcaIfcViewer'], function(ElcaIfcViewer) {
 
-                            var lastedLoadedGuid;
+                            var latestLoadedGuid;
 
                             var viewer = new ElcaIfcViewer({
                                 src: $context.data('src'),
@@ -106,7 +106,7 @@ if (typeof jQuery != 'undefined') {
                                             var oid = selected.objects[0];
                                             var guid = viewer.convertOidToGuid(oid);
 
-                                            if (lastedLoadedGuid && lastedLoadedGuid === guid) {
+                                            if (latestLoadedGuid && latestLoadedGuid === guid) {
                                                 console.log('Current loaded element equals the selected', guid);
                                                 return;
                                             }
@@ -116,6 +116,8 @@ if (typeof jQuery != 'undefined') {
                                             elca.msgBus.submit('ifcViewer.selection-changed', {
                                                 guid: guid
                                             });
+
+                                            latestLoadedGuid = guid;
                                         }
                                     });
                                 }
@@ -128,7 +130,7 @@ if (typeof jQuery != 'undefined') {
                                     return;
                                 }
 
-                                lastedLoadedGuid = message.guid;
+                                latestLoadedGuid = message.guid;
                                 viewer.viewElement(message.guid);
                             });
                         });

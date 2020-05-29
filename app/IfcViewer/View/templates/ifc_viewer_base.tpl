@@ -8,6 +8,9 @@
     <script type="text/javascript" src="/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="/js/d3.v3/d3.v3.min.js"></script>
 
+    <script type="text/javascript" src="/js/bimsurfer/src/threeViewer/three.js"></script>
+    <script type="text/javascript" src="/js/bimsurfer/src/threeViewer/OrbitControls.js"></script>
+    <script type="text/javascript" src="/js/bimsurfer/src/threeViewer/GLTFLoader.js"></script>
     <script type="text/javascript" data-main="/js/ifcViewer/ElcaIfcViewer" src="/js/bimsurfer/lib/require.js"></script>
 
     <link rel="shortcut icon" href="/favicon.ico"/>
