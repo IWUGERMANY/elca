@@ -782,7 +782,7 @@ class ElcaValidator extends HtmlFormValidator
 
         $foundElement = ElcaElement::findForIfcGuid($ifcGuid, $projectVariantId, true);
 
-        return $this->assertTrue('attr['.Elca::ELEMENT_ATTR_IFCGUID.']', $foundElement->getId() === $currentElementId, $errorMessage);
+        return $this->assertTrue('attr['.Elca::ELEMENT_ATTR_IFCGUID.']', !$foundElement->isInitialized() || $foundElement->getId() === $currentElementId, $errorMessage);
     }
 }
 // End HtmlFormValidator
