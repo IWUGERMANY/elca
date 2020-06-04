@@ -490,7 +490,7 @@ class ProjectIfcCtrl extends AppCtrl
 						$cmdCollada,
 						$cmdColladaInput,
 						$cmdColladaOutput,
-						($config->colladagltfexecuteOptions ?? '-v 1.0')
+						($config->colladagltfexecuteOptions ?? '-v 1.0') 
 					);
 					
 					try {
@@ -505,7 +505,7 @@ class ProjectIfcCtrl extends AppCtrl
 					{
 						Log::getInstance()->debug($cmdGLTF);
 						Log::getInstance()->debug($Exception->getMessage());
-						throw new \RuntimeException(sprintf('GLTF file not created: "%s" - Project: "%d"', $cmdGLTF,$elcaProject->getId()));
+						throw new \RuntimeException(sprintf('GLTF  file not created: "%s" - Project: "%d"', $cmdGLTF,$elcaProject->getId()));
 					}					
 										
 					
