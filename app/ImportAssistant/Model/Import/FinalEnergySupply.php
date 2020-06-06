@@ -55,7 +55,7 @@ class FinalEnergySupply
 
         $this->materialMapping = $materialMapping;
         $this->quantity        = $quantity;
-        $this->enEvRatio       = $enEvRatio;
+        $this->enEvRatio       = $enEvRatio ?? 0;
     }
 
     /**
