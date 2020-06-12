@@ -44,8 +44,8 @@ class IfcProjectElementImporter
 
             $ifcPredefinedTypeString = trim($csv[8] ?? '');
 
-            // 30.04.2020 - no unit available
-            $unitString         = trim($csv[9] ?? ''); // default in python-script = Stück
+            // default in python-script = only qm, no distinction (2020-06-12)
+            $unitString         = trim($csv[9] ?? ''); 
 			
 			$quantityString = trim($csv[2] ?? '');
 			if(!empty($quantityString))
@@ -60,6 +60,11 @@ class IfcProjectElementImporter
 				$unitString = Unit::CUBIC_METER;
 			}	
 			
+            // check / set Unit::PIECE
+            if($unitString != Unit::SQUARE_METER && $unitString != Unit::CUBIC_METER)
+            {
+                $unitString = Unit::PIECE;
+            }    
 			
 			// Trick - no Bauteil-ID in ifc-file
 			$tplElementUuidOrId = null;

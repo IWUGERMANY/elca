@@ -238,6 +238,7 @@ class ProjectIfcCtrl extends AppCtrl
                     catch (\Exception $Exception) {
                         Log::getInstance()->debug($cmd);
                         Log::getInstance()->debug($Exception->getMessage());
+                        throw new \RuntimeException(sprintf('Python Error cmd: "%s", output: %s, returnvar: %s', $cmd, $output, $returnvar));
                     }
 
 
