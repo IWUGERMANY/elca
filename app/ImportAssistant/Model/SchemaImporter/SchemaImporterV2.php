@@ -149,6 +149,9 @@ class SchemaImporterV2 extends AbstractSchemaImporter
             ]
         );
 
+        // normalize level 2 dinCode
+        $dinCode = \utf8_substr($dinCode, 0, 2) . '0';
+
         $element = new Element(
             $uuid,
             $dinCode,
