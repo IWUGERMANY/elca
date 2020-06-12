@@ -2,7 +2,7 @@ import sys
 import ifcopenshell
 import csv
 
-# ON!
+# ON! 
 # sys.stderr = sys.stdout
 
 def property_finder(ifc_element, property_set, property_name):
