@@ -15,6 +15,7 @@ use Elca\Db\ElcaProcessSet;
 use Elca\Model\Common\Unit;
 use Elca\Model\Process\ProcessDbId;
 use Elca\Model\ProcessConfig\Conversion\FlowReference;
+use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\ProcessConfig\ProcessConfigId;
 use Elca\Model\ProcessConfig\ProcessLifeCycleId;
@@ -184,7 +185,7 @@ class Soda4LcaConversionsImporter
                 continue;
             }
 
-            $importConversion = new LinearConversion($inUnit, $outUnit, (float)$convDO->factor);
+            $importConversion = new ImportedLinearConversion($inUnit, $outUnit, (float)$convDO->factor, null);
 
             $foundConversion = $foundConversions->find($inUnit, $outUnit);
             if ($foundConversion->isPresent()) {
