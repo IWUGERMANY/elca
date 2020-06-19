@@ -33,7 +33,6 @@ use Elca\Db\ElcaCacheElement;
 use Elca\Db\ElcaCacheElementType;
 use Elca\Db\ElcaCompositeElement;
 use Elca\Db\ElcaElement;
-use Elca\Db\ElcaElementAttribute;
 use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaElementType;
 use Elca\Db\ElcaProjectVariant;
@@ -103,7 +102,8 @@ class ProjectElementsCtrl extends ElementsCtrl
             /**
              * If not list action, then re-route to list
              */
-            if($this->getAction() != 'list') {
+            if($this->getAction() != 'list')
+            {
                 $Element = ElcaElement::findById($this->getAction());
 
                 if ($Element->isInitialized()) {
@@ -123,13 +123,7 @@ class ProjectElementsCtrl extends ElementsCtrl
         $this->readOnly = !$this->Access->canEditProject($this->Elca->getProject());
     }
     // End init
-    protected function defaultAction($elementId = null)
-    {
-        parent::defaultAction($elementId);
 
-        $this->handleIfcViewerSelectionRequest($elementId);
-
-    }
 
     /**
      * Sets the osit scenario
@@ -341,22 +335,18 @@ class ProjectElementsCtrl extends ElementsCtrl
             if(ElcaProjectVariant::findById($this->Request->projectVariantId)->getProjectId() != Elca::getInstance()->getProjectId())
                 return;
 
-            $elementAttributes = $this->Request->get('attr');
-
-            $validator = new ElcaValidator($this->Request);
-            $validator->assertNotEmpty('name', null, 'Bitte geben Sie einen Namen ein');
+            $Validator = new ElcaValidator($this->Request);
+            $Validator->assertNotEmpty('name', null, 'Bitte geben Sie einen Namen ein');
 
             if($this->Request->has('refUnit'))
-                $validator->assertNotEmpty('refUnit', null, 'Bitte wählen Sie eine Bezugsgröße');
+                $Validator->assertNotEmpty('refUnit', null, 'Bitte wählen Sie eine Bezugsgröße');
 
-            $validator->assertNumber('quantity', null, 'Es sind nur numerische Werte erlaubt');
-            $validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_EOL.']', 0, 5, 'Der Wert für Rückbau ist ungültig und muss zwischen 0 und 5 liegen');
-            $validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_SEPARATION.']', 0, 5, 'Der Wert für Trennung ist ungültig und muss zwischen 0 und 5 liegen');
-            $validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_RECYCLING.']', 0, 5, 'Der Wert für Verwerung ist ungültig und muss zwischen 0 und 5 liegen');
+            $Validator->assertNumber('quantity', null, 'Es sind nur numerische Werte erlaubt');
+            $Validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_EOL.']', 0, 5, 'Der Wert für Rückbau ist ungültig und muss zwischen 0 und 5 liegen');
+            $Validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_SEPARATION.']', 0, 5, 'Der Wert für Trennung ist ungültig und muss zwischen 0 und 5 liegen');
+            $Validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_RECYCLING.']', 0, 5, 'Der Wert für Verwerung ist ungültig und muss zwischen 0 und 5 liegen');
 
-            $validator->assertUniqueIfcGuidWithinProjectVariant($elementAttributes, $this->Elca->getProjectVariantId(), $element->getId(), "Diese IFCGuid wird bereits in der Projektvariante verwendet. Eine Zuordnung ist nur einmal möglich");
-
-            if($validator->isValid())
+            if($Validator->isValid())
             {
                 $quantity = ElcaNumberFormat::fromString($this->Request->quantity, 3);
                 $oldQuantity = null;
@@ -467,6 +457,8 @@ class ProjectElementsCtrl extends ElementsCtrl
                      */
                     if($this->Request->has('attr'))
                     {
+                        $elementAttributes = $this->Request->get('attr');
+
                         if(is_array($elementAttributes))
                             $this->saveElementAttributes($element, $elementAttributes);
                     }
@@ -492,7 +484,9 @@ class ProjectElementsCtrl extends ElementsCtrl
                      */
                     if($this->Request->has('attr'))
                     {
-                        if (is_array($elementAttributes))
+                        $elementAttributes = $this->Request->get('attr');
+
+                        if(is_array($elementAttributes))
                             $this->saveElementAttributes($element, $elementAttributes);
                     }
 
@@ -514,15 +508,15 @@ class ProjectElementsCtrl extends ElementsCtrl
                     $this->setOsitElementScenario($ElementType->getNodeId(), $element->getId());
                 }
 
-                $validator = null;
+                $Validator = null;
             }
             else
             {
-                foreach($validator->getErrors() as $property => $message)
+                foreach($Validator->getErrors() as $property => $message)
                     $this->messages->add($message, ElcaMessages::TYPE_ERROR);
             }
 
-            $this->generalAction($element->getId(), $validator);
+            $this->generalAction($element->getId(), $Validator);
             $this->addNavigationViewOnCompareWithReferenceProject($ElementType->getNodeId());
         }
         elseif(isset($this->Request->cancel))
@@ -1183,31 +1177,6 @@ class ProjectElementsCtrl extends ElementsCtrl
         if ($this->Namespace->compareWithReferenceProjects->compare ?? false) {
             $this->addNavigationView($elementTypeNodeId);
         }
-    }
-
-    private function handleIfcViewerSelectionRequest($elementId): void
-    {
-        /**
-         * Prevent sending an event if this element was loaded by the viewer
-         */
-        if ($this->Request->has('via') && $this->Request->get('via') === 'ifcViewer') {
-            return;
-        }
-
-        $elementId = $elementId ? $elementId : $this->getAction();
-		
-		$attrIFC = ElcaElementAttribute::findByElementIdAndIdent($elementId, Elca::ELEMENT_ATTR_IFCGUID);
-
-		if (null !== $attrIFC->getId())
-		{
-			if (\is_numeric($elementId)) {
-				$msg = [
-					'guid'      => $attrIFC->getTextValue(),
-					'elementId' => $elementId,
-				];
-				$this->runJs(sprintf('elca.msgBus.submit(\'elca.element-loaded\', %s);', \json_encode($msg)));
-			}
-		}	
     }
 }
 // End ProjectElementsCtrl

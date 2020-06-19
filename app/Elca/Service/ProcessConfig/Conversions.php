@@ -36,7 +36,6 @@ use Elca\Model\Process\ProcessDbId;
 use Elca\Model\ProcessConfig\Conversion\Conversion;
 use Elca\Model\ProcessConfig\Conversion\ConversionSet;
 use Elca\Model\ProcessConfig\Conversion\FlowReference;
-use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\ProcessConfig\Conversion\ProcessConversionsRepository;
 use Elca\Model\ProcessConfig\ConversionId;
@@ -98,8 +97,6 @@ class Conversions
         );
 
         if (null === $foundProcessConversion) {
-            $conversion = $this->provideKnownConversionIfPossible($conversion, $flowReference);
-
             $processConversion = new ProcessConversion($processDbId, $processConfigId,
                 $conversion, $flowReference);
 
@@ -380,29 +377,6 @@ class Conversions
     {
         return $this->processConversionsRepository->findByConversion($processConfigId, $processDbId, Unit::m2(),
             Unit::kg());
-    }
-
-    /**
-     * Invert a conversion if it is known this way, keep imported conversions as-is
-     */
-    protected function provideKnownConversionIfPossible(LinearConversion $conversion, ?FlowReference $flowReference)
-    {
-        if ($this->isImported($conversion, $flowReference) || $conversion->isKnown()) {
-            return $conversion;
-        }
-
-        $invertedConversion = $conversion->invert();
-
-        if ($invertedConversion->isKnown()) {
-            return $invertedConversion;
-        }
-
-        return $conversion;
-    }
-
-    protected function isImported(LinearConversion $conversion, ?FlowReference $flowReference): bool
-    {
-        return $conversion instanceof ImportedLinearConversion || null !== $flowReference;
     }
 
 }

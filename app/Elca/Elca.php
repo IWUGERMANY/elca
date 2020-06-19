@@ -150,7 +150,6 @@ class Elca
     const ELEMENT_ATTR_U_VALUE = 'elca.uValue';
     const ELEMENT_ATTR_R_W = 'elca.rW';
     const ELEMENT_ATTR_OZ = 'elca.oz';
-	const ELEMENT_ATTR_IFCGUID = 'elca.ifcguid';
     const ELEMENT_ATTR_EOL = 'elca.bnb.eol';
     const ELEMENT_ATTR_SEPARATION = 'elca.bnb.separation';
     const ELEMENT_ATTR_RECYCLING = 'elca.bnb.recycling';
@@ -162,8 +161,7 @@ class Elca
      */
     public static $elementAttributes = [Elca::ELEMENT_ATTR_U_VALUE => 'U-Wert',
                                              Elca::ELEMENT_ATTR_R_W => 'R\'w',
-                                             Elca::ELEMENT_ATTR_OZ => 'OZ',
-											 Elca::ELEMENT_ATTR_IFCGUID => 'IFC-GUID'
+                                             Elca::ELEMENT_ATTR_OZ => 'OZ'
                                              ];
 
     /**

@@ -39,7 +39,7 @@ class ImportedLinearConversion extends LinearConversion
         return new self($procRefUnit, $procRefUnit, 1, ConversionType::production());
     }
 
-    public function __construct(Unit $fromUnit, Unit $toUnit, float $factor, ConversionType $conversionType = null)
+    public function __construct(Unit $fromUnit, Unit $toUnit, float $factor, ConversionType $conversionType)
     {
         parent::__construct($fromUnit, $toUnit, $factor);
 

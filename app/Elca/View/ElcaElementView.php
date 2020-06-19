@@ -55,7 +55,6 @@ use Elca\Db\ElcaElementAttribute;
 use Elca\Db\ElcaElementType;
 use Elca\Db\ElcaProcessDbSet;
 use Elca\Db\ElcaProcessViewSet;
-use Elca\Db\ElcaProjectIFCSet;
 use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\Model\Process\Module;
@@ -369,16 +368,14 @@ class ElcaElementView extends HtmlView
         $attrGroup = $AttrContainer->add(new HtmlFormGroup(t('Attribute')));
         $attrGroup->addClass('clearfix clear column');
 
-		
         foreach (Elca::$elementAttributes as $ident => $caption) {
             $Attr = ElcaElementAttribute::findByElementIdAndIdent($this->element->getId(), $ident);
-			
+
             switch ($ident) {
                 /**
                  * Skip OZ
                  */
                 case Elca::ELEMENT_ATTR_OZ:
-				case Elca::ELEMENT_ATTR_IFCGUID:
                     break;
                 default:
                     $attrGroup->add(
@@ -402,34 +399,11 @@ class ElcaElementView extends HtmlView
                 $attrGroup->add(
                     new ElcaHtmlFormElementLabel(
                         t($caption),
-                        new HtmlTextInput('attr['.$ident.']', $Attr->getNumericValue(), $readOnly)
+                        new ElcaHtmlNumericInput('attr['.$ident.']', $Attr->getNumericValue(), $readOnly)
                     )
                 );
             }
         }
-
-        $projectId = Elca::getInstance()->getProjectId();
-        if (ElcaProjectIFCSet::exists($projectId)) {
-            $attrIFC = ElcaElementAttribute::findByElementIdAndIdent($this->element->getId(),
-                Elca::ELEMENT_ATTR_IFCGUID);
-
-            $attrGroup = $AttrContainer->add(new HtmlTag('div', null,
-                ['class' => 'clearfix column  fieldset ifcguid']));
-            $attrGroup->add(
-                new ElcaHtmlFormElementLabel(
-                    t(Elca::$elementAttributes[Elca::ELEMENT_ATTR_IFCGUID]),
-                    new HtmlTextInput('attr[' . Elca::ELEMENT_ATTR_IFCGUID . ']', $attrIFC->getTextValue())
-                )
-            );
-
-            $attrGroup->add(new HtmlTag('a', t('Starte Viewer'), [
-                'class'  => 'no-xhr page',
-                'href'   => '/ifcViewer/main/?',
-                'target' => 'viewer-' . $projectId,
-            ]));
-        }
-
-
         /**
          * Buttons
          */

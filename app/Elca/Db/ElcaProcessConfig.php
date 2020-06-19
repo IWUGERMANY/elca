@@ -1599,7 +1599,7 @@ class ElcaProcessConfig extends DbObject
      *
      * @param array    $orderBy
      * @param  boolean $force
-     * @return ElcaProcessConversionSet|ElcaProcessConversion[]
+     * @return ElcaProcessConversionSet
      */
     public function getProcessConversions(array $orderBy = null, $force = false)
     {

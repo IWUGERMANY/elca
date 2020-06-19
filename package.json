@@ -1,12 +1,11 @@
 {
-  "name": "elca",
-  "version": "1.8.0",
+  "name": "bbsr/elca",
+  "version": "1.3",
   "devDependencies": {
-    "grunt": "^1.1.0",
-    "grunt-contrib-compass": "^1.1.1",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-uglify": "^4.0.1",
-    "grunt-contrib-watch": "^1.1.0"
+    "grunt": "~0.4.2",
+    "grunt-contrib-compass": "^1.0.4",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-watch": "~0.5.3"
   },
   "main": "Gruntfile.js",
   "scripts": {
@@ -19,10 +18,8 @@
   "author": "",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "grunt": "^1.1.0",
-    "grunt-contrib-uglify": "^4.0.1",
-    "grunt-contrib-uglify-es": "github:gruntjs/grunt-contrib-uglify#harmony",
-    "grunt-contrib-watch": "^1.1.0",
-    "uglify-es": "^3.3.9"
+    "grunt": "~0.4.4",
+    "grunt-contrib-uglify": "~0.4.0",
+    "grunt-contrib-watch": "~0.6.1"
   }
 }

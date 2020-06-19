@@ -1,6 +1,5 @@
 <div id="content" class="elca-filter-sheets">
     <div id="elca-projects">
-	    <div id="createIFCProject" class="button import ifc"><a href="/project-ifc/import">_(IFC Import)_ +</a></div>
         <div id="createCSVProject" class="button import csv"><a href="/project-csv/import">_(CSV/XLS Import)_ +</a></div>
         <div id="importAssistantProject" class="button import enev"><a class="page" href="/importAssistant/projects/import/">_(EnEV Projekt importieren)_ +</a></div>
         <div id="importProject" class="button import"><a href="/projects/import/">_(Projekt importieren)_ +</a></div>

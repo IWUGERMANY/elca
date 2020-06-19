@@ -52,19 +52,13 @@ module.exports = function(grunt) {
                     sassDir: 'app/ImportAssistant/assets/sass',
                     cssDir: 'www/css/importAssistant'
                 }
-            },
-            ifcViewer: {
-                options: {
-                    sassDir: 'app/IfcViewer/assets/sass',
-                    cssDir: 'www/css/ifcViewer'
-                }
-            },
+            }
         },
         uglify: {
             options: {
                 compress: {}, // debug
                 beautify: false, // debug
-                mangle: false,
+                mangle: false
             },
             elca: {
                 files: {
@@ -72,8 +66,6 @@ module.exports = function(grunt) {
                         'app/Elca/assets/js/jBlibs.js',
                         'app/Elca/assets/js/elca.js',
                         'app/Elca/assets/js/elca_charts.js',
-                        'app/Elca/assets/js/broadcastChannel_shim.js',
-                        'app/Elca/assets/js/elca_msgbus.js',
                         'vendor/beibob/htmlTools/js/selectboxChooser.js'
                    ]
                 }
@@ -86,6 +78,7 @@ module.exports = function(grunt) {
                         'www/js/jquery/jquery.browser.min.js',
                         'www/js/jquery/jquery.numeric.js',
                         'www/js/jquery/js.cookie.js',
+//                        'www/js/jquery/jquery.cookie.js',
                         'www/js/jquery/jquery.url.packed.js',
                         'www/js/jquery/jquery.ba-hashchange.js',
                         'www/js/jquery/jquery.tablescroll.js',
@@ -126,23 +119,7 @@ module.exports = function(grunt) {
                 files: {
                     'www/js/importAssistant/import_assistant.min.js': ['app/ImportAssistant/assets/js/import_assistant.js']
                 }
-            },
-            ifcViewer: {
-                files: {
-                    'www/js/ifcViewer/ifcViewer.min.js': [
-                        'app/IfcViewer/assets/js/ifcViewer.js',
-                    ]
-                }
-            },
-        },
-        copy: {
-            elcaIfcViewer: {
-                expand: true,
-                src: 'app/IfcViewer/assets/js/ElcaIfcViewer.js',
-                dest: 'www/js/ifcViewer',
-                flatten: true,
-                filter: 'isFile',
-            },
+            }
         },
         watch: {
             elca_css: {
@@ -200,24 +177,15 @@ module.exports = function(grunt) {
             importAssistant_js: {
                 files: ['app/ImportAssistant/assets/js/*.js'],
                 tasks: ['uglify:importAssistant']
-            },
-            ifcViewer_css: {
-                files: ['app/IfcViewer/assets/sass/**/*.scss'],
-                tasks: ['compass:ifcViewer']
-            },
-            ifcViewer_js: {
-                files: ['app/IfcViewer/assets/js/**/*.js'],
-                tasks: ['uglify:ifcViewer', 'copy']
-            },
+            }
         }
     });
 
     // Load the plugins
-    grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-contrib-uglify-es');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-compass');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     // Default task(s).
-    grunt.registerTask('default', ['compass', 'copy', 'uglify', 'watch']);
+    grunt.registerTask('default', ['compass', 'uglify', 'watch']);
 };
