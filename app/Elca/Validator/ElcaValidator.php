@@ -32,6 +32,7 @@ use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaIndicator;
 use Elca\Db\ElcaProcessConfig;
 use Elca\Db\ElcaProjectFinalEnergyDemand;
+use Elca\Elca;
 use Elca\ElcaNumberFormat;
 use Elca\numeric;
 
@@ -764,6 +765,24 @@ class ElcaValidator extends HtmlFormValidator
         }
 
         return true;
+    }
+
+    public function assertUniqueIfcGuidWithinProjectVariant(array $elementAttributes, int $projectVariantId,
+        int $currentElementId, string $errorMessage)
+    {
+        if (!isset($elementAttributes[Elca::ELEMENT_ATTR_IFCGUID])) {
+            return true;
+        }
+
+        $ifcGuid = \trim($elementAttributes[Elca::ELEMENT_ATTR_IFCGUID]);
+
+        if (!$ifcGuid) {
+            return true;
+        }
+
+        $foundElement = ElcaElement::findForIfcGuid($ifcGuid, $projectVariantId, true);
+
+        return $this->assertTrue('attr['.Elca::ELEMENT_ATTR_IFCGUID.']', !$foundElement->isInitialized() || $foundElement->getId() === $currentElementId, $errorMessage);
     }
 }
 // End HtmlFormValidator

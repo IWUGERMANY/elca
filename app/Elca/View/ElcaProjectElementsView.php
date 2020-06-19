@@ -73,7 +73,7 @@ class ElcaProjectElementsView extends ElcaElementsView
     {
         if(!Elca::getInstance()->getProjectVariantId())
             return Log::getInstance()->fatal('No project variant for this project (id='.Elca::getInstance()->getProjectId().') found', __METHOD__);
-
+		
         return parent::buildList('Elca\View\ElcaProjectElementSheetView');
     }
     // End buildList

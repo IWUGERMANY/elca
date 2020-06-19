@@ -135,4 +135,9 @@ class Unit
     {
         return self::KILOGRAMM === $this->unit;
     }
+
+    public function isM2(): bool
+    {
+        return self::SQUARE_METER === $this->unit;
+    }
 }

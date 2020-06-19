@@ -510,10 +510,16 @@ class ProcessesCtrl extends TabsCtrl
                         foreach ($processConfig->getProcessConversions() as $conversion) {
                             $conversionVersion = $conversion->getVersionFor($processDbId);
 
-                            if ($conversionVersion->getIdent()) {
+                            /**
+                             * Imported must not be modified
+                             */
+                            if ($conversionVersion->flowUuid()) {
                                 continue;
                             }
 
+                            /**
+                             * Density conversions are modified in a separate input field
+                             */
                             if ($conversion->getInUnit() === Unit::CUBIC_METER && $conversion->getOutUnit() === Unit::KILOGRAMM) {
                                 continue;
                             }

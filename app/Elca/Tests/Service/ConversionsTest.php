@@ -25,6 +25,7 @@
 
 namespace Elca\Tests\Service;
 
+use Beibob\Blibs\FloatCalc;
 use Elca\Model\Common\Quantity\Quantity;
 use Elca\Model\Common\Unit;
 use Elca\Model\Process\Module;
@@ -32,6 +33,7 @@ use Elca\Model\Process\ProcessDbId;
 use Elca\Model\Process\ProcessId;
 use Elca\Model\Process\ProcessName;
 use Elca\Model\ProcessConfig\Conversion\ConversionType;
+use Elca\Model\ProcessConfig\Conversion\FlowReference;
 use Elca\Model\ProcessConfig\Conversion\ImportedLinearConversion;
 use Elca\Model\ProcessConfig\Conversion\LinearConversion;
 use Elca\Model\ProcessConfig\Conversion\ProcessConversionsRepository;
@@ -47,6 +49,7 @@ use Elca\Service\ProcessConfig\Conversions;
 use Elca\Service\ProcessConfig\ConversionsAudit;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
+use Ramsey\Uuid\Uuid;
 
 class ConversionsTest extends TestCase
 {
@@ -148,6 +151,74 @@ class ConversionsTest extends TestCase
             new LinearConversion(
                 Unit::piece(), Unit::kg(), 10
             )
+        );
+    }
+
+    public function test_registerConversion_invertsConversion_whenInvertedConversionIsAKnownConversion()
+    {
+        $linearConversion = new LinearConversion(
+            Unit::kg(), Unit::m2(), 10
+        );
+
+        $this->assertFalse($linearConversion->isKnown());
+
+        $this->processConversionsRepository
+            ->method('findByConversion')
+            ->willReturn(null);
+
+        $this->processConversionsRepository->expects($this->once())->method('add')
+            ->with($this->invertedLinearConversion($linearConversion));
+
+
+        $this->conversions->registerConversion(
+            new ProcessDbId(1),
+            new ProcessConfigId(2),
+            $linearConversion
+        );
+    }
+
+    public function test_registerConversion_doesNotInvertConversion_whenInvertedConversionIsKnownAndImported()
+    {
+        $importedConversion = new ImportedLinearConversion(
+            Unit::kg(), Unit::m2(), 10, null
+        );
+
+        $this->assertFalse($importedConversion->isKnown());
+
+        $this->processConversionsRepository
+            ->method('findByConversion')
+            ->willReturn(null);
+
+        $this->processConversionsRepository->expects($this->once())->method('add')
+                                           ->with($this->notInvertedConversion($importedConversion));
+
+        $this->conversions->registerConversion(
+            new ProcessDbId(1),
+            new ProcessConfigId(2),
+            $importedConversion
+        );
+    }
+
+    public function test_registerConversion_doesNotInvertConversion_whenInvertedConversionIsKnownAndFlowReferenceIsPresent()
+    {
+        $linearConversion = new LinearConversion(
+            Unit::kg(), Unit::m2(), 10
+        );
+
+        $this->assertFalse($linearConversion->isKnown());
+
+        $this->processConversionsRepository
+            ->method('findByConversion')
+            ->willReturn(null);
+
+        $this->processConversionsRepository->expects($this->once())->method('add')
+                                           ->with($this->notInvertedConversion($linearConversion));
+
+        $this->conversions->registerConversion(
+            new ProcessDbId(1),
+            new ProcessConfigId(2),
+            $linearConversion,
+            FlowReference::from(Uuid::uuid4())
         );
     }
 
@@ -320,6 +391,27 @@ class ConversionsTest extends TestCase
 
         $this->conversions = new Conversions($this->processLifeCycleRepository, $this->processConversionsRepository,
             $this->conversionsAudit);
+    }
+
+    protected function invertedLinearConversion(LinearConversion $linearConversion): \PHPUnit\Framework\Constraint\Callback
+    {
+        return $this->callback(function (ProcessConversion $subject) use ($linearConversion) {
+            $conversion = $subject->conversion();
+
+            return $conversion->isKnown() &&
+                   $conversion->fromUnit()->isM2() &&
+                   $conversion->toUnit()->isKg() &&
+                   FloatCalc::cmp($conversion->factor(), 1 / $linearConversion->factor(), 0.1);
+        });
+    }
+
+    protected function notInvertedConversion(LinearConversion $importedConversion): \PHPUnit\Framework\Constraint\Callback
+    {
+        return $this->callback(function (ProcessConversion $subject) use ($importedConversion) {
+            $conversion = $subject->conversion();
+
+            return $conversion->equals($importedConversion);
+        });
     }
 
     private function given_a_process_life_cycle(

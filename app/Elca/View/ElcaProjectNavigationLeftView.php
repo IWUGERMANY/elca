@@ -138,7 +138,7 @@ class ElcaProjectNavigationLeftView extends HtmlView
         $Container = $this->appendChild($this->getDiv(['id' => 'navLeft']));
 
         $Include = $Container->appendChild($this->createElement('include'));
-        $Include->setAttribute('name', 'Elca\View\ElcaNavigationLeftView');
+        $Include->setAttribute('name', ElcaNavigationLeftView::class);
         $Include->setAttribute('navigation', '$$mainNav$$');
     }
     // End beforeRender
