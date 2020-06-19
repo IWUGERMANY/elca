@@ -36,6 +36,7 @@ use Elca\Db\ElcaProcessConfigSearchSet;
 use Elca\Model\Assistant\Stairs\Assembler;
 use Elca\Model\Assistant\Stairs\Validator;
 use Elca\Service\Assistant\Stairs\StaircaseAssistant;
+use Elca\Service\ElcaElementImageCache;
 use Elca\Service\Element\ElementService;
 use Elca\Service\Messages\ElcaMessages;
 use Elca\View\Assistant\StaircaseAssistantView;
@@ -76,8 +77,8 @@ class StaircaseCtrl extends TabsCtrl
         $this->context = isset($args['context'])? $args['context'] : $this->Request->get('context');
         $this->elementTypeNodeId = isset($args['t'])? $args['t'] : $this->Request->get('t');
         $this->elementId = isset($args['e'])? $args['e'] : $this->Request->get('e');
-        $this->assistant = $this->container->get('Elca\Service\Assistant\Stairs\StaircaseAssistant');
-        $this->imageCache = $this->container->get('Elca\Service\ElcaElementImageCache');
+        $this->assistant = $this->container->get(StaircaseAssistant::class);
+        $this->imageCache = $this->container->get(ElcaElementImageCache::class);
     }
     // End init
 
@@ -141,9 +142,9 @@ class StaircaseCtrl extends TabsCtrl
                 $this->Response->setHeader('X-Replace-Hash: '. (string)$url);
 
                 if ($this->context === ProjectElementsCtrl::CONTEXT)
-                    $ctrl = '\Elca\Controller\ProjectElementsCtrl';
+                    $ctrl = ProjectElementsCtrl::class;
                 else
-                    $ctrl = '\Elca\Controller\ElementsCtrl';
+                    $ctrl = ElementsCtrl::class;
 
                 $this->forward($ctrl, $element->getId(), null, $url->getParameter());
             }

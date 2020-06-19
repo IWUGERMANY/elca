@@ -1701,8 +1701,11 @@ class ElcaProcessConfig extends DbObject
      */
     public function getRequiredConversions($includeOpLifeCycle = false)
     {
+        $requiredConversions = new ElcaProcessConversionSet();
+        $additionalConversions = new ElcaProcessConversionSet();
+
         if(!$this->isInitialized())
-            return array(array(), array());
+            return array($requiredConversions, $additionalConversions);
 
         $requiredUnits = $this->getRequiredUnits($includeOpLifeCycle);
 
@@ -1719,9 +1722,6 @@ class ElcaProcessConfig extends DbObject
             }
         }
 
-        $RequiredConversions = new ElcaProcessConversionSet();
-        $AdditionalConversions = new ElcaProcessConversionSet();
-
         /**
          * Find direct matches in -> out and vice versa
          */
@@ -1734,15 +1734,15 @@ class ElcaProcessConfig extends DbObject
             if(isset($matrix[$inUnit][$outUnit]))
             {
                 unset($matrix[$inUnit][$outUnit]);
-                $RequiredConversions->add($Conversion);
+                $requiredConversions->add($Conversion);
             }
             elseif(isset($matrix[$outUnit][$inUnit]))
             {
                 unset($matrix[$outUnit][$inUnit]);
-                $RequiredConversions->add($Conversion);
+                $requiredConversions->add($Conversion);
             }
             else
-                $AdditionalConversions->add($Conversion);
+                $additionalConversions->add($Conversion);
         }
 
         /**
@@ -1758,11 +1758,11 @@ class ElcaProcessConfig extends DbObject
                 $Conversion = ElcaProcessConversion::findById(null);
                 $Conversion->setInUnit($inUnit);
                 $Conversion->setOutUnit($outUnit);
-                $RequiredConversions->add($Conversion);
+                $requiredConversions->add($Conversion);
             }
         }
 
-        return array($RequiredConversions, $AdditionalConversions);
+        return array($requiredConversions, $additionalConversions);
     }
     // End getRequiredConversions
 

@@ -25,19 +25,23 @@
 
 namespace Elca\Service\Assistant\Pillar;
 
+use Beibob\Blibs\DbHandle;
+use Beibob\Blibs\Log;
 use Elca\Controller\Assistant\PillarCtrl;
+use Elca\Db\ElcaAssistantElement;
+use Elca\Db\ElcaAssistantSubElement;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaElementAttribute;
+use Elca\Db\ElcaElementAttributeSet;
 use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaProject;
-use Elca\Db\ElcaProjectVariant;
 use Elca\Elca;
 use Elca\Model\Assistant\Configuration;
+use Elca\Model\Assistant\Pillar\Assembler;
 use Elca\Model\Assistant\Pillar\Pillar;
 use Elca\Model\Element\ElementObserver;
 use Elca\Model\Import\ImportObserver;
 use Elca\Model\Processing\ElcaLcaProcessor;
-use Elca\Model\Processing\ElcaProjectVariantObserver;
 use Elca\Service\Assistant\AbstractAssistant;
 use Elca\Service\Assistant\ElementAssistant;
 use Elca\View\Assistant\PillarElementImageView;
@@ -54,11 +58,16 @@ class PillarAssistant extends AbstractAssistant implements ElementObserver, Impo
     private $lcaProcessor;
 
     /**
+     * @var Log
+     */
+    private $log;
+
+    /**
      * Constructor
      *
      * @param ElcaLcaProcessor $lcaProcessor
      */
-    public function __construct(ElcaLcaProcessor $lcaProcessor)
+    public function __construct(ElcaLcaProcessor $lcaProcessor, Log $log)
     {
         $this->setConfiguration(
             new Configuration(
@@ -89,6 +98,7 @@ class PillarAssistant extends AbstractAssistant implements ElementObserver, Impo
         );
 
         $this->lcaProcessor = $lcaProcessor;
+        $this->log = $log;
     }
 
     /**
@@ -122,9 +132,32 @@ class PillarAssistant extends AbstractAssistant implements ElementObserver, Impo
 
     /**
      * @param $elementId
-     * @return Pillar|null
+     * @return Pillar
      */
     public function getPillarFromElement($elementId = null)
+    {
+        $pillar = null;
+
+        if (null !== $elementId) {
+            $assistantElement = ElcaAssistantElement::findByElementId($elementId, static::IDENT);
+            $pillar = $assistantElement->getDeserializedConfig();
+
+        }
+
+        if ($pillar === null || !$pillar instanceof Pillar) {
+
+            $initName = $this->getDefaultName($elementId);
+            $pillar = Pillar::createDefault($initName);
+        }
+
+        return $pillar;
+    }
+
+    /**
+     * @param $elementId
+     * @return Pillar|null
+     */
+    public function _getPillarFromElement($elementId = null)
     {
         $pillar = null;
 
@@ -152,29 +185,31 @@ class PillarAssistant extends AbstractAssistant implements ElementObserver, Impo
      */
     public function savePillarForElement($pillarElementId, $pillar)
     {
-        $pillarElementId = $this->getPillarElementId($pillarElementId);
+        $assistantElement = ElcaAssistantElement::findByElementId($pillarElementId);
 
-        $element = ElcaElement::findById($pillarElementId);
-        if (!$element->isInitialized() )
-            throw new \Exception('Trying to save pillar data for an uninitialized element');
-
-        $serializedPillar = base64_encode(serialize($pillar));
-
-        // save attribute with data
-        $attr = ElcaElementAttribute::findByElementIdAndIdent($element->getId(), static::IDENT);
-
-        if ($attr->isInitialized()) {
-            $attr->setTextValue($serializedPillar);
-            $attr->update();
+        if ($assistantElement->isInitialized()) {
+            $assistantElement->setUnserializedConfig($pillar);
+            $assistantElement->update();
         }
         else {
-            // save attribute with data
-            ElcaElementAttribute::create($pillarElementId,
+            $pillarElement = ElcaElement::findById($pillarElementId);
+
+            if (!$pillarElement->isInitialized()) {
+                throw new \Exception('Trying to save pillar data for an uninitialized element');
+            }
+
+            $assistantElement = ElcaAssistantElement::createWithUnserializedConfig(
+                $pillarElementId,
                 static::IDENT,
-                static::IDENT,
-                null,
-                $serializedPillar
+                $pillarElement->getProjectVariantId(),
+                $pillar,
+                $pillarElement->isReference(),
+                $pillarElement->isPublic(),
+                $pillarElement->getOwnerId(),
+                $pillarElement->getAccessGroupId()
             );
+
+            ElcaAssistantSubElement::create($assistantElement->getId(), $pillarElementId, Assembler::IDENT_PILLAR);
         }
     }
 
@@ -185,6 +220,27 @@ class PillarAssistant extends AbstractAssistant implements ElementObserver, Impo
      * @return int
      */
     public function getPillarElementId($elementId)
+    {
+        if ($elementId) {
+            $assistantElement = ElcaAssistantElement::findByElementId($elementId, static::IDENT);
+
+            if ($assistantElement->isInitialized()) {
+                if ($assistantElement->getMainElementId() !== $elementId) {
+                    $elementId = $assistantElement->getMainElementId();
+                }
+            }
+        }
+
+        return $elementId;
+    }
+
+    /**
+     * Checks if given elementId is a pillar element.
+     *
+     * @param $elementId
+     * @return int
+     */
+    public function _getPillarElementId($elementId)
     {
         if ($elementId) {
             $attr = ElcaElementAttribute::findByElementIdAndIdent($elementId, static::IDENT);
@@ -205,12 +261,8 @@ class PillarAssistant extends AbstractAssistant implements ElementObserver, Impo
      */
     public function isPillarElement($elementId)
     {
-        $attr = ElcaElementAttribute::findByElementIdAndIdent($elementId, static::IDENT);
+        return ElcaAssistantElement::findByElementId($elementId, static::IDENT)->isInitialized();
 
-        if (!$attr->isInitialized())
-            return false;
-
-        return $attr->getNumericValue() === null;
     }
 
     public function computeLcaForPillarElement($pillarElementId)
@@ -292,6 +344,16 @@ class PillarAssistant extends AbstractAssistant implements ElementObserver, Impo
      */
     public function onElementCopy(ElcaElement $element, ElcaElement $copiedElement)
     {
+        if (!$this->isPillarElement($element->getId())) {
+            return;
+        }
+
+        $pillar = $this->getPillarFromElement($copiedElement->getId());
+
+        if ($pillar->name() !== $copiedElement->getName()) {
+            $pillar->changeName($copiedElement->getName());
+            $this->savePillarForElement($copiedElement->getId(), $pillar);
+        }
     }
 
     /**
@@ -300,7 +362,6 @@ class PillarAssistant extends AbstractAssistant implements ElementObserver, Impo
      */
     public function onProjectImport(ElcaProject $project)
     {
-        // TODO: Implement onProjectImport() method.
     }
 
     /**
@@ -318,5 +379,50 @@ class PillarAssistant extends AbstractAssistant implements ElementObserver, Impo
     protected function getDefaultName($elementId)
     {
         return $elementId ? ElcaElement::findById($elementId)->getName() : null;
+    }
+
+    protected function migrate(int $elementId)
+    {
+        $dbh = DbHandle::getInstance();
+        try {
+            $dbh->begin();
+            $pillarElementId = $this->_getPillarElementId($elementId);
+
+            $pillarElement = ElcaElement::findById($pillarElementId);
+
+            if (!$pillarElement->isInitialized()) {
+                throw new \UnexpectedValueException('Migration of assistant element ' . $elementId . ' failed: Main element could not be initialized');
+            }
+
+            $this->log->notice(sprintf('Migrating %s element(s) `%s\' (%s)', static::IDENT, $pillarElement->getName(),
+                $pillarElement->getId()), __FUNCTION__);
+
+            $pillarConfiguration = $this->_getPillarFromElement($pillarElementId);
+
+            $assistantElement = ElcaAssistantElement::createWithUnserializedConfig($pillarElementId,
+                static::IDENT,
+                $pillarElement->getProjectVariantId(),
+                $pillarConfiguration,
+                $pillarElement->isReference(),
+                $pillarElement->isPublic(),
+                $pillarElement->getOwnerId(),
+                $pillarElement->getAccessGroupId()
+            );
+
+            ElcaAssistantSubElement::create($assistantElement->getId(), $pillarElementId, Assembler::IDENT_PILLAR);
+
+            // remove all legacy attributes
+            $elementAttributes = ElcaElementAttributeSet::findWithinProjectVariantByIdent($pillarElement->getProjectVariantId(),
+                static::IDENT);
+            foreach ($elementAttributes as $elementAttribute) {
+                $elementAttribute->delete();
+            }
+
+            $dbh->commit();
+        }
+        catch (\Exception $e) {
+            $dbh->rollback();
+            throw $e;
+        }
     }
 }

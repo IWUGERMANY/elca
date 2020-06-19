@@ -27,6 +27,8 @@ namespace Elca\Service\Element;
 
 use Beibob\Blibs\DbHandle;
 use Beibob\Blibs\UserStore;
+use Elca\Db\ElcaAssistantElement;
+use Elca\Db\ElcaAssistantSubElement;
 use Elca\Db\ElcaCacheElement;
 use Elca\Db\ElcaCompositeElement;
 use Elca\Db\ElcaCompositeElementSet;
@@ -60,6 +62,10 @@ class ElementService
         $this->dbh              = $dbh;
     }
 
+    public function addElementObserver(ElementObserver $elementObserver) {
+        $this->elementObservers[] = $elementObserver;
+    }
+
     /**
      * @param ElcaElement $element
      * @param null|int    $ownerId
@@ -80,6 +86,8 @@ class ElementService
             return null;
         }
 
+        $assistantElement = ElcaAssistantElement::findByMainElementId($element->getId());
+
         $ownerId = $ownerId ?? UserStore::getInstance()->getUser()->getId();
 
         $copy = $this->copyElement(
@@ -90,7 +98,8 @@ class ElementService
             $copyName,
             $copyCacheItems,
             $compositeElementId,
-            $compositePosition
+            $compositePosition,
+            $assistantElement
         );
 
         // trigger observers
@@ -123,6 +132,15 @@ class ElementService
         if ($element->isComposite() && $recursive) {
             foreach ($element->getCompositeElements() as $assignment) {
                 $assignment->getElement()->delete();
+            }
+        }
+
+        $assistantElement = ElcaAssistantElement::findByMainElementId($element->getId());
+        if ($assistantElement->isInitialized() && $assistantElement->getMainElementId() === $element->getId()) {
+            foreach ($assistantElement->getSubElements() as $assistantSubElement) {
+                if ($assistantSubElement->getElementId() !== $assistantElement->getMainElementId()) {
+                    $this->deleteElement($assistantSubElement->getElement(), $recursive);
+                }
             }
         }
 
@@ -289,20 +307,21 @@ class ElementService
     }
 
     /**
-     * @param ElcaElement $element
-     * @param             $ownerId
-     * @param             $projectVariantId
-     * @param             $accessGroupId
-     * @param             $copyName
-     * @param             $copyCacheItems
-     * @param             $compositeElementId
-     * @param             $compositePosition
+     * @param ElcaElement               $element
+     * @param                           $ownerId
+     * @param                           $projectVariantId
+     * @param                           $accessGroupId
+     * @param                           $copyName
+     * @param                           $copyCacheItems
+     * @param                           $compositeElementId
+     * @param                           $compositePosition
+     * @param ElcaAssistantElement|null $assistantElement
      * @return ElcaElement
      * @throws Exception
      */
     private function copyElement(
         ElcaElement $element, $ownerId, $projectVariantId, $accessGroupId, $copyName, $copyCacheItems,
-        $compositeElementId, $compositePosition
+        $compositeElementId, $compositePosition, ElcaAssistantElement $assistantElement
     ): ElcaElement {
         try {
             $this->dbh->begin();
@@ -360,11 +379,15 @@ class ElementService
                 }
 
                 if ($element->isComposite()) {
-                    /**
-                     * Always clone sub elements.
-                     */
+                    if ($assistantElement->isInitialized() && $assistantElement->isMainElement($element->getId())) {
+                        $assistantSubElement = ElcaAssistantSubElement::findByPk($assistantElement->getId(), $element->getId());
+
+                        $newAssistantElement = $assistantElement->copy($copy->getId(), $copy->getProjectVariantId(), $ownerId, $accessGroupId);
+                        $assistantSubElement->copy($newAssistantElement->getId(), $copy->getId());
+                    }
+
                     foreach ($element->getCompositeElements(null, true) as $assignment) {
-                        $this->copyElement(
+                        $copiedSubElement = $this->copyElement(
                             $assignment->getElement(),
                             $ownerId,
                             $projectVariantId,
@@ -372,8 +395,15 @@ class ElementService
                             true,
                             $copyCacheItems,
                             $copy->getId(),
-                            $assignment->getPosition()
+                            $assignment->getPosition(),
+                            $assistantElement
                         );
+
+                        if ($assistantElement->isInitialized()) {
+                            $assistantSubElement = ElcaAssistantSubElement::findByPk($assistantElement->getId(),
+                                $assignment->getElementId());
+                            $assistantSubElement->copy($newAssistantElement->getId(), $copiedSubElement->getId());
+                        }
                     }
                 } else {
                     /**
@@ -414,6 +444,26 @@ class ElementService
                             }
                         } else {
                             $component->copy($copy->getId(), null, $copyCacheItems);
+                        }
+                    }
+
+                    /**
+                     * Copy assistant and sub elements if this element is a assistant main element
+                     */
+                    if ($assistantElement->isInitialized() && $assistantElement->isMainElement($element->getId())) {
+                        $newAssistantElement = $assistantElement->copy($copy->getId(), $copy->getProjectVariantId(), $ownerId, $accessGroupId);
+
+                        foreach ($assistantElement->getSubElements() as $assistantSubElement) {
+                            if ($assistantSubElement->getElementId() === $assistantElement->getMainElementId()) {
+                                $assistantSubElement->copy($newAssistantElement->getId(), $copy->getId());
+                            }
+                            else {
+                                $copiedSubElement = $this->copyElement($assistantSubElement->getElement(), $ownerId,
+                                    $projectVariantId, $accessGroupId, $copyName, $copyCacheItems, null,
+                                    null, $newAssistantElement);
+
+                                $assistantSubElement->copy($newAssistantElement->getId(), $copiedSubElement->getId());
+                            }
                         }
                     }
                 }

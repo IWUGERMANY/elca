@@ -158,7 +158,8 @@ class ElcaLcaProcessor
         array $processors, ProcessConfigRepository $processConfigRepository,
         ProcessLifeCycleRepository $processLifeCycleRepository, IndicatorRepository $indicatorRepository,
         LifeCycleUsageService $lifeCycleUsageService, Conversions $conversions, ElcaCache $cache, Logger $logger
-    ) {
+    )
+    {
         $this->processors                 = $processors;
         $this->cache                      = $cache;
         $this->logger                     = $logger;
@@ -174,11 +175,12 @@ class ElcaLcaProcessor
      * Recomputes a project variant
      *
      * @param ElcaProjectVariant $variant
-     * @param  ProcessDbId               $processDbId
-     * @param  int               $lifeTime
+     * @param ProcessDbId        $processDbId
+     * @param int                $lifeTime
      * @return ElcaLcaProcessor
      */
-    public function computeProjectVariant(ElcaProjectVariant $variant, ProcessDbId $processDbId = null, $lifeTime = null)
+    public function computeProjectVariant(ElcaProjectVariant $variant, ProcessDbId $processDbId = null,
+        $lifeTime = null)
     {
         if (!$lifeTime || !$processDbId) {
             $Project     = $variant->getProject();
@@ -221,16 +223,17 @@ class ElcaLcaProcessor
     /**
      * Computes the lca and mass for a single element and its components
      *
-     * @param  ElcaElement $Element
-     * @param  ProcessDbId         $processDbId
-     * @param  int         $lifeTime
-     * @param null         $compositeItemId
+     * @param ElcaElement $element
+     * @param ProcessDbId $processDbId
+     * @param int         $lifeTime
+     * @param null        $compositeItemId
      * @return ElcaLcaProcessor
      */
-    public function computeElement(ElcaElement $Element, ProcessDbId $processDbId = null, $lifeTime = null, $compositeItemId = null)
+    public function computeElement(ElcaElement $element, ProcessDbId $processDbId = null, $lifeTime = null,
+        $compositeItemId = null)
     {
         if (!$lifeTime || !$processDbId) {
-            $Project     = $Element->getProjectVariant()->getProject();
+            $Project     = $element->getProjectVariant()->getProject();
             $lifeTime    = $lifeTime ? $lifeTime : $Project->getLifeTime();
             $processDbId = $processDbId ?? new ProcessDbId($Project->getProcessDbId());
         }
@@ -239,25 +242,25 @@ class ElcaLcaProcessor
          * Invoke additional lca processors
          */
         foreach ($this->processors as $Processor) {
-            $Processor->beforeElementProcessing($Element, $processDbId->value(), $lifeTime);
+            $Processor->beforeElementProcessing($element, $processDbId->value(), $lifeTime);
         }
 
         /**
          * Update/insert new results
          */
         $CacheElement = $this->cache->storeElement(
-            $Element,
+            $element,
             0,
-            $Element->getQuantity(),
-            $Element->getRefUnit(),
+            $element->getQuantity(),
+            $element->getRefUnit(),
             $compositeItemId
         );
 
-        if ($Element->isComposite()) {
+        if ($element->isComposite()) {
             /**
              * Compute indicators for each associated element
              */
-            foreach ($Element->getCompositeElements([], true) as $SubCompositeElement) {
+            foreach ($element->getCompositeElements([], true) as $SubCompositeElement) {
                 $this->computeElement(
                     $SubCompositeElement->getElement(),
                     $processDbId,
@@ -269,7 +272,7 @@ class ElcaLcaProcessor
             /**
              * Compute indicators for each component
              */
-            foreach ($Element->getComponents() as $Component) {
+            foreach ($element->getComponents() as $Component) {
                 $this->computeElementComponent($Component, $processDbId, $lifeTime);
             }
         }
@@ -284,7 +287,7 @@ class ElcaLcaProcessor
          * Invoke additional lca processors
          */
         foreach ($this->processors as $Processor) {
-            $Processor->afterElementProcessing($Element, $CacheElement);
+            $Processor->afterElementProcessing($element, $CacheElement);
         }
 
         return $this;
@@ -295,15 +298,16 @@ class ElcaLcaProcessor
     /**
      * Computes lca and the mass for the given element component
      *
-     * @param  ElcaElementComponent $component
-     * @param  ProcessDbId                  $processDbId
-     * @param  int                  $projectLifeTime - project lifeTime for maintenance calculation
-     * @throws Exception
+     * @param ElcaElementComponent $component
+     * @param ProcessDbId          $processDbId
+     * @param int                  $projectLifeTime - project lifeTime for maintenance calculation
      * @return ElcaLcaProcessor
+     * @throws Exception
      */
     public function computeElementComponent(
         ElcaElementComponent $component, ProcessDbId $processDbId = null, $projectLifeTime = null
-    ) {
+    )
+    {
         $project = $component->getElement()->getProjectVariant()->getProject();
 
         $projectLifeTime = $projectLifeTime ?? $project->getLifeTime();
@@ -351,8 +355,9 @@ class ElcaLcaProcessor
                         ),
                         $component->isExtant()
                     );
-            } catch (\Exception $exception) {
-                $this->logger->notice('Error during LCA calculation of component `'.$component->getProcessConfig()->getName().'\': ' . $exception->getMessage());
+            }
+            catch (\Exception $exception) {
+                $this->logger->notice('Error during LCA calculation of component `' . $component->getProcessConfig()->getName() . '\': ' . $exception->getMessage());
             }
         }
 
@@ -387,18 +392,22 @@ class ElcaLcaProcessor
      * @param ElcaElementComponent $elcaElementComponent
      * @return Quantity
      */
-    public function computeElementComponentQuantity(ElcaElementComponent $elcaElementComponent, ProcessDbId $processDbId): Quantity
+    public function computeElementComponentQuantity(ElcaElementComponent $elcaElementComponent,
+        ProcessDbId $processDbId): Quantity
     {
-        $processConversion = $this->conversions->findConversion(new ConversionId($elcaElementComponent->getProcessConversionId()), $processDbId);
+        $processConversion = $this->conversions->findConversion(new ConversionId($elcaElementComponent->getProcessConversionId()),
+            $processDbId);
 
         if (null === $processConversion) {
-            throw new InvalidArgumentException('Could not find a conversion for conversionId=:conversionId: and processDbId=:processDbId:', [
-                ':conversionId:' => $elcaElementComponent->getProcessConversionId(),
-                ':processDbId:' => $processDbId
-            ]);
+            throw new InvalidArgumentException('Could not find a conversion for conversionId=:conversionId: and processDbId=:processDbId:',
+                [
+                    ':conversionId:' => $elcaElementComponent->getProcessConversionId(),
+                    ':processDbId:'  => $processDbId,
+                ]);
         }
 
-        $elementComponentQuantity = ElementComponentQuantity::fromElcaElementComponent($elcaElementComponent, $processConversion);
+        $elementComponentQuantity = ElementComponentQuantity::fromElcaElementComponent($elcaElementComponent,
+            $processConversion);
 
         /**
          * Convert quantity into outUnits
@@ -424,7 +433,7 @@ class ElcaLcaProcessor
     /**
      * Computes all final energy related demands and supplies for the given project variant
      *
-     * @param  ElcaProjectVariant $projectVariant
+     * @param ElcaProjectVariant $projectVariant
      * @return ElcaLcaProcessor
      */
     public function computeFinalEnergy(ElcaProjectVariant $projectVariant)
@@ -474,12 +483,12 @@ class ElcaLcaProcessor
 
 
     /**
-     * @throws Exception
      * @param                                 $projectVariantId
      * @param ElcaProjectFinalEnergyDemandSet $finalEnergyDemandSet
      * @param                                 $processDbId
      * @param                                 $lifeTime
      * @param                                 $ngfEnEv
+     * @throws Exception
      */
     public function computeFinalEnergyDemand(
         $projectVariantId,
@@ -488,12 +497,14 @@ class ElcaLcaProcessor
         $lifeTime,
         $ngfEnEv,
         array $indicators
-    ) {
+    )
+    {
         /**
          * Invoke additional lca processors
          */
         foreach ($this->processors as $Processor) {
-            $Processor->beforeFinalEnergyDemandProcessing($projectVariantId, $finalEnergyDemandSet, $processDbId, $lifeTime, $ngfEnEv);
+            $Processor->beforeFinalEnergyDemandProcessing($projectVariantId, $finalEnergyDemandSet, $processDbId,
+                $lifeTime, $ngfEnEv);
         }
 
         /**
@@ -508,10 +519,11 @@ class ElcaLcaProcessor
 
         /**
          * Calculate new values
+         *
          * @var ElcaProjectFinalEnergyDemand $finalEnergyDemand
          */
         foreach ($finalEnergyDemandSet as $finalEnergyDemand) {
-            $processConfigId  = new ProcessConfigId($finalEnergyDemand->getProcessConfigId());
+            $processConfigId = new ProcessConfigId($finalEnergyDemand->getProcessConfigId());
 
             $processLifeCycle = $this->processLifeCycleRepository->findById(new ProcessLifeCycleId(
                 new ProcessDbId($processDbId), $processConfigId));
@@ -570,12 +582,14 @@ class ElcaLcaProcessor
         $processDbId,
         $ngfEnEv,
         array $indicators
-    ) {
+    )
+    {
         /**
          * Invoke additional lca processors
          */
         foreach ($this->processors as $Processor) {
-            $Processor->beforeFinalEnergySupplyProcessing($projectVariantId, $finalEnergySupplies, $processDbId, $lifeTime, $ngfEnEv);
+            $Processor->beforeFinalEnergySupplyProcessing($projectVariantId, $finalEnergySupplies, $processDbId,
+                $lifeTime, $ngfEnEv);
         }
 
         /**
@@ -650,7 +664,8 @@ class ElcaLcaProcessor
         ElcaProjectFinalEnergyRefModelSet $finalEnergyRefModels,
         ElcaBenchmarkRefProcessConfigSet $benchmarkRefProcessConfigSet,
         array $indicators
-    ) {
+    )
+    {
         /**
          * Delete old data
          */
@@ -671,9 +686,9 @@ class ElcaLcaProcessor
              */
             if (!$benchmarkRefProcessConfig = $benchmarkRefProcessConfigSet->search('ident', $refModel->getIdent())) {
                 $this->logger->warning(
-                    'Found no processConfig for ref model '.$refModel->getIdent()
-                    .' in project '.$projectVariant->getProject()->getName().' ['.$projectVariant->getProjectId()
-                    .' / '.$projectVariant->getId().']',
+                    'Found no processConfig for ref model ' . $refModel->getIdent()
+                    . ' in project ' . $projectVariant->getProject()->getName() . ' [' . $projectVariant->getProjectId()
+                    . ' / ' . $projectVariant->getId() . ']',
                     __METHOD__
                 );
 
@@ -716,7 +731,7 @@ class ElcaLcaProcessor
     /**
      * Computes all transports for the given project variant
      *
-     * @param  ElcaProjectVariant
+     * @param ElcaProjectVariant
      * @return ElcaLcaProcessor
      * @throws \Exception
      */
@@ -746,7 +761,7 @@ class ElcaLcaProcessor
             /** @var ElcaProjectTransportMean $transportMean */
             foreach ($means as $transportMean) {
                 $processLifeCycle = $this->processLifeCycleRepository->findById(new ProcessLifeCycleId(
-                    new ProcessDbId($processDb->getId()), new ProcessConfigId($transportMean->getProcessConfigId()))
+                        new ProcessDbId($processDb->getId()), new ProcessConfigId($transportMean->getProcessConfigId()))
                 );
 
                 $processLcaCalculator = new ProcessLcaCalculator(
@@ -789,8 +804,8 @@ class ElcaLcaProcessor
      *
      * @param null $projectVariantId
      *
-     * @throws Exception
      * @return ElcaLcaProcessor
+     * @throws Exception
      */
     public function updateCache($projectId, $projectVariantId = null)
     {
@@ -814,8 +829,8 @@ class ElcaLcaProcessor
     /**
      * Reaggregates the element type tree for a given project variant and element type
      *
-     * @param  int $projectVariantId
-     * @param  int $elementTypeNodeId
+     * @param int $projectVariantId
+     * @param int $elementTypeNodeId
      * @return ElcaLcaProcessor
      */
     public function updateElementTypeTree($projectVariantId, $elementTypeNodeId)
@@ -830,7 +845,7 @@ class ElcaLcaProcessor
     /**
      * Reaggregates the project variantor root cache item
      *
-     * @param  int $projectVariantId
+     * @param int $projectVariantId
      * @return ElcaLcaProcessor
      */
     public function updateProjectVariant($projectVariantId)

@@ -28,9 +28,9 @@ namespace Elca\Model\Assistant\Window;
 use Beibob\Blibs\DbHandle;
 use Beibob\Blibs\Exception;
 use Beibob\Blibs\Log;
+use Elca\Db\ElcaAssistantElement;
+use Elca\Db\ElcaAssistantSubElement;
 use Elca\Db\ElcaElement;
-use Elca\Db\ElcaElementAttribute;
-use Elca\Db\ElcaElementAttributeSet;
 use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaElementComponentAttribute;
 use Elca\Db\ElcaElementComponentSet;
@@ -153,85 +153,87 @@ class Assembler
             // window
             $this->updateWindowElement($windowElement);
 
+            $assistantElement = ElcaAssistantElement::findByElementId($windowElement->getId(), WindowAssistant::IDENT);
+
             // indoor sill
-            $element = $this->findElementByAttribute($windowElement->getId(), self::IDENT_INDOOR_SILL);
+            $element = $this->findElementByAssistantElementIdAndSubElementIdent($assistantElement->getId(), self::IDENT_INDOOR_SILL);
             if ($this->window->hasSillIndoor()) {
-                if ($element)
+                if ($element && $element->isInitialized())
                     $this->updateSillElement($element, true);
                 else
                     $this->createSillElement($windowElement, true);
             }
             else {
-                if ($element)
+                if ($element && $element->isInitialized())
                     $element->delete();
             }
 
             // outdoor sill
-            $element = $this->findElementByAttribute($windowElement->getId(), self::IDENT_OUTDOOR_SILL);
+            $element = $this->findElementByAssistantElementIdAndSubElementIdent($assistantElement->getId(), self::IDENT_OUTDOOR_SILL);
             if ($this->window->hasSillOutdoor()) {
-                if ($element) {
+                if ($element && $element->isInitialized()) {
                     $this->updateSillElement($element, false);
                 } else {
                     $this->createSillElement($windowElement, false);
                 }
             }
             else {
-                if ($element)
+                if ($element && $element->isInitialized())
                     $element->delete();
             }
             // indoor soffit
-            $element = $this->findElementByAttribute($windowElement->getId(), self::IDENT_INDOOR_SOFFIT);
+            $element = $this->findElementByAssistantElementIdAndSubElementIdent($assistantElement->getId(), self::IDENT_INDOOR_SOFFIT);
             if ($this->window->hasSoffitIndoor()) {
-                if ($element) {
+                if ($element && $element->isInitialized()) {
                     $this->updateSoffitElement($element, true);
                 } else {
                     $this->createSoffitElement($windowElement, true);
                 }
             }
             else {
-                if ($element)
+                if ($element && $element->isInitialized())
                     $element->delete();
             }
 
             // outdoor soffit
-            $element = $this->findElementByAttribute($windowElement->getId(), self::IDENT_OUTDOOR_SOFFIT);
+            $element = $this->findElementByAssistantElementIdAndSubElementIdent($assistantElement->getId(), self::IDENT_OUTDOOR_SOFFIT);
             if ($this->window->hasSoffitOutdoor()) {
-                if ($element) {
+                if ($element && $element->isInitialized()) {
                     $this->updateSoffitElement($element, false);
                 } else {
                     $this->createSoffitElement($windowElement, false);
                 }
             }
             else {
-                if ($element)
+                if ($element && $element->isInitialized())
                     $element->delete();
             }
 
             // indoor sunscreen
-            $element = $this->findElementByAttribute($windowElement->getId(), self::IDENT_INDOOR_SUNSCREEN);
+            $element = $this->findElementByAssistantElementIdAndSubElementIdent($assistantElement->getId(), self::IDENT_INDOOR_SUNSCREEN);
             if ($this->window->hasSunscreenIndoor()) {
-                if ($element) {
+                if ($element && $element->isInitialized()) {
                     $this->updateSunScreenElement($element, true);
                 } else {
                     $this->createSunScreenElement($windowElement, true);
                 }
             }
             else {
-                if ($element)
+                if ($element && $element->isInitialized())
                     $element->delete();
             }
 
             // outdoor sunscreen
-            $element = $this->findElementByAttribute($windowElement->getId(), self::IDENT_OUTDOOR_SUNSCREEN);
+            $element = $this->findElementByAssistantElementIdAndSubElementIdent($assistantElement->getId(), self::IDENT_OUTDOOR_SUNSCREEN);
             if ($this->window->hasSunscreenOutdoor()) {
-                if ($element) {
+                if ($element && $element->isInitialized()) {
                     $this->updateSunScreenElement($element, false);
                 } else {
                     $this->createSunScreenElement($windowElement, false);
                 }
             }
             else {
-                if ($element)
+                if ($element && $element->isInitialized())
                     $element->delete();
             }
 
@@ -264,6 +266,18 @@ class Assembler
         );
 
         $this->log->debug('Window element `'. $windowElement->getName() .'\'['. $windowElement->getId().'] created');
+
+        $assistantElement = ElcaAssistantElement::createWithUnserializedConfig($windowElement->getId(),
+            WindowAssistant::IDENT,
+            $windowElement->getProjectVariantId(),
+            $this->window,
+            $windowElement->isReference(),
+            $windowElement->isPublic(),
+            $windowElement->getOwnerId(),
+            $windowElement->getAccessGroupId()
+        );
+
+        ElcaAssistantSubElement::create($assistantElement->getId(), $windowElement->getId(), self::IDENT_WINDOW);
 
         $this->createSealingLayer($windowElement->getId());
         $this->createFixedFrameComponent($windowElement->getId());
@@ -359,7 +373,6 @@ class Assembler
 
         $sealingProcessConfig= ElcaProcessConfig::findById($sealing->getMaterialId());
         $conversionId = $this->getLayerConversionId($sealingProcessConfig->getId());
-
 
         $sealingLayer = ElcaElementComponent::create(
             $elementId,
@@ -617,13 +630,9 @@ class Assembler
             ElcaAccess::getInstance()->getUserId()
         );
 
-        // save attribute
-        ElcaElementAttribute::create($element->getId(),
-                                     WindowAssistant::IDENT,
-                                     WindowAssistant::IDENT,
-                                     $windowElement->getId(),
-                                     $indoor? self::IDENT_INDOOR_SILL : self::IDENT_OUTDOOR_SILL
-        );
+
+        $assistantElement = ElcaAssistantElement::findByElementId($windowElement->getId());
+        ElcaAssistantSubElement::create($assistantElement->getId(), $element->getId(), $indoor? self::IDENT_INDOOR_SILL : self::IDENT_OUTDOOR_SILL);
 
         $this->log->debug('Sill element `'. $element->getName() .'\'['. $element->getId().'] created');
 
@@ -658,10 +667,6 @@ class Assembler
                 return [$sillLayer];
             }
         );
-
-        $components = $element->getComponents();
-
-
     }
 
     /**
@@ -735,13 +740,8 @@ class Assembler
             ElcaAccess::getInstance()->getUserId()
         );
 
-        // save attribute
-        ElcaElementAttribute::create($element->getId(),
-            WindowAssistant::IDENT,
-            WindowAssistant::IDENT,
-            $windowElement->getId(),
-            $indoor? self::IDENT_INDOOR_SOFFIT : self::IDENT_OUTDOOR_SOFFIT
-        );
+        $assistantElement = ElcaAssistantElement::findByElementId($windowElement->getId());
+        ElcaAssistantSubElement::create($assistantElement->getId(), $element->getId(), $indoor? self::IDENT_INDOOR_SOFFIT : self::IDENT_OUTDOOR_SOFFIT);
 
         $this->log->debug('Soffit element `'. $element->getName() .'\'['. $element->getId().'] created');
 
@@ -854,13 +854,8 @@ class Assembler
             ElcaAccess::getInstance()->getUserId()
         );
 
-        // save attribute
-        ElcaElementAttribute::create($element->getId(),
-                                     WindowAssistant::IDENT,
-                                     WindowAssistant::IDENT,
-                                     $windowElement->getId(),
-                                     $indoor? self::IDENT_INDOOR_SUNSCREEN: self::IDENT_OUTDOOR_SUNSCREEN
-        );
+        $assistantElement = ElcaAssistantElement::findByElementId($windowElement->getId());
+        ElcaAssistantSubElement::create($assistantElement->getId(), $element->getId(), $indoor? self::IDENT_INDOOR_SUNSCREEN: self::IDENT_OUTDOOR_SUNSCREEN);
 
         $this->log->debug('Sunscreen element `'. $element->getName() .'\'['. $element->getId().'] created');
 
@@ -1014,23 +1009,13 @@ class Assembler
     }
 
     /**
-     * @param $windowElementId
+     * @param $assistantElementId
      * @param $ident
      * @return ElcaElement|null
      */
-    private function findElementByAttribute($windowElementId, $ident)
+    private function findElementByAssistantElementIdAndSubElementIdent($assistantElementId, $ident)
     {
-        $attrSet = ElcaElementAttributeSet::find([
-            'ident' => WindowAssistant::IDENT,
-            'text_value' => $ident,
-            'numeric_value' => $windowElementId
-        ], ['id' => 'ASC'], 1);
-
-        if (!$attrSet->count())
-            return null;
-
-        return $attrSet[0]->getElement();
+        return ElcaAssistantSubElement::findByAssistantElementIdAndIdent($assistantElementId, $ident)
+            ->getElement();
     }
-
-
 }

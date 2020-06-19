@@ -29,6 +29,7 @@ use Beibob\Blibs\DataObjectSet;
 use Beibob\Blibs\DbHandle;
 use Beibob\Blibs\FloatCalc;
 use Beibob\Blibs\UserStore;
+use Elca\Db\ElcaAssistantElement;
 use Elca\Db\ElcaElement;
 use Elca\Model\Common\Unit;
 use Elca\Model\Element\ElementObserver;
@@ -106,6 +107,13 @@ class ProjectElementService
             }
 
             $elementTypeNodeIds[] = $element->getElementTypeNodeId();
+        }
+
+        $assistantElement = ElcaAssistantElement::findByMainElementId($element->getId());
+        if ($assistantElement->isInitialized() && $assistantElement->getMainElementId() === $element->getId()) {
+            foreach ($assistantElement->getSubElements() as $assistantSubElement) {
+                $elementTypeNodeIds[] = $assistantSubElement->getElement()->getElementTypeNodeId();
+            }
         }
 
         $this->elementService->deleteElement($element, $recursive);

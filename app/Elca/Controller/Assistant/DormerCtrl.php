@@ -30,8 +30,8 @@ use Elca\Commands\Assistant\Window\SaveCommand;
 use Elca\Controller\ElementsCtrl;
 use Elca\Controller\ProjectElementsCtrl;
 use Elca\Controller\TabsCtrl;
+use Elca\Db\ElcaAssistantElement;
 use Elca\Db\ElcaElement;
-use Elca\Db\ElcaElementAttribute;
 use Elca\Db\ElcaProcessConfigSearchSet;
 use Elca\Model\Assistant\Window\DormerAssembler;
 use Elca\Model\Assistant\Window\Validator;
@@ -113,10 +113,9 @@ class DormerCtrl extends TabsCtrl
         $view->assign('elementTypeNodeId', $this->elementTypeNodeId);
 
         $elementId = $command->elementId;
-        $attr = ElcaElementAttribute::findByElementIdAndIdent($elementId, DormerAssistant::IDENT);
-        if ($attr->isInitialized() && $attr->getNumericValue() !== null) {
-            $elementId = $attr->getNumericValue();
-        }
+
+        $assistantElement = ElcaAssistantElement::findByElementId($elementId, DormerAssistant::IDENT);
+        $elementId = $assistantElement->getMainElementId();
 
         $element = ElcaElement::findById($elementId);
 

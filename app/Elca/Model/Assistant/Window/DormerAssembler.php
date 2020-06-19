@@ -28,9 +28,9 @@ namespace Elca\Model\Assistant\Window;
 use Beibob\Blibs\DbHandle;
 use Beibob\Blibs\Exception;
 use Beibob\Blibs\Log;
+use Elca\Db\ElcaAssistantElement;
+use Elca\Db\ElcaAssistantSubElement;
 use Elca\Db\ElcaElement;
-use Elca\Db\ElcaElementAttribute;
-use Elca\Db\ElcaElementAttributeSet;
 use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaElementComponentAttribute;
 use Elca\Db\ElcaElementComponentSet;
@@ -58,7 +58,7 @@ class DormerAssembler
     const IDENT_INDOOR_SILL = 'indoor_sill';
     const IDENT_OUTDOOR_SILL = 'outdoor_sill';
     const IDENT_INDOOR_SOFFIT = 'indoor_soffit';
-    const IDENT_OUTDOOR_SOFFIT= 'outdoor_soffit';
+    const IDENT_OUTDOOR_SOFFIT = 'outdoor_soffit';
     const IDENT_INDOOR_SUNSCREEN = 'indoor_sunscreen';
     const IDENT_OUTDOOR_SUNSCREEN = 'outdoor_sunscreen';
 
@@ -91,7 +91,7 @@ class DormerAssembler
      */
     public function __construct(Window $window, $projectVariantId = null)
     {
-        $this->window = $window;
+        $this->window           = $window;
         $this->projectVariantId = $projectVariantId;
 
         $this->log = Log::getInstance();
@@ -104,33 +104,39 @@ class DormerAssembler
     public function create()
     {
         $dbh = DbHandle::getInstance();
-        try
-        {
+        try {
             $dbh->begin();
 
             $windowElement = $this->createWindowElement();
 
-            if ($this->window->hasSillIndoor())
+            if ($this->window->hasSillIndoor()) {
                 $this->createSillElement($windowElement, true);
+            }
 
-            if ($this->window->hasSillOutdoor())
+            if ($this->window->hasSillOutdoor()) {
                 $this->createSillElement($windowElement, false);
+            }
 
-            if ($this->window->hasSoffitIndoor())
+            if ($this->window->hasSoffitIndoor()) {
                 $this->createSoffitElement($windowElement, true);
+            }
 
-            if ($this->window->hasSoffitOutdoor())
+            if ($this->window->hasSoffitOutdoor()) {
                 $this->createSoffitElement($windowElement, false);
+            }
 
-            if ($this->window->hasSunscreenIndoor())
+            if ($this->window->hasSunscreenIndoor()) {
                 $this->createSunScreenElement($windowElement, true);
+            }
 
-            if ($this->window->hasSunscreenOutdoor())
+            if ($this->window->hasSunscreenOutdoor()) {
                 $this->createSunScreenElement($windowElement, false);
+            }
 
             $dbh->commit();
 
-        } catch(\Exception $e) {
+        }
+        catch (\Exception $e) {
             $dbh->rollback();
             throw $e;
         }
@@ -146,102 +152,143 @@ class DormerAssembler
     public function update(ElcaElement $windowElement)
     {
         $dbh = DbHandle::getInstance();
-        try
-        {
+        try {
             $dbh->begin();
 
             // window
             $this->updateWindowElement($windowElement);
 
+            $assistantElement = ElcaAssistantElement::findByElementId($windowElement->getId(), DormerAssistant::IDENT);
+
             // indoor sill
-            $element = $this->findElementByAttribute($windowElement->getId(), self::IDENT_INDOOR_SILL);
+            $element = $this->findElementByAssistantElementIdAndSubElementIdent($assistantElement->getId(),
+                self::IDENT_INDOOR_SILL);
             if ($this->window->hasSillIndoor()) {
-                if ($element)
+                if ($element && $element->isInitialized()) {
                     $this->updateSillElement($element, true);
-                else
+                } else {
                     $this->createSillElement($windowElement, true);
-            }
-            else {
-                if ($element)
+                }
+            } else {
+                if ($element && $element->isInitialized()) {
                     $element->delete();
+                }
             }
 
             // outdoor sill
-            $element = $this->findElementByAttribute($windowElement->getId(), self::IDENT_OUTDOOR_SILL);
+            $element = $this->findElementByAssistantElementIdAndSubElementIdent($assistantElement->getId(),
+                self::IDENT_OUTDOOR_SILL);
             if ($this->window->hasSillOutdoor()) {
-                if ($element) {
+                if ($element && $element->isInitialized()) {
                     $this->updateSillElement($element, false);
                 } else {
                     $this->createSillElement($windowElement, false);
                 }
-            }
-            else {
-                if ($element)
+            } else {
+                if ($element && $element->isInitialized()) {
                     $element->delete();
+                }
             }
             // indoor soffit
-            $element = $this->findElementByAttribute($windowElement->getId(), self::IDENT_INDOOR_SOFFIT);
+            $element = $this->findElementByAssistantElementIdAndSubElementIdent($assistantElement->getId(),
+                self::IDENT_INDOOR_SOFFIT);
             if ($this->window->hasSoffitIndoor()) {
-                if ($element) {
+                if ($element && $element->isInitialized()) {
                     $this->updateSoffitElement($element, true);
                 } else {
                     $this->createSoffitElement($windowElement, true);
                 }
-            }
-            else {
-                if ($element)
+            } else {
+                if ($element && $element->isInitialized()) {
                     $element->delete();
+                }
             }
 
             // outdoor soffit
-            $element = $this->findElementByAttribute($windowElement->getId(), self::IDENT_OUTDOOR_SOFFIT);
+            $element = $this->findElementByAssistantElementIdAndSubElementIdent($assistantElement->getId(),
+                self::IDENT_OUTDOOR_SOFFIT);
             if ($this->window->hasSoffitOutdoor()) {
-                if ($element) {
+                if ($element && $element->isInitialized()) {
                     $this->updateSoffitElement($element, false);
                 } else {
                     $this->createSoffitElement($windowElement, false);
                 }
-            }
-            else {
-                if ($element)
+            } else {
+                if ($element && $element->isInitialized()) {
                     $element->delete();
+                }
             }
 
             // indoor sunscreen
-            $element = $this->findElementByAttribute($windowElement->getId(), self::IDENT_INDOOR_SUNSCREEN);
+            $element = $this->findElementByAssistantElementIdAndSubElementIdent($assistantElement->getId(),
+                self::IDENT_INDOOR_SUNSCREEN);
             if ($this->window->hasSunscreenIndoor()) {
-                if ($element) {
+                if ($element && $element->isInitialized()) {
                     $this->updateSunScreenElement($element, true);
                 } else {
                     $this->createSunScreenElement($windowElement, true);
                 }
-            }
-            else {
-                if ($element)
+            } else {
+                if ($element && $element->isInitialized()) {
                     $element->delete();
+                }
             }
 
             // outdoor sunscreen
-            $element = $this->findElementByAttribute($windowElement->getId(), self::IDENT_OUTDOOR_SUNSCREEN);
+            $element = $this->findElementByAssistantElementIdAndSubElementIdent($assistantElement->getId(),
+                self::IDENT_OUTDOOR_SUNSCREEN);
             if ($this->window->hasSunscreenOutdoor()) {
-                if ($element) {
+                if ($element && $element->isInitialized()) {
                     $this->updateSunScreenElement($element, false);
                 } else {
                     $this->createSunScreenElement($windowElement, false);
                 }
-            }
-            else {
-                if ($element)
+            } else {
+                if ($element && $element->isInitialized()) {
                     $element->delete();
+                }
             }
 
             $dbh->commit();
-        } catch(\Exception $e) {
+        }
+        catch (\Exception $e) {
             $dbh->rollback();
             throw $e;
         }
 
         return $windowElement;
+    }
+
+    /**
+     * @param      $windowElement
+     * @param bool $indoor
+     * @return ElcaElement
+     */
+    public function createSunScreenElement($windowElement, $indoor = true)
+    {
+        $element = ElcaElement::create(
+            ElcaElementType::findByIdent(self::DIN_SUNSCREEN)
+                           ->getNodeId(),
+            sprintf($indoor ? self::NAME_INDOOR_SUNSCREEN : self::NAME_OUTDOOR_SUNSCREEN, $this->window->getName()),
+            '', // description
+            false,
+            $windowElement->getAccessGroupId(),
+            $this->projectVariantId,
+            $windowElement->getQuantity(),
+            Elca::UNIT_STK,
+            null,
+            ElcaAccess::getInstance()->getUserId()
+        );
+
+        $assistantElement = ElcaAssistantElement::findByElementId($windowElement->getId());
+        ElcaAssistantSubElement::create($assistantElement->getId(), $element->getId(),
+            $indoor ? self::IDENT_INDOOR_SUNSCREEN : self::IDENT_OUTDOOR_SUNSCREEN);
+
+        $this->log->debug('Sunscreen element `' . $element->getName() . '\'[' . $element->getId() . '] created');
+
+        $this->createSunscreenComponent($element->getId(), $indoor);
+
+        return $element;
     }
 
     /**
@@ -263,7 +310,19 @@ class DormerAssembler
             ElcaAccess::getInstance()->getUserId()
         );
 
-        $this->log->debug('Window element `'. $windowElement->getName() .'\'['. $windowElement->getId().'] created');
+        $this->log->debug('Window element `' . $windowElement->getName() . '\'[' . $windowElement->getId() . '] created');
+
+        $assistantElement = ElcaAssistantElement::createWithUnserializedConfig($windowElement->getId(),
+            DormerAssistant::IDENT,
+            $windowElement->getProjectVariantId(),
+            $this->window,
+            $windowElement->isReference(),
+            $windowElement->isPublic(),
+            $windowElement->getOwnerId(),
+            $windowElement->getAccessGroupId()
+        );
+
+        ElcaAssistantSubElement::create($assistantElement->getId(), $windowElement->getId(), self::IDENT_WINDOW);
 
         $this->createSealingLayer($windowElement->getId());
         $this->createFixedFrameComponent($windowElement->getId());
@@ -298,7 +357,8 @@ class DormerAssembler
                 }
                 $updatedComponents[] = $component;
 
-                if ($component = $components->search('processConfigId', $this->window->getFixedFrame()->getMaterialId())) {
+                if ($component = $components->search('processConfigId',
+                    $this->window->getFixedFrame()->getMaterialId())) {
                     $this->updateFixedFrameComponent($component);
                     $updatedComponents[] = $component;
                 } else {
@@ -306,7 +366,8 @@ class DormerAssembler
                 }
 
                 if ($this->window->getFixedFrame()->getSashFrameMaterialId()) {
-                    if ($component = $components->search('processConfigId', $this->window->getFixedFrame()->getSashFrameMaterialId())) {
+                    if ($component = $components->search('processConfigId',
+                        $this->window->getFixedFrame()->getSashFrameMaterialId())) {
                         $this->updateSashFrameComponent($component);
                     } else {
                         $component = $this->createSashFrameComponent($windowElementId);
@@ -345,8 +406,6 @@ class DormerAssembler
         return $windowElement;
     }
 
-
-
     /**
      * @param     $elementId
      * @param int $position
@@ -354,11 +413,12 @@ class DormerAssembler
      */
     private function createSealingLayer($elementId, $position = 1)
     {
-        if (!$sealing = $this->window->getSealing())
+        if (!$sealing = $this->window->getSealing()) {
             return null;
+        }
 
-        $sealingProcessConfig= ElcaProcessConfig::findById($sealing->getMaterialId());
-        $conversionId = $this->getLayerConversionId($sealingProcessConfig->getId());
+        $sealingProcessConfig = ElcaProcessConfig::findById($sealing->getMaterialId());
+        $conversionId         = $this->getLayerConversionId($sealingProcessConfig->getId());
 
 
         $sealingLayer = ElcaElementComponent::create(
@@ -378,7 +438,7 @@ class DormerAssembler
             $sealing->getHeight()
         );
 
-        $this->log->debug('Sealing layer `'. $sealingLayer->getProcessConfig()->getName() .'\'['. $sealingLayer->getId().'] created');
+        $this->log->debug('Sealing layer `' . $sealingLayer->getProcessConfig()->getName() . '\'[' . $sealingLayer->getId() . '] created');
 
         return $this->createComponentAttribute($sealingLayer);
     }
@@ -395,7 +455,7 @@ class DormerAssembler
         $component->setLayerWidth($sealing->getHeight());
         $component->update();
 
-        $this->log->debug('Sealing layer `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] updated');
+        $this->log->debug('Sealing layer `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] updated');
     }
 
     /**
@@ -404,9 +464,9 @@ class DormerAssembler
      */
     private function createFixedFrameComponent($elementId)
     {
-        $fixedFrame = $this->window->getFixedFrame();
+        $fixedFrame    = $this->window->getFixedFrame();
         $processConfig = ElcaProcessConfig::findById($fixedFrame->getMaterialId());
-        $conversionId = $this->getComponentConversionId($processConfig->getId(), Elca::UNIT_M);
+        $conversionId  = $this->getComponentConversionId($processConfig->getId(), Elca::UNIT_M);
 
         $component = ElcaElementComponent::create(
             $elementId,
@@ -417,7 +477,7 @@ class DormerAssembler
             $fixedFrame->getLength()
         );
 
-        $this->log->debug('Fixed frame component `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] created');
+        $this->log->debug('Fixed frame component `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] created');
 
         return $this->createComponentAttribute($component);
     }
@@ -429,10 +489,10 @@ class DormerAssembler
     {
         $fixedFrame = $this->window->getFixedFrame();
         $component->setProcessConfigId($fixedFrame->getMaterialId());
-        $component->setQuantity( $fixedFrame->getLength());
+        $component->setQuantity($fixedFrame->getLength());
         $component->update();
 
-        $this->log->debug('Fixed frame component `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] updated');
+        $this->log->debug('Fixed frame component `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] updated');
     }
 
     /**
@@ -442,11 +502,12 @@ class DormerAssembler
      */
     private function createSashFrameComponent($elementId)
     {
-        if (!$this->window->getFixedFrame()->getSashFrameMaterialId())
+        if (!$this->window->getFixedFrame()->getSashFrameMaterialId()) {
             return null;
+        }
 
         $processConfig = ElcaProcessConfig::findById($this->window->getFixedFrame()->getSashFrameMaterialId());
-        $conversionId = $this->getComponentConversionId($processConfig->getId(), Elca::UNIT_M);
+        $conversionId  = $this->getComponentConversionId($processConfig->getId(), Elca::UNIT_M);
 
         $component = ElcaElementComponent::create(
             $elementId,
@@ -457,7 +518,7 @@ class DormerAssembler
             $this->window->getFixedFrame()->getSashFramesLength()
         );
 
-        $this->log->debug('Sash frame component `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] created');
+        $this->log->debug('Sash frame component `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] created');
 
         return $this->createComponentAttribute($component);
     }
@@ -471,7 +532,7 @@ class DormerAssembler
         $component->setQuantity($this->window->getFixedFrame()->getSashFramesLength());
         $component->update();
 
-        $this->log->debug('Sash frame component `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] updated');
+        $this->log->debug('Sash frame component `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] updated');
     }
 
     /**
@@ -481,11 +542,12 @@ class DormerAssembler
      */
     private function createGlassComponent($elementId)
     {
-        if (!$this->window->getGlassMaterialId())
+        if (!$this->window->getGlassMaterialId()) {
             return null;
+        }
 
         $processConfig = ElcaProcessConfig::findById($this->window->getGlassMaterialId());
-        $conversionId = $this->getComponentConversionId($processConfig->getId(), Elca::UNIT_M2);
+        $conversionId  = $this->getComponentConversionId($processConfig->getId(), Elca::UNIT_M2);
 
         $component = ElcaElementComponent::create(
             $elementId,
@@ -496,7 +558,7 @@ class DormerAssembler
             $this->window->getGlassArea()
         );
 
-        $this->log->debug('Glass component `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] created');
+        $this->log->debug('Glass component `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] created');
 
         return $this->createComponentAttribute($component);
     }
@@ -511,9 +573,8 @@ class DormerAssembler
 
         $component->update();
 
-        $this->log->debug('Glass component `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] updated');
+        $this->log->debug('Glass component `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] updated');
     }
-
 
     /**
      * @param $elementId
@@ -521,11 +582,12 @@ class DormerAssembler
      */
     private function createFittingsComponent($elementId)
     {
-        if (!$fittings = $this->window->getFittings())
+        if (!$fittings = $this->window->getFittings()) {
             return null;
+        }
 
         $processConfig = ElcaProcessConfig::findById($fittings->getMaterialId());
-        $conversionId = $this->getComponentConversionId($processConfig->getId(), [Elca::UNIT_STK, 'Stück']);
+        $conversionId  = $this->getComponentConversionId($processConfig->getId(), [Elca::UNIT_STK, 'Stück']);
 
         $component = ElcaElementComponent::create(
             $elementId,
@@ -536,7 +598,7 @@ class DormerAssembler
             $fittings->getQuantity()
         );
 
-        $this->log->debug('Fittings component `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] created');
+        $this->log->debug('Fittings component `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] created');
 
         return $this->createComponentAttribute(
             $component
@@ -553,9 +615,8 @@ class DormerAssembler
         $component->setQuantity($fittings->getQuantity());
         $component->update();
 
-        $this->log->debug('Fittings component `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] updated');
+        $this->log->debug('Fittings component `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] updated');
     }
-
 
     /**
      * @param $elementId
@@ -563,22 +624,23 @@ class DormerAssembler
      */
     private function createHandlesComponent($elementId)
     {
-        if (!$handles = $this->window->getHandles())
+        if (!$handles = $this->window->getHandles()) {
             return null;
+        }
 
         $processConfig = ElcaProcessConfig::findById($handles->getMaterialId());
-        $conversionId = $this->getComponentConversionId($processConfig->getId(), [Elca::UNIT_STK, 'Stück']);
+        $conversionId  = $this->getComponentConversionId($processConfig->getId(), [Elca::UNIT_STK, 'Stück']);
 
         $component = ElcaElementComponent::create(
-                $elementId,
-                $processConfig->getId(),
-                $conversionId,
-                $processConfig->getDefaultLifeTime(),
-                false,
-                $handles->getQuantity()
-            );
+            $elementId,
+            $processConfig->getId(),
+            $conversionId,
+            $processConfig->getDefaultLifeTime(),
+            false,
+            $handles->getQuantity()
+        );
 
-        $this->log->debug('Handles component `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] created');
+        $this->log->debug('Handles component `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] created');
 
         return $this->createComponentAttribute($component);
     }
@@ -593,7 +655,7 @@ class DormerAssembler
         $component->setQuantity($handles->getQuantity());
         $component->update();
 
-        $this->log->debug('Handles component `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] updated');
+        $this->log->debug('Handles component `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] updated');
     }
 
     /**
@@ -604,9 +666,9 @@ class DormerAssembler
     private function createSillElement(ElcaElement $windowElement, $indoor = false)
     {
         $element = ElcaElement::create(
-            ElcaElementType::findByIdent($indoor? self::DIN_INNER_WALL_CLADDING : self::DIN_OUTER_WALL_CLADDING)
-                ->getNodeId(),
-            sprintf(self::NAME_SILL, $this->window->getName(), $indoor? self::NAME_INDOOR : self::NAME_OUTDOOR),
+            ElcaElementType::findByIdent($indoor ? self::DIN_INNER_WALL_CLADDING : self::DIN_OUTER_WALL_CLADDING)
+                           ->getNodeId(),
+            sprintf(self::NAME_SILL, $this->window->getName(), $indoor ? self::NAME_INDOOR : self::NAME_OUTDOOR),
             '', // description
             false,
             $windowElement->getAccessGroupId(),
@@ -617,15 +679,12 @@ class DormerAssembler
             ElcaAccess::getInstance()->getUserId()
         );
 
-        // save attribute
-        ElcaElementAttribute::create($element->getId(),
-                                     DormerAssistant::IDENT,
-                                     DormerAssistant::IDENT,
-                                     $windowElement->getId(),
-                                     $indoor? self::IDENT_INDOOR_SILL : self::IDENT_OUTDOOR_SILL
-        );
 
-        $this->log->debug('Sill element `'. $element->getName() .'\'['. $element->getId().'] created');
+        $assistantElement = ElcaAssistantElement::findByElementId($windowElement->getId());
+        ElcaAssistantSubElement::create($assistantElement->getId(), $element->getId(),
+            $indoor ? self::IDENT_INDOOR_SILL : self::IDENT_OUTDOOR_SILL);
+
+        $this->log->debug('Sill element `' . $element->getName() . '\'[' . $element->getId() . '] created');
 
         $position = 0;
         $this->createSillLayer($element->getId(), $indoor, ++$position);
@@ -639,15 +698,16 @@ class DormerAssembler
      */
     private function updateSillElement(ElcaElement $element, $indoor = false)
     {
-        $element->setName(sprintf(self::NAME_SILL, $this->window->getName(), $indoor? self::NAME_INDOOR : self::NAME_OUTDOOR));
+        $element->setName(sprintf(self::NAME_SILL, $this->window->getName(),
+            $indoor ? self::NAME_INDOOR : self::NAME_OUTDOOR));
         $element->update();
 
-        $this->log->debug('Sill element `'. $element->getName() .'\'['. $element->getId().'] updated');
+        $this->log->debug('Sill element `' . $element->getName() . '\'[' . $element->getId() . '] updated');
 
         $this->updateElementComponents(
             $element->getId(),
-            function ($elementId, ElcaElementComponentSet $components) use($indoor) {
-                $sill = $indoor? $this->window->getSillIndoor() : $this->window->getSillOutdoor();
+            function ($elementId, ElcaElementComponentSet $components) use ($indoor) {
+                $sill = $indoor ? $this->window->getSillIndoor() : $this->window->getSillOutdoor();
 
                 if ($sillLayer = $components->search('processConfigId', $sill->getMaterialId())) {
                     $this->updateSillLayer($sillLayer, $indoor);
@@ -658,10 +718,6 @@ class DormerAssembler
                 return [$sillLayer];
             }
         );
-
-        $components = $element->getComponents();
-
-
     }
 
     /**
@@ -672,9 +728,9 @@ class DormerAssembler
      */
     private function createSillLayer($elementId, $indoor = false, $position = 1)
     {
-        $sill = $indoor? $this->window->getSillIndoor() : $this->window->getSillOutdoor();
+        $sill          = $indoor ? $this->window->getSillIndoor() : $this->window->getSillOutdoor();
         $processConfig = ElcaProcessConfig::findById($sill->getMaterialId());
-        $conversionId = $this->getLayerConversionId($processConfig->getId());
+        $conversionId  = $this->getLayerConversionId($processConfig->getId());
 
         $component = ElcaElementComponent::create(
             $elementId,
@@ -693,7 +749,7 @@ class DormerAssembler
             $sill->getBoundary()->getHeight()
         );
 
-        $this->log->debug('Sill layer `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] created');
+        $this->log->debug('Sill layer `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] created');
 
         return $this->createComponentAttribute($component);
     }
@@ -703,7 +759,7 @@ class DormerAssembler
      */
     private function updateSillLayer(ElcaElementComponent $component, $indoor = false)
     {
-        $sill = $indoor? $this->window->getSillIndoor() : $this->window->getSillOutdoor();
+        $sill = $indoor ? $this->window->getSillIndoor() : $this->window->getSillOutdoor();
 
         $component->setProcessConfigId($sill->getMaterialId());
         $component->setLayerSize($sill->getSize());
@@ -711,9 +767,8 @@ class DormerAssembler
         $component->setLayerWidth($sill->getBoundary()->getHeight());
         $component->update();
 
-        $this->log->debug('Sill layer `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] updated');
+        $this->log->debug('Sill layer `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] updated');
     }
-
 
     /**
      * @param $type
@@ -722,9 +777,9 @@ class DormerAssembler
     private function createSoffitElement(ElcaElement $windowElement, $indoor = false)
     {
         $element = ElcaElement::create(
-            ElcaElementType::findByIdent($indoor? self::DIN_INNER_WALL_CLADDING : self::DIN_OUTER_WALL_CLADDING)
+            ElcaElementType::findByIdent($indoor ? self::DIN_INNER_WALL_CLADDING : self::DIN_OUTER_WALL_CLADDING)
                            ->getNodeId(),
-            sprintf(self::NAME_SOFFIT, $this->window->getName(), $indoor? self::NAME_INDOOR : self::NAME_OUTDOOR),
+            sprintf(self::NAME_SOFFIT, $this->window->getName(), $indoor ? self::NAME_INDOOR : self::NAME_OUTDOOR),
             '', // description
             false,
             $windowElement->getAccessGroupId(),
@@ -735,15 +790,11 @@ class DormerAssembler
             ElcaAccess::getInstance()->getUserId()
         );
 
-        // save attribute
-        ElcaElementAttribute::create($element->getId(),
-            DormerAssistant::IDENT,
-            DormerAssistant::IDENT,
-            $windowElement->getId(),
-            $indoor? self::IDENT_INDOOR_SOFFIT : self::IDENT_OUTDOOR_SOFFIT
-        );
+        $assistantElement = ElcaAssistantElement::findByElementId($windowElement->getId());
+        ElcaAssistantSubElement::create($assistantElement->getId(), $element->getId(),
+            $indoor ? self::IDENT_INDOOR_SOFFIT : self::IDENT_OUTDOOR_SOFFIT);
 
-        $this->log->debug('Soffit element `'. $element->getName() .'\'['. $element->getId().'] created');
+        $this->log->debug('Soffit element `' . $element->getName() . '\'[' . $element->getId() . '] created');
 
         $position = 0;
         $this->createSoffitLayer($element->getId(), $indoor, ++$position);
@@ -757,22 +808,24 @@ class DormerAssembler
      */
     private function updateSoffitElement(ElcaElement $element, $indoor = false)
     {
-        $element->setName(sprintf(self::NAME_SOFFIT, $this->window->getName(), $indoor? self::NAME_INDOOR : self::NAME_OUTDOOR));
+        $element->setName(sprintf(self::NAME_SOFFIT, $this->window->getName(),
+            $indoor ? self::NAME_INDOOR : self::NAME_OUTDOOR));
         $element->update();
 
-        $this->log->debug('Soffit element `'. $element->getName() .'\'['. $element->getId().'] updated');
+        $this->log->debug('Soffit element `' . $element->getName() . '\'[' . $element->getId() . '] updated');
 
         $this->updateElementComponents(
             $element->getId(),
-            function ($elementId, ElcaElementComponentSet $components) use($indoor) {
+            function ($elementId, ElcaElementComponentSet $components) use ($indoor) {
 
-                $soffit = $indoor? $this->window->getSoffitIndoor() : $this->window->getSoffitOutdoor();
+                $soffit = $indoor ? $this->window->getSoffitIndoor() : $this->window->getSoffitOutdoor();
 
                 if ($soffitLayer = $components->search('processConfigId', $soffit->getMaterialId())) {
                     $this->updateSoffitLayer($soffitLayer, $indoor);
                 } else {
                     $soffitLayer = $this->createSoffitLayer($elementId, $indoor);
                 }
+
                 return [$soffitLayer];
             }
         );
@@ -788,9 +841,9 @@ class DormerAssembler
      */
     private function createSoffitLayer($elementId, $indoor = false, $position = 1)
     {
-        $soffit = $indoor? $this->window->getSoffitIndoor() : $this->window->getSoffitOutdoor();
+        $soffit        = $indoor ? $this->window->getSoffitIndoor() : $this->window->getSoffitOutdoor();
         $processConfig = ElcaProcessConfig::findById($soffit->getMaterialId());
-        $conversionId = $this->getLayerConversionId($processConfig->getId());
+        $conversionId  = $this->getLayerConversionId($processConfig->getId());
 
         $component = ElcaElementComponent::create(
             $elementId,
@@ -809,7 +862,7 @@ class DormerAssembler
             $soffit->getBoundary()->getWidth()
         );
 
-        $this->log->debug('Soffit layer `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] created');
+        $this->log->debug('Soffit layer `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] created');
 
         return $this->createComponentAttribute($component);
     }
@@ -819,7 +872,7 @@ class DormerAssembler
      */
     private function updateSoffitLayer(ElcaElementComponent $component, $indoor = false)
     {
-        $soffit = $indoor? $this->window->getSoffitIndoor() : $this->window->getSoffitOutdoor();
+        $soffit = $indoor ? $this->window->getSoffitIndoor() : $this->window->getSoffitOutdoor();
 
         $component->setProcessConfigId($soffit->getMaterialId());
         $component->setLayerSize($soffit->getSize());
@@ -827,46 +880,9 @@ class DormerAssembler
         $component->setLayerWidth($soffit->getBoundary()->getWidth());
         $component->update();
 
-        $this->log->debug('Soffit layer `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] updated');
+        $this->log->debug('Soffit layer `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] updated');
 
         return $component;
-    }
-
-
-    /**
-     * @param      $windowElement
-     * @param bool $indoor
-     * @return ElcaElement
-     */
-    public function createSunScreenElement(ElcaElement $windowElement, $indoor = true)
-    {
-        $element = ElcaElement::create(
-            ElcaElementType::findByIdent(self::DIN_SUNSCREEN)
-                           ->getNodeId(),
-            sprintf($indoor? self::NAME_INDOOR_SUNSCREEN : self::NAME_OUTDOOR_SUNSCREEN, $this->window->getName()),
-            '', // description
-            false,
-            $windowElement->getAccessGroupId(),
-            $this->projectVariantId,
-            $windowElement->getQuantity(),
-            Elca::UNIT_STK,
-            null,
-            ElcaAccess::getInstance()->getUserId()
-        );
-
-        // save attribute
-        ElcaElementAttribute::create($element->getId(),
-                                     DormerAssistant::IDENT,
-                                     DormerAssistant::IDENT,
-                                     $windowElement->getId(),
-                                     $indoor? self::IDENT_INDOOR_SUNSCREEN: self::IDENT_OUTDOOR_SUNSCREEN
-        );
-
-        $this->log->debug('Sunscreen element `'. $element->getName() .'\'['. $element->getId().'] created');
-
-        $this->createSunscreenComponent($element->getId(), $indoor);
-
-        return $element;
     }
 
     /**
@@ -876,16 +892,17 @@ class DormerAssembler
     private function updateSunscreenElement(ElcaElement $element, $indoor = false)
     {
         $element->setName(
-            sprintf($indoor? self::NAME_INDOOR_SUNSCREEN : self::NAME_OUTDOOR_SUNSCREEN, $this->window->getName())
+            sprintf($indoor ? self::NAME_INDOOR_SUNSCREEN : self::NAME_OUTDOOR_SUNSCREEN, $this->window->getName())
         );
         $element->update();
 
-        $this->log->debug('Sunscreen element `'. $element->getName() .'\'['. $element->getId().'] updated');
+        $this->log->debug('Sunscreen element `' . $element->getName() . '\'[' . $element->getId() . '] updated');
 
         $this->updateElementComponents(
             $element->getId(),
-            function ($elementId, ElcaElementComponentSet $components) use($indoor) {
-                $materialId = $indoor? $this->window->getSunscreenIndoorMaterialId() : $this->window->getSunscreenOutdoorMaterialId();
+            function ($elementId, ElcaElementComponentSet $components) use ($indoor) {
+                $materialId = $indoor ? $this->window->getSunscreenIndoorMaterialId()
+                    : $this->window->getSunscreenOutdoorMaterialId();
 
                 if ($component = $components->search('processConfigId', $materialId)) {
                     $this->updateSunscreenComponent($component, $indoor);
@@ -907,9 +924,10 @@ class DormerAssembler
      */
     private function createSunscreenComponent($elementId, $indoor = false)
     {
-        $materialId = $indoor? $this->window->getSunscreenIndoorMaterialId() : $this->window->getSunscreenOutdoorMaterialId();
+        $materialId    = $indoor ? $this->window->getSunscreenIndoorMaterialId()
+            : $this->window->getSunscreenOutdoorMaterialId();
         $processConfig = ElcaProcessConfig::findById($materialId);
-        $conversionId = $this->getComponentConversionId($processConfig->getId(), Elca::UNIT_M2);
+        $conversionId  = $this->getComponentConversionId($processConfig->getId(), Elca::UNIT_M2);
 
         $component = ElcaElementComponent::create(
             $elementId,
@@ -920,7 +938,7 @@ class DormerAssembler
             $this->window->getOpeningBoundary()->getArea()
         );
 
-        $this->log->debug('Sunscreen component `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] created');
+        $this->log->debug('Sunscreen component `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] created');
 
         return $this->createComponentAttribute($component);
     }
@@ -931,12 +949,13 @@ class DormerAssembler
      */
     private function updateSunscreenComponent(ElcaElementComponent $component, $indoor = false)
     {
-        $materialId = $indoor? $this->window->getSunscreenIndoorMaterialId() : $this->window->getSunscreenOutdoorMaterialId();
+        $materialId = $indoor ? $this->window->getSunscreenIndoorMaterialId()
+            : $this->window->getSunscreenOutdoorMaterialId();
         $component->setProcessConfigId($materialId);
         $component->setQuantity($this->window->getOpeningBoundary()->getArea());
         $component->update();
 
-        $this->log->debug('Sunscreen component `'. $component->getProcessConfig()->getName() .'\'['. $component->getId().'] updated');
+        $this->log->debug('Sunscreen component `' . $component->getProcessConfig()->getName() . '\'[' . $component->getId() . '] updated');
     }
 
     /**
@@ -948,7 +967,8 @@ class DormerAssembler
     private function updateElementComponents($elementId, $callback)
     {
         // find marked components
-        $components = ElcaElementComponentSet::findByElementIdAndAttributeIdent($elementId, DormerAssistant::IDENT);
+        $components         = ElcaElementComponentSet::findByElementIdAndAttributeIdent($elementId,
+            DormerAssistant::IDENT);
         $componentsToDelete = $components->getArrayBy('id', 'id');
 
         $updatedComponents = $callback($elementId, $components);
@@ -960,7 +980,7 @@ class DormerAssembler
         // delete unseen components
         foreach ($componentsToDelete as $componentId) {
             $component = ElcaElementComponent::findById($componentId);
-            $this->log->debug('Component `'. $component->getProcessConfig()->getName() .'\' removed');
+            $this->log->debug('Component `' . $component->getProcessConfig()->getName() . '\' removed');
 
             $component->delete();
         }
@@ -972,10 +992,12 @@ class DormerAssembler
      */
     private function getLayerConversionId($processConfigId)
     {
-        $conversionSet = ElcaProcessConversionSet::findByProcessConfigIdAndInUnit($processConfigId, 'm3', ['id' => 'ASC'], 1);
+        $conversionSet = ElcaProcessConversionSet::findByProcessConfigIdAndInUnit($processConfigId, 'm3',
+            ['id' => 'ASC'], 1);
 
-        if ($conversionSet->count())
+        if ($conversionSet->count()) {
             return $conversionSet[0]->getId();
+        }
 
         return null;
     }
@@ -988,14 +1010,17 @@ class DormerAssembler
     {
         $processConfig = ElcaProcessConfig::findById($processConfigId);
         list($requiredConversions, $availableConversions) = $processConfig->getRequiredConversions();
-        $units = array_flip(array_unique($requiredConversions->getArrayBy('inUnit', 'id') + $availableConversions->getArrayBy('inUnit', 'id')));
+        $units = array_flip(array_unique($requiredConversions->getArrayBy('inUnit',
+                'id') + $availableConversions->getArrayBy('inUnit', 'id')));
 
-        if (!is_array($inUnit))
+        if (!is_array($inUnit)) {
             $inUnit = [$inUnit];
+        }
 
         foreach ($inUnit as $unit) {
-            if (isset($units[$unit]))
+            if (isset($units[$unit])) {
                 return $units[$unit];
+            }
         }
 
         return null;
@@ -1014,22 +1039,14 @@ class DormerAssembler
     }
 
     /**
-     * @param $windowElementId
+     * @param $assistantElementId
      * @param $ident
      * @return ElcaElement|null
      */
-    private function findElementByAttribute($windowElementId, $ident)
+    private function findElementByAssistantElementIdAndSubElementIdent($assistantElementId, $ident)
     {
-        $attrSet = ElcaElementAttributeSet::find([
-            'ident' => DormerAssistant::IDENT,
-            'text_value' => $ident,
-            'numeric_value' => $windowElementId
-        ], ['id' => 'ASC'], 1);
-
-        if (!$attrSet->count())
-            return null;
-
-        return $attrSet[0]->getElement();
+        return ElcaAssistantSubElement::findByAssistantElementIdAndIdent($assistantElementId, $ident)
+                                      ->getElement();
     }
 
 

@@ -26,6 +26,7 @@
 namespace Elca\Service\Project\ProjectVariant;
 
 use Beibob\Blibs\DbHandle;
+use Elca\Db\ElcaAssistantElement;
 use Elca\Db\ElcaElementSet;
 use Elca\Db\ElcaProjectConstruction;
 use Elca\Db\ElcaProjectEnEv;
@@ -169,6 +170,15 @@ class ProjectVariantService
                  */
                 if ($element->hasCompositeElement())
                     continue;
+
+                /**
+                 * Skip if element is a sub assistant element. This will be copied by the
+                 * assistant element itself
+                 */
+                $assistantElement = ElcaAssistantElement::findByElementId($element->getId());
+                if ($assistantElement->isInitialized() && $assistantElement->getMainElementId() !== $element->getId()) {
+                    continue;
+                }
 
                 $this->elementService->copyElementFrom(
                     $element,
