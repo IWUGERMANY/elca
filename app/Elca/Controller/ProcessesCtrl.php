@@ -517,6 +517,10 @@ class ProcessesCtrl extends TabsCtrl
                                 continue;
                             }
 
+                            if ($conversion->isIdentity()) {
+                                continue;
+                            }
+
                             /**
                              * Density conversions are modified in a separate input field
                              */
