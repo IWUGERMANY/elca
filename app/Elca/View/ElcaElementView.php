@@ -409,7 +409,7 @@ class ElcaElementView extends HtmlView
         }
 
         $projectId = Elca::getInstance()->getProjectId();
-        if (ElcaProjectIFCSet::exists($projectId)) {
+        if ($projectId && ElcaProjectIFCSet::exists($projectId)) {
             $attrIFC = ElcaElementAttribute::findByElementIdAndIdent($this->element->getId(),
                 Elca::ELEMENT_ATTR_IFCGUID);
 
@@ -428,7 +428,6 @@ class ElcaElementView extends HtmlView
                 'target' => 'viewer-' . $projectId,
             ]));
         }
-
 
         /**
          * Buttons
