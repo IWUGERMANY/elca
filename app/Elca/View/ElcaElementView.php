@@ -273,7 +273,7 @@ class ElcaElementView extends HtmlView
         if ($this->context == ElementsCtrl::CONTEXT && ElcaAccess::getInstance()->hasAdminPrivileges()) {
             $checkboxGroup = $leftGroup->add(new ElcaHtmlFormElementLabel(''));
 
-            $this->appendElementScope($checkboxGroup, 'isPublic', $isElementOfComposite, t('Öffentliche Vorlage'), $this->element->isReference());
+            $this->appendElementScope($checkboxGroup, 'isPublic', $isElementOfComposite, t('Öffentliche Vorlage'), (bool)$this->element->isReference());
             $this->appendElementScope($checkboxGroup, 'isReference', $isElementOfComposite, t('Referenzvorlage'));
         }
 
