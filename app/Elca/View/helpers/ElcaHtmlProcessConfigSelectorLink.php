@@ -81,6 +81,11 @@ class ElcaHtmlProcessConfigSelectorLink extends HtmlFormElement
     private $enableReplaceAll;
 
     /**
+     * @var bool
+     */
+    private $enableTplContext;
+
+    /**
      * Sets the context
      */
     public function setContext($context)
@@ -217,6 +222,11 @@ class ElcaHtmlProcessConfigSelectorLink extends HtmlFormElement
         $this->enableReplaceAll = $enableReplaceAll;
     }
 
+    public function setTplContext(bool $enableTplContext)
+    {
+        $this->enableTplContext = $enableTplContext;
+    }
+
 
     /**
      * Builds this element
@@ -289,6 +299,10 @@ class ElcaHtmlProcessConfigSelectorLink extends HtmlFormElement
 
         if ($this->enableReplaceAll) {
             $args['replaceAll'] = true;
+        }
+
+        if ($this->enableTplContext) {
+            $args['tpl'] = true;
         }
 
         $href = Url::factory('/' . $this->context . '/selectProcessConfig/', $args);

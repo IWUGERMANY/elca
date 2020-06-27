@@ -608,6 +608,7 @@ class WindowAssistantView extends HtmlView
         $selector->setProcessCategoryNodeId(ElcaProcessCategory::findByRefNum(self::$selectorConfig[$key]['catRefNum'])->getNodeId());
         $selector->setBuildMode(self::$selectorConfig[$key]['buildMode']);
         $selector->setContext(WindowCtrl::CONTEXT);
+        $selector->setTplContext($this->context === ElementsCtrl::CONTEXT);
         $selector->setProcessDbId(Elca::getInstance()->getProject()->getProcessDbId());
 
         if (isset(self::$selectorConfig[$key]['inUnit']))

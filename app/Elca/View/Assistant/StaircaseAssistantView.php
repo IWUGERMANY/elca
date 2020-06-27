@@ -36,7 +36,6 @@ use Beibob\HtmlTools\HtmlImage;
 use Beibob\HtmlTools\HtmlLink;
 use Beibob\HtmlTools\HtmlRadiobox;
 use Beibob\HtmlTools\HtmlRadioGroup;
-use Beibob\HtmlTools\HtmlStaticText;
 use Beibob\HtmlTools\HtmlTag;
 use Beibob\HtmlTools\HtmlTextInput;
 use DOMElement;
@@ -529,6 +528,7 @@ class StaircaseAssistantView extends HtmlView
         $selector->setProcessCategoryNodeId(ElcaProcessCategory::findByRefNum(self::$selectorConfig[$key]['catRefNum'])->getNodeId());
         $selector->setBuildMode(self::$selectorConfig[$key]['buildMode']);
         $selector->setContext(StaircaseCtrl::CONTEXT);
+        $selector->setTplContext($this->context === ElementsCtrl::CONTEXT);
         $selector->setProcessDbId(Elca::getInstance()->getProject()->getProcessDbId());
 
         if (isset(self::$selectorConfig[$key]['inUnit']))

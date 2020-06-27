@@ -609,6 +609,7 @@ class DormerAssistantView extends HtmlView
         $selector->setBuildMode(self::$selectorConfig[$key]['buildMode']);
         $selector->setContext(DormerCtrl::CONTEXT);
         $selector->setProcessDbId(Elca::getInstance()->getProject()->getProcessDbId());
+        $selector->setTplContext($this->context === ElementsCtrl::CONTEXT);
 
         if (isset(self::$selectorConfig[$key]['inUnit']))
             $selector->setInUnit(self::$selectorConfig[$key]['inUnit']);

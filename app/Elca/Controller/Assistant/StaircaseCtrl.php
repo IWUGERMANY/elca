@@ -209,17 +209,18 @@ class StaircaseCtrl extends TabsCtrl
 
             if ($processConfigId == 'NULL') $processConfigId = null;
 
-            $View = $this->setView(new ElcaProcessConfigSelectorView());
-            $View->assign('processConfigId', $processConfigId);
-            $View->assign('elementId', $this->Request->elementId);
-            $View->assign('relId', $this->Request->relId);
-            $View->assign('processCategoryNodeId', $this->Request->processCategoryNodeId? $this->Request->processCategoryNodeId : $this->Request->c);
-            $View->assign('buildMode', $this->Request->b);
-            $View->assign('inUnit', $this->Request->u);
-            $View->assign('context', self::CONTEXT);
-            $View->assign('allowDeselection', true);
-            $View->assign('db', $this->Request->db);
-            $View->assign('epdSubType', $this->Request->epdSubType);
+            $view = $this->setView(new ElcaProcessConfigSelectorView());
+            $view->assign('processConfigId', $processConfigId);
+            $view->assign('elementId', $this->Request->elementId);
+            $view->assign('relId', $this->Request->relId);
+            $view->assign('processCategoryNodeId', $this->Request->processCategoryNodeId? $this->Request->processCategoryNodeId : $this->Request->c);
+            $view->assign('buildMode', $this->Request->b);
+            $view->assign('inUnit', $this->Request->u);
+            $view->assign('context', self::CONTEXT);
+            $view->assign('allowDeselection', true);
+            $view->assign('db', $this->Request->db);
+            $view->assign('epdSubType', $this->Request->epdSubType);
+            $view->assign('isTemplateContext', $this->Request->tpl ?? ElementsCtrl::CONTEXT === $this->context);
         }
         /**
          * If user pressed select button, assign the new process
