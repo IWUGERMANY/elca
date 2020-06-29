@@ -549,7 +549,7 @@ class ProcessesCtrl extends TabsCtrl
                          * Add required, but missing conversions
                          */
                         foreach ($requiredConversions as $conversion) {
-                            if ($conversion->hasSurrogateId()) {
+                            if ($conversion instanceof LinearConversion && $conversion->hasSurrogateId()) {
                                 continue;
                             }
 
