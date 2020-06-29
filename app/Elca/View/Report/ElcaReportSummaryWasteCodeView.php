@@ -140,13 +140,86 @@ class ElcaReportSummaryWasteCodeView extends ElcaReportsView
 
         $tdContainer = $this->appendPrintTable($Container);
 
+        $this->buildData($tdContainer, $projectVariant);
+        /* 
         switch ($this->buildMode) {
 
             case self::BUILDMODE_TOTAL:
                 // $this->buildTotalEffects($infoDl, $ProjectConstruction, $tdContainer, false);
                 break;
         }
+        */
+        }
+
+
+/**
+     * Builds the summary
+     *
+     * @param  DOMElement $Container
+     *
+     * @return void -
+     */
+    private function buildData(DOMElement $Container, $ProjectVariant)
+    {
+
+		$wastCodeData = ElcaReportSet::findWasteCode($this->projectVariantId);
+		$wasteCodeNormalizedData = $this->normalizeData($wastCodeData);
+		
+		
+		foreach($wasteCodeNormalizedData as $dataKey => $dataSetValue)
+		{
+			if($dataKey == 0) 
+			{
+				$avvHeadline = $Container->appendChild($this->getH1(t("Ohne Zuordnung")));
+			} else  {
+				$avvHeadline = $Container->appendChild($this->getH1(t("AVV ". $dataKey))); // ['class' => 'avv-number']
+			}
+			
+			$Table = new HtmlTable('report report-avv-waste-code');
+			$Table->addColumn('choose');
+			$Table->addColumn('value_dincodeSum', t('KG'));
+			$Table->addColumn('din_code');
+			$Table->addColumn('mass', t('Masse [Kg]'));
+			$Table->addColumn('volume', t('Volumen [m³]'));
+			
+			$Head = $Table->createTableHead();
+			$HeadRow = $Head->addTableRow(new HtmlTableHeadRow());
+			$HeadRow->addClass('table-headlines');
+			
+			$Body = $Table->createTableBody();
+			$Row = $Body->addTableRow();
+			$Row->getColumn('choose')->setOutputElement(new HtmlTag('span',null, ['class' => 'arrowrow']));
+			$Row->getColumn('value_dincodeSum')->setOutputElement(new HtmlText('value_dincodeSum'));
+			$Row->getColumn('din_code')->setOutputElement(new HtmlText('din_code'));
+			$Row->getColumn('mass')->setOutputElement(new ElcaHtmlNumericText('mass', 1, true));
+			$Row->getColumn('volume')->setOutputElement(new ElcaHtmlNumericText('volume', 1, true));
+			
+			foreach($dataSetValue as $dataKGKey => $dataKGValue)
+			{
+				foreach($dataKGValue as $dataKGSingleKey => $dataKGSingleValue)
+				{
+					// First = summary 
+					if($dataKGSingleKey==0) 
+					{
+						// $Body->setDataSet($dataKGValue);
+
+					}
+					else
+					{
+						$Body->setDataSet($dataKGValue);
+					}	
+				}	
+				
+				$Tables = $Container->appendChild($this->getDiv(['class' => 'tables']));
+				$Table->appendTo($Tables);
+			}
+
+		}
     }
+    // End buildData
+
+
+
 
     /**
      * @param DOMElement              $infoDl
