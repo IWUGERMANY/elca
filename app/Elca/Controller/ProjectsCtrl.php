@@ -35,6 +35,7 @@ use Elca\Db\ElcaProcessDbSet;
 use Elca\Db\ElcaProject;
 use Elca\Db\ElcaProjectPhase;
 use Elca\Db\ElcaProjectVariant;
+use Elca\Db\ElcaProjectIFCSet;
 use Elca\Elca;
 use Elca\Model\Import\Xml\Importer;
 use Elca\Model\Navigation\ElcaOsitItem;
@@ -148,6 +149,8 @@ class ProjectsCtrl extends AppCtrl
                     }
                     return;
                 }
+				
+
             }
             else
             {
@@ -235,6 +238,12 @@ class ProjectsCtrl extends AppCtrl
         if (!$this->checkProjectAccess($project)) {
             return;
         }
+
+		// Check, if IFC based project
+		$ifcProject = ElcaProjectIFCSet::findIFCprojectById($project->getId());
+		if(is_array($ifcProject)) {
+			$this->namespace->ifcData = $ifcProject;
+		}
 
         $this->Response->setHeader(
             'X-Redirect: '. $this->getActionLink($this->Request->id)

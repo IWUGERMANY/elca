@@ -262,7 +262,51 @@ class ElcaElement extends DbObject
     }
     // End findById
 
+    /**
+     * Inits a `ElcaElement' by its primary key
+     *
+     * @param  integer  $id    - elementId
+     * @param  boolean  $force - Bypass caching
+     * @return ElcaElement
+     */
+    public static function findForIfcGuid($ifcGuid, $projectVariantId, $force = false)
+    {
+        if (!$ifcGuid || !$projectVariantId) {
+            return new ElcaElement();
+        }
 
+        $sql = sprintf("SELECT e.id
+                             , e.element_type_node_id
+                             , e.name
+                             , e.description
+                             , e.is_reference
+                             , e.is_public
+                             , e.access_group_id
+                             , e.project_variant_id
+                             , e.quantity
+                             , e.ref_unit
+                             , e.copy_of_element_id
+                             , e.owner_id
+                             , e.is_composite
+                             , e.uuid
+                             , e.created
+                             , e.modified
+                          FROM %s e
+                          JOIN %s a ON e.id = a.element_id
+                         WHERE a.ident = :ident
+                           AND a.text_value = :textValue
+                           AND e.project_variant_id = :projectVariantId
+                         LIMIT 1"
+            , self::TABLE_NAME
+            , ElcaElementAttribute::TABLE_NAME
+        );
+
+        return self::findBySql(get_class(), $sql, [
+            'ident' => Elca::ELEMENT_ATTR_IFCGUID,
+            'projectVariantId' => $projectVariantId,
+            'textValue' => $ifcGuid,
+            ], $force);
+    }
 
     /**
      * Inits a `ElcaElement' by its uuid
@@ -396,7 +440,7 @@ class ElcaElement extends DbObject
             else
                 $quantity = 1;
 
-            $Copy = self::create($this->elementTypeNodeId,
+            $copy = self::create($this->elementTypeNodeId,
                                  $copyName? $this->name : self::findNewUniqueName($this),
                                  $this->description,
                                  false, // copy is never a reference element
@@ -410,9 +454,9 @@ class ElcaElement extends DbObject
             /**
              * Copy components
              */
-            if($Copy->isInitialized())
+            if ($copy->isInitialized())
             {
-                if($copyCacheItems)
+                if ($copyCacheItems)
                 {
                     /**
                      * Retrieve the cached composite element itemId for the given compositeElementId
@@ -423,18 +467,18 @@ class ElcaElement extends DbObject
                     if($compositeElementId)
                         $compositeItemId = ElcaCacheElement::findByElementId($compositeElementId)->getItemId();
 
-                    ElcaCacheElement::findByElementId($this->id)->copy($Copy->getId(), $compositeItemId);
+                    ElcaCacheElement::findByElementId($this->id)->copy($copy->getId(), $compositeItemId);
                 }
 
-                if($this->isComposite())
+                if ($this->isComposite())
                 {
                     /**
                      * Always clone sub elements.
                      */
-                    foreach($this->getCompositeElements(null, true) as $Assignment)
+                    foreach($this->getCompositeElements(null, true) as $assignment)
                     {
-                        $SubElement = $Assignment->getElement();
-                        $SubElement->copy($ownerId, $projectVariantId, $accessGroupId, true, $copyCacheItems, $Copy->getId(), $Assignment->getPosition());
+                        $subElement = $assignment->getElement();
+                        $subElement->copy($ownerId, $projectVariantId, $accessGroupId, true, $copyCacheItems, $copy->getId(), $assignment->getPosition());
                     }
                 }
                 else
@@ -442,53 +486,55 @@ class ElcaElement extends DbObject
                     /**
                      * Assign element to compositeElementId
                      */
-                    if($compositeElementId)
+                    if ($compositeElementId)
                     {
                         $position = $compositePosition? $compositePosition : ElcaCompositeElement::getMaxCompositePosition($compositeElementId) + 1;
-                        ElcaCompositeElement::create($compositeElementId, $position, $Copy->getId());
+                        ElcaCompositeElement::create($compositeElementId, $position, $copy->getId());
                     }
 
                     /**
                      * Clone all components
                      */
-                    $Components = ElcaElementComponentSet::findByElementId($this->getId(), [], ['layer_position' => 'ASC', 'id' => 'ASC']);
+                    $components = ElcaElementComponentSet::findByElementId($this->getId(), [], ['layer_position' => 'ASC', 'id' => 'ASC']);
 
                     $siblings = [];
-                    foreach($Components as $Component)
+                    foreach ($components as $component)
                     {
-                        if($Component->hasLayerSibling())
+                        if ($component->hasLayerSibling())
                         {
-                            if(!isset($siblings[$Component->getId()]))
+                            if(!isset($siblings[$component->getId()]))
                             {
-                                $CopyComponent = $Component->copy($Copy->getId(), null, $copyCacheItems);
-                                $CopySibling = $Component->getLayerSibling()->copy($Copy->getId(), $CopyComponent->getId(), $copyCacheItems);
+                                $CopyComponent = $component->copy($copy->getId(), null, $copyCacheItems);
+                                $CopySibling = $component->getLayerSibling()->copy($copy->getId(), $CopyComponent->getId(), $copyCacheItems);
 
                                 $CopyComponent->setLayerSiblingId($CopySibling->getId());
                                 $CopyComponent->update();
 
-                                $siblings[$Component->getLayerSiblingId()] = true;
+                                $siblings[$component->getLayerSiblingId()] = true;
                             }
                         }
                         else
-                            $Component->copy($Copy->getId(), null, $copyCacheItems);
+                            $component->copy($copy->getId(), null, $copyCacheItems);
                     }
                 }
 
                 // if this a template element, copy constrDesigns and catalogs
-                if($Copy->isTemplate())
+                if ($copy->isTemplate())
                 {
                     foreach($this->getConstrCatalogs() as $ConstrCatalog)
-                        $Copy->assignConstrCatalogId($ConstrCatalog->getId());
+                        $copy->assignConstrCatalogId($ConstrCatalog->getId());
 
                     foreach($this->getConstrDesigns() as $ConstrDesign)
-                        $Copy->assignConstrDesignId($ConstrDesign->getId());
+                        $copy->assignConstrDesignId($ConstrDesign->getId());
                 }
 
                 /**
                  * Copy element attributes
                  */
-                foreach($this->getAttributes() as $Attr)
-                    ElcaElementAttribute::create($Copy->getId(), $Attr->getIdent(), $Attr->getCaption(), $Attr->getNumericValue(), $Attr->getTextValue());
+                foreach ($this->getAttributes() as $Attr) {
+                    ElcaElementAttribute::create($copy->getId(), $Attr->getIdent(), $Attr->getCaption(),
+                        $Attr->getNumericValue(), $Attr->getTextValue());
+                }
             }
             $this->Dbh->commit();
         }
@@ -498,10 +544,9 @@ class ElcaElement extends DbObject
             throw $Exception;
         }
 
-        return $Copy;
+        return $copy;
     }
     // End copy
-
 
     /**
      * Sets the property elementTypeNodeId
@@ -1624,6 +1669,10 @@ class ElcaElement extends DbObject
         return FloatCalc::cmp($this->getMaxSurface(), 1);
     }
 
+    public function isAssistantMainElement()
+    {
+        return ElcaAssistantElement::findByMainElementId($this->getId());
+    }
 
     /**
      * Inserts a new object in the table

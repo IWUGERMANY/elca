@@ -27,10 +27,11 @@ namespace Elca\Model\Assistant\Stairs;
 
 use Beibob\Blibs\DbHandle;
 use Beibob\Blibs\Log;
+use Elca\Db\ElcaAssistantElement;
+use Elca\Db\ElcaAssistantSubElement;
 use Elca\Db\ElcaCompositeElement;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaElementAttribute;
-use Elca\Db\ElcaElementAttributeSet;
 use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaElementComponentAttribute;
 use Elca\Db\ElcaElementComponentSet;
@@ -56,6 +57,7 @@ class Assembler
     const DIN_CONSTRUCTION = '351';
     const DIN_COVER = '352';
 
+    const IDENT_STAIRCASE = 'staircase';
     const IDENT_CONSTRUCTION = 'construction';
     const IDENT_COVER_RISER = 'cover-riser';
     const IDENT_COVER = 'cover';
@@ -172,10 +174,10 @@ class Assembler
 
             /** @var ElcaElementAttribute $assignment */
             foreach ($compositeElementSet as $assignment) {
-                $attr = $assignment->getElement()->getAttribute(StaircaseAssistant::IDENT);
-
-                if ($attr->isInitialized())
-                    $elements[$attr->getTextValue()] = $assignment->getElement();
+                $assistantSubElement = ElcaAssistantSubElement::findByElementId($assignment->getElementId());
+                if ($assistantSubElement->isInitialized()) {
+                    $elements[$assistantSubElement->getIdent()] = $assignment->getElement();
+                }
             }
 
             if (isset($elements[self::IDENT_CONSTRUCTION]))
@@ -251,7 +253,7 @@ class Assembler
      */
     private function createCompositeElement()
     {
-        return ElcaElement::create(
+        $element = ElcaElement::create(
             ElcaElementType::findByIdent(self::DIN_CEILINGS)->getNodeId(),
             $this->staircase->getName(),
             '', // description
@@ -263,6 +265,10 @@ class Assembler
             null,
             ElcaAccess::getInstance()->getUserId()
         );
+
+        $this->createAssistantSubElement($element->getId(), self::IDENT_STAIRCASE);
+
+        return $element;
     }
 
 
@@ -305,7 +311,7 @@ class Assembler
             ElcaAccess::getInstance()->getUserId()
         );
 
-        $this->createElementAttribute($element->getId(), self::IDENT_CONSTRUCTION);
+        $this->createAssistantSubElement($element->getId(), self::IDENT_CONSTRUCTION);
 
         $this->log->debug('Construction element `'. $element->getName() .'\'['. $element->getId().'] created');
 
@@ -476,7 +482,7 @@ class Assembler
             ElcaAccess::getInstance()->getUserId()
         );
 
-        $this->createElementAttribute($element->getId(), self::IDENT_COVER_RISER);
+        $this->createAssistantSubElement($element->getId(), self::IDENT_COVER_RISER);
         $this->log->debug('Cover & Riser element `'. $element->getName() .'\'['. $element->getId().'] created');
 
         $cover = $this->staircase->getSteps()->getStep()->getCover();
@@ -643,9 +649,6 @@ class Assembler
                 $elca->getProject()->getAccessGroupId(),
                 true
             );
-
-            // fix element id
-            //$this->staircase->getPlatform()->setConstructionElementId($platformElement->getId());
         }
 
         $platformElement->setName(
@@ -662,7 +665,7 @@ class Assembler
         $platformElement->setDescription($description);
         $platformElement->update();
 
-        $this->createElementAttribute($platformElement->getId(), self::IDENT_PLATFORM_CONSTRUCTION);
+        $this->createAssistantSubElement($platformElement->getId(), self::IDENT_PLATFORM_CONSTRUCTION);
         $this->log->debug('Platform construction element `'. $platformElement->getName() .'\'['. $platformElement->getId().'] created');
 
         return $platformElement;
@@ -738,9 +741,6 @@ class Assembler
                 $elca->getProject()->getAccessGroupId(),
                 true
             );
-
-            // fix element id
-            //$this->staircase->getPlatform()->setCoverElementId($platformElement->getId());
         }
 
         $platformElement->setName(
@@ -756,7 +756,7 @@ class Assembler
         $platformElement->setDescription($description);
         $platformElement->update();
 
-        $this->createElementAttribute($platformElement->getId(), self::IDENT_PLATFORM_COVER);
+        $this->createAssistantSubElement($platformElement->getId(), self::IDENT_PLATFORM_COVER);
         $this->log->debug('Platform cover element `'. $platformElement->getName() .'\'['. $platformElement->getId().'] created');
 
         return $platformElement;
@@ -966,15 +966,24 @@ class Assembler
      * @param $elementId
      * @param $ident
      */
-    private function createElementAttribute($elementId, $ident)
+    private function createAssistantSubElement($elementId, $ident)
     {
-        // save attribute
-        ElcaElementAttribute::create($elementId,
-                                     StaircaseAssistant::IDENT,
-                                     StaircaseAssistant::IDENT,
-                                     null,
-                                     $ident
-        );
+        $assistantElement = ElcaAssistantElement::findByElementId($elementId, StaircaseAssistant::IDENT);
+
+        if (!$assistantElement->isInitialized()) {
+            $element = ElcaElement::findById($elementId);
+            $assistantElement = ElcaAssistantElement::createWithUnserializedConfig($element->getId(),
+                StaircaseAssistant::IDENT,
+                $element->getProjectVariantId(),
+                $this->staircase,
+                $element->isReference(),
+                $element->isPublic(),
+                $element->getOwnerId(),
+                $element->getAccessGroupId()
+            );
+        }
+
+        ElcaAssistantSubElement::create($assistantElement->getId(), $elementId, $ident);
     }
 
 
@@ -989,24 +998,5 @@ class Assembler
         ElcaElementComponentAttribute::create($component->getId(), $ident, null, $additionalValue);
 
         return $component;
-    }
-
-    /**
-     * @param $staircaseElementId
-     * @param $ident
-     * @return ElcaElement|null
-     */
-    private function findElementByAttribute($staircaseElementId, $ident)
-    {
-        $attrSet = ElcaElementAttributeSet::find([
-            'ident' => StaircaseAssistant::IDENT,
-            'text_value' => $ident,
-            'numeric_value' => $staircaseElementId
-        ], ['id' => 'ASC'], 1);
-
-        if (!$attrSet->count())
-            return null;
-
-        return $attrSet[0]->getElement();
     }
 }

@@ -34,6 +34,8 @@ use DOMDocument;
 use DOMElement;
 use DOMNodeList;
 use DOMXPath;
+use Elca\Db\ElcaAssistantElement;
+use Elca\Db\ElcaAssistantSubElement;
 use Elca\Db\ElcaCompositeElement;
 use Elca\Db\ElcaConstrCatalog;
 use Elca\Db\ElcaConstrClass;
@@ -113,6 +115,8 @@ class Importer
      * element uuid cache
      */
     private $elementUuids = [];
+
+    private $assistantUuids = [];
 
     /**
      * @var ImportObserver[]
@@ -766,6 +770,50 @@ class Importer
             }
         }
 
+        /**
+         * AssistantElement
+         */
+
+        $assistantNode = $this->getNode('{p:}assistant', $elementNode, true);
+
+        if (null !== $assistantNode) {
+            $assistantIdent = $this->getAttribute($assistantNode, 'ident');
+            $assistantUuid  = $this->getAttribute($assistantNode, 'uuid');
+            $assistantDO    = $this->getObjectProperties(
+                $assistantNode,
+                [
+                    'config',
+                    'element'
+                ]
+            );
+
+            $assistantElement = $this->assistantUuids[$assistantUuid] ?? ElcaAssistantElement::create(
+                $element->getId(),
+                $assistantIdent,
+                $element->getProjectVariantId(),
+                $assistantDO->config ?? null,
+                $element->isReference(),
+                $element->isPublic(),
+                $element->getOwnerId(),
+                $element->getAccessGroupId()
+            );
+            $this->assistantUuids[$assistantUuid] = $assistantElement;
+
+            // update main element, since subelements may have arised earlier and already triggered the creation
+            // of the assistant element
+            if (null !== $assistantDO->config && null === $assistantElement->getConfig()) {
+                $assistantElement->setMainElementId($element->getId());
+                $assistantElement->setIsPublic($element->isPublic());
+                $assistantElement->setIsReference($element->isReference());
+                $assistantElement->setOwnerId($element->getOwnerId());
+                $assistantElement->setAccessGroupId($element->getAccessGroupId());
+                $assistantElement->setConfig($assistantDO->config);
+                $assistantElement->update();
+            }
+
+            ElcaAssistantSubElement::create($assistantElement->getId(), $element->getId(), $assistantDO->element);
+        }
+
         return $element;
     }
     // End importComponent
@@ -927,10 +975,12 @@ class Importer
             $nodelist = $this->query('./{p:}'.$property.'/text()', $container);
 
             if ($nodelist && $nodelist->length > 0) {
-                $value = $nodelist->item(0)->textContent;
+                for ($i = 0; $i < $nodelist->length; $i++) {
+                    $value .= $nodelist->item($i)->textContent;
+                }
             }
 
-            $dataObject->$property = $value;
+            $dataObject->$property = $nodelist->length > 1 ? trim($value) : $value;
         }
 
         return $dataObject;

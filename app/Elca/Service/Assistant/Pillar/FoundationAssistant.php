@@ -2,13 +2,12 @@
 
 namespace Elca\Service\Assistant\Pillar;
 
+use Beibob\Blibs\Log;
 use Elca\Controller\Assistant\FoundationCtrl;
-use Elca\Controller\Assistant\PillarCtrl;
 use Elca\Model\Assistant\Configuration;
 use Elca\Model\Processing\ElcaLcaProcessor;
 use Elca\Service\Assistant\ElementAssistant;
 use Elca\View\Assistant\FoundationAssistantImageView;
-use Elca\View\Assistant\PillarElementImageView;
 use Elca\View\DefaultElementImageView;
 
 class FoundationAssistant extends PillarAssistant
@@ -20,9 +19,9 @@ class FoundationAssistant extends PillarAssistant
      *
      * @param ElcaLcaProcessor $lcaProcessor
      */
-    public function __construct(ElcaLcaProcessor $lcaProcessor)
+    public function __construct(ElcaLcaProcessor $lcaProcessor, Log $log)
     {
-        parent::__construct($lcaProcessor);
+        parent::__construct($lcaProcessor, $log);
 
         $this->setConfiguration(
             new Configuration(

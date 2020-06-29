@@ -32,7 +32,6 @@ use Elca\Controller\ElementsCtrl;
 use Elca\Controller\ProjectElementsCtrl;
 use Elca\Controller\TabsCtrl;
 use Elca\Db\ElcaElement;
-use Elca\Db\ElcaElementAttribute;
 use Elca\Db\ElcaProcessConfigSearchSet;
 use Elca\Model\Assistant\Pillar\Assembler;
 use Elca\Model\Assistant\Pillar\Validator;
@@ -42,6 +41,7 @@ use Elca\Service\Messages\ElcaMessages;
 use Elca\View\Assistant\PillarAssistantView;
 use Elca\View\ElcaElementsNavigationView;
 use Elca\View\ElcaProcessConfigSelectorView;
+use Elca\View\ElcaProjectElementsNavigationView;
 
 class PillarCtrl extends TabsCtrl
 {
@@ -119,11 +119,7 @@ class PillarCtrl extends TabsCtrl
         $view->assign('assistantIdent', $this->assistant->getIdent());
         $view->assign('assistantContext', static::CONTEXT);
 
-        $elementId = $command->elementId;
-        $attr = ElcaElementAttribute::findByElementIdAndIdent($elementId, $this->assistant->getIdent());
-        if ($attr->isInitialized() && $attr->getNumericValue() !== null) {
-            $elementId = $attr->getNumericValue();
-        }
+        $elementId = $this->assistant->getPillarElementId($command->elementId);
 
         $element = ElcaElement::findById($elementId);
 
@@ -158,7 +154,7 @@ class PillarCtrl extends TabsCtrl
 
             $this->imageCache->clear($element->getId());
 
-            $this->addNavigationView($element->getElementTypeNodeId());
+            $this->addNavigationView($element->getElementTypeNodeId(), $element->getProjectVariantId());
         } else {
 
             $view->assign('elementId', $elementId);
@@ -210,17 +206,18 @@ class PillarCtrl extends TabsCtrl
                 $processConfigId = null;
             }
 
-            $View = $this->setView(new ElcaProcessConfigSelectorView());
-            $View->assign('processConfigId', $processConfigId);
-            $View->assign('elementId', $this->Request->elementId);
-            $View->assign('relId', $this->Request->relId);
-            $View->assign('processCategoryNodeId', $this->Request->processCategoryNodeId? $this->Request->processCategoryNodeId : $this->Request->c);
-            $View->assign('buildMode', $this->Request->b);
-            $View->assign('inUnit', $this->Request->u);
-            $View->assign('context', static::CONTEXT);
-            $View->assign('allowDeselection', true);
-            $View->assign('db', $this->Request->db);
-            $View->assign('epdSubType', $this->Request->epdSubType);
+            $view = $this->setView(new ElcaProcessConfigSelectorView());
+            $view->assign('processConfigId', $processConfigId);
+            $view->assign('elementId', $this->Request->elementId);
+            $view->assign('relId', $this->Request->relId);
+            $view->assign('processCategoryNodeId', $this->Request->processCategoryNodeId? $this->Request->processCategoryNodeId : $this->Request->c);
+            $view->assign('buildMode', $this->Request->b);
+            $view->assign('inUnit', $this->Request->u);
+            $view->assign('context', static::CONTEXT);
+            $view->assign('allowDeselection', true);
+            $view->assign('db', $this->Request->db);
+            $view->assign('epdSubType', $this->Request->epdSubType);
+            $view->assign('isTemplateContext', $this->Request->tpl ?? ElementsCtrl::CONTEXT === $this->context);
         }
         /**
          * If user pressed select button, assign the new process
@@ -247,17 +244,22 @@ class PillarCtrl extends TabsCtrl
      *
      * @param null $activeElementTypeId
      */
-    protected function addNavigationView($activeElementTypeId = null)
+    protected function addNavigationView($activeElementTypeId = null, $projectVariantId = null)
     {
         /**
          * Add left navigation
          */
         if(!$this->hasViewByName(ElcaElementsNavigationView::class))
         {
-            $View = $this->addView(new ElcaElementsNavigationView());
-            $View->assign('context', $this->context);
-            $View->assign('activeElementTypeId', $activeElementTypeId);
-            $View->assign('controller', $this->context === ElementsCtrl::CONTEXT? ElementsCtrl::class : ProjectElementsCtrl::class);
+            $view = $this->addView(
+                null !== $projectVariantId
+                    ? new ElcaProjectElementsNavigationView()
+                    : new ElcaElementsNavigationView()
+            );
+            $view->assign('context', $this->context);
+            $view->assign('activeElementTypeId', $activeElementTypeId);
+            $view->assign('projectVariantId', $projectVariantId);
+            $view->assign('controller', $this->context === ElementsCtrl::CONTEXT? ElementsCtrl::class : ProjectElementsCtrl::class);
         }
     }
 

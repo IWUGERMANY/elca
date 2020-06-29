@@ -510,10 +510,20 @@ class ProcessesCtrl extends TabsCtrl
                         foreach ($processConfig->getProcessConversions() as $conversion) {
                             $conversionVersion = $conversion->getVersionFor($processDbId);
 
-                            if ($conversionVersion->getIdent()) {
+                            /**
+                             * Imported must not be modified
+                             */
+                            if ($conversionVersion->flowUuid()) {
                                 continue;
                             }
 
+                            if ($conversion->isIdentity()) {
+                                continue;
+                            }
+
+                            /**
+                             * Density conversions are modified in a separate input field
+                             */
                             if ($conversion->getInUnit() === Unit::CUBIC_METER && $conversion->getOutUnit() === Unit::KILOGRAMM) {
                                 continue;
                             }
@@ -539,7 +549,7 @@ class ProcessesCtrl extends TabsCtrl
                          * Add required, but missing conversions
                          */
                         foreach ($requiredConversions as $conversion) {
-                            if ($conversion->hasSurrogateId()) {
+                            if ($conversion instanceof LinearConversion && $conversion->hasSurrogateId()) {
                                 continue;
                             }
 

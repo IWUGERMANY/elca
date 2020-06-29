@@ -1,3 +1,6 @@
+# 1.8.1
++ Behebt einen Fehler beim EnEV Projekt Import, wenn die EnEV-Ratio in der Energierbereitstellung nicht gesetzt ist
+
 # 1.8.0 (0.9.7)
 + Ergänzt Optimierungen an der Navigation
 + Ergänzt Optimierungen in der Darstellung im Bereich Auswertungen

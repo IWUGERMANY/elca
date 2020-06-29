@@ -119,7 +119,7 @@ class ElcaProjectKwk extends DbObject
          * @var ElcaProjectFinalEnergyDemand $finalEnergyDemand
          */
         foreach (ElcaProjectFinalEnergyDemandSet::findByKwkId($this->getId(), ['id' => 'ASC']) as $finalEnergyDemand) {
-            $finalEnergyDemand->copy($this->projectVariantId, $copy->getId());
+            $finalEnergyDemand->copy($newProjectVariantId, $copy->getId());
         }
 
         return $copy;

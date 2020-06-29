@@ -27,13 +27,17 @@ $(window).load(function () {
         /**
          * Debug output through console.log
          */
-        debug: false,
+        debug: true,
 
         /**
          * Update the hash url, if an action element has this css class
          */
         updateHashUrlCssClass: 'page',
 
+        /**
+         * elca controller self reference
+         */
+        elca: null,
 
         /**
          * Global initialize method. Will be called once per http request
@@ -191,7 +195,6 @@ $(window).load(function () {
                     }, t);
                 });
             };
-
         },
 
 
@@ -212,6 +215,8 @@ $(window).load(function () {
                  * Per controller initialization method. Will be called once per http request
                  */
                 initialize: function () {
+                    jBlibs.App.elca = this;
+
                     /**
                      * load the main content from hash url
                      * or from the currenturl, except for login
@@ -225,7 +230,6 @@ $(window).load(function () {
                             var regex = /\_\_\*\*(.+?)\*\*\_\_/m;
                             return this.nodeType === 3 && regex.test(this.textContent);
                         }).highlightMissingTranslation();
-
                 },
 
                 onLoad: function (e, xhr, ajaxOpts) {
@@ -330,7 +334,8 @@ $(window).load(function () {
                     'body.projects': 'prepareContent',
                     '#projectProcessConfigSanity': 'prepareContent',
                     '#content.replace-components, #content.replace-elements': ['prepareReplaceElementComponents', 'prepareElementImages'],
-                    '#content.project-csv-import.preview': 'prepareElementImages'
+                    '#content.project-csv-import.preview': 'prepareElementImages',
+					'#content.project-csv-import.preview.ifc': 'prepareContent'
                 },
 
                 prepareSearchAndReplace: function ($context) {
@@ -555,8 +560,22 @@ $(window).load(function () {
                     this.prepareSheets($context);
                     this.highlightMissingTranslations($context);
 
-                    $('#languageChooser li a').off('click').on('click', function (e) {
 
+					/**
+					*   IFC Import - delete data row
+					*/
+					$('#content.project-csv-import.preview.ifc .ifcdatadelete').on('click',function(e){
+						e.preventDefault();
+						var previewform = $(this).parents('form');
+						var urlKey = $(this).attr('href');
+						$(this).parent('.element').fadeOut('slow');
+						previewform.attr('action', urlKey );
+						previewform.submit();
+						
+					});
+										
+                    $('#languageChooser li a').off('click').on('click', function (e) {
+						
                         var url = $.url(this);
                         var extendedUrl;
                         if (url.param('origin')) {

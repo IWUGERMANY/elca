@@ -10,6 +10,7 @@ CREATE OR REPLACE VIEW import_assistant.process_config_mapping_conversions_view 
          , m.sibling_ratio
          , m.required_additional_layer
          , m.process_db_id
+         , m.created
          , pc.epd_types
          , pc.process_db_ids
          , array_agg(DISTINCT c.in_unit) FILTER (WHERE c.id IS NOT NULL) AS units
@@ -24,6 +25,7 @@ CREATE OR REPLACE VIEW import_assistant.process_config_mapping_conversions_view 
         , m.sibling_ratio
         , m.required_additional_layer
         , m.process_db_id
+        , m.created
         , pc.epd_types
         , pc.process_db_ids
     ;

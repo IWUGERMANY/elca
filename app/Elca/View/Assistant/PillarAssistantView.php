@@ -347,6 +347,7 @@ class PillarAssistantView extends HtmlView
         );
         $selector->setBuildMode(self::$selectorConfig[$key]['buildMode']);
         $selector->setContext($this->assistantContext);
+        $selector->setTplContext($this->context === ElementsCtrl::CONTEXT);
         $selector->setProcessDbId(Elca::getInstance()->getProject()->getProcessDbId());
 
         if (isset(self::$selectorConfig[$key]['inUnit'])) {

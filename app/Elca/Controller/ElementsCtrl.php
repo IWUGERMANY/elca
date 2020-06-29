@@ -2598,16 +2598,16 @@ class ElementsCtrl extends TabsCtrl
     /**
      * Save element attributes
      *
-     * @param  ElcaElement $Element
+     * @param  ElcaElement $element
      * @param array        $attributes
      * @return boolean
      */
-    protected function saveElementAttributes(ElcaElement $Element, array $attributes)
+    protected function saveElementAttributes(ElcaElement $element, array $attributes)
     {
-        if(!$Element->isInitialized() || empty($attributes))
+        if(!$element->isInitialized() || empty($attributes))
             return;
 
-        $elementId = $Element->getId();
+        $elementId = $element->getId();
 
         foreach((Elca::$elementAttributes + Elca::$elementBnbAttributes) as $ident => $caption)
         {
@@ -2617,20 +2617,19 @@ class ElementsCtrl extends TabsCtrl
                 continue;
 
             $value = \trim($attributes[$ident]);
-            if($ident != Elca::ELEMENT_ATTR_OZ && preg_match('/^\d+[,.]?\d{0,}$/', $value))
+            if($ident != Elca::ELEMENT_ATTR_OZ && $ident != Elca::ELEMENT_ATTR_IFCGUID && preg_match('/^\d+[,.]?\d{0,}$/', $value))
                 $numValue = ElcaNumberFormat::fromString($value);
             else
                 $txtValue = $value;
 
-            $Attr = ElcaElementAttribute::findByElementIdAndIdent($elementId, $ident);
-            if($Attr->isInitialized())
-            {
-                $Attr->setNumericValue($numValue);
-                $Attr->setTextValue($txtValue);
-                $Attr->update();
-            }
-            else
+            $attr = ElcaElementAttribute::findByElementIdAndIdent($elementId, $ident);
+            if ($attr->isInitialized()) {
+                $attr->setNumericValue($numValue);
+                $attr->setTextValue($txtValue);
+                $attr->update();
+            } else {
                 ElcaElementAttribute::create($elementId, $ident, $caption, $numValue, $txtValue);
+            }
         }
 
 

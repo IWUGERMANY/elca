@@ -25,6 +25,7 @@
 
 namespace Elca\Service\Assistant;
 
+use Elca\Db\ElcaAssistantElement;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaElementAttribute;
 use Elca\Db\ElcaElementType;
@@ -68,12 +69,18 @@ abstract class AbstractAssistant implements ElementAssistant
             return false;
         }
 
-        $attr = ElcaElementAttribute::findByElementIdAndIdent($element->getId(), $this->configuration->getIdent());
+        $assistantElement = ElcaAssistantElement::findByElementId($element->getId(), $this->getIdent());
 
-        if ($attr->isInitialized())
-            return true;
+        if (false === $assistantElement->isInitialized()) {
+            $attr = ElcaElementAttribute::findByElementIdAndIdent($element->getId(), $this->configuration->getIdent());
 
-        return false;
+            if ($attr->isInitialized()) {
+                $this->migrate($element->getId());
+                return true;
+            }
+        }
+
+        return $assistantElement->isInitialized();
     }
 
     /**
@@ -83,4 +90,6 @@ abstract class AbstractAssistant implements ElementAssistant
     {
         $this->configuration = $configuration;
     }
+
+    abstract protected function migrate(int $elementId);
 }

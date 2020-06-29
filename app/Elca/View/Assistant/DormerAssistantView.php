@@ -35,6 +35,7 @@ use Beibob\HtmlTools\HtmlLink;
 use Beibob\HtmlTools\HtmlTag;
 use Beibob\HtmlTools\HtmlTextInput;
 use DOMElement;
+use DOMNode;
 use Elca\Controller\Assistant\DormerCtrl;
 use Elca\Controller\ElementsCtrl;
 use Elca\Db\ElcaElement;
@@ -180,6 +181,7 @@ class DormerAssistantView extends HtmlView
                 }
 
                 $content = $this->appendChild($this->getDiv(['id' => 'tabContent', 'class' => 'assistant tab-dormer-assistant tab-window-assistant '.$this->context]));
+                $this->appendIdInfo($content);
                 $this->appendDefault($form);
                 $form->appendTo($content);
                 break;
@@ -607,6 +609,7 @@ class DormerAssistantView extends HtmlView
         $selector->setBuildMode(self::$selectorConfig[$key]['buildMode']);
         $selector->setContext(DormerCtrl::CONTEXT);
         $selector->setProcessDbId(Elca::getInstance()->getProject()->getProcessDbId());
+        $selector->setTplContext($this->context === ElementsCtrl::CONTEXT);
 
         if (isset(self::$selectorConfig[$key]['inUnit']))
             $selector->setInUnit(self::$selectorConfig[$key]['inUnit']);
@@ -660,5 +663,24 @@ class DormerAssistantView extends HtmlView
         );
 
         return $ImgContainer;
+    }
+
+    private function appendIdInfo(DOMNode $content)
+    {
+        if (!$this->element->getId()) {
+            return;
+        }
+
+        $container = $content->appendChild($this->getUl(['class' => 'id-info']));
+        $container->appendChild($this->getLi())->appendChild($this->selectionTextElement('ID', $this->element->getId()));
+        $container->appendChild($this->getLi())->appendChild($this->selectionTextElement('UUID', $this->element->getUuid()));
+    }
+
+    private function selectionTextElement($label, $text) : \DOMElement {
+        $container = $this->getSpan(null, ['class' => 'select-text']);
+        $container->appendChild($this->getSpan($label.':', ['class' => 'selection-label']));
+        $container->appendChild($this->getSpan($text, ['class' => 'selection-value']));
+
+        return $container;
     }
 }
