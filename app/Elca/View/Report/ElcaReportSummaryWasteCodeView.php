@@ -219,7 +219,62 @@ class ElcaReportSummaryWasteCodeView extends ElcaReportsView
     // End buildData
 
 
+/**
+     * @param ElcaReportSet $data
+     * @return array
+     */
+    protected function normalizeData(ElcaReportSet $data)
+    {
+        /**
+         * Restructure data to array 
+         */
+        $report = [];
+        foreach($data as $dataObject) {
+			$key = 0;
+			if(!is_null($dataObject->waste_code))
+			{
+				$key = $dataObject->waste_code.'-'.(!is_null($dataObject->waste_code_suffix)?:'000');
+			}	
+			if (!isset($report[$key])) {
+                $report[$key] = [];
+            }
 
+            $dataObject->value_dincodeSum 	= (floor($dataObject->din_code/10)*10);
+			
+            // $dataObject->value_dincode 		= $dataObject->din_code;
+            // $dataObject->value_mass   		= $dataObject->mass;
+			// $dataObject->value_volume   	= $dataObject->volume;
+			
+            $report[$key][$dataObject->value_dincodeSum][$dataObject->din_code]  = $dataObject;
+        }
+
+
+		// Calculation and totals
+		$defaultKGkey = 0;
+		foreach($report as $reportKey => $reportData) 
+		{
+			foreach($reportData as $reportDataKGkey => $reportDataKGvalues) 
+			{
+				$reportTemp = [];
+				$reportTemp[0] = (object)[
+				    "project_variant_id"	=> 	0,
+					"din_code"				=>  0,
+					"element_type_name"		=>	'',
+					"process_config_id"		=>	'',
+					"name"					=>	'',
+					"waste_code"			=>	0,
+					"waste_code_suffix"		=>	0,
+					"mass"					=>	array_sum(array_column($reportDataKGvalues, 'mass')),
+					"volume"				=>	array_sum(array_column($reportDataKGvalues, 'volume')),
+					"value_dincodeSum"		=>	$reportDataKGkey
+				];
+				
+				$reportCalculated[$reportKey][$reportDataKGkey] = array_merge($reportTemp,$reportDataKGvalues);
+			}
+		}	
+
+        return $reportCalculated;
+	}	
 
     /**
      * @param DOMElement              $infoDl
