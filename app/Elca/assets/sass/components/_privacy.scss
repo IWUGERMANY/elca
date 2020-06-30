@@ -165,8 +165,13 @@ margin-left: 0;
 	color: $textColorRed;
 }
 
-.report-avv-waste-code .firstRow {
+.report-avv-waste-code .summary-row td {
     font-weight: bold; 
+    padding: 10px 4px 2px 4px;
+    font-size: 15px;
+}
+.report-avv-waste-code .summary-row td.firstColumn {
+    padding: 10px 4px 2px 0;
 }
 
 .report td {

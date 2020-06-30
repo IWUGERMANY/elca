@@ -690,7 +690,9 @@ h1.projectHeader { float: left; margin-right: 3em; }
 
 .textcolor-red { color: #ff0000; }
 
-.report-avv-waste-code .firstRow { font-weight: bold; }
+.report-avv-waste-code .summary-row td { font-weight: bold; padding: 10px 4px 2px 4px; font-size: 15px; }
+
+.report-avv-waste-code .summary-row td.firstColumn { padding: 10px 4px 2px 0; }
 
 .report td { font-size: 14px; }
 

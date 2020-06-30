@@ -28,7 +28,9 @@ namespace Elca\View\Report;
 use Beibob\Blibs\Environment;
 use Beibob\Blibs\FrontController;
 use Beibob\Blibs\Url;
+use Beibob\HtmlTools\Interfaces\Formatter;
 use Beibob\HtmlTools\HtmlForm;
+use Beibob\HtmlTools\HtmlElement;
 use Beibob\HtmlTools\HtmlFormGroup;
 use Beibob\HtmlTools\HtmlSelectbox;
 use Beibob\HtmlTools\HtmlSelectOption;
@@ -187,32 +189,30 @@ class ElcaReportSummaryWasteCodeView extends ElcaReportsView
             $HeadRow->addClass('table-headlines');
                   
             
-            $Body = $Table->createTableBody();
-            $Row = $Body->addTableRow();
-            //$Row->getColumn('choose')->setOutputElement(new HtmlTag('span',null, ['class' => 'arrowrow']));
-            $Row->getColumn('value_dincodeSum')->setOutputElement(new HtmlText('value_dincodeSum'));
-            $Row->getColumn('din_code')->setOutputElement(new HtmlText('din_code'));
-            $Row->getColumn('mass')->setOutputElement(new ElcaHtmlNumericText('mass', 1, true));
-            $Row->getColumn('volume')->setOutputElement(new ElcaHtmlNumericText('volume', 1, true));
+             $Body = $Table->createTableBody();
+             $Row = $Body->addTableRow();
+             $Row->getColumn('value_dincodeSum')->setOutputElement(new HtmlText('value_dincodeSum'));
+             $Row->getColumn('din_code')->setOutputElement(new HtmlText('din_code'));
+             $Row->getColumn('mass')->setOutputElement(new ElcaHtmlNumericText('mass', 1, true));
+             $Row->getColumn('volume')->setOutputElement(new ElcaHtmlNumericText('volume', 1, true));
 
-			
-			foreach($dataSetValue as $dataKGKey => $dataKGValue)
-			{
-				foreach($dataKGValue as $dataKGSingleKey => $dataKGSingleValue)
-				{
-					// First = summary 
-					if($dataKGSingleKey==0) 
-					{
-						// $Body->setDataSet($dataKGValue);
-					}
-					else
-					{
-						$Body->setDataSet($dataKGValue);
-					}	
-				}	
-				
-                $Table->appendTo($reportAVV);
-			}
+             $Row->addAttrFormatter(new class implements Formatter {
+                 public function format(HtmlElement $obj, $dataObject = null, $property = null) {
+                     if ($dataObject && empty($dataObject->din_code)) {
+                         $obj->addClass('summary-row');
+                     }
+                 }
+            });
+             // in flaches array umkopieren (wenn du es nicht schon vorher flach halten kannst)
+             $dataSet = [];
+             foreach($dataSetValue as $dataKGKey => $dataKGValue) {
+                foreach($dataKGValue as $dataKGSingleKey => $dataKGSingleValue) {
+                     $dataSet[] = $dataKGSingleValue;
+                }  
+             }
+
+             $Body->setDataSet($dataSet);
+             $Table->appendTo($reportAVV);
            
 		}
     }
