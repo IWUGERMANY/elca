@@ -142,6 +142,8 @@ class ElcaReportSummaryWasteCodeView extends ElcaReportsView
 
         $tdContainer = $this->appendPrintTable($Container);
 
+        $this->buildTotalEffects($infoDl, $ProjectConstruction, $tdContainer, false);
+
         $this->buildData($tdContainer, $projectVariant);
         /* 
         switch ($this->buildMode) {
@@ -198,9 +200,12 @@ class ElcaReportSummaryWasteCodeView extends ElcaReportsView
 
              $Row->addAttrFormatter(new class implements Formatter {
                  public function format(HtmlElement $obj, $dataObject = null, $property = null) {
-                     if ($dataObject && empty($dataObject->din_code)) {
-                         $obj->addClass('summary-row');
-                     }
+                    if ($dataObject && empty($dataObject->din_code)) {
+                        $obj->addClass('summary-row');
+                    } 
+                    if ($dataObject && !empty($dataObject->din_code)) {
+                        $dataObject->value_dincodeSum = '';
+                    } 
                  }
             });
              // in flaches array umkopieren (wenn du es nicht schon vorher flach halten kannst)
@@ -276,6 +281,357 @@ class ElcaReportSummaryWasteCodeView extends ElcaReportsView
         return $reportCalculated;
 	}	
 
+
+/**
+     * @param DOMElement              $infoDl
+     * @param ElcaProjectConstruction $ProjectConstruction
+     * @param DOMElement              $TdContainer
+     * @param bool                    $onlyHiddenIndicators
+     */
+    protected function buildTotalEffects(
+        DOMElement $infoDl,
+        ElcaProjectConstruction $ProjectConstruction,
+        DOMElement $TdContainer,
+        $onlyHiddenIndicators = false
+    ) {
+        $RootElementType = ElcaElementType::findRoot();
+        $CElementType    = ElcaCacheElementType::findByProjectVariantIdAndElementTypeNodeId(
+            $this->projectVariantId,
+            $RootElementType->getNodeId()
+        );
+        $mass            = $CElementType->getMass();
+
+        $infoDl->appendChild($this->getDt([], t('Masse gesamt').': '));
+        $infoDl->appendChild($this->getDd([], ElcaNumberFormat::toString($mass / 1000, 3).' t'));
+
+        $infoDl->appendChild($this->getDt([], t('Masse NGF').': '));
+        $Dd = $infoDl->appendChild(
+            $this->getDd(
+                [],
+                ElcaNumberFormat::toString($mass / max(1, $ProjectConstruction->getNetFloorSpace()), 2).' kg/ m²'
+            )
+        );
+        $Dd->appendChild($this->getSub(t('NGF')));
+
+        if ($bgf = $ProjectConstruction->getGrossFloorSpace()) {
+            $infoDl->appendChild($this->getDt([], t('Masse BGF').': '));
+            $Dd = $infoDl->appendChild($this->getDd([], ElcaNumberFormat::toString($mass / $bgf, 2).' kg/ m²'));
+            $Dd->appendChild($this->getSub(t('BGF')));
+        }
+
+        $this->appendNonDefaultLifeTimeInfo($infoDl);
+        // $this->appendEpdTypeStatistic($infoDl);
+
+        
+
+        // return $TotalEffects->count();
+    }
+    // End beforeRender
+    
+/**
+     * Builds the view for construction and system effects
+     *
+     * @param DOMElement     $Container
+     * @param  ElcaReportSet $ReportSet
+     * @param bool           $isLifeCycle
+     * @param bool           $addBenchmarks
+     * @param array          $totalEffects
+	 * @param string         $realCategories
+     *
+     * @return void -
+     */
+    private function buildEffects(
+        DOMElement $Container,
+        ElcaReportSet $ReportSet,
+        $isLifeCycle = false,
+        $addBenchmarks = false,
+        array $totalEffects = null,
+		$realCategories = null
+    ) {
+        if (!$ReportSet->count()) {
+            return;
+        }
+
+        $projectVariant      = ElcaProjectVariant::findById($this->projectVariantId);
+        $ProjectConstruction = ElcaProjectConstruction::findByProjectVariantId($this->projectVariantId);
+        $addPhaseRec         = $projectVariant->getProject()->getProcessDb()->isEn15804Compliant();
+        $lcUsages = Environment::getInstance()
+                                      ->getContainer()
+                                      ->get(LifeCycleUsageService::class)
+                                      ->findLifeCycleUsagesForProject(new ProjectId($projectVariant->getProjectId()));
+
+        /**
+         * Normalize values
+         *
+         * All values per m2 and year
+         */
+        $m2a = max(1, $projectVariant->getProject()->getLifeTime() * $ProjectConstruction->getNetFloorSpace());
+
+        $reports = [];
+        foreach ($ReportSet as $reportDO) {
+            $reportDO->norm_total_value = $reportDO->value / $m2a;
+            $key                        = $reportDO->category;
+
+            if ($isLifeCycle && $totalEffects &&
+                $lcUsages->moduleIsAppliedInTotals(new Module($reportDO->life_cycle_ident))
+            ) {
+                // @todo: if total value eq 0 what percentage should be shown?
+
+                $reportDO->percentage = $totalEffects[$reportDO->indicator_id] == 0 ? null
+                    : $reportDO->value / $totalEffects[$reportDO->indicator_id];
+                $reportDO->bar        = round($reportDO->percentage * 100);
+            }
+
+            /**
+             * Restructure
+             */
+            if (!isset($reports[$key])) {
+                $reports[$key] = [];
+            }
+            $reports[$key][] = $reportDO;
+        }
+
+        if ($isLifeCycle && $this->Project->getProcessDb()->isEn15804Compliant()) {
+            ksort($reports, SORT_STRING);
+        }
+
+        /**
+         * Compute Benchmark
+         */
+        if ($addBenchmarks && $this->benchmarkVersionId) {
+            $benchmarkVersion = ElcaBenchmarkVersion::findById($this->benchmarkVersionId);
+
+            /**
+             * Get indicator benchmarks
+             */
+            $indicatorBenchmarks = ElcaProjectIndicatorBenchmarkSet::find(
+                ['project_variant_id' => $this->projectVariantId]
+            )->getArrayBy('benchmark', 'indicatorId');
+
+            /**
+             * Compute benchmarks
+             */
+            $benchmarks = Environment::getInstance()->getContainer()->get(BenchmarkService::class)->compute(
+                $benchmarkVersion,
+                $projectVariant
+            );
+            foreach ($ReportSet as $reportDO) {
+                $reportDO->benchmark     = isset($benchmarks[$reportDO->ident]) ? ElcaNumberFormat::toString(
+                    $benchmarks[$reportDO->ident],
+                    2
+                ) : null;
+                $reportDO->initBenchmark = $indicatorBenchmarks[$reportDO->indicator_id] ?? null;
+            }
+
+            if (isset($benchmarks['pe'])) {
+                $reports['Gesamt'][] = (object)[
+                    'ident'     => 'pe',
+                    'name'      => t('Primärenergie'),
+                    'benchmark' => ElcaNumberFormat::toString(
+                        $benchmarks['pe'],
+                        2
+                    ),
+                ];
+            }
+        }
+
+        $TypeUl = $Container->appendChild($this->getUl(['class' => 'category']));
+
+
+		
+		foreach ($reports as $category => $dataSet) {
+            $TypeLi = $TypeUl->appendChild($this->getLi(['class' => 'section clearfix']));
+			
+            $H1 = $TypeLi->appendChild($this->getH1(t($category)));
+            if ($category === 'Gesamt') {
+			   if($realCategories) {
+				   $showCategories = $realCategories;
+			   }  
+			   else
+			   {
+				    $showCategories = $this->getTotalLifeCycleIdents();
+			   }		
+			   $H1->appendChild($this->getSpan(t('inkl.').' '.$showCategories));
+			   // $H1->appendChild($this->getSpan(t('inkl.').' '.$this->getTotalLifeCycleIdents()));
+			   // $H1->appendChild($this->getSpan(t('inkl.').' '. $realCategories));
+            } elseif ($category === t('Instandhaltung')) {
+                $H1->appendChild($this->getSpan(t('inkl. ').' '.$this->getMaintenanceLifeCycleIdents()));
+            } elseif ($isLifeCycle && $category === 'D') {
+                $H1->appendChild($this->getSpan(t('Gesamt (energetisch und stofflich)')));
+            } elseif ($isLifeCycle && $category === 'D energetisch') {
+                $H1->textContent = t('D');
+                $H1->appendChild($this->getSpan(t('energetisch (gemäß DIN EN 15978)')));
+            } elseif ($isLifeCycle && $category === 'D stofflich') {
+                $H1->textContent = t('D');
+                $H1->appendChild($this->getSpan(t('stofflich (gemäß DIN EN 15804)')));
+            }
+
+
+            $this->appendEffect($TypeLi, $dataSet, $addBenchmarks, $isLifeCycle && $totalEffects, $addPhaseRec);
+
+            if ($addBenchmarks && $this->benchmarkVersionId) {
+                $this->buildBenchmarkChart($TypeLi, $this->projectVariantId);
+            }
+        }
+
+        $this->addClass($TypeLi, 'last');
+    }    
+    
+    
+/**
+     * Appends a table for one effect
+     *
+     * @param  DOMElement $Container
+     * @param array       $dataSet
+     * @param bool        $addBenchmarks
+     * @param bool        $addBars
+     * @param bool        $addPhaseRec
+     *
+     * @return void -
+     */
+    private function appendEffect(
+        DOMElement $Container,
+        array $dataSet,
+        $addBenchmarks = false,
+        $addBars = false,
+        $addPhaseRec = false,
+        array $secondDataSet = null,
+        $addLivingSpaceAndYear = false,
+        $hasBenchmarkInit = false,
+        $hasBenchmarkGroup = false,
+        $hasBenchmarkGroupBenchmark = false,
+        $hideTotalScores = false
+    ) {
+        if (0 === count($dataSet)) {
+            return;
+        }
+
+        $FirstDO = $dataSet[0];
+
+        $table = new HtmlTable('report report-effects');
+        $table->addColumn('name', t('Indikator'));
+        $table->addColumn('unit', t('Einheit'));
+        $table->addColumn('norm_total_value', t('Umweltwirkung').' / m²a');
+
+        if ($addLivingSpaceAndYear) {
+            $table->addColumn('norm_living_space_total_value', t('Umweltwirkung').' / m²WFa');
+        }
+
+        if (isset($FirstDO->norm_prod_value)) {
+            $table->addColumn('norm_prod_value', t('Herstellung').' / m²a');
+            $table->addColumn('norm_maint_value', t('Instandhaltung').' / m²a');
+            $table->addColumn('norm_eol_value', t('Entsorgung').' / m²a');
+
+            if ($addPhaseRec) {
+                $table->addColumn('norm_rec_value', t('Rec.potential').' / m²a');
+            }
+        }
+
+        if ($addBenchmarks) {
+            if ($hasBenchmarkInit) {
+                $table->addColumn('initBenchmark', t('Zielwert'));
+            }
+
+            if (!$hideTotalScores) {
+                $table->addColumn('benchmark', t('Punktwert'));
+            }
+
+            if ($hasBenchmarkGroup) {
+                $table->addColumn('group', t('Kriterium'));
+            }
+            if ($hasBenchmarkGroupBenchmark) {
+                $table->addColumn('groupBenchmark', t('Bewertung'));
+            }
+        }
+
+        if ($addBars) {
+            $table->addColumn('percentage', '%');
+            $table->addColumn('bar', '');
+        }
+
+        $Head    = $table->createTableHead();
+        $HeadRow = $Head->addTableRow(new HtmlTableHeadRow());
+        $HeadRow->addClass('table-headlines');
+
+        /**
+         * Add m2 Sub
+         */
+        $phaseColumns = [
+            'norm_total_value' => t('Gesamt'),
+            'norm_prod_value'  => t('Herstellung'),
+            'norm_maint_value' => t('Instandhaltung'),
+            'norm_eol_value'   => t('Entsorgung'),
+        ];
+        if ($addPhaseRec) {
+            $phaseColumns['norm_rec_value'] = t('Rec.potential');
+        }
+
+        foreach ($phaseColumns as $col => $caption) {
+            if (!isset($FirstDO->$col)) {
+                continue;
+            }
+
+            $span = $HeadRow->getColumn($col)->setOutputElement(new HtmlTag('span', $caption.' / m²'));
+            $span->add(new HtmlTag('sub', t('NGF')));
+            $span->add(new HtmlStaticText('a'));
+        }
+
+        if ($addLivingSpaceAndYear) {
+            $span = $HeadRow->getColumn('norm_living_space_total_value')->setOutputElement(new HtmlTag('span', 'Gesamt / m²'));
+            $span->add(new HtmlTag('sub', t('WF')));
+            $span->add(new HtmlStaticText('a'));
+        }
+
+        $Body = $table->createTableBody();
+        $Row  = $Body->addTableRow();
+        $Row->getColumn('norm_total_value')->setOutputElement(
+            new ElcaHtmlNumericText('norm_total_value', 10, false, '?', null, null, true)
+        );
+
+        if ($addLivingSpaceAndYear) {
+            $Row->getColumn('norm_living_space_total_value')->setOutputElement(
+                new ElcaHtmlNumericText('norm_living_space_total_value', 10, false, '?', null, null, true)
+            );
+        }
+
+        if (isset($FirstDO->norm_prod_value)) {
+            $Row->getColumn('norm_prod_value')->setOutputElement(
+                new ElcaHtmlNumericText('norm_prod_value', 10, false, '?', null, null, true)
+            );
+            $Row->getColumn('norm_maint_value')->setOutputElement(
+                new ElcaHtmlNumericText('norm_maint_value', 10, false, '?', null, null, true)
+            );
+            $Row->getColumn('norm_eol_value')->setOutputElement(
+                new ElcaHtmlNumericText('norm_eol_value', 10, false, '?', null, null, true)
+            );
+
+            if ($addPhaseRec) {
+                $Row->getColumn('norm_rec_value')->setOutputElement(
+                    new ElcaHtmlNumericText('norm_rec_value', 10, false, '?', null, null, true)
+                );
+            }
+        }
+
+        if ($addBars) {
+            $Row->getColumn('percentage')->setOutputElement(new ElcaHtmlNumericText('percentage', 1, true));
+            $Row->getColumn('bar')->setOutputElement(new ElcaHtmlReportBar('bar'));
+        }
+
+        $Row->getColumn('name')->setOutputElement(new HtmlText('name', new ElcaTranslatorConverter()));
+        $Row->getColumn('unit')->setOutputElement(new HtmlText('unit', new ElcaTranslatorConverter()));
+
+        $Body->setDataSet($dataSet);
+
+        if ($secondDataSet) {
+            $Body = $table->createTableBody();
+            $Body->addClass('second-data-set');
+            $Body->setDataSet($secondDataSet);
+        }
+
+        $Tables = $Container->appendChild($this->getDiv(['class' => 'tables']));
+        $table->appendTo($Tables);
+    }
+    
     
 }
 // End ElcaReportSummaryWasteCodeView
