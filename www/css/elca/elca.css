@@ -690,6 +690,14 @@ h1.projectHeader { float: left; margin-right: 3em; }
 
 .textcolor-red { color: #ff0000; }
 
+.report-avv-waste-code td { text-align: right; }
+
+.report-avv-waste-code .summary-row td { font-weight: bold; padding: 10px 4px 2px 4px; font-size: 15px; }
+
+.report-avv-waste-code .summary-row td.firstColumn { padding: 10px 4px 2px 0; text-align: left !important; }
+
+.report-avv-waste-code td { font-size: 14px; }
+
 .toggle { display: none; }
 .toggle, .toggle:after, .toggle:before, .toggle *, .toggle *:after, .toggle *:before, .toggle + .toggle-btn { box-sizing: border-box; }
 .toggle::selection, .toggle:after::selection, .toggle:before::selection, .toggle *::selection, .toggle *:after::selection, .toggle *:before::selection, .toggle + .toggle-btn::selection { background: none; }

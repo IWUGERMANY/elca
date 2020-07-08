@@ -75,7 +75,8 @@ class ElcaReportSet extends DataObjectSet
     const VIEW_REPORT_FINAL_ENERGY_REF_MODEL_EFFECTS = 'elca_cache.report_final_energy_ref_model_effects_v';
     const VIEW_REPORT_TOTAL_CONSTRUCTION_RECYCLING_EFFECTS = 'elca_cache.report_total_construction_recycling_effects_v';
     const VIEW_REPORT_TOTAL_ENERGY_RECYCLING_EFFECTS = 'elca_cache.report_total_energy_recycling_potential';
-	
+	const VIEW_REPORT_WASTE_CODE_MASS_V = 'elca_cache.report_waste_code_mass_v'; 
+    
 	const TABLE_REPORT_PDF_QUEUE = 'elca.reports_pdf_queue';
 
 
@@ -1788,6 +1789,29 @@ class ElcaReportSet extends DataObjectSet
 
         return [$initValues, $filterSql];
     }
+    
+    
+    /**
+     * Returns waste code aggregated values
+     *
+     * @param  int $projectVariantId
+     * @param bool $force
+     *
+     * @return ElcaReportSet
+     */
+    public static function findWasteCode($projectVariantId, $force = false)
+    {
+        // $Project = ElcaProjectVariant::findById($projectVariantId)->getProject();
+
+        return self::_find(
+            get_class(),
+            self::VIEW_REPORT_WASTE_CODE_MASS_V,
+            array(
+                'project_variant_id' => $projectVariantId
+            )
+        );
+    }
+    // End findTransportAssets    
 	
 }
 // End ElcaReportSet
