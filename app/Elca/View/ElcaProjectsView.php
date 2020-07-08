@@ -25,6 +25,8 @@
 
 namespace Elca\View;
 
+use Beibob\Blibs\Config;
+use Beibob\Blibs\Environment;
 use Beibob\Blibs\FrontController;
 use Beibob\Blibs\HtmlView;
 use Beibob\HtmlTools\HtmlForm;
@@ -110,6 +112,15 @@ class ElcaProjectsView extends HtmlView
             $limitMessage = $this->getElementById('projectLimitMessage', true);
             $limitMessage->parentNode->removeChild($limitMessage);
             $this->getElementById('importAssistantProject', true);
+        }
+
+        // enable/disable IFC import Btn
+        $environment = Environment::getInstance();
+        $config      = $environment->getConfig();
+        $ShowIfcProjectBtn = $config->ifcImportActive ? $config->ifcImportActive : 0;
+        if(!$ShowIfcProjectBtn) {
+            $NoIfcImportBtn = $this->getElementById('createIFCProject');
+            $NoIfcImportBtn->parentNode->removeChild($NoIfcImportBtn);
         }
 
         $NoProjectsElt = $this->getElementById('no-projects');
