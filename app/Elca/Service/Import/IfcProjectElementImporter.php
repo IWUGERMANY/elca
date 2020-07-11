@@ -44,24 +44,27 @@ class IfcProjectElementImporter
 
             $ifcPredefinedTypeString = trim($csv[8] ?? '');
 
-            // default in python-script = only qm, no distinction (2020-06-12)
-            $unitString         = trim($csv[9] ?? ''); 
-			
+            // default in python-script = only SQUARE_METRE (2020-07-08)
+            $ifcUnits = ['METRE' => Unit::METER, 'SQUARE_METRE' => Unit::SQUARE_METER, 'CUBIC_METRE' => Unit::CUBIC_METER];
+            $ifcUnitString = trim($csv[9] ?? '');
+            
+            $unitString = array_key_exists($ifcUnitString, $ifcUnits) ? $ifcUnits[$ifcUnitString] : '';
+            
 			$quantityString = trim($csv[2] ?? '');
-			if(!empty($quantityString))
+			if(!empty($quantityString) && $unitString != Unit::SQUARE_METER)
 			{
 				$unitString = Unit::SQUARE_METER;
 			}
 			
 			$massString 	= trim($csv[3] ?? '');
-			if(!empty($massString) && $massString!='0.0')
+			if(!empty($massString) && $massString!='0.0' && $unitString != Unit::CUBIC_METER)
 			{
 				$quantityString = $massString;
 				$unitString = Unit::CUBIC_METER;
 			}	
 			
             // check / set Unit::PIECE
-            if($unitString != Unit::SQUARE_METER && $unitString != Unit::CUBIC_METER)
+            if($unitString != Unit::SQUARE_METER && $unitString != Unit::CUBIC_METER && $unitString != Unit::METER)
             {
                 $unitString = Unit::PIECE;
             }    
