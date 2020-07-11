@@ -1097,6 +1097,81 @@ class ElcaReportSet extends DataObjectSet
     }
     // End findEffectsPerElementType
 
+    /**
+     * Returns a list of level1-3 element type effects
+     *
+     * @param          $projectVariantId
+     * @param array    $lcPhases
+     * @param null     $indicatorId
+     * @param null     $parentElementTypeNodeId
+     * @param int|null $maxLevel
+     * @param int      $minLevel
+     * @param bool     $force
+     * @return DataObjectSet
+     */
+    public static function findGWPTotal (
+        $projectVariantId,
+        array $lcPhases = null,
+        $indicatorId = null,
+        $parentElementTypeNodeId = null,
+        $maxLevel = 3,
+        $minLevel = 1,
+        $force = false
+    ) {
+        $initValues['projectVariantId'] = $projectVariantId;
+        $initValues['minLevel']         = (int)$minLevel;
+        $initValues['maxLevel']         = (int)$maxLevel;
+
+        if ($indicatorId) {
+            $initValues['indicatorId'] = $indicatorId;
+        }
+
+        $lcSql = null;
+        if ($lcPhases) {
+            $pieces = array();
+            foreach ($lcPhases as $index => $phase) {
+                $initValues['lcPhase' . $index] = $phase;
+                $pieces[]                       = ':lcPhase' . $index;
+            }
+            $lcSql = join(', ', $pieces);
+        }
+
+        if ($parentElementTypeNodeId) {
+            $initValues['parentElementTypeNodeId'] = $parentElementTypeNodeId;
+        }
+
+
+        $sql = sprintf(
+            'SELECT value,din_code
+                          FROM %s
+                         WHERE project_variant_id = :projectVariantId
+                           AND is_hidden = false 
+                           AND level BETWEEN :minLevel AND :maxLevel
+                           %s %s %s
+                           AND ( din_code = 0 OR din_code=300 OR din_code=400)
+                      ORDER BY din_code
+                             , life_cycle_phase DESC
+                             , indicator_p_order'
+            ,
+            self::VIEW_REPORT_ELEMENT_TYPE_EFFECTS
+            ,
+            $indicatorId ? 'AND indicator_id = :indicatorId' : ''
+            ,
+            $lcSql ? ' AND life_cycle_phase IN (' . $lcSql . ')' : ''
+            ,
+            $parentElementTypeNodeId ? ' AND parent_element_type_node_id = :parentElementTypeNodeId' : ''
+        );
+
+        return self::_findBySql(
+            get_class(),
+            $sql,
+            $initValues,
+            $force
+        );
+    }
+    // End findGWPTotal
+
+
 
     /**
      * Returns a list of life cycle effects

@@ -184,3 +184,41 @@ margin-left: 0;
 .report-avv-waste-code td {
     font-size: 14px;
 }
+
+
+/* Report summary - GWP data */
+.projects .report-summary-total .print-content {
+    position: relative;
+}
+.projects .report-summary-total .print-content .GWPvalues{
+    position: absolute;
+    top:20px;
+    right: -200px;
+} 
+
+#content.report .GPWtabelle td {
+    text-align:right;
+}
+
+#content.report .GPWtabelle td.firstColumn {
+    text-align:left;
+}
+
+#content.report .GPWtabelle .firstRow {
+    font-weight:bold;
+}
+
+.GWPvalues svg.piechart 
+{
+    transform: rotate(-90deg);
+    height: 200px; 
+}
+
+@media print {
+  .projects .report-summary-total .print-content .GWPvalues{
+    position: relative;
+    top: auto;
+    right: auto;
+    padding: 0 0 30px 0;
+  } 
+}
