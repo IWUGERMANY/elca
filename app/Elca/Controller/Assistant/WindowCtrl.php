@@ -32,12 +32,11 @@ use Elca\Controller\ProjectElementsCtrl;
 use Elca\Controller\TabsCtrl;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaElementAttribute;
-use Elca\Db\ElcaElementComponent;
 use Elca\Db\ElcaProcessConfigSearchSet;
 use Elca\Model\Assistant\Window\Assembler;
 use Elca\Model\Assistant\Window\Validator;
-use Elca\Service\Messages\ElcaMessages;
 use Elca\Service\Assistant\Window\WindowAssistant;
+use Elca\Service\Messages\ElcaMessages;
 use Elca\View\Assistant\WindowAssistantView;
 use Elca\View\ElcaElementsNavigationView;
 use Elca\View\ElcaProcessConfigSelectorView;
@@ -177,10 +176,13 @@ class WindowCtrl extends TabsCtrl
          */
         if(isset($this->Request->term))
         {
+            $compatDbs = $this->Request->compatdbs ?: [];
+            $activeProcessDbIds = $this->Request->db ? [$this->Request->db] : $compatDbs;
+
             $keywords = explode(' ', \trim((string)$this->Request->term));
             $inUnit = $this->Request->has('u')? $this->Request->get('u') : null;
             $Results = ElcaProcessConfigSearchSet::findByKeywords($keywords, $this->Elca->getLocale(), $inUnit, !$this->Access->hasAdminPrivileges(),
-                $this->context == ProjectElementsCtrl::CONTEXT? null : [$this->Elca->getProject()->getProcessDbId()], null, $this->Request->epdSubType);
+                $this->context == ProjectElementsCtrl::CONTEXT? [$this->Elca->getProject()->getProcessDbId()] : $activeProcessDbIds, null, $this->Request->epdSubType);
 
             $returnValues = [];
             foreach($Results as $Result)
