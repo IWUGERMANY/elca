@@ -183,10 +183,13 @@ class StaircaseCtrl extends TabsCtrl
          */
         if(isset($this->Request->term))
         {
+            $compatDbs = $this->Request->compatdbs ?: [];
+            $activeProcessDbIds = $this->Request->db ? [$this->Request->db] : $compatDbs;
+
             $keywords = explode(' ', \trim((string)$this->Request->term));
             $inUnit = $this->Request->has('u')? $this->Request->get('u') : null;
             $Results = ElcaProcessConfigSearchSet::findByKeywords($keywords, $this->Elca->getLocale(), $inUnit, !$this->Access->hasAdminPrivileges(),
-                $this->context == ProjectElementsCtrl::CONTEXT? null : [$this->Elca->getProject()->getProcessDbId()], null, $this->Request->epdSubType);
+                $this->context == ProjectElementsCtrl::CONTEXT? [$this->Elca->getProject()->getProcessDbId()] : $activeProcessDbIds, null, $this->Request->epdSubType);
 
             $returnValues = [];
             foreach($Results as $Result)
