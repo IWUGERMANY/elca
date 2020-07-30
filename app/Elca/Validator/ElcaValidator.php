@@ -532,18 +532,19 @@ class ElcaValidator extends HtmlFormValidator
 
         $ratios = $this->getValue('ratio');
         $overallRatio = 0;
+        $validKwkDemands = true;
         foreach ($processConfigIds as $key => $processConfigId) {
             if (isset($isKwk[$key]) && !$isKwk[$key]) {
                 continue;
             }
 
-            $this->assertProjectKwkFinalEnergyDemand($key);
+            $validKwkDemands &= $this->assertProjectKwkFinalEnergyDemand($key);
             if (isset($ratios[$key])) {
                 $overallRatio += ElcaNumberFormat::fromString($ratios[$key]);
             }
         }
 
-        return $this->assertTrue('ratio['. $key .']', $overallRatio >= 0 && $overallRatio <= 100, t('Der Wert muss zwischen 0 und 100 liegen'));
+        return $validKwkDemands && $this->assertTrue('ratio['. $key .']', $overallRatio >= 0 && $overallRatio <= 100, t('Der Wert muss zwischen 0 und 100 liegen'));
     }
 
     /**
@@ -579,13 +580,13 @@ class ElcaValidator extends HtmlFormValidator
     {
         $processConfigIds = $this->getValue('processConfigId');
         if (!is_array($processConfigIds) || !isset($processConfigIds[$key])) {
-            return;
+            return true;
         }
 
         $suffix = '[' . $key . ']';
 
         $value = $this->getValue('ratio' . $suffix);
-        $this->assertNotEmpty('ratio'. $suffix, $value, t('Der Wert darf nicht leer sein'));
+        return $this->assertNotEmpty('ratio'. $suffix, $value, t('Der Wert darf nicht leer sein'));
     }
 
 

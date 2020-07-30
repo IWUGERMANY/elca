@@ -84,6 +84,7 @@ class ElcaProjectDataEnEvView extends HtmlView
     private $addNewProjectFinalEnergyDemand;
     private $addNewProjectFinalEnergySupply;
     private $addNewProjectKwkFinalEnergyDemand;
+    private $addKwkInit;
 
     /**
      * nfg
@@ -123,6 +124,7 @@ class ElcaProjectDataEnEvView extends HtmlView
         $this->addNewProjectFinalEnergyDemand = $this->get('addNewProjectFinalEnergyDemand', false);
         $this->addNewProjectFinalEnergySupply = $this->get('addNewProjectFinalEnergySupply', false);
         $this->addNewProjectKwkFinalEnergyDemand = $this->get('addNewProjectKwkFinalEnergyDemand', false);
+        $this->addKwkInit = $this->get('addKwkInit', false);
 
         /**
          * Changed elements
@@ -369,8 +371,9 @@ class ElcaProjectDataEnEvView extends HtmlView
 
         $kwkEnabled = Environment::getInstance()->getConfig()->elca->kwk->toBoolean('enabled');
         if ($kwkEnabled) {
-            if ($this->Data->Kwk->id) {
+            if ($this->hasKwkDemands() || $this->addKwkInit) {
                 $this->appendKwkEnergyDemands($container);
+                $form->add(new HtmlHiddenField('addKwkInit', true));
             }
         }
 
@@ -379,7 +382,7 @@ class ElcaProjectDataEnEvView extends HtmlView
             $buttonGroup->addClass('buttons');
 
             if ($kwkEnabled) {
-                if (!$this->Data->Kwk->id) {
+                if (!$this->hasKwkDemands()) {
                     $buttonGroup->add(new ElcaHtmlSubmitButton('addKwk', t('Fernwärme spezifizieren')))->addClass(
                         'add-energy-carrier'
                     );
@@ -923,6 +926,19 @@ class ElcaProjectDataEnEvView extends HtmlView
             'style'       => 'height:' . max(100, count($pieData) * 60) . 'px',
             'data-values' => json_encode($pieData)
         ]));
+    }
+
+    protected function hasKwkDemands(): bool
+    {
+        if (!$this->Data->Kwk->id) {
+            return false;
+        }
+
+        $kwkDemandCount = \count(\array_filter($this->Data->Demand->isKwk, function($isKwk) {
+            return $isKwk;
+        }));
+
+        return $kwkDemandCount > 0;
     }
 
 
