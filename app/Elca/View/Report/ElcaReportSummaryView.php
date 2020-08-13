@@ -28,6 +28,7 @@ namespace Elca\View\Report;
 use Beibob\Blibs\Environment;
 use Beibob\Blibs\FrontController;
 use Beibob\Blibs\Url;
+use Beibob\HtmlTools\HtmlElement;
 use Beibob\HtmlTools\HtmlForm;
 use Beibob\HtmlTools\HtmlFormGroup;
 use Beibob\HtmlTools\HtmlSelectbox;
@@ -104,6 +105,10 @@ class ElcaReportSummaryView extends ElcaReportsView
     private $updateCharts = false;
 
     private $readOnly;
+
+    // GWP total - 
+    private $totalValueGWP = 0;
+    private $totalB6ValueGWP = 0;
 
     // protected
 
@@ -272,7 +277,9 @@ class ElcaReportSummaryView extends ElcaReportsView
 		}		
 
         $this->buildEffects($TdContainer, $TotalEffects,false,false,null,$realCategories);
-		
+        
+        $TypeGWP = $TdContainer->appendChild($this->getDiv(['class' => 'GWPvalues']));
+        
         $this->buildEffects(
             $TdContainer,
             $LifeCycleEffects,
@@ -281,9 +288,90 @@ class ElcaReportSummaryView extends ElcaReportsView
             $TotalEffects->getArrayBy('value', 'indicator_id')
         );
 
+        $this->buildGWPChart($TypeGWP, ElcaReportSet::findGWPTotal($this->projectVariantId, ['total'], 9, null, 2, 0), $projectVariant, $ProjectConstruction); 
+        
         return $TotalEffects->count();
     }
     // End beforeRender
+
+    /**
+     * Build and append the container for the GWP chart
+     *
+     * @param DOMElement $Container
+     * @param ElcaReportSet  $GWPTotal
+     * @param ElcaProjectVariant $projectVariant
+     * @param ElcaProjectConstruction $projectConstruction
+     * 
+     *
+     * @return void -
+     */
+    protected function buildGWPChart(DOMElement $Container, ElcaReportSet $GWPTotal, ElcaProjectVariant $projectVariant, ElcaProjectConstruction $projectConstruction)
+    {
+        
+        $m2a = max(1, $projectVariant->getProject()->getLifeTime() * $projectConstruction->getNetFloorSpace());
+        
+        $GWPTotalValues = [];
+        
+        $data = new \stdClass();
+        $data->name = t('GWP');
+        $data->value = $this->totalValueGWP;
+        $data->percentage = 1;
+        $GWPTotalValues[] = $data;
+        
+        $data = new \stdClass();
+        $data->name = t('B6');
+        $data->value = $this->totalB6ValueGWP;
+        $data->percentage = number_format(($this->totalB6ValueGWP/$this->totalValueGWP),5,".",".");
+        $GWPTotalValues[] = $data;
+        
+        foreach($GWPTotal as $GWPTotalItems) 
+        {
+            if($GWPTotalItems->value>0)
+            {
+                if($GWPTotalItems->din_code > 0)
+                {    
+                    $data = new \stdClass();
+                    $data->name = t('KG '. $GWPTotalItems->din_code);
+                    
+                    $data->value = ($GWPTotalItems->value / $m2a);
+                    $data->percentage = number_format((($GWPTotalItems->value / $m2a)/$this->totalValueGWP),5,'.','.');
+                    $GWPTotalValues[] = $data;
+                }
+            }        
+        }
+ 
+        $H2 = $Container->appendChild($this->getH2(t('GWP Anteile', null)));
+        
+        $table = new HtmlTable('GPWtabelle');
+        $table->addColumn('name', t('Name'));
+        $table->addColumn('percentage', t('Prozent'));
+        $table->addColumn('value', t('Gesamt').' / m²a');
+
+        $Head    = $table->createTableHead();
+        $HeadRow = $Head->addTableRow(new HtmlTableHeadRow());
+        $HeadRow->addClass('table-headlines');
+
+        $span = $HeadRow->getColumn('name')->setOutputElement(new HtmlTag('span', t('Bereich')));
+        $span = $HeadRow->getColumn('percentage')->setOutputElement(new HtmlTag('span', t('Prozent')));
+        $span = $HeadRow->getColumn('value')->setOutputElement(new HtmlTag('span', t('Gesamt').' / m²'));
+        $span->add(new HtmlTag('sub', t('NGF')));
+        $span->add(new HtmlStaticText('a'));
+        
+        
+        $Body = $table->createTableBody();
+        $Row  = $Body->addTableRow();
+        
+        $Row->getColumn('name')->setOutputElement(new HtmlText('name'));
+        $Row->getColumn('percentage')->setOutputElement(new ElcaHtmlNumericText('percentage', 2, true));
+        $Row->getColumn('value')->setOutputElement(new ElcaHtmlNumericText('value', 8, false));
+
+        $Body->setDataSet($GWPTotalValues);
+
+        $Tables = $Container->appendChild($this->getDiv(['class' => 'tables']));
+        $table->appendTo($Tables);
+
+        // ElcaNumberFormat::toString($this->totalValueGWP, 2)
+    }
 
     /**
      * Appends the container for the benchmark diagram
@@ -453,6 +541,7 @@ class ElcaReportSummaryView extends ElcaReportsView
         $m2a = max(1, $projectVariant->getProject()->getLifeTime() * $ProjectConstruction->getNetFloorSpace());
 
         $reports = [];
+        
         foreach ($ReportSet as $reportDO) {
             $reportDO->norm_total_value = $reportDO->value / $m2a;
             $key                        = $reportDO->category;
@@ -466,7 +555,13 @@ class ElcaReportSummaryView extends ElcaReportsView
                     : $reportDO->value / $totalEffects[$reportDO->indicator_id];
                 $reportDO->bar        = round($reportDO->percentage * 100);
             }
-
+            
+            // Get GWP total value   
+            if($reportDO->indicator_id == 9 && $key == "Gesamt") 
+            {
+                $this->totalValueGWP = $reportDO->norm_total_value;
+            }
+            
             /**
              * Restructure
              */
@@ -551,7 +646,18 @@ class ElcaReportSummaryView extends ElcaReportsView
                 $H1->appendChild($this->getSpan(t('stofflich (gemäß DIN EN 15804)')));
             }
 
-
+            // Get B6 GWP total value    
+            if($category === 'B6') 
+            {
+                foreach($dataSet as $dataSetKey => $dataSetKeyValue)
+                {
+                    if($dataSetKeyValue->indicator_id==9) 
+                    {
+                        $this->totalB6ValueGWP = $dataSetKeyValue->norm_total_value;
+                    }    
+                }
+            }
+             
             $this->appendEffect($TypeLi, $dataSet, $addBenchmarks, $isLifeCycle && $totalEffects, $addPhaseRec);
 
             if ($addBenchmarks && $this->benchmarkVersionId) {
@@ -860,7 +966,6 @@ class ElcaReportSummaryView extends ElcaReportsView
 
         $Row->getColumn('name')->setOutputElement(new HtmlText('name', new ElcaTranslatorConverter()));
         $Row->getColumn('unit')->setOutputElement(new HtmlText('unit', new ElcaTranslatorConverter()));
-
         $Body->setDataSet($dataSet);
 
         if ($secondDataSet) {
