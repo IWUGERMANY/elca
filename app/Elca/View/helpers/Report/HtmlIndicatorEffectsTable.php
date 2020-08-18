@@ -63,6 +63,11 @@ class HtmlIndicatorEffectsTable extends HtmlTable
      * @var bool
      */
     private $isEn15804Compliant;
+    
+    /**
+     * @var array
+     */
+    private $lifeCycleReal;
 
     /**
      * @param                   $tableName
@@ -71,7 +76,7 @@ class HtmlIndicatorEffectsTable extends HtmlTable
      * @param int               $precision
      * @param bool              $inScientificNotation
      */
-    public function __construct($tableName, array $indicatorEffects, LifeCycleUsages $lifeCycleUsages, $isEn15804Compliant = true, $precision = 10, $inScientificNotation = true)
+    public function __construct($tableName, array $indicatorEffects, LifeCycleUsages $lifeCycleUsages, array $lifeCycleReal = [], $isEn15804Compliant = true, $precision = 10, $inScientificNotation = true)
     {
         parent::__construct(trim('report report-effects '.$tableName));
 
@@ -80,6 +85,7 @@ class HtmlIndicatorEffectsTable extends HtmlTable
         $this->indicatorEffects     = $indicatorEffects;
         $this->lifeCycleUsages      = $lifeCycleUsages;
         $this->isEn15804Compliant = $isEn15804Compliant;
+        $this->lifeCycleReal = $lifeCycleReal;
     }
 
     /**
@@ -146,13 +152,26 @@ class HtmlIndicatorEffectsTable extends HtmlTable
         $footerRow = $footer->addTableRow();
         $firstColumn = $footerRow->getColumn('name');
         $firstColumn->setColSpan(2 + count($phaseColumns));
+        
+        // show lifecycle real values only - 2020-08-14    
+        $lifeCycleTotalInclusive ="";
+
+        if(is_array($this->lifeCycleReal) && count($this->lifeCycleReal)>0) {
+            sort($this->lifeCycleReal);
+            $lifeCycleTotalInclusive = implode(', ', $this->lifeCycleReal);
+            
+        } else {
+            $lifeCycleTotalInclusive = $this->getTotalLifeCycleIdents();
+        }
+        
         $firstColumn->setOutputElement(
-            new HtmlStaticText(
-                t('Gesamt inkl.') .' '. $this->getTotalLifeCycleIdents() .'; '.
+                new HtmlStaticText(
+                t('Gesamt inkl.') .' '. $lifeCycleTotalInclusive .'; '.
                 t('Instandhaltung inkl.') .' '. $this->getMaintenanceLifeCycleIdents()
             )
-        );
-
+        );    
+        // show lifecycle real values only - 2020-08-14
+        
         return parent::appendTo($node);
     }
 
@@ -218,10 +237,10 @@ class HtmlIndicatorEffectsTable extends HtmlTable
     protected function getTotalLifeCycleIdents()
     {
         $parts = [];
+        
         foreach ($this->lifeCycleUsages->modulesAppliedInTotal() as $module) {
             $parts[$module->value()] = t($module->name());
         }
-
         $parts = $this->cleanupLifeCycleIdents($parts);
 
         sort($parts);
