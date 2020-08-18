@@ -95,6 +95,11 @@ class ElcaProcessConfigSelectorView extends HtmlView
     private $element;
 
     /**
+     * @var boolean
+     */
+    private $isTemplateContext;
+
+    /**
      * Inits the view
      *
      * @param  array $args
@@ -108,6 +113,7 @@ class ElcaProcessConfigSelectorView extends HtmlView
         $this->filterByProjectVariantId = $this->get('filterByProjectVariantId');
         $this->enableReplaceAll         = $this->get('enableReplaceAll');
         $this->element                  = ElcaElement::findById($this->get('elementId'));
+        $this->isTemplateContext        = $this->get('isTemplateContext', false);
 
         $this->assign('headline', $this->get('headline', t('Baustoff suchen und wählen')));
     }
@@ -132,7 +138,7 @@ class ElcaProcessConfigSelectorView extends HtmlView
         }
 
         $compatibleProcessDbs = new ElcaProcessDbSet();
-        if ($this->element->isTemplate()) {
+        if ($this->isTemplateContext()) {
             $compatibleProcessDbs = ElcaProcessDbSet::findElementCompatibles($this->element);
 
             if (0 === $compatibleProcessDbs->count()) {
@@ -170,7 +176,7 @@ class ElcaProcessConfigSelectorView extends HtmlView
             $form->setDataObject($activeProcessConfig);
         }
 
-        if ($this->element->isTemplate()) {
+        if ($this->isTemplateContext()) {
             $this->appendProcessDbFilter($form, $compatibleProcessDbs, $activeProcessDbId);
         }
 
@@ -206,6 +212,11 @@ class ElcaProcessConfigSelectorView extends HtmlView
         $this->appendButtons($form);
 
         $form->appendTo($Container);
+    }
+
+    protected function isTemplateContext(): bool
+    {
+        return $this->isTemplateContext || $this->element->isTemplate();
     }
 
     /**
@@ -379,6 +390,7 @@ class ElcaProcessConfigSelectorView extends HtmlView
         $form->add(new HtmlHiddenField('sp', ''));
         $form->add(new HtmlHiddenField('db', $activeProcessDbId));
         $form->add(new HtmlHiddenField('filterByProjectVariantId', $this->filterByProjectVariantId));
+        $form->add(new HtmlHiddenField('tpl', $this->isTemplateContext()));
 
         if ($epdSubType && ElcaProcessDb::findById($activeProcessDbId)->isEn15804Compliant()) {
             $form->add(new HtmlHiddenField('epdSubType', $epdSubType));

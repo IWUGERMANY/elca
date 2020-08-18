@@ -29,6 +29,8 @@ use Beibob\Blibs\DbObject;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
+use Elca\Db\ElcaAssistantElement;
+use Elca\Db\ElcaAssistantSubElement;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaElementAttribute;
 use Elca\Db\ElcaElementComponent;
@@ -385,6 +387,23 @@ class Exporter
 
         $elementInfo = $elementNode->appendChild($this->get('elementInfo'));
         $this->appendObjectProperties($elementInfo, $element, ['name', 'description']);
+
+        $assistantElement = ElcaAssistantElement::findByElementId($element->getId());
+
+        if ($assistantElement->isInitialized()) {
+            $assistantNode = $elementNode->appendChild($this->get('assistant', [
+                'ident' => $assistantElement->getAssistantIdent(),
+                'uuid'  => $assistantElement->getUuid(),
+            ]));
+
+            if ($assistantElement->isMainElement($element->getId())) {
+                $assistantConfigNode = $assistantNode->appendChild($this->get('config'));
+                $assistantConfigNode->appendChild($this->document->createCDATASection($assistantElement->getConfig()));
+            }
+
+            $assistantSubElement = ElcaAssistantSubElement::findByPk($assistantElement->getId(), $element->getId());
+            $assistantNode->appendChild($this->get('element', [], $assistantSubElement->getIdent()));
+        }
 
         if ($element->isComposite()) {
             $elementsNode = $elementNode->appendChild($this->get('elements'));

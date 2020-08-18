@@ -104,6 +104,12 @@ class Pillar
         return $this->name;
     }
 
+    public function changeName(string $name)
+    {
+        $this->name = $name;
+    }
+
+
     /**
      * @return number
      */

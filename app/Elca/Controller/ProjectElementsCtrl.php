@@ -29,6 +29,7 @@ use Beibob\Blibs\DbHandle;
 use Beibob\Blibs\FloatCalc;
 use Beibob\Blibs\Url;
 use Beibob\Blibs\UserStore;
+use Elca\Db\ElcaAssistantElement;
 use Elca\Db\ElcaCacheElement;
 use Elca\Db\ElcaCacheElementType;
 use Elca\Db\ElcaCompositeElement;
@@ -290,9 +291,22 @@ class ProjectElementsCtrl extends ElementsCtrl
          * Compute lca
          * this implicitly computes all assigned elements as well
          */
-        $this->container->get(ElcaLcaProcessor::class)
-            ->computeElement($copy)
-            ->updateCache($copy->getProjectVariant()->getProjectId());
+        $lcaProcessor = $this->container->get(ElcaLcaProcessor::class);
+        $lcaProcessor->computeElement($copy);
+
+
+        if ($copy->isAssistantMainElement()) {
+            $assistantElement = ElcaAssistantElement::findByElementId($copy->getId());
+            foreach ($assistantElement->getSubElements() as $assistantSubElement) {
+                if ($copy->getId() === $assistantSubElement->getElementId()) {
+                    continue;
+                }
+
+                $lcaProcessor->computeElement($assistantSubElement->getElement());
+            }
+        }
+
+        $lcaProcessor->updateCache($copy->getProjectVariant()->getProjectId());
 
         $this->addNavigationView($copy->getElementTypeNodeId());
         $this->updateHashUrl('/project-elements/' . $copy->getId() . '/');

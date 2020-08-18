@@ -27,8 +27,8 @@ namespace Elca\View\Assistant;
 use Beibob\Blibs\IdFactory;
 use DOMElement;
 use DOMNode;
+use Elca\Db\ElcaAssistantElement;
 use Elca\Db\ElcaElement;
-use Elca\Db\ElcaElementAttribute;
 use Elca\Db\ElcaElementComponentSet;
 use Elca\Db\ElcaSvgPattern;
 use Elca\Model\Assistant\Window\FixedFrame;
@@ -772,10 +772,10 @@ class DormerElementImageView extends ElementImageView
     */
     private function initPatterns($element)
     {
-        $attr = ElcaElementAttribute::findByElementIdAndIdent($element->getId(), DormerAssistant::IDENT);
-        if ($attr->isInitialized() && $attr->getNumericValue() !== null) {
-            $elementId = $attr->getNumericValue();
-            $element = ElcaElement::findById($elementId);
+        $assistantElement = ElcaAssistantElement::findByElementId($element->getId(), DormerAssistant::IDENT);
+
+        if ($assistantElement->getMainElementId() !== $element->getId()) {
+            $element = $assistantElement->getMainElement();
         }
 
         $this->patterns = [];

@@ -100,7 +100,7 @@ class ElcaElementAttributeSet extends DbObjectSet
      * @param  integer  $elementId - elementId
      * @param  string   $ident    - attribute identifier
      * @param  boolean  $force    - Bypass caching
-     * @return ElcaElementAttributeSet
+     * @return ElcaElementAttributeSet|ElcaElementAttribute[]
      */
     public static function findWithinProjectVariantByIdentAndNumericValue($projectVariantId, $ident, $numericValue = null, $force = false)
     {
@@ -142,6 +142,41 @@ class ElcaElementAttributeSet extends DbObjectSet
     }
     // End findByElementIdAndIdent
 
+    /**
+     * Inits a `ElcaElementAttribute' by its unique key (elementId, ident)
+     *
+     * @param         $projectVariantId
+     * @param string  $ident - attribute identifier
+     * @param boolean $force - Bypass caching
+     * @return ElcaElementAttributeSet|ElcaElementAttribute[]
+     * @throws \Beibob\Blibs\Exception
+     */
+    public static function findWithinProjectVariantByIdent($projectVariantId, $ident, $force = false)
+    {
+        if (!$projectVariantId) {
+            return new ElcaElementAttributeSet();
+        }
+
+        $initValues = ['projectVariantId' => $projectVariantId, 'ident' => $ident];
+
+        $sql = sprintf("SELECT a.id
+                             , a.element_id
+                             , a.ident
+                             , a.caption
+                             , a.numeric_value
+                             , a.text_value
+                          FROM %s a
+                          JOIN %s e ON e.id = a.element_id
+                         WHERE e.project_variant_id = :projectVariantId
+                           AND a.ident = :ident
+                           "
+            , ElcaElementAttribute::TABLE_NAME
+            , ElcaElement::TABLE_NAME
+        );
+
+        return self::_findBySql(get_class(), $sql, $initValues, $force);
+    }
+    // End findByElementIdAndIdent
 
     /**
      * Lazy find

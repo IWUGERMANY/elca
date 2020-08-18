@@ -1,9 +1,31 @@
-import sys
+import sys   
 import ifcopenshell
 import csv
 
 # ON!
 # sys.stderr = sys.stdout
+
+prefixes = {None: 1, 'EXA': 1e18, 'PETA': 1e15, 'TERA': 1e12, 'GIGA': 1e9, 'MEGA':
+    1e6, 'KILO': 1e3, 'HECTO': 1e2, 'DECA': 1e1, 'DECI': 1e-1, 'CENTI':
+                1e-2, 'MILLI': 1e-3, 'MICRO': 1e-6, 'NANO': 1e-9, 'PICO': 1e-12,
+            'FEMTO': 1e-15, 'ATTO': 1e-18}
+
+
+def getSIUnits(model):
+    SIUnit_length_list, SIUnit_area_list, SIUnit_volume_list, SIUnit_mass_list = [], [], [], []
+    for SIUnit in model.by_type("IfcSIUnit"):
+        for SIUnit_name in SIUnit:
+            if SIUnit_name == 'LENGTHUNIT':
+                SIUnit_length_list.append([SIUnit.Prefix, SIUnit.Name])
+            elif SIUnit_name == 'AREAUNIT':
+                SIUnit_area_list.append([SIUnit.Prefix, SIUnit.Name])
+            elif SIUnit_name == 'VOLUMEUNIT':
+                SIUnit_volume_list.append([SIUnit.Prefix, SIUnit.Name])
+            elif SIUnit_name == 'MASSUNIT':
+                SIUnit_mass_list.append([SIUnit.Prefix, SIUnit.Name])
+
+    return SIUnit_length_list, SIUnit_area_list, SIUnit_volume_list, SIUnit_mass_list
+
 
 def property_finder(ifc_element, property_set, property_name):
     for s in ifc_element.IsDefinedBy:
@@ -22,18 +44,32 @@ def property_finder(ifc_element, property_set, property_name):
     return None
 
 
+def property_finder_unit(ifc_element, property_set, property_name):
+    for s in ifc_element.IsDefinedBy:
+        if hasattr(s, 'RelatingPropertyDefinition'):
+            if s.RelatingPropertyDefinition.Name == property_set:
+                if hasattr(s.RelatingPropertyDefinition, 'HasProperties'):
+                    for v in s.RelatingPropertyDefinition.HasProperties:
+                        if v.Name == property_name:
+                            return v.Unit
+                elif hasattr(s.RelatingPropertyDefinition, 'Quantities'):
+                    for v in s.RelatingPropertyDefinition.Quantities:
+                        if v.Name == property_name:
+                            for attr, value in vars(v).items():
+                                if attr.endswith('Value'):
+                                    #print(v)
+                                    return v.Unit
+    return None
+
+
 def material_property_finder(material, property_set, property_name):
     if hasattr(material, 'HasProperties'):  # 2x3 ToDo: Materialpropertyset missing
         for e in material.HasProperties:
             if e.Name == property_set:
-                try:
-                    for v in e.Properties:
-                        if v.Name == property_name:
-                            return v.NominalValue.wrappedValue
-                # unknown attribute type error
-                except RuntimeError:
-                    pass
-    return 0
+                for v in e.Properties:
+                    if v.Name == property_name:
+                        return v.NominalValue.wrappedValue
+    return None
 
 
 class eLCA_Produkt:
@@ -51,6 +87,7 @@ class eLCA_Produkt:
         self.area_density = None
         self.enum = None
         self.volume = None
+        self.layerthickness = None
         self.getInfos()
 
     def getInfos(self):
@@ -72,14 +109,20 @@ class eLCA_Produkt:
 
         # Area
         try:
-            self.area = self.getArea()
+            self.area, self.area_unit = self.getArea()
+            if self.area_unit is None and self.area is not None:
+                self.area_unit = SIUnit_area
+            if self.area_unit and self.area:  # Umrechnung der Einheit auf SI-Einheit (ohne Präfix)
+                self.area *= prefixes[self.area_unit[0]]
+                self.area_unit = self.area_unit[1]
+
         except:
             print("ERROR in area CALCULATION", self.product)
-        # TODO Einheit mit rausgeben, momentan hardgecoded
+        # if self.area_unit is None:
 
         # Material
         try:
-            self.material, self.area_density = self.getMaterial()
+            self.material, self.material_density = self.getMaterial()
         except:
             print("ERROR in material CALCULATION", self.product)
 
@@ -101,22 +144,18 @@ class eLCA_Produkt:
         except:
             print("ERROR in Volume CALCULATION", self.product)
 
-        # Primary_Mass
+        # Primary Mass
         try:
             if self.area_density is not None and self.volume is not None:
                 self.primary_mass = self.volume * self.area_density
         except:
             print("ERROR in Primary Mass CALCULATION", self.product)
 
-        # Area Unit
-        for u in model.by_type("IFCSIUNIT"):
-            if u.UnitType == "AREAUNIT":
-                unit = u.Name
-                if unit == "SQUARE_METRE":
-                    # TODO prefix wird noch nicht betrachtet
-                    unit = "qm"
-                break
-        self.area_unit = unit
+        # Layer Thickness
+        try:
+            self.layerthickness = self.getLayerThickness()
+        except:
+            print("ERROR in Layer Thickness CALCULATION", self.product)
 
     def getStorey(self):
         try:
@@ -245,46 +284,51 @@ class eLCA_Produkt:
     def getArea(self):
         def Wall():
             area = property_finder(p, "QTo_WallBaseQuantities", "NetSideArea")
+            area_unit = property_finder_unit(p, "QTo_WallBaseQuantities", "NetSideArea")
             if area is None:
-                return property_finder(self.product, "BaseQuantities", "NetSideArea")
+                return property_finder(self.product, "BaseQuantities", "NetSideArea"), property_finder_unit(self.product, "BaseQuantities", "NetSideArea")
             else:
-                return area
+                return area, area_unit
 
         def Window_Door():
             try:
-                return self.product.OverallHeight * self.product.OverallWidth
+                return self.product.OverallHeight * self.product.OverallWidth, None
             except:
-                return None
+                return None, None
 
         def Column():
             area = property_finder(self.product, "QTo_WallBaseQuantities", "GrossSurfaceArea")  # outersurfacearea, totalsurfacearea
+            area_unit = property_finder_unit(self.product, "QTo_WallBaseQuantities", "GrossSurfaceArea")
             if area is None:
-                return property_finder(self.product, "BaseQuantities", "GrossSurfaceArea")
+                return property_finder(self.product, "BaseQuantities", "GrossSurfaceArea"), property_finder_unit(self.product, "BaseQuantities", "GrossSurfaceArea")
             else:
-                return area
+                return area, area_unit
 
         def Covering():
             # not in this file
             area = property_finder(self.product, "QTo_WallBaseQuantities", "GrossSurfaceArea")
+            area_unit = property_finder_unit(self.product, "QTo_WallBaseQuantities", "GrossSurfaceArea")
             if area is None:
-                return property_finder(self.product, "BaseQuantities", "GrossSurfaceArea")
+                return property_finder(self.product, "BaseQuantities", "GrossSurfaceArea"), property_finder_unit(self.product, "BaseQuantities", "GrossSurfaceArea")
             else:
-                return area
+                return area, area_unit
 
         def Slab_Roof():
             area = property_finder(self.product, "QTo_WallBaseQuantities", "GrossArea")
+            area_unit = property_finder_unit(self.product, "QTo_WallBaseQuantities", "GrossArea")
             if area is None:
-                return property_finder(self.product, "BaseQuantities", "GrossArea")
+                return property_finder(self.product, "BaseQuantities", "GrossArea"), property_finder_unit(self.product, "BaseQuantities", "GrossArea")
             else:
-                return area
+                return area, area_unit
 
         def ShadingDevice():
             # not in this file
             area = property_finder(self.product, "QTo_WallBaseQuantities", "NetArea")
+            area_unit = property_finder_unit(self.product, "QTo_WallBaseQuantities", "NetArea")
             if area is None:
-                return property_finder(self.product, "BaseQuantities", "NetArea")
+                return property_finder(self.product, "BaseQuantities", "NetArea"), property_finder_unit(self.product, "BaseQuantities", "NetArea")
             else:
-                return area
+                return area, area_unit
 
         switcher = {"IfcWall": Wall,
                     "IfcWallStandardCase": Wall,
@@ -296,7 +340,7 @@ class eLCA_Produkt:
                     "IfcRoof": Slab_Roof,
                     "IfcShadingDevice": ShadingDevice}
 
-        func = switcher.get(self.product.is_a(), lambda: None)
+        func = switcher.get(self.product.is_a(), lambda: (None, None))
         return func()
 
     def getVolume(self):
@@ -337,64 +381,75 @@ class eLCA_Produkt:
 
         return enum
 
+    def getLayerThickness(self):
+        layerThickness_list = []
+        for relAssociates in self.product.HasAssociations:
+            if relAssociates.is_a('IfcRelAssociatesMaterial'):
+                relatingMaterial = relAssociates.RelatingMaterial
+                if relatingMaterial.is_a("IfcMaterialLayerSetUsage"):
+                    for materialLayer in relatingMaterial.ForLayerSet.MaterialLayers:
+                        layerThickness_list.append(materialLayer.LayerThickness)
+                if relatingMaterial.is_a("IfcMaterialLayerSet"):
+                    for materialLayer in relatingMaterial.MaterialLayers:
+                        if materialLayer.is_a('IfcMaterialLayer'):
+                            layerThickness_list.append(materialLayer.LayerThickness)
+        return layerThickness_list
+
     def getMaterial(self):
-        density = 0
-        material = None
-        for i in self.product.HasAssociations:
+        material_list = []
+        densities = []
+        for relAssociates in self.product.HasAssociations:
+            if relAssociates.is_a('IfcRelAssociatesMaterial'):
+                relatingMaterial = relAssociates.RelatingMaterial
+                if relatingMaterial.is_a("IfcMaterial"):
+                    material_list.append(relatingMaterial.Name)
+                    densities.append(material_property_finder(relatingMaterial, 'Pset_MaterialCommon', 'MassDensity'))
+                elif relatingMaterial.is_a("IfcMaterialConstituentSet"):
+                    for materialConstituent in relatingMaterial.MaterialConstituents:
+                        if materialConstituent.is_a("IfcMaterialConstituent"):
+                            material_list.append(materialConstituent.Material.Name)
+                            densities.append(material_property_finder(materialConstituent.Material, 'Pset_MaterialCommon', 'MassDensity'))
+                elif relatingMaterial.is_a("IfcMaterialLayerSet"):
+                    for materialLayer in relatingMaterial.MaterialLayers:
+                        if materialLayer.is_a('IfcMaterialLayer'):
+                            material_list.append(materialLayer.Material.Name)
+                            densities.append(material_property_finder(materialLayer.Material, 'Pset_MaterialCommon', 'MassDensity'))
+                elif relatingMaterial.is_a("IfcMaterialLayerSetUsage"):
+                    for materialLayer in relatingMaterial.ForLayerSet.MaterialLayers:
+                        if materialLayer.is_a('IfcMaterialLayer'):
+                            material_list.append(materialLayer.Material.Name)
+                            densities.append(material_property_finder(materialLayer.Material, 'Pset_MaterialCommon', 'MassDensity'))
+                elif relatingMaterial.is_a("IfcMaterialProfileSet"):
+                    for materialProfile in relatingMaterial.MaterialProfiles:
+                        if materialProfile.is_a('IfcMaterialProfile'):
+                            material_list.append(materialProfile.Material.Name)
+                            densities.append(material_property_finder(materialProfile.Material, 'Pset_MaterialCommon', 'MassDensity'))
+                elif relatingMaterial.is_a("IfcMaterialProfileSetUsage"):
+                    for materialProfile in relatingMaterial.ForProfileSet.MaterialProfiles:
+                        if materialProfile.is_a('IfcMaterialProfile'):
+                            material_list.append(materialProfile.Material.Name)
+                            densities.append(material_property_finder(materialProfile.Material, 'Pset_MaterialCommon', 'MassDensity'))
+                elif relatingMaterial.is_a('IfcMaterialList'):
+                    for materialList in relatingMaterial:
+                        for material in materialList:
+                            if material.is_a('IfcMaterial'):
+                                material_list.append(material.Name)
+                                densities.append(material_property_finder(material, 'Pset_MaterialCommon', 'MassDensity'))
 
-            if i.is_a("IfcRelAssociatesClassification"): continue  # TODO das noch betrachten
+        if len(densities) == 1:
+            densities = densities[0]
+        elif len(material_list) == 0:
+            densities = None
 
-            if hasattr(i.RelatingMaterial, 'Name'):
-                material = i.RelatingMaterial.Name
-                density += material_property_finder(i.RelatingMaterial, 'Pset_MaterialCommon', 'MassDensity')
-            # various materials (not layers)
-            elif hasattr(i.RelatingMaterial, 'Materials'):
-                materials = []
-                for mat in i.RelatingMaterial.Materials:
-                    materials.append(mat.Name)
-                    density += material_property_finder(mat, 'Pset_MaterialCommon', 'MassDensity')
-                if len(materials) == 1:
-                    material = materials[0]
-                else:
-                    material = str(materials)
-            # MaterialConstituentSet
-            elif hasattr(i.RelatingMaterial, 'MaterialConstituents'):
-                materials = []
-                for mat in i.RelatingMaterial.MaterialConstituents.ToMaterialConstituentSet:
-                    materials.append(mat.Name)
-                    density += material_property_finder(mat, 'Pset_MaterialCommon', 'MassDensity')
-                if len(materials) == 1:
-                    material = materials[0]
-                else:
-                    material = str(materials)
-
-            # materialsets
-            for attr, value in vars(i.RelatingMaterial).items():
-                # (layersetusage, profilesetusage)
-                materials = []
-                if attr.startswith('For'):
-                    for at, val in vars(value).items():
-                        if at.startswith('Material'):
-                            for set_e in val:
-                                materials.append(set_e.Material.Name)
-                                density += material_property_finder(set_e.Material, 'Pset_MaterialCommon',
-                                                                    'MassDensity')
-                    if len(materials) == 1:
-                        material = materials[0]
-                    else:
-                        material = str(materials)
-                # (layerset, profileset)
-                elif attr.startswith('Material'):
-                    for set_e in value:
-                        # print(set_e, set_e.get_info())
-                        materials.append(set_e.Name)
-                        # materials.append(set_e.Material.Name)
-                        # density += material_property_finder(set_e.Material, 'Pset_MaterialCommon','MassDensity')
-                        if len(materials) == 1:
-                            material = materials[0]
-                        else:
-                            material = str(materials)
-        return material, density
+        if len(material_list) == 1:
+            return material_list[0], densities
+        elif len(material_list) == 0:
+            return "", densities
+        else:
+            material_list_string = str(material_list).replace("[", "")
+            material_list_string = material_list_string.replace("]", "")
+            material_list_string = material_list_string.replace(";", ",")
+            return material_list_string, densities
 
 
 # ON! 
@@ -405,6 +460,17 @@ if len(sys.argv) != 3:
 model = ifcopenshell.open(sys.argv[1])
 
 schema = model.schema
+
+SIUnit_length_list, SIUnit_area_list, SIUnit_volume_list, SIUnit_mass_list = getSIUnits(model)
+#print(SIUnit_length_list, SIUnit_area_list, SIUnit_volume_list, SIUnit_mass_list)
+if len(SIUnit_area_list) == 0:
+    SIUnit_area = [None, 'SQUARE_METRE']
+else:
+    SIUnit_area = SIUnit_area_list[0]
+
+#print(schema)
+#print(SIUnit_area)
+
 Produkte = []
 
 for p in model.by_type("IfcProduct"):
@@ -412,13 +478,14 @@ for p in model.by_type("IfcProduct"):
         continue
     Produkte.append(eLCA_Produkt(p))
 
-# with open('IFC_data.csv', mode='w') as file:
+#with open('IFC_data_20200624.csv', mode='w') as file:
+#    writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+#    writer.writerow(['GUID', 'Name', 'Stockwerk', 'Klasse', 'Flaeche', 'Flaecheneinheit', 'Kostengruppe', 'Masse', 'Material', 'Art'])
+#    for P in Produkte:
+#        writer.writerow([P.guid, P.name, P.storey, P.type, P.area, P.area_unit, P.KG, P.primary_mass, P.material, P.enum])
+        
 with open(sys.argv[2], 'w', encoding='utf-8') as file:
     writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    #writer.writerow(['GUID', 'Name', 'Stockwerk', 'Klasse', 'Flaeche', 'Flaecheneinheit', 'Kostengruppe', 'Masse', 'Material', 'Art'])
-    #for P in Produkte:
-    #    writer.writerow([P.guid, P.name, P.storey, P.type, P.area, P.area_unit, P.KG, P.primary_mass, P.material, P.enum])
-    
     writer.writerow(['Name','Kostengruppe','Flaeche','Masse','Typ','Stockwerk','Material','GUID','PredefinedType','Unit'])
     for P in Produkte:
-        writer.writerow([P.name, str(P.KG), P.area, P.primary_mass, P.type, P.storey, P.material, P.guid, P.enum, P.area_unit])
+        writer.writerow([P.name, str(P.KG), P.area, P.primary_mass, P.type, P.storey, P.material, P.guid, P.enum, P.area_unit])        

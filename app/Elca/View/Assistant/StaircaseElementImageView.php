@@ -55,7 +55,7 @@ class StaircaseElementImageView extends DefaultElementImageView
             /**
              * @var StaircaseAssistant $assistant
              */
-            $assistant = Environment::getInstance()->getContainer()->get('Elca\Service\Assistant\Stairs\StaircaseAssistant');
+            $assistant = Environment::getInstance()->getContainer()->get(StaircaseAssistant::class);
             $staircase = $assistant->getStaircaseFromElement($this->elementId);
 
             $v = 1.1;

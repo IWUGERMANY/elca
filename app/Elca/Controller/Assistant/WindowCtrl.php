@@ -30,12 +30,13 @@ use Elca\Commands\Assistant\Window\SaveCommand;
 use Elca\Controller\ElementsCtrl;
 use Elca\Controller\ProjectElementsCtrl;
 use Elca\Controller\TabsCtrl;
+use Elca\Db\ElcaAssistantElement;
 use Elca\Db\ElcaElement;
-use Elca\Db\ElcaElementAttribute;
 use Elca\Db\ElcaProcessConfigSearchSet;
 use Elca\Model\Assistant\Window\Assembler;
 use Elca\Model\Assistant\Window\Validator;
 use Elca\Service\Assistant\Window\WindowAssistant;
+use Elca\Service\ElcaElementImageCache;
 use Elca\Service\Messages\ElcaMessages;
 use Elca\View\Assistant\WindowAssistantView;
 use Elca\View\ElcaElementsNavigationView;
@@ -74,8 +75,8 @@ class WindowCtrl extends TabsCtrl
         $this->context = isset($args['context'])? $args['context'] : $this->Request->get('context');
         $this->elementTypeNodeId = isset($args['t'])? $args['t'] : $this->Request->get('t');
         $this->elementId = isset($args['e'])? $args['e'] : $this->Request->get('e');
-        $this->assistant = $this->container->get('Elca\Service\Assistant\Window\WindowAssistant');
-        $this->imageCache = $this->container->get('Elca\Service\ElcaElementImageCache');
+        $this->assistant = $this->container->get(WindowAssistant::class);
+        $this->imageCache = $this->container->get(ElcaElementImageCache::class);
     }
     // End init
 
@@ -112,10 +113,9 @@ class WindowCtrl extends TabsCtrl
         $view->assign('elementTypeNodeId', $this->elementTypeNodeId);
 
         $elementId = $command->elementId;
-        $attr = ElcaElementAttribute::findByElementIdAndIdent($elementId, WindowAssistant::IDENT);
-        if ($attr->isInitialized() && $attr->getNumericValue() !== null) {
-            $elementId = $attr->getNumericValue();
-        }
+
+        $assistantElement = ElcaAssistantElement::findByElementId($elementId, WindowAssistant::IDENT);
+        $elementId = $assistantElement->getMainElementId();
 
         $element = ElcaElement::findById($elementId);
 
@@ -205,17 +205,19 @@ class WindowCtrl extends TabsCtrl
 
             if ($processConfigId == 'NULL') $processConfigId = null;
 
-            $View = $this->setView(new ElcaProcessConfigSelectorView());
-            $View->assign('processConfigId', $processConfigId);
-            $View->assign('elementId', $this->Request->elementId);
-            $View->assign('relId', $this->Request->relId);
-            $View->assign('processCategoryNodeId', $this->Request->processCategoryNodeId? $this->Request->processCategoryNodeId : $this->Request->c);
-            $View->assign('buildMode', $this->Request->b);
-            $View->assign('inUnit', $this->Request->u);
-            $View->assign('context', 'assistant/window');
-            $View->assign('allowDeselection', true);
-            $View->assign('db', $this->Request->db);
-            $View->assign('epdSubType', $this->Request->epdSubType);
+            $view = $this->setView(new ElcaProcessConfigSelectorView());
+            $view->assign('processConfigId', $processConfigId);
+            $view->assign('elementId', $this->Request->elementId);
+            $view->assign('relId', $this->Request->relId);
+            $view->assign('processCategoryNodeId', $this->Request->processCategoryNodeId? $this->Request->processCategoryNodeId : $this->Request->c);
+            $view->assign('buildMode', $this->Request->b);
+            $view->assign('inUnit', $this->Request->u);
+            $view->assign('context', 'assistant/window');
+            $view->assign('allowDeselection', true);
+            $view->assign('db', $this->Request->db);
+            $view->assign('epdSubType', $this->Request->epdSubType);
+            $view->assign('isTemplateContext', $this->Request->tpl ?? ElementsCtrl::CONTEXT === $this->context);
+
         }
         /**
          * If user pressed select button, assign the new process
@@ -245,7 +247,7 @@ class WindowCtrl extends TabsCtrl
         /**
          * Add left navigation
          */
-        if(!$this->hasViewByName('Elca\View\ElcaElementsNavigationView'))
+        if(!$this->hasViewByName(ElcaElementsNavigationView::class))
         {
             $view = $this->addView(
                 null !== $projectVariantId
@@ -254,7 +256,7 @@ class WindowCtrl extends TabsCtrl
             );
             $view->assign('context', $this->context);
             $view->assign('activeElementTypeId', $activeElementTypeId);
-            $view->assign('controller', $this->context === ElementsCtrl::CONTEXT? 'Elca\Controller\ElementsCtrl' : 'Elca\Controller\ProjectElementsCtrl');
+            $view->assign('controller', $this->context === ElementsCtrl::CONTEXT? ElementsCtrl::class : ProjectElementsCtrl::class);
 
             if (null !== $projectVariantId) {
                 $view->assign('projectVariantId', $projectVariantId);

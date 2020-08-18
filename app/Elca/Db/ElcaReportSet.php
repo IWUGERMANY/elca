@@ -75,7 +75,8 @@ class ElcaReportSet extends DataObjectSet
     const VIEW_REPORT_FINAL_ENERGY_REF_MODEL_EFFECTS = 'elca_cache.report_final_energy_ref_model_effects_v';
     const VIEW_REPORT_TOTAL_CONSTRUCTION_RECYCLING_EFFECTS = 'elca_cache.report_total_construction_recycling_effects_v';
     const VIEW_REPORT_TOTAL_ENERGY_RECYCLING_EFFECTS = 'elca_cache.report_total_energy_recycling_potential';
-	
+	const VIEW_REPORT_WASTE_CODE_MASS_V = 'elca_cache.report_waste_code_mass_v'; 
+    
 	const TABLE_REPORT_PDF_QUEUE = 'elca.reports_pdf_queue';
 
 
@@ -1096,6 +1097,81 @@ class ElcaReportSet extends DataObjectSet
     }
     // End findEffectsPerElementType
 
+    /**
+     * Returns a list of level1-3 element type effects
+     *
+     * @param          $projectVariantId
+     * @param array    $lcPhases
+     * @param null     $indicatorId
+     * @param null     $parentElementTypeNodeId
+     * @param int|null $maxLevel
+     * @param int      $minLevel
+     * @param bool     $force
+     * @return DataObjectSet
+     */
+    public static function findGWPTotal (
+        $projectVariantId,
+        array $lcPhases = null,
+        $indicatorId = null,
+        $parentElementTypeNodeId = null,
+        $maxLevel = 3,
+        $minLevel = 1,
+        $force = false
+    ) {
+        $initValues['projectVariantId'] = $projectVariantId;
+        $initValues['minLevel']         = (int)$minLevel;
+        $initValues['maxLevel']         = (int)$maxLevel;
+
+        if ($indicatorId) {
+            $initValues['indicatorId'] = $indicatorId;
+        }
+
+        $lcSql = null;
+        if ($lcPhases) {
+            $pieces = array();
+            foreach ($lcPhases as $index => $phase) {
+                $initValues['lcPhase' . $index] = $phase;
+                $pieces[]                       = ':lcPhase' . $index;
+            }
+            $lcSql = join(', ', $pieces);
+        }
+
+        if ($parentElementTypeNodeId) {
+            $initValues['parentElementTypeNodeId'] = $parentElementTypeNodeId;
+        }
+
+
+        $sql = sprintf(
+            'SELECT value,din_code
+                          FROM %s
+                         WHERE project_variant_id = :projectVariantId
+                           AND is_hidden = false 
+                           AND level BETWEEN :minLevel AND :maxLevel
+                           %s %s %s
+                           AND ( din_code = 0 OR din_code=300 OR din_code=400)
+                      ORDER BY din_code
+                             , life_cycle_phase DESC
+                             , indicator_p_order'
+            ,
+            self::VIEW_REPORT_ELEMENT_TYPE_EFFECTS
+            ,
+            $indicatorId ? 'AND indicator_id = :indicatorId' : ''
+            ,
+            $lcSql ? ' AND life_cycle_phase IN (' . $lcSql . ')' : ''
+            ,
+            $parentElementTypeNodeId ? ' AND parent_element_type_node_id = :parentElementTypeNodeId' : ''
+        );
+
+        return self::_findBySql(
+            get_class(),
+            $sql,
+            $initValues,
+            $force
+        );
+    }
+    // End findGWPTotal
+
+
 
     /**
      * Returns a list of life cycle effects
@@ -1788,6 +1864,29 @@ class ElcaReportSet extends DataObjectSet
 
         return [$initValues, $filterSql];
     }
+    
+    
+    /**
+     * Returns waste code aggregated values
+     *
+     * @param  int $projectVariantId
+     * @param bool $force
+     *
+     * @return ElcaReportSet
+     */
+    public static function findWasteCode($projectVariantId, $force = false)
+    {
+        // $Project = ElcaProjectVariant::findById($projectVariantId)->getProject();
+
+        return self::_find(
+            get_class(),
+            self::VIEW_REPORT_WASTE_CODE_MASS_V,
+            array(
+                'project_variant_id' => $projectVariantId
+            )
+        );
+    }
+    // End findTransportAssets    
 	
 }
 // End ElcaReportSet
