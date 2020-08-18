@@ -42,5 +42,4 @@
         <div class="button"><a href="/project-reports/lcaProcessing/">Komplettes Projekt neu berechnen</a></div>
     </div>
 
-
 </div>

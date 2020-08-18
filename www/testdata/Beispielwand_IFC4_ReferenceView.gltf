@@ -1,0 +1,236 @@
+{
+    "asset": {
+        "premultipliedAlpha": true,
+        "profile": {
+            "api": "WebGL",
+            "version": "1.0.2"
+        },
+        "generator": "COLLADA2GLTF",
+        "version": "1.0"
+    },
+    "scenes": {
+        "scene_0": {
+            "nodes": [
+                "node_0"
+            ]
+        }
+    },
+    "scene": "scene_0",
+    "nodes": {
+        "node_0": {
+            "children": [
+                "product-f3c6b01b-b40f-4076-b4e9-5996992d6bec-body"
+            ],
+            "matrix": [
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                -1.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "name": "Z_UP"
+        },
+        "product-f3c6b01b-b40f-4076-b4e9-5996992d6bec-body": {
+            "meshes": [
+                "representation-189"
+            ],
+            "matrix": [
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                -0.00004529493162408471,
+                0.2374809831380844,
+                0.0,
+                1.0
+            ],
+            "name": "product-f3c6b01b-b40f-4076-b4e9-5996992d6bec-body"
+        }
+    },
+    "meshes": {
+        "representation-189": {
+            "primitives": [
+                {
+                    "attributes": {
+                        "NORMAL": "accessor_1",
+                        "POSITION": "accessor_2"
+                    },
+                    "indices": "accessor_0",
+                    "mode": 4,
+                    "material": "surface-style-182-mauerwerk---sichtmauerwerk-fx"
+                }
+            ],
+            "name": "representation-189"
+        }
+    },
+    "accessors": {
+        "accessor_0": {
+            "bufferView": "bufferView_0",
+            "byteOffset": 0,
+            "componentType": 5123,
+            "count": 36,
+            "max": [
+                23
+            ],
+            "min": [
+                0
+            ],
+            "type": "SCALAR"
+        },
+        "accessor_1": {
+            "bufferView": "bufferView_1",
+            "byteOffset": 0,
+            "byteStride": 12,
+            "componentType": 5126,
+            "count": 24,
+            "max": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "min": [
+                -1.0,
+                -1.0,
+                -1.0
+            ],
+            "type": "VEC3"
+        },
+        "accessor_2": {
+            "bufferView": "bufferView_1",
+            "byteOffset": 288,
+            "byteStride": 12,
+            "componentType": 5126,
+            "count": 24,
+            "max": [
+                10.0,
+                0.23749999701976777,
+                3.0
+            ],
+            "min": [
+                0.0,
+                -0.23749999701976777,
+                0.0
+            ],
+            "type": "VEC3"
+        }
+    },
+    "materials": {
+        "surface-style-182-mauerwerk---sichtmauerwerk-fx": {
+            "values": {
+                "diffuse": [
+                    0.5098039507865906,
+                    0.28235292434692385,
+                    0.1764705926179886,
+                    1.0
+                ]
+            },
+            "technique": "technique_0",
+            "name": "surface-style-182-mauerwerk---sichtmauerwerk-fx"
+        }
+    },
+    "techniques": {
+        "technique_0": {
+            "attributes": {
+                "a_normal": "normal",
+                "a_position": "position"
+            },
+            "parameters": {
+                "diffuse": {
+                    "type": 35666
+                },
+                "modelViewMatrix": {
+                    "semantic": "MODELVIEW",
+                    "type": 35676
+                },
+                "normal": {
+                    "semantic": "NORMAL",
+                    "type": 35665
+                },
+                "normalMatrix": {
+                    "semantic": "MODELVIEWINVERSETRANSPOSE",
+                    "type": 35675
+                },
+                "position": {
+                    "semantic": "POSITION",
+                    "type": 35665
+                },
+                "projectionMatrix": {
+                    "semantic": "PROJECTION",
+                    "type": 35676
+                }
+            },
+            "program": "program_0",
+            "states": {
+                "enable": [
+                    2884,
+                    2929
+                ]
+            },
+            "uniforms": {
+                "u_diffuse": "diffuse",
+                "u_modelViewMatrix": "modelViewMatrix",
+                "u_normalMatrix": "normalMatrix",
+                "u_projectionMatrix": "projectionMatrix"
+            }
+        }
+    },
+    "programs": {
+        "program_0": {
+            "attributes": [
+                "a_normal",
+                "a_position"
+            ],
+            "fragmentShader": "shader_1",
+            "vertexShader": "shader_0"
+        }
+    },
+    "shaders": {
+        "shader_0": {
+            "type": 35633,
+            "uri": "data:text/plain;base64,cHJlY2lzaW9uIGhpZ2hwIGZsb2F0Owp1bmlmb3JtIG1hdDQgdV9tb2RlbFZpZXdNYXRyaXg7CnVuaWZvcm0gbWF0NCB1X3Byb2plY3Rpb25NYXRyaXg7CnVuaWZvcm0gbWF0MyB1X25vcm1hbE1hdHJpeDsKYXR0cmlidXRlIHZlYzMgYV9wb3NpdGlvbjsKdmFyeWluZyB2ZWMzIHZfcG9zaXRpb247CmF0dHJpYnV0ZSB2ZWMzIGFfbm9ybWFsOwp2YXJ5aW5nIHZlYzMgdl9ub3JtYWw7CnZvaWQgbWFpbih2b2lkKSB7CiAgICB2ZWM0IHBvcyA9IHVfbW9kZWxWaWV3TWF0cml4ICogdmVjNChhX3Bvc2l0aW9uLDEuMCk7CiAgICB2X3Bvc2l0aW9uID0gcG9zLnh5ejsKICAgIGdsX1Bvc2l0aW9uID0gdV9wcm9qZWN0aW9uTWF0cml4ICogcG9zOwogICAgdl9ub3JtYWwgPSB1X25vcm1hbE1hdHJpeCAqIGFfbm9ybWFsOwp9Cg=="
+        },
+        "shader_1": {
+            "type": 35632,
+            "uri": "data:text/plain;base64,cHJlY2lzaW9uIGhpZ2hwIGZsb2F0Owp1bmlmb3JtIHZlYzQgdV9kaWZmdXNlOwp2YXJ5aW5nIHZlYzMgdl9wb3NpdGlvbjsKdmFyeWluZyB2ZWMzIHZfbm9ybWFsOwp2b2lkIG1haW4odm9pZCkgewogICAgdmVjMyBub3JtYWwgPSBub3JtYWxpemUodl9ub3JtYWwpOwogICAgdmVjNCBkaWZmdXNlID0gdV9kaWZmdXNlOwogICAgdmVjMyBkaWZmdXNlTGlnaHQgPSB2ZWMzKDAuMCwgMC4wLCAwLjApOwogICAgdmVjMyBhbWJpZW50ID0gZGlmZnVzZS5yZ2I7CiAgICB2ZWMzIHZpZXdEaXIgPSAtbm9ybWFsaXplKHZfcG9zaXRpb24pOwogICAgdmVjMyBhbWJpZW50TGlnaHQgPSB2ZWMzKDAuMCwgMC4wLCAwLjApOwogICAgYW1iaWVudExpZ2h0ICs9IHZlYzMoMC4yLCAwLjIsIDAuMik7CiAgICB2ZWMzIGwgPSB2ZWMzKDAuMCwgMC4wLCAxLjApOwogICAgZGlmZnVzZUxpZ2h0ICs9IHZlYzMoMS4wLCAxLjAsIDEuMCkgKiBtYXgoZG90KG5vcm1hbCwgbCksIDAuKTsgCiAgICB2ZWMzIGNvbG9yID0gdmVjMygwLjAsIDAuMCwgMC4wKTsKICAgIGNvbG9yICs9IGRpZmZ1c2UucmdiICogZGlmZnVzZUxpZ2h0OwogICAgY29sb3IgKz0gYW1iaWVudCAqIGFtYmllbnRMaWdodDsKICAgIGdsX0ZyYWdDb2xvciA9IHZlYzQoY29sb3IgKiBkaWZmdXNlLmEsIGRpZmZ1c2UuYSk7Cn0K"
+        }
+    },
+    "bufferViews": {
+        "bufferView_0": {
+            "buffer": "buffer_0",
+            "byteOffset": 576,
+            "byteLength": 72,
+            "target": 34963
+        },
+        "bufferView_1": {
+            "buffer": "buffer_0",
+            "byteOffset": 0,
+            "byteLength": 576,
+            "target": 34962
+        }
+    },
+    "buffers": {
+        "buffer_0": {
+            "byteLength": 648,
+            "uri": "data:application/octet-stream;base64,AAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAgQTMzcz4AAEBAAAAgQTMzcz4AAAAAAAAAADMzcz4AAEBAAAAAADMzcz4AAAAAAAAAADMzcz4AAEBAAAAAADMzcz4AAAAAAAAAADMzc74AAAAAAAAAADMzc74AAEBAAAAAADMzc74AAEBAAAAAADMzc74AAAAAAAAgQTMzc74AAEBAAAAgQTMzc74AAAAAAAAgQTMzc74AAEBAAAAgQTMzc74AAAAAAAAgQTMzcz4AAAAAAAAgQTMzcz4AAEBAAAAAADMzc74AAAAAAAAAADMzcz4AAAAAAAAgQTMzcz4AAAAAAAAgQTMzc74AAAAAAAAgQTMzcz4AAEBAAAAAADMzcz4AAEBAAAAAADMzc74AAEBAAAAgQTMzc74AAEBAAAABAAIAAgABAAMABAAFAAYABwAEAAYACAAJAAoACgAJAAsADAANAA4ADwAMAA4AEAARABIAEwAQABIAFAAVABYAFAAWABcA"
+        }
+    }
+}
