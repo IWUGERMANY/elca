@@ -930,7 +930,7 @@ class ElcaProjectDataEnEvView extends HtmlView
 
     protected function hasKwkDemands(): bool
     {
-        if (!$this->Data->Kwk->id) {
+        if (!$this->Data->Kwk->id || !isset($this->Data->Demand->isKwk)) {
             return false;
         }
 
