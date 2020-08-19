@@ -516,7 +516,15 @@ class ElcaValidator extends HtmlFormValidator
         $processConfigIds = $this->getValue('processConfigId');
         $isKwk = $this->getValue('isKwk');
 
-        if (!is_array($processConfigIds)) {
+        if (!is_array($processConfigIds) || !is_array($isKwk)) {
+            return true;
+        }
+
+        $kwkDemandCount = \count(\array_filter($isKwk, function($isKwk) {
+            return $isKwk;
+        }));
+
+        if (0 === $kwkDemandCount) {
             return true;
         }
 
