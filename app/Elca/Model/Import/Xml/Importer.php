@@ -57,6 +57,7 @@ use Elca\Db\ElcaProjectEnEv;
 use Elca\Db\ElcaProjectFinalEnergyDemand;
 use Elca\Db\ElcaProjectFinalEnergySupply;
 use Elca\Db\ElcaProjectIndicatorBenchmark;
+use Elca\Db\ElcaProjectKwk;
 use Elca\Db\ElcaProjectLocation;
 use Elca\Db\ElcaProjectPhase;
 use Elca\Db\ElcaProjectVariant;
@@ -436,19 +437,30 @@ class Importer
                     $nodes = $this->getList('{p:}finalEnergyDemands/{p:}finalEnergyDemand', $variantNode);
                     foreach ($nodes as $node) {
                         $processConfigUuid = $this->getAttribute($node, 'processConfigUuid');
+                        $kwkName           = $this->getAttribute($node, 'kwk', null, true);
+                        $fedRatio          = $this->getAttribute($node, 'ratio', 1, true);
                         $processConfig     = ElcaProcessConfig::findByUuid($processConfigUuid);
-                        $dataObject                = $this->getObjectProperties(
+                        $dataObject        = $this->getObjectProperties(
                             $node,
                             ['heating', 'water', 'lighting', 'ventilation', 'cooling']
                         );
-                        $fed               = ElcaProjectFinalEnergyDemand::create(
+
+                        $kwkId = null;
+                        if ($kwkName) {
+                            $kwkId = $this->createOrFindProjectKwkId($variant, $kwkName, $dataObject);
+                        }
+
+                        $fed = ElcaProjectFinalEnergyDemand::create(
                             $variant->getId(),
                             $processConfig->getId(),
                             $dataObject->heating,
                             $dataObject->water,
                             $dataObject->lighting,
                             $dataObject->ventilation,
-                            $dataObject->cooling
+                            $dataObject->cooling,
+                            null,
+                            $fedRatio,
+                            $kwkId
                         );
 
                         if (!$fed->isInitialized()) {
@@ -1070,6 +1082,17 @@ class Importer
 
 
     // private
+    protected function createOrFindProjectKwkId(ElcaProjectVariant $variant, string $kwkName, $dataObject): int
+    {
+        $projectKwk = ElcaProjectKwk::findByProjectVariantId($variant->getId());
+
+        if ($projectKwk->isInitialized()) {
+            return $projectKwk->getId();
+        }
+
+        return ElcaProjectKwk::create($variant->getId(), $kwkName, $dataObject->heating,
+            $dataObject->water)->getId();
+    }
 
     /**
      * Validates the document

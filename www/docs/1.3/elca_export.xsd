@@ -25,12 +25,12 @@
 <!--
  Version 1.3.2
     + add optional assistant elements
-
+    + add optional kwk capability for final energy demands
 
  Version 1.3.1
     + attribute caption is not mandatory anymore
 
- Version 1.3
+ Version 1.3.0
     + added informational processConfigName attribute
     + added optional project variant attributes
     + extracted attributesType
@@ -44,7 +44,7 @@
  Changes to previous:
     + added element attributes to componentType
 
- Version: 1.2
+ Version: 1.2.0
 
  Changes to previous:
     + added attribute isExtantBuilding to construction element
@@ -172,6 +172,8 @@
                                 </xs:all>
                                 <xs:attribute type="xs:string" name="processConfigUuid"/>
                                 <xs:attribute type="xs:string" name="processConfigName" use="optional"/>
+                                <xs:attribute type="xs:string" name="ratio" use="optional"/>
+                                <xs:attribute type="xs:string" name="kwk" use="optional"/>
                             </xs:complexType>
                         </xs:element>
                     </xs:sequence>
