@@ -1,3 +1,9 @@
+# 1.8.2
++ Ergänzt die Möglichkeit IFC Projekte zu importieren und in einem Viewer anzusehen
++ Ergänzt eine Auswertung nach Abfallschlüssel
++ Optimiert die Persistierung von Assistentenbauteilen
++ Behebt die Projekt-Import- und Exportfunktion für Fermwärmedatensätze
+
 # 1.8.1
 + Behebt einen Fehler beim EnEV Projekt Import, wenn die EnEV-Ratio in der Energierbereitstellung nicht gesetzt ist
 
