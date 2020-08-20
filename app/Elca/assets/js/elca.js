@@ -2727,6 +2727,11 @@ $(window).load(function () {
                             else if ($this.hasClass('pie-chart')) {
                                 self.prepareFinalEnergyKwkPieChart($context);
                             }
+                            else if ($this.hasClass('pie-chart-gwp')) {
+                                self.prepareGWPPieChart($context);
+                            }
+                            
+                            
                             load = (i + 1) / chartCount;
 
                             $progressElt.html($('#diagramsLoading').text() + ' ' + Math.round(load * 100) + '%');
@@ -2895,7 +2900,7 @@ $(window).load(function () {
 
                 prepareFinalEnergyKwkPieChart: function ($context) {
                     var $chart = $('.pie-chart', $context);
-
+                    
                     if ($chart.length === 0) {
                         return;
                     }
@@ -2983,6 +2988,97 @@ $(window).load(function () {
                             return d.data.text;
                         });
                 },
+                
+                prepareGWPPieChart: function ($context) {
+                    var $chart = $('.pie-chart-gwp', $context);
+                    
+                    if ($chart.length === 0) {
+                        return;
+                    }
+
+                    var data = $chart.data('values');
+
+                    var self = this;
+
+                    var width = 100,
+                        height = 100,
+                        radius = Math.min(width, height) / 2;
+
+                    var color = d3.scale.ordinal()
+                        .range(["#E0ACA6", "#D05A46", "#AE4C3B", "#7EADA3"]);
+
+                    var arc = d3.svg.arc()
+                        .outerRadius(radius - 10)
+                        .innerRadius(0);
+
+                    var pie = d3.layout.pie()
+                        .sort(null)
+                        .value(function (d) {
+                            return d.value;
+                        });
+
+                    var svg = d3.select($chart[0]).append("svg")
+                        .attr("width", width + '%')
+                        .attr("height", height + '%')
+                        .attr("viewBox", "0 0 100 100")
+                        .append("g")
+                        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+                    var charsPerLine = 8;
+                    var textBaseSize = 8;
+
+                    data.forEach(function (d) {
+                        d.value = +d.value;
+                        d.text = (d.name + ' ' + ((d.value * 100 * 10) / 10).toFixed(2) + "%").replace('.', ',')
+
+                        var newEmSize = charsPerLine / d.text.length;
+                        d.fontSize = newEmSize < 1 ? (newEmSize * textBaseSize) + "px" : "8px";
+                    });
+
+                    this.tooltip = d3.select($chart[0])
+                        .append("div")
+                        .attr("class", "tooltip")
+                        .style("opacity", 0);
+
+                    var g = svg.selectAll(".arc")
+                        .data(pie(data))
+                        .enter().append("g")
+                        .attr("class", "arc");
+
+                    g.append("path")
+                        .attr("d", arc)
+                        .style("fill", function (d) {
+                            return d.data.class === 'undefined' ? '#FF0000' : d.data.class;
+                        })
+                        .on("mouseover", function (d) {
+                            var coords = d3.mouse($chart[0]);
+                            self.tooltip.transition()
+                                .duration(200)
+                                .style("opacity", .9);
+
+                            self.tooltip.text(d.data.text)
+                                .style("left", coords[0] + "px")
+                                .style("top", (coords[1] - 12) + "px");
+                        })
+                        .on("mouseout", function (d) {
+                            self.tooltip.transition()
+                                .duration(500)
+                                .style("opacity", 0);
+                        });
+
+                    g.append("text")
+                        .attr("transform", function (d) {
+                            return "translate(" + arc.centroid(d) + ")";
+                        })
+                        .attr("dy", ".35em")
+                        .style("text-anchor", "middle")
+                        .style("font-size", function(d) {
+                            return d.data.fontSize;
+                        })
+                        .text(function (d) {
+                            return d.data.text;
+                        });
+                },                
 
             }
         }

@@ -109,7 +109,7 @@ class ElcaReportSummaryView extends ElcaReportsView
     // GWP total - 
     private $totalValueGWP = 0;
     private $totalB6ValueGWP = 0;
-
+    private $pieChartColorsGWP = ['B6' => "#E0ACA6", 'KG 300' => "#D05A46",'KG 400' => "#AE4C3B"];
     // protected
 
 
@@ -287,7 +287,6 @@ class ElcaReportSummaryView extends ElcaReportsView
             false,
             $TotalEffects->getArrayBy('value', 'indicator_id')
         );
-
         $this->buildGWPChart($TypeGWP, ElcaReportSet::findGWPTotal($this->projectVariantId, ['total'], 9, null, 2, 0), $projectVariant, $ProjectConstruction); 
         
         return $TotalEffects->count();
@@ -322,7 +321,19 @@ class ElcaReportSummaryView extends ElcaReportsView
         $data->name = t('B6');
         $data->value = $this->totalB6ValueGWP;
         $data->percentage = number_format(($this->totalB6ValueGWP/$this->totalValueGWP),5,".",".");
+        $data->class = 'undefined';
+        
         $GWPTotalValues[] = $data;
+        
+        if($data->percentage>0) {
+            $data->class = $this->pieChartColorsGWP[$data->name];
+            $GWPTotalPieValues[] = $data;
+        } 
+        else 
+        {
+            
+            $GWPTotalPieValues[] = $data;
+        }   
         
         foreach($GWPTotal as $GWPTotalItems) 
         {
@@ -336,6 +347,11 @@ class ElcaReportSummaryView extends ElcaReportsView
                     $data->value = ($GWPTotalItems->value / $m2a);
                     $data->percentage = number_format((($GWPTotalItems->value / $m2a)/$this->totalValueGWP),5,'.','.');
                     $GWPTotalValues[] = $data;
+                    $data->class = 'undefined';
+                    if($data->percentage>0) {
+                        $data->class = $this->pieChartColorsGWP[$data->name];
+                        $GWPTotalPieValues[] = $data;
+                    }   
                 }
             }        
         }
@@ -365,13 +381,48 @@ class ElcaReportSummaryView extends ElcaReportsView
         $Row->getColumn('percentage')->setOutputElement(new ElcaHtmlNumericText('percentage', 2, true));
         $Row->getColumn('value')->setOutputElement(new ElcaHtmlNumericText('value', 8, false));
 
+
         $Body->setDataSet($GWPTotalValues);
 
         $Tables = $Container->appendChild($this->getDiv(['class' => 'tables']));
         $table->appendTo($Tables);
 
+        $pieChart = $Container->appendChild($this->getDiv(['class' => 'pieChartSVG']));
+        
+        $this->buildPieChart($pieChart, $GWPTotalPieValues);    
         // ElcaNumberFormat::toString($this->totalValueGWP, 2)
     }
+
+    /**
+     * Appends the container for the stacked bar chart
+     *
+     * @param  @param DOMElement $Container
+     * @param          $projectVariantId
+     * @param          $elementTypeNodeId
+     */
+    protected function buildPieChart(DOMElement $Container, array $GWPTotalPieValues)
+    {
+        $pieData = [];
+       
+        /*    
+            ["name"]=> string(3) "GWP" 
+            ["value"]=> float(10.629270257842) 
+            ["percentage"]=> int(1) 
+        */    
+        foreach ($GWPTotalPieValues as $GWPSingleValues) {
+            $pieData[] = (object)['name' => $GWPSingleValues->name,
+                                  'value' => $GWPSingleValues->percentage,
+                                  'class' => $GWPSingleValues->class
+                                ];
+        }
+
+        $Container->appendChild($this->getDiv([
+            'class' => 'chart pie-chart-gwp',
+            'data-values' => json_encode($pieData)
+        ]));
+
+    }
+
 
     /**
      * Appends the container for the benchmark diagram
