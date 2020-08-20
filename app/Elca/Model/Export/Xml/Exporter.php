@@ -41,10 +41,12 @@ use Elca\Db\ElcaProject;
 use Elca\Db\ElcaProjectAttribute;
 use Elca\Db\ElcaProjectConstruction;
 use Elca\Db\ElcaProjectEnEv;
+use Elca\Db\ElcaProjectFinalEnergyDemand;
 use Elca\Db\ElcaProjectFinalEnergyDemandSet;
 use Elca\Db\ElcaProjectFinalEnergySupply;
 use Elca\Db\ElcaProjectFinalEnergySupplySet;
 use Elca\Db\ElcaProjectIndicatorBenchmarkSet;
+use Elca\Db\ElcaProjectKwk;
 use Elca\Db\ElcaProjectLocation;
 use Elca\Db\ElcaProjectVariantSet;
 use Elca\Service\ElcaElementImageCache;
@@ -166,13 +168,13 @@ class Exporter
         $variantsNode = $projectNode->appendChild($this->get('projectVariants'));
 
         foreach (ElcaProjectVariantSet::findByProjectId($project->getId(), [], ['id' => 'ASC']) as $variant) {
-            $attributes = ['phaseIdent' => $variant->getPhase()->getIdent()];
+            $fedAttributes = ['phaseIdent' => $variant->getPhase()->getIdent()];
 
             if ($project->getCurrentVariantId() == $variant->getId()) {
-                $attributes['isCurrent'] = 'true';
+                $fedAttributes['isCurrent'] = 'true';
             }
 
-            $variantNode = $variantsNode->appendChild($this->get('variant', $attributes));
+            $variantNode = $variantsNode->appendChild($this->get('variant', $fedAttributes));
 
             $this->appendObjectProperties($variantNode, $variant, ['name']);
 
@@ -245,20 +247,25 @@ class Exporter
                         ['ngfEnEv' => $projectEnEv->getNgf(), 'enEvVersion' => (int)$projectEnEv->getVersion()]
                     )
                 );
+                /**
+                 * @var ElcaProjectFinalEnergyDemand $finalEnergyDemand
+                 */
                 foreach (
                     ElcaProjectFinalEnergyDemandSet::findByProjectVariantId(
                         $variant->getId()
                     ) as $finalEnergyDemand
                 ) {
-                    $fedNode = $containerNode->appendChild(
-                        $this->get(
-                            'finalEnergyDemand',
-                            [
-                                'processConfigUuid' => $finalEnergyDemand->getProcessConfig()->getUuid(),
-                                'processConfigName' => $finalEnergyDemand->getProcessConfig()->getName(),
-                            ]
-                        )
-                    );
+                    $fedAttributes = [
+                        'processConfigUuid' => $finalEnergyDemand->getProcessConfig()->getUuid(),
+                        'processConfigName' => $finalEnergyDemand->getProcessConfig()->getName(),
+                    ];
+
+                    if ($finalEnergyDemand->isKwk()) {
+                        $fedAttributes['kwk'] = ElcaProjectKwk::findByProjectVariantId($variant->getId())->getName();
+                        $fedAttributes['ratio'] = $finalEnergyDemand->getRatio();
+                    }
+
+                    $fedNode = $containerNode->appendChild($this->get('finalEnergyDemand', $fedAttributes));
                     $this->appendObjectProperties(
                         $fedNode,
                         $finalEnergyDemand,

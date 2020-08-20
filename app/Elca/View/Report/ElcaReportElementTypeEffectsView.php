@@ -136,8 +136,19 @@ class ElcaReportElementTypeEffectsView extends ElcaReportsView
                                       ->get(LifeCycleUsageService::class)
                                       ->findLifeCycleUsagesForProject(new ProjectId($this->Project->getId()));
 
+        // show lifecycle real values only - 2020-08-14
+        $lifeCycleReal = [];
+        foreach ($reportSet as $dataSetReal) {
+            if ($dataSetReal->life_cycle_ident !== ElcaLifeCycle::PHASE_TOTAL &&
+                 $dataSetReal->life_cycle_ident !== ElcaLifeCycle::PHASE_MAINT 
+            )   {
+                    $lifeCycleReal[$dataSetReal->din_code][$dataSetReal->life_cycle_ident] = $dataSetReal->life_cycle_ident;
+                }    
+        }    
+        // show lifecycle real values only - 2020-08-14
+        
         $reports = $this->prepareReportSet($reportSet, $lifeCycleUsages);
-
+        
         $elementTypes = [];
 
         $typeUl = $Container->appendChild($this->getUl(['class' => 'category']));
@@ -146,7 +157,6 @@ class ElcaReportElementTypeEffectsView extends ElcaReportsView
             $indicatorItem = $dataSet[$this->indicatorId];
             $headline = $indicatorItem->category === ElcaElementType::ROOT_NODE ? t('Gesamt / Konstruktion') : $dinCode .' '. $indicatorItem->category;
             $elementTypes[ $indicatorItem->element_type_node_id ] = $indicatorItem->phases[ElcaLifeCycle::PHASE_TOTAL];
-
             foreach ($dataSet as $indicatorId => $indicator) {
                 $dataSet[$indicatorId] = new IndicatorEffect(
                     $indicator->indicator,
@@ -167,8 +177,9 @@ class ElcaReportElementTypeEffectsView extends ElcaReportsView
             }
 
             $dataSet = array_values($dataSet);
-
-            $effectsTable = new HtmlIndicatorEffectsTable('element-type-effects', $dataSet, $lifeCycleUsages);
+            
+            // show lifecycle real values only - 2020-08-14
+            $effectsTable = new HtmlIndicatorEffectsTable('element-type-effects', $dataSet, $lifeCycleUsages,$lifeCycleReal[$dinCode]);
             $effectsTable->appendTo($typeLi);
 
             $this->buildStackedBarChart($typeLi, $this->projectVariantId, $indicatorItem->element_type_node_id);

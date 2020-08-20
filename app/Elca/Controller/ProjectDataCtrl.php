@@ -1241,6 +1241,7 @@ class ProjectDataCtrl extends AppCtrl
         $addNewDemand     = isset($this->Request->addDemand) ? (bool)$this->Request->addDemand : false;
         $addNewKwkDemand  = isset($this->Request->addKwkDemand) ? (bool)$this->Request->addKwkDemand : false;
         $addNewSupply     = isset($this->Request->addSupply) ? (bool)$this->Request->addSupply : false;
+        $addKwkInit       = isset($this->Request->addKwkInit) ? (bool)$this->Request->addKwkInit : false;
         $projectVariantId = $this->Request->projectVariantId;
         $validator        = new ElcaValidator($this->Request);
         $modified         = false;
@@ -1307,6 +1308,7 @@ class ProjectDataCtrl extends AppCtrl
             if ($projectKwk->isInitialized()) {
                 if (!$validator->assertProjectKwkFinalEnergyDemands()) {
                     $addNewKwkDemand = true;
+                    $addKwkInit = true;
                 }
             }
 
@@ -1369,6 +1371,8 @@ class ProjectDataCtrl extends AppCtrl
                     ElcaProjectKwk::create($projectVariantId, t('Fernwärme Mix'));
                     $addNewKwkDemand = true;
                 }
+
+                $addKwkInit = true;
         } elseif (isset($this->Request->addKwkEnergyDemand)) {
             $key = 'newKwkDemand';
 
@@ -1436,6 +1440,7 @@ class ProjectDataCtrl extends AppCtrl
         $view->assign('addNewProjectFinalEnergyDemand', $addNewDemand);
         $view->assign('addNewProjectKwkFinalEnergyDemand', $addNewKwkDemand);
         $view->assign('addNewProjectFinalEnergySupply', $addNewSupply);
+        $view->assign('addKwkInit', $addKwkInit);
         $view->assign('ngf', $ngf->getNgf());
         $view->assign('enEvVersion', $ngf->getVersion());
 
@@ -2766,11 +2771,11 @@ class ProjectDataCtrl extends AppCtrl
      */
     private function selectFinalEnergyProcessConfig()
     {
-        $View = $this->setView(new ElcaProjectDataEnEvView());
-        $View->assign('projectVariantId', $this->Request->projectVariantId);
-        $View->assign('ngf', $this->Request->ngf);
-        $View->assign('enEvVersion', $this->Request->enEvVersion);
-        $View->assign('readOnly', !$this->Access->isProjectOwnerOrAdmin($this->Elca->getProject()));
+        $view = $this->setView(new ElcaProjectDataEnEvView());
+        $view->assign('projectVariantId', $this->Request->projectVariantId);
+        $view->assign('ngf', $this->Request->ngf);
+        $view->assign('enEvVersion', $this->Request->enEvVersion);
+        $view->assign('readOnly', !$this->Access->isProjectOwnerOrAdmin($this->Elca->getProject()));
 
         $projectVariantId = $this->Request->projectVariantId;
 
@@ -2781,19 +2786,22 @@ class ProjectDataCtrl extends AppCtrl
          */
         if (!is_numeric($relId)) {
             switch ($relId) {
-                case 'newDemand': $View->assign("addNewProjectFinalEnergyDemand", true); break;
-                case 'newSupply': $View->assign("addNewProjectFinalEnergySupply", true); break;
-                case 'newKwkDemand': $View->assign("addNewProjectKwkFinalEnergyDemand", true); break;
+                case 'newDemand': $view->assign("addNewProjectFinalEnergyDemand", true); break;
+                case 'newSupply': $view->assign("addNewProjectFinalEnergySupply", true); break;
+                case 'newKwkDemand':
+                    $view->assign("addNewProjectKwkFinalEnergyDemand", true);
+                    $view->assign("addKwkInit", true);
+                    break;
             }
         }
 
         if ($this->Request->id != $this->Request->p) {
-            $View->assign('changedElements', ['processConfigId[' . $relId . ']' => true]);
+            $view->assign('changedElements', ['processConfigId[' . $relId . ']' => true]);
         }
 
         $this->Request->processConfigId = [$relId => $this->Request->id];
 
-        $View->assign('Data', $this->getFinalEnergyDataObject($projectVariantId, $relId == 'newSupply'));
+        $view->assign('Data', $this->getFinalEnergyDataObject($projectVariantId, $relId == 'newSupply'));
     }
     // End saveProjectTransport
 
