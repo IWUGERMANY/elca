@@ -109,7 +109,7 @@ class ElcaReportSummaryView extends ElcaReportsView
     // GWP total - 
     private $totalValueGWP = 0;
     private $totalB6ValueGWP = 0;
-    private $pieChartColorsGWP = ['B6' => "#E0ACA6", 'KG 300' => "#D05A46",'KG 400' => "#AE4C3B"];
+    private $pieChartColorsGWP = ['B6' => "#FAB07F", 'KG 300' => "#99CCCC",'KG 400' => "#669999"];
     // protected
 
 
