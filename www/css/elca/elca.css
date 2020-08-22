@@ -701,7 +701,7 @@ h1.projectHeader { float: left; margin-right: 3em; }
 /* Report summary - GWP data */
 .projects .report-summary-total .print-content { position: relative; }
 
-.projects .report-summary-total .print-content .GWPvalues { position: absolute; top: 20px; right: -200px; }
+.projects .report-summary-total .print-content .GWPvalues { position: absolute; top: 20px; right: -200px; width: 250px; }
 
 #content.report .GPWtabelle td { text-align: right; }
 
