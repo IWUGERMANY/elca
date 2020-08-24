@@ -701,7 +701,7 @@ h1.projectHeader { float: left; margin-right: 3em; }
 /* Report summary - GWP data */
 .projects .report-summary-total .print-content { position: relative; }
 
-.projects .report-summary-total .print-content .GWPvalues { position: absolute; top: 20px; right: -200px; }
+.projects .report-summary-total .print-content .GWPvalues { position: absolute; top: 20px; right: -200px; width: 250px; }
 
 #content.report .GPWtabelle td { text-align: right; }
 
@@ -709,9 +709,12 @@ h1.projectHeader { float: left; margin-right: 3em; }
 
 #content.report .GPWtabelle .firstRow { font-weight: bold; }
 
-.GWPvalues svg.piechart { transform: rotate(-90deg); height: 200px; }
+#content.report .GWPvalues { padding-left: 0px; width: 250px; }
 
-@media print { .projects .report-summary-total .print-content .GWPvalues { position: relative; top: auto; right: auto; padding: 0 0 30px 0; } }
+#content.report .GWPvalues div.chart { padding-left: 0px; }
+
+@media print { .projects .report-summary-total .print-content .GWPvalues { position: relative; top: auto; right: auto; padding: 0 0 30px 0; }
+  .projects .report-summary-total .print-content .GWPvalues .pie-chart-gwp svg { width: 300px; height: 300px; } }
 .toggle { display: none; }
 .toggle, .toggle:after, .toggle:before, .toggle *, .toggle *:after, .toggle *:before, .toggle + .toggle-btn { box-sizing: border-box; }
 .toggle::selection, .toggle:after::selection, .toggle:before::selection, .toggle *::selection, .toggle *:after::selection, .toggle *:before::selection, .toggle + .toggle-btn::selection { background: none; }
