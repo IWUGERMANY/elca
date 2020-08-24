@@ -368,7 +368,7 @@ class ProjectElementsCtrl extends ElementsCtrl
             $validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_SEPARATION.']', 0, 5, 'Der Wert für Trennung ist ungültig und muss zwischen 0 und 5 liegen');
             $validator->assertNumberRange('attr['. Elca::ELEMENT_ATTR_RECYCLING.']', 0, 5, 'Der Wert für Verwerung ist ungültig und muss zwischen 0 und 5 liegen');
 
-            $validator->assertUniqueIfcGuidWithinProjectVariant($elementAttributes, $this->Elca->getProjectVariantId(), $element->getId(), "Diese IFCGuid wird bereits in der Projektvariante verwendet. Eine Zuordnung ist nur einmal möglich");
+            $validator->assertUniqueIfcGuidWithinProjectVariant($elementAttributes, $this->Elca->getProjectVariantId(), $element->getId()?$element->getId():0, "Diese IFCGuid wird bereits in der Projektvariante verwendet. Eine Zuordnung ist nur einmal möglich");
 
             if($validator->isValid())
             {
