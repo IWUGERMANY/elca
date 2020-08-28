@@ -329,11 +329,7 @@ class ElcaReportSummaryView extends ElcaReportsView
             $data->class = $this->pieChartColorsGWP[$data->name];
             $GWPTotalPieValues[] = $data;
         } 
-        else 
-        {
-            
-            $GWPTotalPieValues[] = $data;
-        }   
+        
         
         foreach($GWPTotal as $GWPTotalItems) 
         {
