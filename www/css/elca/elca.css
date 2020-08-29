@@ -701,7 +701,7 @@ h1.projectHeader { float: left; margin-right: 3em; }
 /* Report summary - GWP data */
 .projects .report-summary-total .print-content { position: relative; }
 
-.projects .report-summary-total .print-content .GWPvalues { position: absolute; top: 20px; right: -200px; width: 250px; }
+.projects .report-summary-total .print-content .GWPvalues { position: absolute; top: 20px; right: -250px; width: 300px; }
 
 #content.report .GPWtabelle td { text-align: right; }
 
@@ -709,9 +709,19 @@ h1.projectHeader { float: left; margin-right: 3em; }
 
 #content.report .GPWtabelle .firstRow { font-weight: bold; }
 
-#content.report .GWPvalues { padding-left: 0px; width: 250px; }
-
 #content.report .GWPvalues div.chart { padding-left: 0px; }
+
+#content.report .GWPvalues .pieChartSVG svg { -webkit-filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.3)); filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.25)); }
+
+#content.report .GWPvalues .pieChartSVG { height: 200px; margin-top: 20px; }
+
+#content.report .GWPvalues .pie-chart-gwp { height: 200px; }
+
+#content.report .GWPvalues svg { width: 100%; height: 100%; }
+
+#content.report .GWPvalues path.slice { stroke-width: 2px; color: #ffffff; }
+
+#content.report .GWPvalues polyline { opacity: .3; stroke: black; stroke-width: 2px; fill: none; }
 
 @media print { .projects .report-summary-total .print-content .GWPvalues { position: relative; top: auto; right: auto; padding: 0 0 30px 0; }
   .projects .report-summary-total .print-content .GWPvalues .pie-chart-gwp svg { width: 300px; height: 300px; } }
