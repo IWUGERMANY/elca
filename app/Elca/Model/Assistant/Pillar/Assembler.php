@@ -151,7 +151,7 @@ class Assembler
     private function updatePillarElement(ElcaElement $pillarElement)
     {
         $pillarElement->setName($this->pillar->name());
-        $pillarElement->setQuantity($this->pillar->amount());
+        $pillarElement->setQuantity($this->pillar->amount($pillarElement->getQuantity()));
         $pillarElement->setRefUnit($this->pillar->unit());
         $pillarElement->update();
 

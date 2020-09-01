@@ -33,6 +33,7 @@ use Elca\Controller\ProjectElementsCtrl;
 use Elca\Controller\TabsCtrl;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaProcessConfigSearchSet;
+use Elca\Elca;
 use Elca\Model\Assistant\Pillar\Assembler;
 use Elca\Model\Assistant\Pillar\Validator;
 use Elca\Service\Assistant\Pillar\PillarAssistant;
@@ -128,6 +129,13 @@ class PillarCtrl extends TabsCtrl
             $assembler = new Assembler($pillar, $this->context === ProjectElementsCtrl::CONTEXT? $this->Elca->getProjectVariantId() : null);
 
             if ($elementId) {
+                /**
+                 * When unit changes from meter to Stk, reset quantity to 1
+                 */
+                if (Elca::UNIT_M === $element->getRefUnit() && Elca::UNIT_STK === $pillar->unit()) {
+                    $element->setQuantity(1);
+                }
+
                 $element = $assembler->update($element);
 
                 $this->assistant->savePillarForElement($element->getId(), $pillar);

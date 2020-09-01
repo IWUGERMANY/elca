@@ -127,11 +127,12 @@ class Pillar
     }
 
     /**
+     * @param int $quantity
      * @return number|int
      */
-    public function amount()
+    public function amount($quantity = 1)
     {
-        return Elca::UNIT_STK === $this->unit() ? 1 : $this->height();
+        return Elca::UNIT_STK === $this->unit() ? $quantity : $this->height();
     }
 
     /**
