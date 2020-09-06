@@ -387,22 +387,35 @@ class ElementService
                     }
 
                     foreach ($element->getCompositeElements(null, true) as $assignment) {
-                        $copiedSubElement = $this->copyElement(
-                            $assignment->getElement(),
-                            $ownerId,
-                            $projectVariantId,
-                            $accessGroupId,
-                            true,
-                            $copyCacheItems,
-                            $copy->getId(),
-                            $assignment->getPosition(),
-                            $assistantElement
-                        );
-
                         if ($assistantElement->isInitialized()) {
+                            $copiedSubElement = $this->copyElement(
+                                $assignment->getElement(),
+                                $ownerId,
+                                $projectVariantId,
+                                $accessGroupId,
+                                true,
+                                $copyCacheItems,
+                                $copy->getId(),
+                                $assignment->getPosition(),
+                                $assistantElement
+                            );
+
                             $assistantSubElement = ElcaAssistantSubElement::findByPk($assistantElement->getId(),
                                 $assignment->getElementId());
                             $assistantSubElement->copy($newAssistantElement->getId(), $copiedSubElement->getId());
+                        }
+                        else {
+                            $this->copyElement(
+                                $assignment->getElement(),
+                                $ownerId,
+                                $projectVariantId,
+                                $accessGroupId,
+                                true,
+                                $copyCacheItems,
+                                $copy->getId(),
+                                $assignment->getPosition(),
+                                ElcaAssistantElement::findByMainElementId($assignment->getElementId())
+                            );
                         }
                     }
                 } else {

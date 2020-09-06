@@ -6,6 +6,7 @@ use Elca\Db\ElcaAssistantElement;
 use Elca\Db\ElcaAssistantElementSet;
 use Elca\Db\ElcaAssistantSubElement;
 use Elca\Db\ElcaAssistantSubElementSet;
+use Elca\Db\ElcaCompositeElement;
 use Elca\Db\ElcaElement;
 use Elca\Db\ElcaElementAttribute;
 use Elca\Db\ElcaElementType;
@@ -99,12 +100,56 @@ class WindowAssistantTest extends AbstractAssistantTest
         $this->assertTrue($copiedAssistantSubElement->isInitialized());
     }
 
+    public function test_copyCompositeElementWithAssignedAssistantElement_copiesAssistantElement()
+    {
+        // GIVEN
+        $user           = $this->givenUser();
+        $projectVariant = $this->givenProjectVariant($user);
+        $windowElement  = $this->createWindowAssistantElementWithAdditionalSubElement($projectVariant->getId());
+
+        $compositeElement = ElcaElement::create(ElcaElementType::findByIdent('330')->getNodeId(), 'CompositeElement',
+            null, false, null, $projectVariant->getId());
+        ElcaCompositeElement::create($compositeElement->getId(), 1, $windowElement->getId());
+
+        $this->assertElementCount($projectVariant, 3);
+
+        // WHEN
+        $copiedCompositeElement = $this->projectElementService->copyElementFrom(
+            $compositeElement,
+            $user->getId(),
+            $projectVariant->getId(),
+            $user->getGroupId(),
+            false,
+            false
+        );
+
+        // THEN
+        $this->assertElementCount($projectVariant, 6);
+
+        $copiedCompositeWindowElement = $copiedCompositeElement->getCompositeElements()->current();
+        $this->assertNotNull($copiedCompositeWindowElement);
+        $this->assertNotFalse($copiedCompositeWindowElement);
+
+        $copiedWindowElement = $copiedCompositeWindowElement->getElement();
+
+        $copiedAssistantElement = ElcaAssistantElement::findByElementId($copiedWindowElement->getId());
+        $this->assertTrue($copiedAssistantElement->isInitialized());
+
+        $copiedAssistantSubElement = ElcaAssistantSubElement::findByPk($copiedAssistantElement->getId(),
+            $copiedWindowElement->getId());
+        $this->assertTrue($copiedAssistantSubElement->isInitialized());
+
+        $copiedAssistantSubElement = ElcaAssistantSubElement::findByAssistantElementIdAndIdent($copiedAssistantElement->getId(),
+            Assembler::IDENT_OUTDOOR_SILL);
+        $this->assertTrue($copiedAssistantSubElement->isInitialized());
+    }
+
     public function test_copyProjectVariant_copiesAssistantElement()
     {
         // GIVEN
         $user           = $this->givenUser();
         $projectVariant = $this->givenProjectVariant($user);
-        $windowElement  = $this->createWindowAssistantElement($projectVariant);
+        $windowElement  = $this->createWindowAssistantElementWithAdditionalSubElement($projectVariant->getId());
 
         // WHEN
         $copiedProjectVariant = $this->projectVariantService->copy($projectVariant, $projectVariant->getProjectId(),
@@ -117,14 +162,45 @@ class WindowAssistantTest extends AbstractAssistantTest
         $this->assertNotFalse($copiedAssistantElement);
         $this->assertTrue($copiedAssistantElement->isInitialized());
 
-        $copiedAssistantSubElement = ElcaAssistantSubElementSet::find(['assistant_element_id' => $copiedAssistantElement->getId()])
-                                                               ->current();
+        $copiedAssistantSubElementSet = ElcaAssistantSubElementSet::find(['assistant_element_id' => $copiedAssistantElement->getId()]);
+
+        $this->assertNotNull($copiedAssistantSubElementSet);
+        $this->assertEquals(2, $copiedAssistantSubElementSet->count());
+
+        $copiedAssistantSubElement = $this->findAssistantSubElementByIdent($copiedAssistantSubElementSet, Assembler::IDENT_WINDOW);
         $this->assertNotNull($copiedAssistantSubElement);
-        $this->assertNotFalse($copiedAssistantSubElement);
         $this->assertTrue($copiedAssistantSubElement->isInitialized());
 
         $this->assertNotEquals($windowElement->getId(), $copiedAssistantElement->getMainElementId());
         $this->assertNotEquals($windowElement->getId(), $copiedAssistantSubElement->getElementId());
+
+        $copiedAssistantSubElement = $this->findAssistantSubElementByIdent($copiedAssistantSubElementSet, Assembler::IDENT_OUTDOOR_SILL);
+        $this->assertNotNull($copiedAssistantSubElement);
+        $this->assertTrue($copiedAssistantSubElement->isInitialized());
+
+        // also assert old assistant sub elements still exist
+        $originalAssistantElement = ElcaAssistantElementSet::find(['project_variant_id' => $projectVariant->getId()])
+                                                         ->current();
+
+        $this->assertNotNull($originalAssistantElement);
+        $this->assertNotFalse($originalAssistantElement);
+        $this->assertTrue($originalAssistantElement->isInitialized());
+
+        $originalAssistantSubElementSet = ElcaAssistantSubElementSet::find(['assistant_element_id' => $originalAssistantElement->getId()]);
+
+        $this->assertNotNull($originalAssistantSubElementSet);
+        $this->assertEquals(2, $originalAssistantSubElementSet->count());
+
+        $originalAssistantSubElement = $this->findAssistantSubElementByIdent($originalAssistantSubElementSet, Assembler::IDENT_WINDOW);
+        $this->assertNotNull($originalAssistantSubElement);
+        $this->assertTrue($originalAssistantSubElement->isInitialized());
+
+        $this->assertEquals($windowElement->getId(), $originalAssistantElement->getMainElementId());
+        $this->assertEquals($windowElement->getId(), $originalAssistantSubElement->getElementId());
+
+        $originalAssistantSubElement = $this->findAssistantSubElementByIdent($originalAssistantSubElementSet, Assembler::IDENT_OUTDOOR_SILL);
+        $this->assertNotNull($originalAssistantSubElement);
+        $this->assertTrue($originalAssistantSubElement->isInitialized());
     }
 
     public function test_createTemplateFromElement_copiesAssistantElementWithoutProjectVariantId()
@@ -273,5 +349,19 @@ class WindowAssistantTest extends AbstractAssistantTest
         );
 
         return $windowElement;
+    }
+
+    protected function findAssistantSubElementByIdent(ElcaAssistantSubElementSet $copiedAssistantSubElementSet,
+        string $ident): ?ElcaAssistantSubElement
+    {
+        $foundSubElement = $copiedAssistantSubElementSet->filter(function (ElcaAssistantSubElement $subElement) use ($ident) {
+            return $ident === $subElement->getIdent();
+        })->current();
+
+        if (!$foundSubElement) {
+            return null;
+        }
+
+        return $foundSubElement;
     }
 }
