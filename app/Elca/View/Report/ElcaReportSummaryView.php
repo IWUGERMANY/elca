@@ -310,7 +310,7 @@ class ElcaReportSummaryView extends ElcaReportsView
         $m2a = max(1, $projectVariant->getProject()->getLifeTime() * $projectConstruction->getNetFloorSpace());
         
         $GWPTotalValues = [];
-        $GWPTotalPieValues = [];
+        $GWPTotalPieValues = []; 
         
         $data = new \stdClass();
         $data->name = t('GWP');
@@ -394,12 +394,9 @@ class ElcaReportSummaryView extends ElcaReportsView
 
         $pieChart = $Container->appendChild($this->getDiv(['class' => 'pieChartSVG']));
         
-        // var_dump($GWPTotalPieValues);
-        // $GWPTotalPieValues;
         if(is_array($GWPTotalPieValues)) {
             $this->buildPieChart($pieChart, $GWPTotalPieValues);        
         }
-        
         // ElcaNumberFormat::toString($this->totalValueGWP, 2)
     }
 
