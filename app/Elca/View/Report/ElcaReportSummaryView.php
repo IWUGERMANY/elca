@@ -310,6 +310,7 @@ class ElcaReportSummaryView extends ElcaReportsView
         $m2a = max(1, $projectVariant->getProject()->getLifeTime() * $projectConstruction->getNetFloorSpace());
         
         $GWPTotalValues = [];
+        $GWPTotalPieValues = []; 
         
         $data = new \stdClass();
         $data->name = t('GWP');
@@ -320,7 +321,11 @@ class ElcaReportSummaryView extends ElcaReportsView
         $data = new \stdClass();
         $data->name = t('B6');
         $data->value = $this->totalB6ValueGWP;
-        $data->percentage = number_format(($this->totalB6ValueGWP/$this->totalValueGWP),5,".",".");
+        if($this->totalValueGWP>0) {
+            $data->percentage = number_format(($this->totalB6ValueGWP/$this->totalValueGWP),5,".",".");
+        } else {
+            $data->percentage = 0;
+        }   
         $data->class = 'undefined';
         
         $GWPTotalValues[] = $data;
@@ -341,7 +346,11 @@ class ElcaReportSummaryView extends ElcaReportsView
                     $data->name = t('KG '. $GWPTotalItems->din_code);
                     
                     $data->value = ($GWPTotalItems->value / $m2a);
-                    $data->percentage = number_format((($GWPTotalItems->value / $m2a)/$this->totalValueGWP),5,'.','.');
+                    if($this->totalValueGWP>0) {
+                        $data->percentage = number_format((($GWPTotalItems->value / $m2a)/$this->totalValueGWP),5,'.','.');
+                    } else {
+                        $data->percentage = 0;
+                    }
                     $GWPTotalValues[] = $data;
                     $data->class = 'undefined';
                     if($data->percentage>0) {
@@ -385,7 +394,9 @@ class ElcaReportSummaryView extends ElcaReportsView
 
         $pieChart = $Container->appendChild($this->getDiv(['class' => 'pieChartSVG']));
         
-        $this->buildPieChart($pieChart, $GWPTotalPieValues);    
+        if(is_array($GWPTotalPieValues)) {
+            $this->buildPieChart($pieChart, $GWPTotalPieValues);        
+        }
         // ElcaNumberFormat::toString($this->totalValueGWP, 2)
     }
 
@@ -400,11 +411,7 @@ class ElcaReportSummaryView extends ElcaReportsView
     {
         $pieData = [];
        
-        /*    
-            ["name"]=> string(3) "GWP" 
-            ["value"]=> float(10.629270257842) 
-            ["percentage"]=> int(1) 
-        */    
+
         foreach ($GWPTotalPieValues as $GWPSingleValues) {
             $pieData[] = (object)['name' => $GWPSingleValues->name,
                                   'value' => $GWPSingleValues->percentage,

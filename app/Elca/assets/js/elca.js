@@ -3000,7 +3000,7 @@ $(window).load(function () {
 
                     var self = this;
 
-                    var width = 300,
+                    var width = 400,
                         height = 200,
                         radius = Math.min(width, height) / 2;
                         
