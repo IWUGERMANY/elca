@@ -411,11 +411,7 @@ class ElcaReportSummaryView extends ElcaReportsView
     {
         $pieData = [];
        
-        /*    
-            ["name"]=> string(3) "GWP" 
-            ["value"]=> float(10.629270257842) 
-            ["percentage"]=> int(1) 
-        */    
+
         foreach ($GWPTotalPieValues as $GWPSingleValues) {
             $pieData[] = (object)['name' => $GWPSingleValues->name,
                                   'value' => $GWPSingleValues->percentage,
