@@ -112,9 +112,14 @@ class ElementImageCtrl extends AppCtrl
         {
             $elementImageView = null;
 
-            $assistant = $this->assistantRegistry->getAssistantForElement($ElcaElement);
-            if ($assistant)
-                $elementImageView = $assistant->getElementImageView($ElcaElement->getId());
+            try {
+                $assistant = $this->assistantRegistry->getAssistantForElement($ElcaElement);
+                if ($assistant) {
+                    $elementImageView = $assistant->getElementImageView($ElcaElement->getId());
+                }
+            } catch (\Exception $exception) {
+                $this->Log->error('Could not initialize ElementAssistant: ' . $exception->getMessage(), __METHOD__);
+            }
 
             if ($elementImageView === null || !$elementImageView instanceof ElementImageView) {
                 $elementImageView = new DefaultElementImageView();

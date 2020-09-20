@@ -204,20 +204,24 @@ class ElementsCtrl extends TabsCtrl
                 /**
                  * Add tabs
                  */
-                if ($this->assistantRegistry->hasAssistantForElement($this->element)) {
+                try {
+                    if ($this->assistantRegistry->hasAssistantForElement($this->element)) {
 
-                    $assistantConfig = $this->assistantRegistry
-                        ->getAssistantForElement($this->element)
-                        ->getConfiguration();
+                        $assistantConfig = $this->assistantRegistry
+                            ->getAssistantForElement($this->element)
+                            ->getConfiguration();
 
-                    $this->addTabItem(
-                        $assistantConfig->getIdent(),
-                        t($assistantConfig->getCaption()),
-                        null,
-                        $assistantConfig->getController(),
-                        $assistantConfig->getControllerAction(),
-                        ['e' => $elementId, 'context' => $this->context]
-                    );
+                        $this->addTabItem(
+                            $assistantConfig->getIdent(),
+                            t($assistantConfig->getCaption()),
+                            null,
+                            $assistantConfig->getController(),
+                            $assistantConfig->getControllerAction(),
+                            ['e' => $elementId, 'context' => $this->context]
+                        );
+                    }
+                } catch (\Exception $exception) {
+                    $this->messages->add(t('Ein Assistent konnte  für dieses Bauteil nicht initialisiert werden.'));
                 }
 
                 /**
@@ -371,9 +375,14 @@ class ElementsCtrl extends TabsCtrl
             );
         }
 
-        if ($assistant = $this->assistantRegistry
-            ->getAssistantForElement($Element))
-            $view->assign('assistant', $assistant);
+        try {
+            if ($assistant = $this->assistantRegistry
+                ->getAssistantForElement($Element)) {
+                $view->assign('assistant', $assistant);
+            }
+        } catch(\Exception $exception) {
+            $this->Log->error('Could not initialize ElementAssistant: ' . $exception->getMessage(), __METHOD__);
+        }
 
         if($this->Request->has('rel'))
             $view->assign('compositeElementId', $this->Request->get('rel'));
@@ -1275,9 +1284,15 @@ class ElementsCtrl extends TabsCtrl
             $view->assign('context', $this->context);
             $view->assign('buildMode', $this->Request->b);
             $view->assign('elementId', $this->Request->elementId);
-            if ($assistant = $this->assistantRegistry
-                ->getAssistantForElement($element))
-                $view->assign('assistant', $assistant);
+
+            try {
+                if ($assistant = $this->assistantRegistry
+                    ->getAssistantForElement($element)) {
+                    $view->assign('assistant', $assistant);
+                }
+            } catch (\Exception $exception) {
+                $this->Log->error('Could not initialize ElementAssistant: ' . $exception->getMessage(), __METHOD__);
+            }
 
             if ($projectId = $this->Elca->getProjectId()) {
                 $view->assign(
@@ -1743,9 +1758,12 @@ class ElementsCtrl extends TabsCtrl
 
         $assistant = null;
         $element = ElcaElement::findById($elementId);
-        if ($this->assistantRegistry->hasAssistantForElement($element)) {
-
-            $assistant = $this->assistantRegistry->getAssistantForElement($element);
+        try {
+            if ($this->assistantRegistry->hasAssistantForElement($element)) {
+                $assistant = $this->assistantRegistry->getAssistantForElement($element);
+            }
+        } catch (\Exception $exception) {
+            $this->Log->error('Could not initialize ElementAssistant: ' . $exception->getMessage(), __METHOD__);
         }
 
         if($this->Request->m)
@@ -1823,8 +1841,12 @@ class ElementsCtrl extends TabsCtrl
         $view->assign('buildMode', $this->Request->b);
         $view->assign('readOnly', !$this->Access->canEditElement($element));
 
-        if ($assistant = $this->assistantRegistry->getAssistantForElement($element)) {
-            $view->assign('assistant', $assistant);
+        try {
+            if ($assistant = $this->assistantRegistry->getAssistantForElement($element)) {
+                $view->assign('assistant', $assistant);
+            }
+        } catch (\Exception $exception) {
+            $this->Log->error('Could not initialize ElementAssistant: ' . $exception->getMessage(), __METHOD__);
         }
 
         if ($projectId = $this->Elca->getProjectId()) {
@@ -2344,9 +2366,14 @@ class ElementsCtrl extends TabsCtrl
         $Element = $Component->getElement();
         $view->assign('readOnly', !$this->Access->canEditElement($Element));
 
-        if ($assistant = $this->assistantRegistry
-            ->getAssistantForElement($Element))
-            $view->assign('assistant', $assistant);
+        try {
+            if ($assistant = $this->assistantRegistry
+                ->getAssistantForElement($Element)) {
+                $view->assign('assistant', $assistant);
+            }
+        } catch (\Exception $exception) {
+            $this->Log->error('Could not initialize ElementAssistant: ' . $exception->getMessage(), __METHOD__);
+        }
 
         if ($projectId = $this->Elca->getProjectId()) {
             $view->assign(
@@ -2766,9 +2793,14 @@ class ElementsCtrl extends TabsCtrl
             }
         }
 
-        if ($assistant = $this->assistantRegistry
-            ->getAssistantForElement($CompositeElement))
-            $view->assign('assistant', $assistant);
+        try {
+            if ($assistant = $this->assistantRegistry
+                ->getAssistantForElement($CompositeElement)) {
+                $view->assign('assistant', $assistant);
+            }
+        } catch (\Exception $exception) {
+            $this->Log->error('Could not initialize ElementAssistant: ' . $exception->getMessage(), __METHOD__);
+        }
 
         return $view;
     }

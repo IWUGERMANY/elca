@@ -26,6 +26,7 @@ namespace Elca\View;
 
 use Beibob\Blibs\Environment;
 use Beibob\Blibs\FrontController;
+use Beibob\Blibs\Log;
 use Beibob\Blibs\StringFactory;
 use Beibob\Blibs\Url;
 use Elca\Db\ElcaCompositeElementSet;
@@ -86,8 +87,12 @@ class ElcaElementSheetView extends ElcaSheetView
             $registry = Environment::getInstance()->getContainer()->get(ElementAssistantRegistry::class);
 
             /** @var ElementAssistant $assistant */
-            if ($assistant = $registry->hasAssistantForElement($this->element)) {
-                $this->assistant = $registry->getAssistantForElement($this->element);
+            try {
+                if ($assistant = $registry->hasAssistantForElement($this->element)) {
+                    $this->assistant = $registry->getAssistantForElement($this->element);
+                }
+            } catch (\Exception $exception) {
+                Log::getInstance()->error('Could not initialize ElementAssistant: ' . $exception->getMessage(), __METHOD__);
             }
         }
 
