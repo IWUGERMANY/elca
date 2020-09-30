@@ -40,6 +40,7 @@ final class ConversionType
     public const LINEAR_DENSITY = 'LINEAR_DENSITY';
     public const ENERGY_EQUIVALENT = 'ENERGY_EQUIVALENT';
     public const CONVERSION_TO_MASS = 'CONVERSION_TO_MASS';
+    public const PIECE_WEIGHT = 'PIECE_WEIGHT';
 
     private static $knownTypes = [
         Unit::CUBIC_METER  => [
@@ -50,6 +51,9 @@ final class ConversionType
         ],
         Unit::METER        => [
             Unit::KILOGRAMM => self::LINEAR_DENSITY,
+        ],
+        Unit::PIECE => [
+            Unit::KILOGRAMM => self::PIECE_WEIGHT,
         ],
         Unit::KILOWATTHOUR => [
             Unit::MEGAJOULE => self::ENERGY_EQUIVALENT,

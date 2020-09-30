@@ -110,6 +110,7 @@ class ElcaProcessConfigGeneralView extends HtmlView
         ConversionType::GROSS_DENSITY           => 'Rohdichte',
         ConversionType::BULK_DENSITY            => 'Schüttdichte',
         ConversionType::AVG_MPUA                => 'Flächengewicht',
+        ConversionType::PIECE_WEIGHT            => 'Stückgewicht',
         ConversionType::LAYER_THICKNESS         => 'Schichtdicke',
         ConversionType::PRODUCTIVENESS          => 'Ergiebigkeit',
         ConversionType::LINEAR_DENSITY          => 'Längengewicht',
