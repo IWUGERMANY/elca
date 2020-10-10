@@ -463,7 +463,6 @@ class Soda4LcaParser
             {
                 case self::MATML_PROP_NAME_AVG_MPUA:
                 case self::MATML_PROP_NAME_GRAMMAGE:
-                case self::MATML_PROP_NAME_PRODUCTIVENESS:
                     $convDO = $matProperties->conversions[$name] = new \stdClass();
                     $convDO->inUnit = 'm2';
                     $convDO->outUnit = 'kg';
@@ -516,6 +515,10 @@ class Soda4LcaParser
                     $convDO->outUnit = 'kg';
                     $convDO->factor  = 1 / $factor;
                     $convDO->ident   = $conversionType->isKnown() ? $conversionType->value() : ConversionType::CONVERSION_TO_MASS;
+                    break;
+
+                case self::MATML_PROP_NAME_PRODUCTIVENESS:
+                    $this->Log->notice('Material property `'. $name.'\' will not be imported', __METHOD__);
                     break;
 
                     /**
