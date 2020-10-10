@@ -1086,7 +1086,8 @@ class Soda4LcaImporter
                         foreach ($processConfigSet as $processConfig) {
 
                             /**
-                             * Check if this process config has lcIdent assignment
+                             * Check if this process config has already an assignment for the $lcIdent
+                             * and the current processDb
                              */
                             if (ElcaProcessSet::dbCountByProcessConfigId(
                                 $processConfig->getId(),
@@ -1097,6 +1098,10 @@ class Soda4LcaImporter
                                 true
                             )
                             ) {
+                                /**
+                                 * For the update=true case this is expected,
+                                 * but do not overwrite a previous made assignment!
+                                 */
                                 if ($update) {
                                     if (isset($scenarioIdentMap[$scenarioIdent])) {
                                         continue;
@@ -1212,20 +1217,27 @@ class Soda4LcaImporter
              */
             $prodProcessConfigSet = $this->findProcessConfigs($processDO, false, ElcaLifeCycle::PHASE_PROD);
 
-            if (isset($processDO->lcPhases[ElcaLifeCycle::PHASE_PROD]) &&
-                $prodProcessConfigSet instanceOf ElcaProcessConfigSet &&
-                $prodProcessConfigSet->count() == 1
-            ) {
-                if ($matPropProblems = $this->applyMatPropertiesForProcessConfig($processDO, $prodProcessConfigSet[0])) {
-                    foreach ($matPropProblems as $matPropProblem) {
-                        $processStatusDetails[] = $matPropProblem;
-                    }
-                }
+            if (isset($processDO->lcPhases[ElcaLifeCycle::PHASE_PROD])) {
 
-                /**
-                 * Insert PROD identity conversion if necessary
-                 */
-                $this->addIdentityConversionIfNecessary($processDO, $processConfigSet[0]);
+                if ($prodProcessConfigSet instanceOf ElcaProcessConfigSet) {
+
+                    if ($prodProcessConfigSet->count() === 1) {
+                        if ($matPropProblems = $this->applyMatPropertiesForProcessConfig($processDO,
+                            $prodProcessConfigSet[0])) {
+                            foreach ($matPropProblems as $matPropProblem) {
+                                $processStatusDetails[] = $matPropProblem;
+                            }
+                        }
+                    }
+
+                    /**
+                     * Insert PROD identity conversion if necessary
+                     */
+                    $processConfigSet->map(
+                        function (ElcaProcessConfig $processConfig) use ($processDO) {
+                            $this->addIdentityConversionIfNecessary($processDO, $processConfig);
+                        });
+                }
             }
 
             /**
@@ -1823,7 +1835,7 @@ class Soda4LcaImporter
         }
     }
 
-    private function addIdentityConversionIfNecessary($processDO, $processConfig)
+    private function addIdentityConversionIfNecessary($processDO, ElcaProcessConfig $processConfig)
     {
         $processConfigId   = new ProcessConfigId($processConfig->getId());
         $processDbId       = new ProcessDbId($this->Import->getProcessDbId());
@@ -1835,6 +1847,14 @@ class Soda4LcaImporter
         if (null !== $identityConversion) {
             return;
         }
+
+        $this->Log->debug(
+            sprintf('Add identity conversion (refUnit=%s,processDbId=%s) for `%s\' (id=%s)',
+                $processDO->refUnit,
+                $processDbId,
+                $processConfig->getName(),
+                $processConfig->getId()
+            ), __METHOD__);
 
         $this->conversions->registerConversion(
             $processDbId,

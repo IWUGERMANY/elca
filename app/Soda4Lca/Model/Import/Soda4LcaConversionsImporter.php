@@ -159,6 +159,7 @@ class Soda4LcaConversionsImporter
     private function updateConversions(ElcaProcessConfig $processConfig, ProcessDbId $processDbId, \stdClass $processDO,
         ElcaProcess $updateProcess): bool
     {
+        $this->log->notice(sprintf('Running for process config `%s\' and dbId=%s', $processConfig->getName(), $processDbId), __METHOD__);
         $modified = false;
         $processConfigId  = new ProcessConfigId($processConfig->getId());
         $flowReference = $this->provideFlowReference($processDO);
@@ -266,29 +267,25 @@ class Soda4LcaConversionsImporter
             $modified = true;
         }
 
-//        /**
-//         * @var Conversion $unseenConversion
-//         */
-//        foreach ($conversionIndex as $inUnit => $conversions) {
-//            foreach ($conversions as $outUnit => $unseenConversion) {
-//                if ($unseenConversion->isIdentity() || !$unseenConversion->type()->isKnown()) {
-//                    continue;
-//                }
-//
-//                $this->log->notice(
-//                    sprintf('%s [%s/%s]: Will remove stale conversion [%s -> %s] : %f',
-//
-//                        $updateProcess->getName(),
-//                        $updateProcess->getUuid(),
-//                        $updateProcess->getVersion(),
-//                        $unseenConversion->fromUnit(),
-//                        $unseenConversion->toUnit(),
-//                        $unseenConversion->factor()
-//                    ), __METHOD__
-//                );
-//                $modified = true;
-//            }
-//        }
+        if (!isset($conversionIndex[$processDO->refUnit][$processDO->refUnit])) {
+            $this->log->warning(
+                sprintf('Identity conversion `%s` is missing and will be added from %s [%s/%s]: %s',
+                    $processDO->refUnit,
+                    $updateProcess->getName(),
+                    $updateProcess->getUuid(),
+                    $updateProcess->getVersion(),
+                    $flowReference
+                ), __METHOD__
+            );
+
+            $this->conversions->registerConversion(
+                $processDbId,
+                $processConfigId,
+                ImportedLinearConversion::forReferenceUnit(Unit::fromString($processDO->refUnit)), $flowReference,__METHOD__
+            );
+        }
+
+        $this->log->notice(sprintf('Done for process config `%s\' and dbId=%s', $processConfig->getName(), $processDbId), __METHOD__);
 
         return $modified;
     }
