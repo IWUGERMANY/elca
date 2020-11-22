@@ -144,6 +144,26 @@ class WindowAssistantTest extends AbstractAssistantTest
         $this->assertTrue($copiedAssistantSubElement->isInitialized());
     }
 
+    public function test_deleteCompositeElementWithAssignedAssistantElement_deleteAssistantElement()
+    {
+        // GIVEN
+        $user           = $this->givenUser();
+        $projectVariant = $this->givenProjectVariant($user);
+        $windowElement  = $this->createWindowAssistantElementWithAdditionalSubElement($projectVariant->getId());
+
+        $compositeElement = ElcaElement::create(ElcaElementType::findByIdent('330')->getNodeId(), 'CompositeElement',
+            null, false, null, $projectVariant->getId());
+        ElcaCompositeElement::create($compositeElement->getId(), 1, $windowElement->getId());
+
+        $this->assertElementCount($projectVariant, 3);
+
+        // WHEN
+        $copiedCompositeElement = $this->projectElementService->deleteElement($compositeElement, true);
+
+        // THEN
+        $this->assertElementCount($projectVariant, 0);
+    }
+
     public function test_copyProjectVariant_copiesAssistantElement()
     {
         // GIVEN

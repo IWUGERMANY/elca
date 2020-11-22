@@ -131,7 +131,7 @@ class ElementService
 
         if ($element->isComposite() && $recursive) {
             foreach ($element->getCompositeElements() as $assignment) {
-                $assignment->getElement()->delete();
+                $this->deleteElement($assignment->getElement(), true);
             }
         }
 
