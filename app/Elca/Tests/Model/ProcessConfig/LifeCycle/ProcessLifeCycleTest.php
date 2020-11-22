@@ -171,7 +171,7 @@ class ProcessLifeCycleTest extends TestCase
                     ['module' => Module::C3, 'refUnit' => Unit::PIECE],
                 ],
                 [
-                    [Unit::KILOGRAMM, Unit::PIECE],
+                    [Unit::PIECE, Unit::KILOGRAMM],
                 ],
             ],
             'kg, Stk, m3' => [
@@ -181,7 +181,7 @@ class ProcessLifeCycleTest extends TestCase
                     ['module' => Module::D, 'refUnit' => Unit::CUBIC_METER],
                 ],
                 [
-                    [Unit::KILOGRAMM, Unit::PIECE],
+                    [Unit::PIECE, Unit::KILOGRAMM],
                     [Unit::CUBIC_METER, Unit::KILOGRAMM],
                 ],
             ],
