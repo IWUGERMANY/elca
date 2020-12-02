@@ -42,5 +42,5 @@
 
         </div>
     </div>
-    <img class="bbsr-logo" src="/img/elca/bbsr_logo_$$locale$$.png" alt="" />
+    <div class="bbsr-logo"><img src="/img/elca/bbsr_logo_$$locale$$.svg" alt="" /></div>
 </div>
