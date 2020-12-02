@@ -82,7 +82,12 @@
 				<li><a href="/docs/praesentationen/BauTec2018_EnEV2eLCA-final.pdf" target="_blank" title="BauTec 2018 Berlin - BMUB Messetalk" class="iconsheet no-xhr">BauTec 2018 Berlin - BMUB Messetalk [PDF, DE]</a></li>
 			</ul>	
 		</div>
-		
+		<div class="infocolumn">
+			<h2>BIM</h2>
+			<ul class="downloads">
+				<li><a href="" target="_blank" title="" class="iconsheet no-xhr">Demnächst</a></li>
+			</ul>	
+		</div>		
 	
 		
 	</div>	
