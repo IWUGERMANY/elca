@@ -75,7 +75,7 @@
             <p style="font-family: Arial,sans-serif;font-size:11px;color:#555555;">_(Postanschrift:)_ Straße des 17. Juni 112, 10623 Berlin<br/>
                 _(Hausanschrift:)_ Reichpietschufer 86-90, 10785 Berlin</p>
 
-            <p style="font-family: Arial,sans-serif;font-size:11px;color:#555555;">_(Tel.:)_ +49(0)3018-401-3417<br/>
+            <p style="font-family: Arial,sans-serif;font-size:11px;color:#555555;">_(Tel.:)_ +49(0)3018-401-2761<br/>
                 _(Fax.:)_ +49(0)3018-401-2769</p>
 
             <p style="font-family: Arial,sans-serif;font-size:11px;color:#555555;">
