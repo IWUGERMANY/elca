@@ -1326,7 +1326,9 @@ div.element-component.has-highlighted-elements { background-color: #FDFFD9; }
 #content .imprint h3 { color: inherit; font-size: 12px; font-weight: normal; }
 
 /** Login ---------------------*/
-.bbsr-logo { display: block; position: absolute; left: 900px; top: 23px; }
+.bbsr-logo { display: block; position: absolute; left: 900px; top: 50px; width: 350px; }
+
+.bbsr-logo img { width: 100%; }
 
 .elca-login { margin: 20px 35px; line-height: 19px; max-width: 900px; overflow: hidden; position: relative; }
 .elca-login .login-wrapper { padding-left: 500px; width: 250px; }

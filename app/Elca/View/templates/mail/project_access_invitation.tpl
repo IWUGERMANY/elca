@@ -82,9 +82,9 @@
         Referat II 6 Bauen und Umwelt<br/>
         <br/>
         Postanschrift Straße des 17. Juni 112, 10623 Berlin<br/>
-        Eingang Englische Straße 5<br/>
+        Hausanschrift Reichpietschufer 86-90, 10785 Berlin<br/>
         <br/>
-        Tel. +49(0)30 18-401-3417<br/>
+        Tel. +49(0)30 18-401-2761<br/>
         Fax. +49(0)30 18-401-2769)_
         <br/><br/>
         <a href="$$siteUrl$$">$$siteUrl$$</a>
