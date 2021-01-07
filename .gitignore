@@ -19,4 +19,4 @@ www/assets
 /node_modules/
 composer.json
 /www/ifc-data/
-.idea
+.idea/
