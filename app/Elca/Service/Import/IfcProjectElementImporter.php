@@ -11,7 +11,7 @@ use Ramsey\Uuid\Uuid;
 class IfcProjectElementImporter
 {
     const DELIMITER = ';';
-    const COLUMN_COUNT = 10;
+    const COLUMN_COUNT = 11;
 
     /**
      * @param File $file
@@ -36,11 +36,13 @@ class IfcProjectElementImporter
             }
 
             $din276CodeString   = trim($csv[1] ?? '');
-
+            $din276CodeName     = trim($csv[10] ?? ''); // KG.name from external py-script KG.py, not in use, yet [2020-10-20]
+            
             $ifcTypeString      = trim($csv[4] ?? '');
             $ifcFloorString     = trim($csv[5] ?? '');
             $ifcMaterialString  = trim($csv[6] ?? '');
             $ifcGUIDString     	= trim($csv[7] ?? '');
+           
 
             $ifcPredefinedTypeString = trim($csv[8] ?? '');
 
