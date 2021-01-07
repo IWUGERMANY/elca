@@ -4,13 +4,13 @@
     <p>Bundesinstitut für Bau-, Stadt-und Raumforschung (BBSR)<br/>
         im Bundesamt für Bauwesen und Raumordnung (BBR)<br/>
         Referat II 6 Bauen und Umwelt<br/>
-        Straße des 17. Juni 112<br/>
-        10587 Berlin<br/>
+        Mailing Address: Straße des 17. Juni 112, 10623 Berlin<br/>
+        Visitors: Reichpietschufer 86-90, 10785 Berlin<br/>
     </p>
     <h2>Responsible</h2>
-    <p>Stephan Rössig<br/>
+    <p>Marc Siegert<br/>
         E-Mail: referat-2-6(at)bbr.bund.de<br/>
-        Telefon: +49 30 / 18401-3417<br/>
+        Telefon: +49 30 / 18401-2761<br/>
         Telefax: +49 30 / 18401-2769
     </p>
 
