@@ -276,7 +276,7 @@
         Referat II 6 Bauen und Umwelt<br/>
         Straße des 17. Juni 112<br/>
         10623 Berlin<br/>
-        Telefon: +49 (0) 30 / 18401-3417<br/>
+        Telefon: +49 (0) 30 / 18401-2761<br/>
         Telefax: +49 (0) 30 / 18401-2769<br/>
         referat-2-6@bbr.bund.de<br/>
         www.bauteileditor.de
@@ -426,7 +426,7 @@
         Referat II 6 Bauen und Umwelt<br/>
         Straße des 17. Juni 112<br/>
         10623 Berlin<br/>
-        Telefon: +49 (0) 30 / 18401-3417<br/>
+        Telefon: +49 (0) 30 / 18401-2761<br/>
         Telefax: +49 (0) 30 / 18401-2769<br/>
         referat-2-6@bbr.bund.de<br/>
         www.bauteileditor.de
@@ -489,7 +489,7 @@
         Referat II 6 Bauen und Umwelt<br/>
         Straße des 17. Juni 112<br/>
         10623 Berlin<br/>
-        Telefon: +49 (0) 30 / 18401-3417<br/>
+        Telefon: +49 (0) 30 / 18401-2761<br/>
         Telefax: +49 (0) 30 / 18401-2769<br/>
         referat-2-6@bbr.bund.de<br/>
         www.bauteileditor.de
