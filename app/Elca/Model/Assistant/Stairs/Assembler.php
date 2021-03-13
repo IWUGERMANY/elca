@@ -266,7 +266,7 @@ class Assembler
             ElcaAccess::getInstance()->getUserId()
         );
 
-        $this->createAssistantSubElement($element->getId(), self::IDENT_STAIRCASE);
+        $this->createAssistantSubElement($element->getId(), $element->getId(), self::IDENT_STAIRCASE);
 
         return $element;
     }
@@ -311,7 +311,7 @@ class Assembler
             ElcaAccess::getInstance()->getUserId()
         );
 
-        $this->createAssistantSubElement($element->getId(), self::IDENT_CONSTRUCTION);
+        $this->createAssistantSubElement($compositeElementId, $element->getId(), self::IDENT_CONSTRUCTION);
 
         $this->log->debug('Construction element `'. $element->getName() .'\'['. $element->getId().'] created');
 
@@ -482,7 +482,7 @@ class Assembler
             ElcaAccess::getInstance()->getUserId()
         );
 
-        $this->createAssistantSubElement($element->getId(), self::IDENT_COVER_RISER);
+        $this->createAssistantSubElement($compositeElementId, $element->getId(), self::IDENT_COVER_RISER);
         $this->log->debug('Cover & Riser element `'. $element->getName() .'\'['. $element->getId().'] created');
 
         $cover = $this->staircase->getSteps()->getStep()->getCover();
@@ -665,7 +665,7 @@ class Assembler
         $platformElement->setDescription($description);
         $platformElement->update();
 
-        $this->createAssistantSubElement($platformElement->getId(), self::IDENT_PLATFORM_CONSTRUCTION);
+        $this->createAssistantSubElement($compositeElementId, $platformElement->getId(), self::IDENT_PLATFORM_CONSTRUCTION);
         $this->log->debug('Platform construction element `'. $platformElement->getName() .'\'['. $platformElement->getId().'] created');
 
         return $platformElement;
@@ -756,7 +756,7 @@ class Assembler
         $platformElement->setDescription($description);
         $platformElement->update();
 
-        $this->createAssistantSubElement($platformElement->getId(), self::IDENT_PLATFORM_COVER);
+        $this->createAssistantSubElement($compositeElementId, $platformElement->getId(), self::IDENT_PLATFORM_COVER);
         $this->log->debug('Platform cover element `'. $platformElement->getName() .'\'['. $platformElement->getId().'] created');
 
         return $platformElement;
@@ -966,12 +966,12 @@ class Assembler
      * @param $elementId
      * @param $ident
      */
-    private function createAssistantSubElement($elementId, $ident)
+    private function createAssistantSubElement($compositeElementId, $elementId, $ident)
     {
-        $assistantElement = ElcaAssistantElement::findByElementId($elementId, StaircaseAssistant::IDENT);
+        $assistantElement = ElcaAssistantElement::findByMainElementId($compositeElementId);
 
         if (!$assistantElement->isInitialized()) {
-            $element = ElcaElement::findById($elementId);
+            $element = ElcaElement::findById($compositeElementId);
             $assistantElement = ElcaAssistantElement::createWithUnserializedConfig($element->getId(),
                 StaircaseAssistant::IDENT,
                 $element->getProjectVariantId(),

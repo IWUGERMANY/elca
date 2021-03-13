@@ -428,16 +428,7 @@ class StaircaseAssistant extends AbstractAssistant implements ElementObserver, E
      */
     public function onElementDelete(ElcaElement $elementToDelete)
     {
-        if (!$this->isStaircaseElement($elementToDelete->getId()) || $elementToDelete->isComposite()) {
-            return true;
-        }
-
-        $this->messages->add(
-            'Dieses Element kann nicht gelöscht werden, da es über den Treppenassistenten verwaltet wird',
-            ElcaMessages::TYPE_ERROR
-        );
-
-        return false;
+        return true;
     }
 
     /**

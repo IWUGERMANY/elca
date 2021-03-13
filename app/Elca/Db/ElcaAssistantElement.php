@@ -289,18 +289,18 @@ class ElcaAssistantElement extends DbObject
             'elementId' => $elementId,
         ];
 
-        $sql = sprintf("SELECT id
-                             , main_element_id
-                             , project_variant_id
-                             , assistant_ident
-                             , config
-                             , is_reference
-                             , is_public
-                             , uuid
-                             , owner_id
-                             , access_group_id
-                             , created
-                             , modified
+        $sql = sprintf("SELECT e.id
+                             , e.main_element_id
+                             , e.project_variant_id
+                             , e.assistant_ident
+                             , e.config
+                             , e.is_reference
+                             , e.is_public
+                             , e.uuid
+                             , e.owner_id
+                             , e.access_group_id
+                             , e.created
+                             , e.modified
                           FROM %s e
                           JOIN %s s ON e.id = s.assistant_element_id
                          WHERE s.element_id = :elementId"
