@@ -96,7 +96,8 @@ class ElcaProjectsView extends HtmlView
     protected function beforeRender()
     {
         $hasAdminPrivileges = $this->access->hasAdminPrivileges();
-
+        $hasIFCPrivileges = $this->access->hasIFCPrivileges();
+        
         // enable / disable functions
         $canCreateProjects = true;
         if (!ElcaAccess::getInstance()->canCreateProject()) {
@@ -114,15 +115,19 @@ class ElcaProjectsView extends HtmlView
             $this->getElementById('importAssistantProject', true);
         }
 
-        // enable/disable IFC import Btn
+        // enable/disable IFC import Btn (Roles IFC_VIEWER || Admin)
         $environment = Environment::getInstance();
         $config      = $environment->getConfig();
         $ShowIfcProjectBtn = $config->ifcImportActive ? $config->ifcImportActive : 0;
-        if(!$ShowIfcProjectBtn) {
-            $NoIfcImportBtn = $this->getElementById('createIFCProject');
-            $NoIfcImportBtn->parentNode->removeChild($NoIfcImportBtn);
+        
+        // admin has access, deny access to other than role IFC_VIEWER
+        if($hasAdminPrivileges!==true) {
+            if(!$ShowIfcProjectBtn || $hasIFCPrivileges!==true) {
+                $NoIfcImportBtn = $this->getElementById('createIFCProject');
+                $NoIfcImportBtn->parentNode->removeChild($NoIfcImportBtn);
+            }
         }
-
+        
         $NoProjectsElt = $this->getElementById('no-projects');
         $NoProjectsElt->parentNode->removeChild($NoProjectsElt);
 
