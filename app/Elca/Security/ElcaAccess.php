@@ -152,7 +152,25 @@ class ElcaAccess
             $this->groupId
         );
     }
-    // End isOrganisation
+     /**
+     * Current user has ifc privileges
+     *
+     * @param  -
+     *
+     * @return boolean
+     */
+    public function hasIFCPrivileges()
+    {
+        if (!$this->groupId) {
+            return false;
+        }
+
+        return RoleMember::isGranted(
+            Role::findByIdent(Elca::ELCA_ROLES, Elca::ELCA_ROLE_IFC_VIEWER)->getNodeId(),
+            $this->groupId
+        );
+    }     
+    // End IFC privileges
 
     /**
      * Checks if current user account is of type 'Organisation'
