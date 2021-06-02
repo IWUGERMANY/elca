@@ -552,8 +552,8 @@ class ElcaValidator extends HtmlFormValidator
                 $overallRatio += ElcaNumberFormat::fromString($ratios[$key]);
             }
         }
-
-        return $validKwkDemands && $this->assertTrue('ratio['. $key .']', $overallRatio >= 0 && $overallRatio <= 100, t('Der Wert muss zwischen 0 und 100 liegen'));
+        // Hotfix: Gleitkommazahlen : https://www.php.net/manual/de/language.types.float.php (Gleitkommazahlen vergleichen) -  $overallRatio <= 100 --- 02.06.2021
+        return $validKwkDemands && $this->assertTrue('ratio['. $key .']', $overallRatio >= 0 && $overallRatio <= 100.00001, t('Der Gesamtwert muss zwischen 0 und 100 liegen').' - Wert: '.$overallRatio);
     }
 
     /**
