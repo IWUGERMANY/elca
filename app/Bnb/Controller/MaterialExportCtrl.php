@@ -121,7 +121,7 @@ class MaterialExportCtrl extends AppCtrl
             ['mass' => 'DESC'])->getArrayCopy();
 
         $headers = [t('Baustoff'), t('Masse') .' (kg)', t('Volumen') . ' (m³)', t('AVV')];
-        $columns = ['name', 'mass', 'volume', 'avv'];
+        $columns = ['name', 'mass', 'volume', 'waste_code'];
 
         $filename = \trim($project->getName() .'-Stoffstromanalyse-'. date('YmdHis')).".csv";
 
