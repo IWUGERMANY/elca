@@ -89,7 +89,7 @@ class MaterialExportView extends HtmlView
         $row = $body->addTableRow();
         $row->getColumn('mass')->setOutputElement(new HtmlNumericTextWithUnit('mass', 'kg', null, null, 1));
         $row->getColumn('volume')->setOutputElement($columnOutputElement = new HtmlNumericTextWithUnit('volume', 'm3', null, null, 2));
-		$row->getColumn('avv')->setOutputElement(new ElcaHtmlNumericText('avv'));
+		$row->getColumn('avv')->setOutputElement(new ElcaHtmlNumericText('waste_code'));
 		$columnOutputElement->setNullDisplayValue('-');
 		
         $body->setDataSet($data);
