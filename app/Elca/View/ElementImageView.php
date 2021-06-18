@@ -213,6 +213,8 @@ abstract class ElementImageView extends SvgView
         $xml = str_replace('<svg ', '<svg xmlns:default="http://www.w3.org/2000/svg" ', $xml);
         $svgDoc = new \DOMDocument();
 
+        // ON! 11.02.2021 - Unterdücken von Warnings in nicht konformen Patterns
+        libxml_use_internal_errors(TRUE);
         $svgDoc->loadXML($xml, LIBXML_NSCLEAN);
 
         /**
@@ -237,6 +239,11 @@ abstract class ElementImageView extends SvgView
         /**
          * Append the pattern
          */
+        // ON! 11.02.2021 - Keine Zuweisung, wenn svg NULL und nicht Instanz von \DOMNode     
+        if(!$svgDoc->getElementsByTagName('svg')->item(0) instanceof \DOMNode ) 
+        {
+            return;
+        }        
         return $AppendTo->appendChild($this->importNode($svgDoc->getElementsByTagName('svg')->item(0), true));
     }
 }
