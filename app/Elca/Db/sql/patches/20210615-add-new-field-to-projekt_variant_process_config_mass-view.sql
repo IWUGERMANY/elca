@@ -1,5 +1,7 @@
 BEGIN;
 
+SELECT public.register_patch('20210615-add-new-field-to-projekt_variant_process_config_mass-view.sql', 'eLCA');
+
 CREATE OR REPLACE VIEW elca_cache.project_variant_process_config_mass_v AS
 SELECT e.project_variant_id,
     c.process_config_id,
@@ -11,7 +13,7 @@ SELECT e.project_variant_id,
             ELSE NULL::numeric
         END) AS volume,
     p.waste_code
-   FROM ((((((element_components cec
+   FROM ((((((elca_cache.element_components cec
      JOIN elca.element_components c ON ((c.id = cec.element_component_id)))
      JOIN elca.elements e ON ((e.id = c.element_id)))
      JOIN elca.process_configs p ON ((p.id = c.process_config_id)))
