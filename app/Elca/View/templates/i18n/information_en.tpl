@@ -85,7 +85,7 @@
 		<div class="infocolumn">
 			<h2>BIM</h2>
 			<ul class="downloads">
-				<li><a href="" target="_blank" title="" class="iconsheet no-xhr">Soon</a></li>
+				<li><a href="/docs/bim/BIM.zip" target="_blank" title="Support IFC format" class="iconsheet no-xhr">Support IFC format [ZIP, DE]</a></li>
 			</ul>	
 		</div>	        
 		
