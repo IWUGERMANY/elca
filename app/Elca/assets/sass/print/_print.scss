@@ -354,3 +354,22 @@ body.pdf #content table.print-table td.print-td div.print-header p.description s
   }
 
 }
+
+/* Administration 
+   Bauteilkatalog
+   page breaks
+* --------------- */
+
+#elcaAdminBauteilkatalog .elcaAdminBauteilkatalogItem {
+    page-break-before: always;
+    page-break-inside: avoid;
+}
+
+#elcaAdminBauteilkatalog .elcaAdminBauteilkatalogItem dl {
+    width:auto;
+}  
+
+#elcaAdminBauteilkatalog .elcaAdminBauteilkatalogItem dd, 
+#elcaAdminBauteilkatalog .elcaAdminBauteilkatalogItem dt {
+    line-height: 18px !important;
+} 

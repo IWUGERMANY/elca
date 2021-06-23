@@ -763,6 +763,9 @@ h1.projectHeader { float: left; margin-right: 3em; }
 
 .ui-menu .ui-menu-item a:hover, .ui-menu .ui-menu-item a:active { font-weight: normal; background-color: #efefef; }
 
+/** Bauteilkatalog ------------------*/
+#content.elca-admin-bauteilkatalog div.element-image { width: 600px; height: 250px; /* padding-left: 30px; */ }
+
 #elca-svg-patterns div.add { text-align: right; }
 
 .elca-svg-pattern-sheet .elca-sheet-content { padding-left: 92px; }

@@ -295,6 +295,7 @@ $(window).load(function () {
                     '#elcaSheetsContainer,ul.pageable,ul.elements': ['prepareContent', 'preparePageable', 'prepareElementImages', 'prepareFilterTags'],
                     '#content.elca-filter-sheets': ['prepareFilterList', 'preparePageable', 'prepareElementImages', 'prepareFilterTags'],
                     '#tabContent.elements,#tabContent.project-elements': ['prepareElement', 'prepareLifeTimeInput'],
+                    '#content.elca-admin-bauteilkatalog': 'prepareElementImages',
                     '#tabContent.tab-lca,div.process-assignment,div.process-group': 'prepareLcaToggle',
                     '#content.ElcaProcessesCtrl .tab-general': 'prepareProcessConfigGeneral',
                     'div.process-assignment,div.process-group': 'prepareContent',

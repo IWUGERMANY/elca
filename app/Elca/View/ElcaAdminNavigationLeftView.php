@@ -26,6 +26,7 @@ namespace Elca\View;
 
 use Beibob\Blibs\HtmlView;
 use Elca\Controller\Admin\BenchmarksCtrl;
+use Elca\Controller\Admin\BauteilkatalogCtrl;
 use Elca\Controller\AdminSvgPatternsCtrl;
 use Elca\Elca;
 use Elca\Model\Navigation\ElcaNavigation;
@@ -82,7 +83,10 @@ class ElcaAdminNavigationLeftView extends HtmlView
 
             $navItem = $navigation->add(t('Benchmarks'));
             $navItem->add(t('Systeme'), 'elca', BenchmarksCtrl::class, 'systems');
-
+            
+            $navItem = $navigation->add(t('Bauteilkatalog'));
+            $navItem->add(t('PDF erstellen'), 'elca', BauteilkatalogCtrl::class );
+            
             $this->assign('navigation', $navigation);
 
             /**
