@@ -86,7 +86,7 @@ class ElementImageCtrl extends AppCtrl
     {
         $elementId = $this->elementId;
         $containerId = $this->Request->get('c', $elementId);
-var_dump($this->Request);die();
+
         if ($this->Request->has('elementId'))
             $elementId = $this->Request->elementId;
 
@@ -146,7 +146,7 @@ var_dump($this->Request);die();
         $Div = $elementImageView->appendChild($elementImageView->createElement('div', null, ['id' => 'element-image-' . $containerId]));
         $SvgElt = $elementImageView->getElementsByTagName('svg');
         $Div->appendChild($elementImageView->removeChild($SvgElt->item(0)));
-
+        
         if ($this->pdfMode)
             PageActionController::setBaseView($elementImageView);
         else

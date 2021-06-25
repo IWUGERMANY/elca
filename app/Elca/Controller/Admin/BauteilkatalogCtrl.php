@@ -255,7 +255,7 @@ class BauteilkatalogCtrl extends TabsCtrl
 		// $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('cacheDir', true, 'tmp/cache');
 		// -----------------------------------------
 
-        /*
+        /* alt
         $projectsUrl = new Url(
             FrontController::getInstance()->getUrlTo('Elca\Controller\Admin\BauteilkatalogCtrl')
             , ['app_token' => $this->Access->getUser()->getCryptId('modified'), 'pdf' => 1]
@@ -268,13 +268,23 @@ class BauteilkatalogCtrl extends TabsCtrl
         
         $catalogUrl = new Url(
             FrontController::getInstance()->getUrlTo(get_class($this), 'pdfCatalog')
-            , ['app_token' => $this->Access->getUser()->getCryptId('modified')]
+            , ['app_token' => $this->Access->getUser()->getCryptId('modified'),'pdf' => 1]
             , null
             , Environment::getServerHostName()
             , $_SERVER['SERVER_PORT']
             , Environment::sslActive() ? 'https' : 'http'
         );
         
+        /* mb 
+        $catalogUrl = new Url(
+            FrontController::getInstance()->getUrlTo('Elca\Controller\Admin\BauteilkatalogCtrl')
+            , ['app_token' => $this->Access->getUser()->getCryptId('modified'),'pdf' => 1]
+            , '!' . FrontController::getInstance()->getUrlTo(get_class($this), 'pdfCatalog', ['pdf' => 1])
+            , Environment::getServerHostName()
+            , $_SERVER['SERVER_PORT']
+            , Environment::sslActive() ? 'https' : 'http'
+        );        
+       */
         $tmpCatalogFile = new File();
         $tmpCatalogFile->createTemporaryFile($tmpCacheDir);
         $tmpCatalogFile->write(file_get_contents((string)$catalogUrl));
@@ -344,7 +354,7 @@ class BauteilkatalogCtrl extends TabsCtrl
             1000, // javascript-delay
             escapeshellarg((string)$tmpHeaderFile->getFilepath()),
             escapeshellarg((string)$tmpFooterFile->getFilepath()),
-            escapeshellarg((string)$tmpCatalogFile->getFilepath()),
+            escapeshellarg((string)$tmpCatalogFile->getFilepath()), //$tmpCatalogFile->getFilepath() // $catalogUrl
             $pdf->getFilepath()
         );
         

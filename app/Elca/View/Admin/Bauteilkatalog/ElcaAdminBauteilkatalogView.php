@@ -180,7 +180,7 @@ class ElcaAdminBauteilkatalogView extends HtmlView
 
         $DivDruck = $TdB->appendChild($this->getDiv(['id' => 'elcaAdminBauteilkatalog', 'class' => 'report-elements']));
         
-        // get active Process DBs (Ã–BD) - sort by uid desc ("newest" first)
+        // get active Process DBs (ÖBD) - sort by uid desc ("newest" first)
         $processDbs = ElcaProcessDbSet::findActive();
         foreach($processDbs as $processDb) {
             $Elements = $this->getElementSet( $processDb->getId() );
@@ -258,9 +258,10 @@ class ElcaAdminBauteilkatalogView extends HtmlView
                 }    
                 $DivDruckItem->appendChild($this->getBr());
                 
-                // Images und Patterns hinzufÃ¼gen
+                // Images und Patterns hinzufügen
                 // kein PDF-Inhalt, wenn Aktivierung Images - Problem mit SVG XML Erstellung
                 $this->appendElementImage($DivDruckItem, $Element->getId());
+                
             }    
         }    
         

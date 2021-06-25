@@ -51,6 +51,13 @@
         #elcaAdminBauteilkatalog .elcaAdminBauteilkatalogItem dt { clear: both; float: left; width: 200px; padding: 0 0 10px 0; }
         #elcaAdminBauteilkatalog .elcaAdminBauteilkatalogItem dd { margin-left: 200px;  padding: 0 0 10px 0; }
 
+         svg {
+          width:800px;
+          height:500px;
+         }
+        .button.print {
+            display:none;
+        }         
     </style>
 
     <script type="application/javascript">
