@@ -154,13 +154,13 @@ class CsvExportCtrl extends AppCtrl
 
         $View = new TextView();
         $View->setOutputEncoding('ISO-8859-15//TRANSLIT');
-
         $View->setContent($BnbCsvExporter->getCsv());
 
         $this->Response->setContent((string)$View);
-        $this->Response->setHeader('Pragma: ');
+        $this->Response->setHeader('Pragma: no-cache');
         $this->Response->setHeader("Content-Disposition: attachment; filename=\"" . $this->getDownloadFilename($ProjectVariant) . "\"");
-        $this->Response->setHeader('Content-Type: text/csv');
+        $this->Response->setHeader('Content-Type: application/octet-stream');
+        $this->Response->setHeader('Content-Lenght: '.strlen((string)$View));
     }
     // End downloadAction
 
