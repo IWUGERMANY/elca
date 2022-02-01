@@ -26,6 +26,7 @@
 namespace Bnb\Db;
 
 use Beibob\Blibs\DataObjectSet;
+use Beibob\Blibs\Log;
 use Elca\Db\ElcaCacheElementComponent;
 use Elca\Db\ElcaCacheFinalEnergyDemand;
 use Elca\Db\ElcaCacheIndicator;
@@ -241,6 +242,10 @@ class BnbExportSet extends DataObjectSet
             ,
             join(' ', $lftJoins)
         );
+        Log::getInstance()->debug($_SERVER['REMOTE_ADDR']." CSV - Export SQL");
+        if($_SERVER['REMOTE_ADDR']=='87.139.47.179-debug') {
+         var_dump(self::_findBySql(get_class(), $sql, $initValues, $force));die();
+        }        
 
         return self::_findBySql(get_class(), $sql, $initValues, $force);
     }

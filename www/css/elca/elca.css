@@ -2199,7 +2199,7 @@ form.projectForm .column { width: 250px; padding-right: 40px; }
 #content.report-compare .reportForm .projectVariantId .label-holder { width: 200px; float: left; }
 #content.report-compare .reportForm .projectVariantId .form-elt { margin-left: 200px; }
 #content.report-compare .reportForm .projectVariantId .form-elt select { width: 300px; }
-#content.report-compare .reportForm .form-section.i { position: absolute; top: 0; left: 760px; width: 100px; }
+#content.report-compare .reportForm .form-section.i { position: absolute; top: 50px; left: 700px; width: 100px; }
 
 #content.report-assets-non-default-life-time ul.report-elements > li.section { background-color: #f9f9f9; padding: 10px 15px; }
 #content.report-assets-non-default-life-time ul.report-elements > li.section h2 { color: #666; }

@@ -236,7 +236,7 @@ class ElcaAdminBauteilkatalogView extends HtmlView
                 
                 // Bauweise
                 $DivDruckItemDl->appendChild($this->getDt(['class' => ''], t('Bauweise') . ': '));
-                $DivDruckItemDl->appendChild($this->getDd(['class' => ''], implode(', ',$DesignName)));
+                $DivDruckItemDl->appendChild($this->getDd(['class' => ''], ( !empty($DesignName) ? implode(', ',$DesignName) :'-')));
                 
                 // Typ
                 $DivDruckItemDl->appendChild($this->getDt(['class' => ''],  t('Typ') . ': '));

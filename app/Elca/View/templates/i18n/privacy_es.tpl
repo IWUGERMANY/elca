@@ -273,12 +273,12 @@
     <br/><br/>
     Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR) im<br/>
     Bundesamt für Bauwesen und Raumordnung (BBR)<br/>
-    Referat II 6 Bauen und Umwelt<br/>
+    Referat WB 6 Bauen und Umwelt<br/>
     Straße des 17. Juni 112<br/>
     10623 Berlin<br/>
     Telefon: +49 (0) 30 / 18401-2761<br/>
     Telefax: +49 (0) 30 / 18401-2769<br/>
-    referat-2-6@bbr.bund.de<br/>
+    wb6@bbr.bund.de<br/>
     www.bauteileditor.de
     <br/><br/>
     Alle personenbezogenen Daten, die im Zuge der Kontaktaufnahme gespeichert
@@ -423,12 +423,12 @@
     <br/><br/>
     Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR) im<br/>
     Bundesamt für Bauwesen und Raumordnung (BBR)<br/>
-    Referat II 6 Bauen und Umwelt<br/>
+    Referat WB 6 Bauen und Umwelt<br/>
     Straße des 17. Juni 112<br/>
     10623 Berlin<br/>
     Telefon: +49 (0) 30 / 18401-2761<br/>
     Telefax: +49 (0) 30 / 18401-2769<br/>
-    referat-2-6@bbr.bund.de<br/>
+    wb6@bbr.bund.de<br/>
     www.bauteileditor.de
     <br/><br/>
     Alle personenbezogenen Daten, die im Zuge der Kontaktaufnahme gespeichert wurden, werden in diesem Fall
@@ -486,12 +486,12 @@
     <br/><br/>
     Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR) im<br/>
     Bundesamt für Bauwesen und Raumordnung (BBR)<br/>
-    Referat II 6 Bauen und Umwelt<br/>
+    Referat WB 6 Bauen und Umwelt<br/>
     Straße des 17. Juni 112<br/>
     10623 Berlin<br/>
     Telefon: +49 (0) 30 / 18401-2761<br/>
     Telefax: +49 (0) 30 / 18401-2769<br/>
-    referat-2-6@bbr.bund.de<br/>
+    wb6@bbr.bund.de<br/>
     www.bauteileditor.de
     <br/><br/>
     Alle personenbezogenen Daten, die im Zuge der Kontaktaufnahme gespeichert wurden, werden in diesem Fall
@@ -519,7 +519,7 @@
     Datenschutz-Grundverordnung) erfolgt, können Sie diese jederzeit für den entsprechenden Zweck widerrufen. Die
     Rechtmäßigkeit der Verarbeitung aufgrund Ihrer Einwilligung bleibt bis zum Eingang Ihres Widerrufs unberührt.
     <br/><br/>
-    Die vorgenannten Rechte können Sie unter <a href="mailto:referat-2-6@bbr.bund.de">referat-2-6@bbr.bund.de</a>
+    Die vorgenannten Rechte können Sie unter <a href="mailto:wb6@bbr.bund.de">wb6@bbr.bund.de</a>
     geltend machen.
     <br/><br/>
     Ihnen steht zudem gem. Art. 77 DSGVO ein Beschwerderecht bei der datenschutzrechtlichen Aufsichtsbehörde zu.

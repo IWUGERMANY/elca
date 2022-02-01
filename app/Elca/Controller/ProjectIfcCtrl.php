@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of the eLCA project
- *
+ * 
  * eLCA
  * A web based life cycle assessment application
  *
