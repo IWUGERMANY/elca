@@ -19,6 +19,14 @@
 			<h2>Downloads</h2> 
 			<br/>
 			
+            <h3>Component Catalogue (Bauteilkatalog)</h3>
+            <ul class="downloads">
+                <li><a href="/docs/downloads/elcabauteilkatalog.pdf" target="_blank" title="Component Catalogue (Bauteilkatalog, German version only)" class="iconsheet no-xhr">Bauteilkatalog (Component Catalogue) [PDF, DE]</a><br/>
+                    <span>Summary of the existing components, sorted by ÖKOBAUDAT version</span>
+                </li>
+            </ul>
+            <br/>    
+            
 			<h3>CSV2eLCA</h3>
 			<ul class="downloads">
 

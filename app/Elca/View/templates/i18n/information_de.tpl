@@ -1,7 +1,7 @@
 <div id="content" class="websiteinfo">
 	<h1>Informationen zu eLCA</h1>
   
-	<p>Das BBSR (Bundesinstitut für Bau-, Stadt-und Raumforschung, Referat II 6 Bauen und Umwelt) stellt das Ökobilanzierungstool eLCA (www.bauteileditor.de) zur Verfügung, das im Rahmen des Bewertungssystems Nachhaltiges Bauen (BNB) verbindlich anzuwenden ist. </p>
+	<p>Das BBSR (Bundesinstitut für Bau-, Stadt-und Raumforschung, Referat WB6 Bauen und Umwelt) stellt das Ökobilanzierungstool eLCA (www.bauteileditor.de) zur Verfügung, das im Rahmen des Bewertungssystems Nachhaltiges Bauen (BNB) verbindlich anzuwenden ist. </p>
 	<p>Mit eLCA lassen sich die Umweltwirkungen von Gebäuden einfach, schnell und unter Berücksichtigung des gesamten Lebenszyklus bestimmen und bewerten.<br/>
 	Im Bauteileditor, der Kernkomponente des Tools, kann der Nutzer Bauteile sehr einfach und anschaulich modellieren. Die übersichtliche, grafisch aufbereitete Darstellung der Ergebnisse ermöglicht eine detaillierte Ergebnisanalyse.<br/>
 	Die Berechnungen basieren auf den ÖKOBAUDAT-Datensätzen.
@@ -14,11 +14,21 @@
 		<include name="\Elca\View\ElcaInfoHandbookView"/>
 	</div>
 	
+    
 	<div class="infocolumns flex wrap">
 		<div class="infocolumn">
 			<h2>Downloads</h2> 
 			<br/>
 			
+            
+            <h3>Bauteilkatalog</h3>
+            <ul class="downloads">
+                <li><a href="/docs/downloads/elcabauteilkatalog.pdf" target="_blank" title="Bauteilkatalog" class="iconsheet no-xhr">Bauteilkatalog [PDF, DE]</a><br/>
+                    <span>Zusammenfassung der vorhandenen Bauteile, nach ÖKOBAUDAT-Version sortiert</span>
+                </li>
+            </ul>
+            <br/>      
+            
 			<h3>CSV2eLCA</h3>
 			<ul class="downloads">
 				<li><a href="/docs/downloads/CSV2eLCA/How-to-do_CSV-Import_2019-10-01.pdf" target="_blank" title="Anleitung: CSV2eLCA Import" class="iconsheet no-xhr">Anleitung: CSV2eLCA Assistent [PDF, DE]</a><br/>

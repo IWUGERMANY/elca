@@ -19,6 +19,14 @@
 			<h2>Descargas</h2> 
 			<br/>
 			
+            <h3>Catálogo de componentes (Bauteilkatalog)</h3>
+            <ul class="downloads">
+                <li><a href="/docs/downloads/elcabauteilkatalog.pdf" target="_blank" title="Catálogo de componentes (Bauteilkatalog, solo versión alemana)" class="iconsheet no-xhr">Bauteilkatalog (Catálogo de componentes) [PDF, DE]</a><br/>
+                    <span>Resumen de los componentes existentes, ordenados por versión ÖKOBAUDAT</span>
+                </li>
+            </ul>
+            <br/> 
+            
 			<h3>CSV2eLCA</h3>
 			<ul class="downloads">
 				<li><a href="/docs/downloads/CSV2eLCA/How-to-do_CSV-Import_2019-10-01.pdf" target="_blank" title="Anleitung: CSV2eLCA Import" class="iconsheet no-xhr">Anleitung: CSV2eLCA Assistent [PDF, DE]</a><br/>

@@ -61,6 +61,7 @@ use Elca\View\Admin\Bauteilkatalog\ElcaAdminBauteilkatalogView;
 use Elca\View\Admin\Bauteilkatalog\ElcaAdminBauteilkatalogCreatePDFView;
 use Elca\View\Admin\Bauteilkatalog\ElcaAdminBauteilkatalogHeaderFooterView;
 use Elca\View\Admin\Bauteilkatalog\ElcaAdminBauteilkatalogPdfModalDownloadView;
+use Elca\View\Admin\Bauteilkatalog\ElcaAdminBauteilkatalogPdfMoveDownloadView;
 use Elca\View\Admin\Bauteilkatalog\ElcaAdminBauteilkatalogPdfModalView;
 use Exception;
 
@@ -92,6 +93,9 @@ class BauteilkatalogCtrl extends TabsCtrl
     
     const BUILDMODE_SCREEN = 'screen';
     const BUILDMODE_PDF = 'pdf';
+    
+    const DEFAULT_PATH_BAUTEILKATALOG = 'www/docs/downloads/';
+    const DEFAULT_FILENAME_BAUTEILKATALOG = 'elcabauteilkatalog.pdf';
 
     /**
      * Will be called on initialization.
@@ -186,7 +190,7 @@ class BauteilkatalogCtrl extends TabsCtrl
      */
     protected function pdfModalDownloadAction()
     {
-		// elca.js Row:2158 preparePdf: function ($context) 
+		// elca.js Row:2181 preparePdf: function ($context) 
 		// 
         $V  = $this->addView(new ElcaAdminBauteilkatalogPdfModalDownloadView());
         $pdfUrl = FrontController::getInstance()->getUrlTo(null, 'pdfDownload', ['a' => $this->Request->a]);
@@ -194,6 +198,43 @@ class BauteilkatalogCtrl extends TabsCtrl
         $V->assign('action', $pdfUrl);
 		$V->assign('timecreated', $pdfTimeCreated);
     }
+    
+     /**
+     * Open modal and start copying pdf to page informationen if generation has been completed
+     */
+    protected function pdfModalMoveDownloadAction()
+    {
+		// elca.js Row: 2138, 2207 prepareMovePdf: function ($context) 
+		// 
+        
+        $PDFinfo = ElcaReportSet::findPdfInQueue(
+			0, 
+			0,
+			$this->Session->getNamespace('blibs.userStore')->__get('userId'), 
+			FrontController::getInstance()->getUrlTo(get_class($this), 'catalog')
+		);
+        
+        
+        if( !$PDFinfo->isEmpty() )
+		{
+			$infoArray = (array)$PDFinfo[0];
+			
+			if(!is_null($infoArray["ready"]))
+			{
+                $environment = Environment::getInstance();
+				$config = $environment->getConfig();
+                $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('pdfCreateDir', true, 'tmp/pdf-data'). $infoArray["key"];
+				$pdfUrl = FrontController::getInstance()->getUrlTo(null, 'moveCatalogPdf',	['key' => $infoArray["key"]]);
+            }
+        }
+        
+        $viewd2      = $this->addView(new ElcaAdminBauteilkatalogPdfMoveDownloadView());
+        // $pdfUrl = FrontController::getInstance()->getUrlTo(null, 'pdfMoveDownload', ['a' => $this->Request->a]);
+        $pdfTimeCreated = $this->Request->t;
+        $viewd2->assign('action', $pdfUrl);
+        $viewd2->assign('timecreated', $pdfTimeCreated);
+        $viewd2->assign('closeAfterTimeInMs', self::MODAL_CLOSE_TIMEOUT);
+    }    
 
     /**
      * generate pdf
@@ -453,10 +494,65 @@ class BauteilkatalogCtrl extends TabsCtrl
 		}
 		else
 		{
-			$this->messages->add('Die angeforderte Datei ist nicht verfÃ¼gbar!', ElcaMessages::TYPE_ERROR);
+			$this->messages->add('Die angeforderte Datei ist nicht verfügbar!', ElcaMessages::TYPE_ERROR);
             return;
 		}		
     }    
+    
+    
+     /**
+     * Moves generated pdf to page "information" 
+     */
+    protected function moveCatalogPdfAction()
+    {
+
+    
+		$PDFinfo = ElcaReportSet::findPdfInQueueByHash(
+			0, 
+			0,
+			$this->Session->getNamespace('blibs.userStore')->__get('userId'), 
+			$this->Request->key
+			// FrontController::getInstance()->getUrlTo(get_class($this), $this->Request->key)
+		);
+
+		if( !$PDFinfo->isEmpty() )
+		{
+
+            $environment = Environment::getInstance();
+            $config = $environment->getConfig();
+            
+            // Check file path and file name
+            if (!isset($config->pdfCatalogFile)) {
+                $this->Log->warning("Filename download Bauteilkatalog is not configured (pdfCatalogFile). Assuming the default filename `".
+                                    self::DEFAULT_FILENAME_BAUTEILKATALOG ."'",__FUNCTION__);
+            }        
+            $config->pdfCatalogFile ?? self::DEFAULT_FILENAME_BAUTEILKATALOG;  
+            
+            if (!isset($config->pdfCatalogDir)) {
+                $this->Log->warning("File path download Bauteilkatalog is not configured (pdfCatalogFile). Assuming the default path `".
+                                    self::DEFAULT_PATH_BAUTEILKATALOG ."'",__FUNCTION__);
+            }        
+            $config->pdfCatalogDir ?? self::DEFAULT_PATH_BAUTEILKATALOG;                
+            
+
+            // move file Bauteilkatalog
+			$infoArray = (array)$PDFinfo[0];
+			
+			$infoDownloadDir = $config->toDir('baseDir') . $config->pdfCatalogDir;
+            
+            $tmpCacheDir = $config->toDir('baseDir') . $config->toDir('pdfCreateDir', true, 'tmp/pdf-data').$infoArray["key"];	
+			$pdf = new File($tmpCacheDir."/tempPDF.pdf");
+
+            File::copy($pdf->getFilepath(), $infoDownloadDir.$config->pdfCatalogFile );
+            
+		}
+		else
+		{
+			$this->messages->add('Die angeforderte Datei ist nicht verfügbar!', ElcaMessages::TYPE_ERROR);
+            return;
+		}		
+    }    
+        
     
     
     /**
@@ -586,6 +682,48 @@ class BauteilkatalogCtrl extends TabsCtrl
 			}	
 		}	
     }
+    
+   
+    
+   /**
+     * show pdf file name - check before moving to public download site
+     */
+    protected function pdfMoveDownloadAction()
+    {
+       $PDFinfo = ElcaReportSet::findPdfInQueue(
+			0, 
+			0,
+			$this->Session->getNamespace('blibs.userStore')->__get('userId'), 
+			FrontController::getInstance()->getUrlTo(get_class($this), $this->Request->a)
+		);
+	  
+	   if( !$PDFinfo->isEmpty() )
+		{
+			$infoArray = (array)$PDFinfo[0];
+			
+			if(!is_null($infoArray["ready"]))
+			{
+				$environment = Environment::getInstance();
+				$config = $environment->getConfig();
+				
+				$View = $this->addView(new HtmlView());
+				$View->appendChild($View->getDiv(['id' => 'movedownload-pdf', 'class' => 'button', 'rel' => 'close-modal'], $P = $View->getP('')));
+				
+				$tmpCacheDir = $config->toDir('baseDir') . $config->toDir('pdfCreateDir', true, 'tmp/pdf-data'). $infoArray["key"];
+				$downloadUrl = new Url(
+					FrontController::getInstance()->getUrlTo(get_class($this), 'moveCatalogPdf'),
+					['key' => $infoArray["key"]]
+				);
+                
+				$P->appendChild(
+					$View->getA(
+						[ 'class' => 'movedownloadpdflink', 'href' => 'javascript:void(0);',  'title' => $infoArray["projects_filename"]], t('Veröffentlichen')
+						//$this->buildFilename($infoArray["projects_filename"]) 
+					)
+				);
+			}	
+		}	
+    }    
     
     private function resolveWkhtmltopdfCmd(Config $config): string
     {

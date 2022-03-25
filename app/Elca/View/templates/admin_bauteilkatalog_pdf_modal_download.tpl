@@ -3,8 +3,7 @@
     <h1>_(Bauteilkatalog zum Download)_</h1>
 
     <div class="spinning-wheel" data-action="$$action$$"></div>
-	<p class="pdf-gen"></p>
-    <div class="pdf-gen-done pdfdownloadinfo">
+	<div class="pdf-gen-done pdfdownloadinfo">
 		<p><strong>_(Ihr Dokument ist verfügbar.)_</strong></p>
 		<p>_(Als Download ist der Bauteilkatalog in der Version vom)_ <strong class="textcolor-red">$$timecreated$$</strong> _(verfügbar.)_</p>		
 		<div id="download-pdf"></div>

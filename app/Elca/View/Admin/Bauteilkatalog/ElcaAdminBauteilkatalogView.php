@@ -94,6 +94,8 @@ class ElcaAdminBauteilkatalogView extends HtmlView
         $modalUrl = FrontController::getInstance()->getUrlTo(null, 'pdfModal', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : BauteilkatalogCtrl::CATALOGACTION]);
 		// $modalUrlDownload = FrontController::getInstance()->getUrlTo(null, 'pdfModalDownload', ['a' => FrontController::getInstance()->getAction() ? FrontController::getInstance()->getAction() : BauteilkatalogCtrl::CATALOGACTION]);
 		
+        
+        
 		$PrintDiv->appendChild($this->getA([
 			'class' => 'no-xhr', 
 			'rel' => 'open-modal', 
@@ -114,8 +116,12 @@ class ElcaAdminBauteilkatalogView extends HtmlView
 			{
 				$PDFreadyDate = BlibsDateTime::factory($infoArrayReady[0]);
 				$modalUrlDownload = FrontController::getInstance()->getUrlTo(null, 'pdfModalDownload', ['a' => BauteilkatalogCtrl::CATALOGACTION, 't' => $PDFreadyDate->getDateTimeString(t('DATETIME_FORMAT_DMY'))]);
-				$PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal','title' => t('Erstellt:').$PDFreadyDate->getDateTimeString(t('DATETIME_FORMAT_DMY') . ' ' . t('DATETIME_FORMAT_HI')), 'href' => $modalUrlDownload], t('PDF anzeigen')));	
+				$PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal','title' => t('Erstellt: ').$PDFreadyDate->getDateTimeString(t('DATETIME_FORMAT_DMY') . ' ' . t('DATETIME_FORMAT_HI')), 'href' => $modalUrlDownload], t('PDF anzeigen')));	
 				
+                // PDF in den Bereich Informaionen kopieren
+                $pdfModalMoveDownload = FrontController::getInstance()->getUrlTo(null, 'pdfModalMoveDownload', ['a' => BauteilkatalogCtrl::CATALOGACTION, 't' => $PDFreadyDate->getDateTimeString(t('DATETIME_FORMAT_DMY'))]);
+                $PrintDiv->appendChild($this->getA(['class' => 'no-xhr', 'rel' => 'open-modal','title' => t('PDF Bauteilkatalog nach Informationen kopieren - Live schalten: ').$PDFreadyDate->getDateTimeString(t('DATETIME_FORMAT_DMY') . ' ' . t('DATETIME_FORMAT_HI')), 'href' => $pdfModalMoveDownload], t('PDF live schalten')));	
+                
 				$infoArrayKey = (array)$PDFinfo[0]->key;
 				if($infoArrayKey[0])
 				{	
