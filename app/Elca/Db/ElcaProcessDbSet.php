@@ -225,4 +225,21 @@ WHERE db.is_active',
         return self::_find(get_class(), ElcaProcessDb::TABLE_NAME, $initValues, $orderBy, $limit, $offset, $force);
 
     }
+    
+    public static function findActiveOrById(int $processConfigId, array $orderBy = null, $limit = null, $offset = null)
+    {
+        if (!$processConfigId || $processConfigId<=0) {
+            return new self();
+        }
+
+        return self::_findBySql(
+            get_class(),
+            sprintf(
+                'SELECT * FROM %s WHERE id = %d or is_active=true %s',
+                ElcaProcessDb::TABLE_NAME,
+                $processConfigId,
+                self::buildOrderView($orderBy, $limit, $offset)
+            )
+        );
+    }    
 }

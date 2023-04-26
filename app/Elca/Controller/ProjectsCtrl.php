@@ -58,6 +58,7 @@ use Elca\View\ElcaProjectNavigationLeftView;
 use Elca\View\ElcaProjectsView;
 use Elca\View\ElcaProjectView;
 use Elca\View\Modal\ModalProjectAccess;
+use Elca\Security\ElcaAccess;
 use Exception;
 
 /**
@@ -202,7 +203,29 @@ class ProjectsCtrl extends AppCtrl
         }
 
         $View = $this->setView(new ElcaProjectDataGeneralView());
-        $View->assign('ElcaProcessDbSet',ElcaProcessDbSet::find(['is_active' => true], ['version' => 'desc'], null));
+        
+        // ON! 26.04.2023 ------------------------------
+        // nicht aktive Test-DB für Testgruppe abfragen
+        // ---------------------------------------------
+        $environment = Environment::getInstance();
+        $config      = $environment->getConfig();
+        $access = ElcaAccess::getInstance();
+        
+        if ($access->hasAdminPrivileges() || $access->hasRole(Elca::ELCA_ROLE_TESTING)) 
+        {
+            if(isset($config->databasetest->processdbid))
+            {
+               // $databasetestgroup = $config->databasetest->group;
+               $databasetestprocessdbid = (int)$config->databasetest->processdbid;
+            }
+            $View->assign('ElcaProcessDbSet',ElcaProcessDbSet::findActiveOrById($databasetestprocessdbid, ['version' => 'desc'], null)); 
+            
+        }
+        else 
+        {        
+            // normale Abfrage Datenbanken aktiv
+            $View->assign('ElcaProcessDbSet',ElcaProcessDbSet::find(['is_active' => true], ['version' => 'desc'], null));
+        }    
 
         // set default values for new project
         $DataObject = $View->assign('DataObject', new \stdClass());
