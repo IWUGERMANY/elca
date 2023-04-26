@@ -30,6 +30,7 @@ use Beibob\Blibs\DbHandle;
 use Beibob\Blibs\Url;
 use Beibob\Blibs\UserStore;
 use Beibob\Blibs\Validator;
+use Beibob\Blibs\Environment;
 use Elca\Db\ElcaBenchmarkRefProcessConfig;
 use Elca\Db\ElcaBenchmarkRefProcessConfigSet;
 use Elca\Db\ElcaBenchmarkVersion;
@@ -92,6 +93,7 @@ use Elca\View\ElcaProjectNavigationView;
 use Elca\View\ElcaProjectSearchAndReplaceProcessesView;
 use Elca\View\ElcaProjectVariantsView;
 use Elca\View\ProjectData\ReplaceOverviewView;
+use Elca\Security\ElcaAccess;
 use Exception;
 
 /**
@@ -137,7 +139,31 @@ class ProjectDataCtrl extends AppCtrl
         $ProjectVariant = $this->Elca->getProjectVariant();
         $View           = $this->setView(new ElcaProjectDataGeneralView());
         $View->assign('projectVariantId', $ProjectVariant->getId());
-        $View->assign('ElcaProcessDbSet', ElcaProcessDbSet::find(['is_active' => true], ['version' => 'desc'], null));
+        
+        // ON! 26.04.2023 ------------------------------
+        // nicht aktive Test-DB für Testgruppe abfragen
+        // ---------------------------------------------
+        $environment = Environment::getInstance();
+        $config      = $environment->getConfig();
+        $access = ElcaAccess::getInstance();
+        
+        if ($access->hasAdminPrivileges() || $access->hasRole(Elca::ELCA_ROLE_TESTING)) 
+        {
+            if(isset($config->databasetest->processdbid))
+            {
+               // $databasetestgroup = $config->databasetest->group;
+               $databasetestprocessdbid = (int)$config->databasetest->processdbid;
+            }
+            $View->assign('ElcaProcessDbSet',ElcaProcessDbSet::findActiveOrById($databasetestprocessdbid, ['version' => 'desc'], null)); 
+            
+        }
+        else 
+        {        
+            // normale Abfrage Datenbanken aktiv
+            $View->assign('ElcaProcessDbSet',ElcaProcessDbSet::find(['is_active' => true], ['version' => 'desc'], null));
+        }            
+        
+        
         $View->assign('ElcaConstrCatalogSet', ElcaConstrCatalogSet::find(null, ['ident' => 'desc'], null));
         $View->assign('ElcaConstrDesignSet', ElcaConstrDesignSet::find(null, ['ident' => 'desc'], null));
         $View->assign('benchmarkSystemsService', $this->container->get(BenchmarkSystemsService::class));
