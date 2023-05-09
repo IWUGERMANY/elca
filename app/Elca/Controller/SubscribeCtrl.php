@@ -205,7 +205,9 @@ class SubscribeCtrl extends AppCtrl
                         $UserProfile = UserProfile::create($user->getId(), $this->Request->company, $this->Request->gender, $this->Request->firstname, $this->Request->lastname, $this->Request->email);
 
                         RoleMember::grant(
-                            Role::findByIdent(Elca::ELCA_ROLES, Elca::ELCA_ROLE_STANDARD)->getId(),
+                            // Gruppe für IFC-Projekt Import / -Viewer im Registrierungsprozess setzen / erweitern
+                            // Role::findByIdent(Elca::ELCA_ROLES, Elca::ELCA_ROLE_STANDARD)->getId(),
+                            Role::findByIdent(Elca::ELCA_ROLES, Elca::ELCA_ROLE_STANDARD, ELCA::ELCA_ROLE_IFC_VIEWER)->getId(),
                             $user->getGroupId()
                         );
 
