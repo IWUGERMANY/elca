@@ -20,3 +20,5 @@ www/assets
 composer.json
 /www/ifc-data/
 .idea/
+.DS_Store
+.vs_code/
